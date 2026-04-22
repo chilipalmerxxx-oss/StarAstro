@@ -63,11 +63,28 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [showSavedCharts, setShowSavedCharts] = useState(false);
   const [activeTab, setActiveTab] = useState<TabId>('home');
+  const [selectedPlanetForProfile, setSelectedPlanetForProfile] = useState<string | null>(null);
 
   // Sauvegarder les données quand chartData change
   useEffect(() => {
     saveChartToLocalStorage(chartData);
   }, [chartData]);
+
+  // Scroll en haut à chaque changement d'onglet
+  useEffect(() => {
+    const scrollToTop = () => {
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      const root = document.getElementById('root');
+      if (root) root.scrollTop = 0;
+    };
+    scrollToTop();
+    // Retry après le rendu React
+    requestAnimationFrame(scrollToTop);
+    const t = setTimeout(scrollToTop, 50);
+    return () => clearTimeout(t);
+  }, [activeTab, showCoStar, showVoid, showLanding]);
 
   const handleSubmit = async (data: {
     name: string;
@@ -143,6 +160,9 @@ function App() {
   };
 
   const handleTabChange = (tab: TabId) => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
     if (tab === 'void') {
       setShowLanding(false);
       setShowVoid(true);
@@ -171,6 +191,7 @@ function App() {
       }
       setShowLanding(false);
       setShowVoid(false);
+      setShowCoStar(false);
       setActiveTab('profile');
       return;
     }
@@ -183,12 +204,22 @@ function App() {
     }
     setShowLanding(false);
     setShowVoid(false);
+    setShowCoStar(false);
     setActiveTab(tab);
+  };
+
+  const handlePlanetClick = (planetKey: string) => {
+    if (!chartData) return;
+    setSelectedPlanetForProfile(planetKey);
+    setShowLanding(false);
+    setShowVoid(false);
+    setShowCoStar(false);
+    setActiveTab('profile');
   };
 
   if (showCoStar) {
     return (
-      <div className="min-h-screen bg-[#0A0A0F] pb-20">
+      <div className="min-h-screen bg-[#111111] pb-20">
         <CoStarPage 
           onBack={() => {
             setShowCoStar(false);
@@ -208,7 +239,7 @@ function App() {
 
   if (showLanding) {
     return (
-      <div className="min-h-screen bg-[#0A0A0F] pb-20">
+      <div className="min-h-screen bg-[#111111] pb-20">
         <LandingPage
           onGetStarted={handleGetStarted}
           onOpenVoid={() => setShowVoid(true)}
@@ -222,7 +253,7 @@ function App() {
   // ── Friends tab ──
   if (activeTab === 'friends') {
     return (
-      <div className="min-h-screen bg-[#0A0A0F]">
+      <div className="min-h-screen bg-[#111111]">
         <FriendsPage onBack={() => setActiveTab('home')} />
         <BottomNavBar activeTab={activeTab} onTabChange={handleTabChange} />
       </div>
@@ -232,7 +263,7 @@ function App() {
   // ── Profile / Astral tab ──
   if (activeTab === 'profile' && chartData) {
     return (
-      <div className="min-h-screen bg-[#0A0A0F] pb-20">
+      <div className="min-h-screen bg-[#111111] pb-20">
         <AstralProfile
           name={chartData.name}
           birthDate={chartData.birthDate}
@@ -241,14 +272,18 @@ function App() {
           houses={chartData.houses}
           aspects={chartData.aspects}
           onOpenFriends={() => setActiveTab('friends')}
+          initialActivePlanet={selectedPlanetForProfile as any}
         />
-        <BottomNavBar activeTab={activeTab} onTabChange={handleTabChange} />
+        <BottomNavBar activeTab={activeTab} onTabChange={(tab) => {
+          setSelectedPlanetForProfile(null);
+          handleTabChange(tab);
+        }} />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0A0F]">
+    <div className="min-h-screen bg-[#111111]">
       <div className="container mx-auto px-4 py-12">
         <div className="text-center mb-12">
           <div className="flex items-center justify-between mb-6">
@@ -311,6 +346,7 @@ function App() {
                 planetPositions={chartData.planetPositions}
                 houses={chartData.houses}
                 aspects={chartData.aspects}
+                onPlanetClick={handlePlanetClick}
               />
 
               <Interpretation

@@ -7,9 +7,10 @@ interface DetailModalProps {
   onClose: () => void;
   planetKey: string;
   position: PlanetPosition;
+  onNavigateToProfile?: (planetKey: string) => void;
 }
 
-export default function DetailModal({ onClose, planetKey, position }: DetailModalProps) {
+export default function DetailModal({ onClose, planetKey, position, onNavigateToProfile }: DetailModalProps) {
 
   const planetInfo = PLANET_INFO[planetKey];
   const signInfo = SIGN_DETAILED[position.sign];
@@ -89,9 +90,21 @@ export default function DetailModal({ onClose, planetKey, position }: DetailModa
 
           <div className="bg-gradient-to-r from-slate-100 to-slate-50 rounded-xl p-4 border border-slate-200">
             <p className="text-sm text-slate-600 text-center italic">
-              Cette interprétation combine la symbolique de {planetInfo.name}, du signe {position.sign} et de la maison {position.house} pour révéler une facette unique de votre personnalité.
+              Cette interprétation combine la symbolique de {planetInfo.name}, du signe {position.sign} et de la maison {position.house} pour révéler une facette unique de ta personnalité.
             </p>
           </div>
+
+          {onNavigateToProfile && (
+            <button
+              onClick={() => {
+                onNavigateToProfile(planetKey);
+                onClose();
+              }}
+              className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold py-3 rounded-xl transition-all shadow-md"
+            >
+              📖 Voir dans ma carte céleste
+            </button>
+          )}
         </div>
       </div>
     </div>

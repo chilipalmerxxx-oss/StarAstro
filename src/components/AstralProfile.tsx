@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { RotateCcw } from 'lucide-react';
 import { getDetailedInterpretation, SIGN_SYMBOLS } from '../data/signDetailedInterpretations';
 import { PLANET_INFO, getAspectInterpretation } from '../data/interpretations';
@@ -50,6 +50,7 @@ interface AstralProfileProps {
   houses: any[];
   aspects?: any[];
   onOpenFriends: () => void;
+  initialActivePlanet?: PlanetKey;
 }
 
 function getSignForPlanet(
@@ -72,10 +73,43 @@ export default function AstralProfile({
   houses,
   aspects = [],
   onOpenFriends,
+  initialActivePlanet,
 }: AstralProfileProps) {
-  const [activePlanet, setActivePlanet] = useState<PlanetKey>('sun');
+  const [activePlanet, setActivePlanet] = useState<PlanetKey>(initialActivePlanet || 'sun');
   const [activeAspect, setActiveAspect] = useState<any | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const pillsContainerRef = useRef<HTMLDivElement>(null);
+  const activePillRef = useRef<HTMLButtonElement>(null);
+  const topRef = useRef<HTMLDivElement>(null);
+
+  // Set active planet when initialActivePlanet prop changes
+  useEffect(() => {
+    if (initialActivePlanet) {
+      setActivePlanet(initialActivePlanet);
+      setActiveAspect(null);
+      // Délai plus long pour laisser le temps au DOM de se rendre avant le scroll
+      setTimeout(() => {
+        // Scroller vers la pill sélectionnée
+        if (activePillRef.current) {
+          activePillRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }
+        // Puis scroller vers le contenu
+        if (contentRef.current) {
+          contentRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 150);
+    } else {
+      // Pas de planète sélectionnée : scroll en haut
+      topRef.current?.scrollIntoView({ behavior: 'instant', block: 'start' });
+    }
+  }, [initialActivePlanet]);
+
+  // Scroller vers la pill quand activePlanet change
+  useEffect(() => {
+    if (activePillRef.current) {
+      activePillRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
+  }, [activePlanet]);
 
   const sign = getSignForPlanet(activePlanet, planetPositions, houses);
   const interpretation = getDetailedInterpretation(activePlanet, sign);
@@ -85,8 +119,10 @@ export default function AstralProfile({
     setActivePlanet(key);
     setActiveAspect(null);
     setTimeout(() => {
-      contentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 0);
+      if (contentRef.current) {
+        contentRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 50);
   };
 
   const handleAspectClick = (aspect: any) => {
@@ -112,29 +148,30 @@ export default function AstralProfile({
   };
 
   return (
-    <div className="min-h-screen bg-[#0A0A0F]">
+    <div className="min-h-screen bg-[#111111]">
+      <div ref={topRef} />
       {/* Roue Zodiacale en haut */}
       {birthDate && birthPlace && (
-        <div className="relative mb-8 py-12 px-4 before:absolute before:inset-0 before:bg-gradient-to-b before:from-[#1a0033] before:via-[#0a0a1a] before:to-[#000000] before:pointer-events-none before:opacity-80 after:absolute after:top-1/2 after:left-1/2 after:-translate-x-1/2 after:-translate-y-1/2 after:w-[500px] after:h-[500px] after:blur-3xl after:opacity-20 after:pointer-events-none after:rounded-full" style={{ '--tw-gradient-stops': 'rgb(139, 92, 246), rgb(99, 102, 241)' } as React.CSSProperties}>
+        <div className="relative mb-8 pt-2 pb-8 px-4 before:absolute before:inset-0 before:bg-gradient-to-b before:from-[#1a1a1a] before:via-[#141414] before:to-[#111111] before:pointer-events-none before:opacity-80 after:absolute after:top-1/2 after:left-1/2 after:-translate-x-1/2 after:-translate-y-1/2 after:w-[500px] after:h-[500px] after:blur-3xl after:opacity-20 after:pointer-events-none after:rounded-full" style={{ '--tw-gradient-stops': 'rgb(160, 160, 160), rgb(120, 120, 120)' } as React.CSSProperties}>
           <style>{`
             .zodiac-space-bg::after {
-              background: radial-gradient(circle, rgba(139, 92, 246, 0.4) 0%, rgba(99, 102, 241, 0.2) 40%, transparent 70%);
+              background: radial-gradient(circle, rgba(160, 160, 160, 0.15) 0%, rgba(120, 120, 120, 0.08) 40%, transparent 70%);
             }
             @keyframes float-glow {
               0%, 100% { 
-                box-shadow: 0 0 60px rgba(139, 92, 246, 0.4), 
-                           0 0 100px rgba(99, 102, 241, 0.2),
-                           inset 0 0 100px rgba(139, 92, 246, 0.1);
+                box-shadow: 0 0 60px rgba(160, 160, 160, 0.15), 
+                           0 0 100px rgba(120, 120, 120, 0.08),
+                           inset 0 0 100px rgba(160, 160, 160, 0.05);
               }
               50% { 
-                box-shadow: 0 0 100px rgba(139, 92, 246, 0.6), 
-                           0 0 150px rgba(99, 102, 241, 0.3),
-                           inset 0 0 120px rgba(139, 92, 246, 0.2);
+                box-shadow: 0 0 100px rgba(160, 160, 160, 0.25), 
+                           0 0 150px rgba(120, 120, 120, 0.12),
+                           inset 0 0 120px rgba(160, 160, 160, 0.08);
               }
             }
             .zodiac-wheel-container {
               animation: float-glow 5s ease-in-out infinite;
-              filter: drop-shadow(0 0 30px rgba(139, 92, 246, 0.2));
+              filter: drop-shadow(0 0 30px rgba(160, 160, 160, 0.1));
             }
           `}</style>
           <div className="relative z-10 zodiac-wheel-container">
@@ -146,6 +183,7 @@ export default function AstralProfile({
               houses={houses}
               aspects={aspects}
               onAspectClick={handleAspectClick}
+              onPlanetClick={(key) => handlePlanetClick(key as PlanetKey)}
             />
           </div>
         </div>
@@ -160,13 +198,15 @@ export default function AstralProfile({
         </header>
 
       {/* ── Sign pills ── */}
-      <div className="astral-profile__pills">
+      <h3 className="astral-profile__aspects-title">Planètes</h3>
+      <div className="astral-profile__pills" ref={pillsContainerRef}>
         {(['ascendant', 'sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto'] as PlanetKey[]).map((key) => {
           const pillSign = getSignForPlanet(key, planetPositions, houses);
           const isActive = activePlanet === key;
           return (
             <button
               key={key}
+              ref={isActive ? activePillRef : null}
               className={`astral-profile__sign-pill ${isActive ? 'astral-profile__sign-pill--active' : ''}`}
               onClick={() => handlePlanetClick(key)}
             >

@@ -9,6 +9,7 @@ interface NatalChartProps {
   houses: any[];
   aspects: any[];
   onAspectClick?: (aspect: any) => void;
+  onPlanetClick?: (planetKey: string) => void;
 }
 
 const zodiacSigns = [
@@ -76,6 +77,7 @@ export default function NatalChart({
   houses,
   aspects,
   onAspectClick,
+  onPlanetClick,
 }: NatalChartProps) {
   const [selectedPlanet, setSelectedPlanet] = useState<string | null>(null);
   const [hoveredPlanet, setHoveredPlanet] = useState<string | null>(null);
@@ -136,7 +138,7 @@ export default function NatalChart({
 
     // Stack each group radially outward along the average direction
     const bodyPositions: Record<string, { x: number; y: number; stackRadius: number; lineAngle: number }> = {};
-    const stackSpacing = 75; // px between stacked items (circle radius 28 → no overlap)
+    const stackSpacing = 110; // px between stacked items (circle radius 42 → no overlap)
 
     for (const group of groups) {
       const avgLongitude = group.reduce((sum, p) => sum + p.longitude, 0) / group.length;
@@ -236,39 +238,10 @@ export default function NatalChart({
 
   return (
     <div
-      className={`flex flex-col items-center gap-4 md:gap-6 relative overflow-hidden ${isFullscreen ? "fixed inset-0 z-50 bg-neutral-900 flex items-center justify-center" : "rounded-3xl shadow-2xl p-4 md:p-8"}`}
+      className={`flex flex-col items-center gap-4 md:gap-6 relative overflow-hidden ${isFullscreen ? "fixed inset-0 z-50 bg-neutral-900 flex items-center justify-center" : "rounded-3xl shadow-2xl p-4 md:p-8 bg-neutral-900"}`}
       style={!isFullscreen ? {
-        backgroundImage: `
-          radial-gradient(ellipse at 80% 20%, rgba(120, 40, 200, 0.35) 0%, transparent 45%),
-          radial-gradient(ellipse at 10% 80%, rgba(60, 20, 140, 0.3) 0%, transparent 40%),
-          radial-gradient(ellipse at 60% 60%, rgba(30, 10, 80, 0.4) 0%, transparent 50%),
-          radial-gradient(ellipse at 30% 30%, rgba(180, 100, 255, 0.12) 0%, transparent 35%),
-          radial-gradient(2px 2px at 10%, 15%, rgba(255,255,255,0.9), rgba(255,255,255,0)),
-          radial-gradient(1px 1px at 20%, 25%, rgba(255,255,255,0.7), rgba(255,255,255,0)),
-          radial-gradient(1px 1px at 35%, 10%, rgba(255,255,255,0.8), rgba(255,255,255,0)),
-          radial-gradient(2px 2px at 40%, 40%, rgba(255,255,255,0.6), rgba(255,255,255,0)),
-          radial-gradient(1px 1px at 50%, 20%, rgba(255,255,255,0.9), rgba(255,255,255,0)),
-          radial-gradient(1px 1px at 65%, 35%, rgba(255,255,255,0.7), rgba(255,255,255,0)),
-          radial-gradient(2px 2px at 75%, 15%, rgba(255,255,255,0.8), rgba(255,255,255,0)),
-          radial-gradient(1px 1px at 85%, 45%, rgba(255,255,255,0.6), rgba(255,255,255,0)),
-          radial-gradient(1px 1px at 15%, 60%, rgba(255,255,255,0.7), rgba(255,255,255,0)),
-          radial-gradient(2px 2px at 45%, 70%, rgba(255,255,255,0.5), rgba(255,255,255,0)),
-          radial-gradient(1px 1px at 70%, 60%, rgba(255,255,255,0.8), rgba(255,255,255,0)),
-          radial-gradient(1px 1px at 25%, 85%, rgba(255,255,255,0.6), rgba(255,255,255,0)),
-          radial-gradient(1px 1px at 80%, 80%, rgba(255,255,255,0.7), rgba(255,255,255,0)),
-          radial-gradient(2px 2px at 55%, 90%, rgba(255,255,255,0.5), rgba(255,255,255,0)),
-          radial-gradient(1px 1px at 90%, 70%, rgba(255,255,255,0.8), rgba(255,255,255,0)),
-          radial-gradient(1px 1px at 5%, 50%, rgba(255,255,255,0.6), rgba(255,255,255,0)),
-          radial-gradient(1.5px 1.5px at 92%, 30%, rgba(255,255,255,0.7), rgba(255,255,255,0)),
-          radial-gradient(1px 1px at 60%, 5%, rgba(255,255,255,0.8), rgba(255,255,255,0)),
-          radial-gradient(1px 1px at 33%, 55%, rgba(200,180,255,0.6), rgba(255,255,255,0)),
-          linear-gradient(135deg, #03000f 0%, #080010 30%, #06000e 60%, #000008 100%)
-        `,
-        backgroundSize: '100% 100%',
-        backgroundPosition: '0 0',
-        backgroundColor: '#03000f',
-        boxShadow: '0 0 60px rgba(120, 40, 200, 0.3), 0 0 120px rgba(60, 20, 140, 0.15), inset 0 0 80px rgba(80, 20, 160, 0.1)',
-        border: '1px solid rgba(150, 80, 255, 0.2)',
+        boxShadow: '0 0 60px rgba(0, 0, 0, 0.5), 0 0 120px rgba(0, 0, 0, 0.2)',
+        border: '1px solid rgba(255, 255, 255, 0.08)',
       } : {}}
     >
       {isFullscreen && (
@@ -308,7 +281,7 @@ export default function NatalChart({
       )}
 
       <div className={`relative ${isFullscreen ? 'w-full h-full flex items-center justify-center' : 'w-full flex justify-center px-4'}`}>
-        <div className={`${isFullscreen ? 'w-full h-full max-h-[95vh] flex justify-center items-center' : 'w-full max-w-[450px] flex justify-center'}`}>
+        <div className={`${isFullscreen ? 'w-full h-full max-h-[85vh] max-w-[85vh] flex justify-center items-center' : 'w-full max-w-[600px] flex justify-center'}`}>
           <svg
             viewBox="0 0 1600 1600"
             className="drop-shadow-2xl w-full h-auto max-w-full"
@@ -355,6 +328,17 @@ export default function NatalChart({
                 <feGaussianBlur stdDeviation="3" result="coloredBlur" />
                 <feMerge>
                   <feMergeNode in="coloredBlur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+
+              <filter id="planetGlow">
+                <feGaussianBlur in="SourceAlpha" stdDeviation="2" result="blur" />
+                <feOffset dx="0" dy="1" result="offsetBlur" />
+                <feFlood floodColor="rgba(0,0,0,0.5)" result="color" />
+                <feComposite in2="offsetBlur" operator="in" result="shadow" />
+                <feMerge>
+                  <feMergeNode in="shadow" />
                   <feMergeNode in="SourceGraphic" />
                 </feMerge>
               </filter>
@@ -556,10 +540,10 @@ export default function NatalChart({
                   <circle
                     cx={x}
                     cy={y}
-                    r={isHighlighted ? "32" : "28"}
+                    r={isHighlighted ? "48" : "42"}
                     fill={planetColors[key] || "#64748b"}
                     stroke="white"
-                    strokeWidth={isHighlighted ? "4" : "3"}
+                    strokeWidth={isHighlighted ? "5" : "3.5"}
                     filter="url(#shadow)"
                     style={{
                       cursor: "pointer",
@@ -567,17 +551,35 @@ export default function NatalChart({
                     }}
                     onMouseEnter={() => setHoveredPlanet(key)}
                     onMouseLeave={() => setHoveredPlanet(null)}
-                    onClick={() => setSelectedPlanet(key)}
+                    onClick={() => {
+                      if (onPlanetClick) {
+                        onPlanetClick(key);
+                      } else {
+                        setSelectedPlanet(key);
+                      }
+                    }}
+                  />
+                  {/* Inner highlight ring */}
+                  <circle
+                    cx={x}
+                    cy={y}
+                    r={isHighlighted ? "38" : "33"}
+                    fill="none"
+                    stroke="rgba(255,255,255,0.25)"
+                    strokeWidth="1.5"
+                    style={{ pointerEvents: "none" }}
                   />
 
                   <text
                     x={x}
-                    y={y + 1}
-                    fontSize={isHighlighted ? "40" : "38"}
-                    fontWeight="700"
+                    y={y + 2}
+                    fontSize={isHighlighted ? "52" : "46"}
+                    fontWeight="400"
+                    fontFamily="'Segoe UI Symbol', 'Noto Sans Symbols 2', 'Apple Symbols', serif"
                     textAnchor="middle"
                     dominantBaseline="middle"
                     fill="white"
+                    filter="url(#planetGlow)"
                     style={{
                       cursor: "pointer",
                       transition: "all 0.2s",
@@ -587,250 +589,67 @@ export default function NatalChart({
                     {planetGlyphs[key] || "?"}
                   </text>
 
-                  {/* Degree label outside planet circle */}
-                  {(() => {
-                    const degText = `${pos.signDegree.toFixed(1)}°`;
-                    const approxCharWidth = 10;
-                    const paddingX = 10;
-                    const paddingY = 6;
-                    const rectWidth = Math.max(36, degText.length * approxCharWidth + paddingX * 2);
-                    const rectHeight = 20 + paddingY;
-                    const circleRadius = 28; // Same as planet circle radius
 
-                    const pPos = conjunctionPositions[key];
-                    const baseRadius = pPos?.stackRadius ?? radiusPlanets;
-                    const degRadius = baseRadius + 105;
-                    const dx = (pPos?.x ?? center) - center;
-                    const dy = (pPos?.y ?? center) - center;
-                    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-                    let degX = center + (dx / dist) * degRadius;
-                    let degY = center + (dy / dist) * degRadius;
-
-                    // Check if rectangle overlaps with any planet circle
-                    const checkOverlap = (testX: number, testY: number) => {
-                      for (const [otherKey, otherPos] of Object.entries(conjunctionPositions)) {
-                        if (otherKey === key) continue;
-                        const cx = otherPos.x;
-                        const cy = otherPos.y;
-                        const closestX = Math.max(testX - rectWidth / 2, Math.min(testX + rectWidth / 2, cx));
-                        const closestY = Math.max(testY - rectHeight / 2, Math.min(testY + rectHeight / 2, cy));
-                        const distToPlanet = Math.sqrt((closestX - cx) ** 2 + (closestY - cy) ** 2);
-                        if (distToPlanet < circleRadius + 10) return true;
-                      }
-                      return false;
-                    };
-
-                    // Try alternatives if overlap detected
-                    if (checkOverlap(degX, degY)) {
-                      const offset = 90;
-                      const alternatives = [
-                        { x: degX, y: degY + offset }, // Below
-                        { x: degX - offset, y: degY }, // Left
-                        { x: degX + offset, y: degY }, // Right
-                      ];
-                      for (const alt of alternatives) {
-                        if (!checkOverlap(alt.x, alt.y)) {
-                          degX = alt.x;
-                          degY = alt.y;
-                          break;
-                        }
-                      }
-                    }
-
-                    // Clamp to canvas bounds
-                    const paddingEdge = 14;
-                    degX = Math.max(paddingEdge + rectWidth / 2, Math.min(size - paddingEdge - rectWidth / 2, degX));
-                    degY = Math.max(paddingEdge + rectHeight / 2, Math.min(size - paddingEdge - rectHeight / 2, degY));
-
-                    const rectX = degX - rectWidth / 2;
-                    const rectY = degY - rectHeight / 2;
-
-                    return (
-                      <g key={`deg-${key}`} pointerEvents="none">
-                        <rect
-                          x={rectX}
-                          y={rectY}
-                          width={rectWidth}
-                          height={rectHeight}
-                          rx={10}
-                          ry={10}
-                          fill="#0f172a"
-                          opacity={0.92}
-                          stroke="#FFD600"
-                          strokeWidth={1.5}
-                        />
-                        <text
-                          x={degX}
-                          y={degY + 1}
-                          fontSize="15"
-                          fontWeight="700"
-                          textAnchor="middle"
-                          dominantBaseline="middle"
-                          fill="#FFD600"
-                          style={{ paintOrder: "stroke fill" }}
-                        >
-                          {degText}
-                        </text>
-                      </g>
-                    );
-                  })()}
                 </g>
               );
             })}
 
             {cardinalPoints.map((point, i) => {
-              const stackedPos = conjunctionPositions[point.label];
+              if (point.label !== "ASC") {
+                // DSC / MC / FC : simple text marker on outer zodiac ring, no circle in planet zone
+                const labelR = radiusOuter + 70;
+                const { x: lx, y: ly } = getXY(point.angle, labelR);
+                const { x: i1x, y: i1y } = getXY(point.angle, radiusHouses);
+                const { x: i2x, y: i2y } = getXY(point.angle, radiusOuter);
+                return (
+                  <g key={`cardinal-${i}`}>
+                    <line x1={i1x} y1={i1y} x2={i2x} y2={i2y}
+                      stroke="#334155" strokeWidth="5" strokeLinecap="round" />
+                    <text x={lx} y={ly}
+                      fontSize="32" fontWeight="900"
+                      textAnchor="middle" dominantBaseline="middle"
+                      fill="#94a3b8"
+                      style={{ fontFamily: "serif", letterSpacing: "1px" }}>
+                      {point.label}
+                    </text>
+                  </g>
+                );
+              }
+
+              // ASC only — interactive circle in planet zone
+              const stackedPos = conjunctionPositions["ASC"];
               const x = stackedPos?.x ?? getXY(point.angle, radiusPlanets).x;
               const y = stackedPos?.y ?? getXY(point.angle, radiusPlanets).y;
               const { x: lineX, y: lineY } = getXY(point.angle, radiusOuter);
-              const isAscendant = point.label === "ASC";
-              const isHovered = hoveredPlanet === "ascendant" && isAscendant;
-              const isSelected = selectedPlanet === "ascendant" && isAscendant;
-              const isHighlighted = isAscendant && (isHovered || isSelected);
+              const isHovered = hoveredPlanet === "ascendant";
+              const isSelected = selectedPlanet === "ascendant";
+              const isHighlighted = isHovered || isSelected;
 
               return (
                 <g key={`cardinal-${i}`}>
-                  <line
-                    x1={lineX}
-                    y1={lineY}
-                    x2={x}
-                    y2={y}
-                    stroke="#94a3b8"
-                    strokeWidth="2"
-                    opacity="0.6"
-                  />
-                  <circle
-                    cx={x}
-                    cy={y}
-                    r={isHighlighted ? "32" : "28"}
-                    fill="white"
-                    stroke={isAscendant ? "#1e293b" : "#64748b"}
-                    strokeWidth={isHighlighted ? "4" : "3"}
+                  <line x1={lineX} y1={lineY} x2={x} y2={y}
+                    stroke="#94a3b8" strokeWidth="2" opacity="0.6" />
+                  <circle cx={x} cy={y}
+                    r={isHighlighted ? "48" : "42"}
+                    fill="white" stroke="#1e293b"
+                    strokeWidth={isHighlighted ? "5" : "3.5"}
                     filter="url(#shadow)"
-                    style={
-                      isAscendant
-                        ? {
-                            cursor: "pointer",
-                            transition: "all 0.2s",
-                          }
-                        : {}
-                    }
-                    onMouseEnter={
-                      isAscendant
-                        ? () => setHoveredPlanet("ascendant")
-                        : undefined
-                    }
-                    onMouseLeave={
-                      isAscendant ? () => setHoveredPlanet(null) : undefined
-                    }
-                    onClick={
-                      isAscendant
-                        ? () => setSelectedPlanet("ascendant")
-                        : undefined
-                    }
-                  />
-                  <text
-                    x={x}
-                    y={y + 1}
-                    fontSize={isHighlighted ? "28" : "26"}
-                    fontWeight="800"
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    fill={isAscendant ? "#1e293b" : "#64748b"}
-                    style={{
-                      cursor: isAscendant ? "pointer" : "default",
-                      transition: "all 0.2s",
-                      pointerEvents: "none",
+                    style={{ cursor: "pointer", transition: "all 0.2s" }}
+                    onMouseEnter={() => setHoveredPlanet("ascendant")}
+                    onMouseLeave={() => setHoveredPlanet(null)}
+                    onClick={() => {
+                      if (onPlanetClick) { onPlanetClick("ascendant"); }
+                      else { setSelectedPlanet("ascendant"); }
                     }}
-                  >
-                    {point.label}
+                  />
+                  <text x={x} y={y + 1}
+                    fontSize={isHighlighted ? "34" : "30"}
+                    fontWeight="900" textAnchor="middle" dominantBaseline="middle"
+                    fill="#1e293b"
+                    style={{ cursor: "pointer", transition: "all 0.2s", pointerEvents: "none", fontFamily: "serif" }}>
+                    ASC
                   </text>
-                  {/* Degree label only for Ascendant */}
-                  {point.label === "ASC" && (() => {
-                    const degText = `${point.signDegree?.toFixed(1) ?? 0}°`;
-                    const sr = stackedPos?.stackRadius ?? radiusPlanets;
-                    const degRadius = sr + 105;
-                    const dx = x - center;
-                    const dy = y - center;
-                    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-                    let degX = center + (dx / dist) * degRadius;
-                    let degY = center + (dy / dist) * degRadius;
 
-                    const approxCharWidth = 9;
-                    const paddingX = 8;
-                    const paddingY = 6;
-                    const rectWidth = Math.max(34, degText.length * approxCharWidth + paddingX * 2);
-                    const rectHeight = 18 + paddingY;
-                    const circleRadius = 28; // Same as cardinal circle radius
-
-                    // Check if rectangle overlaps with any planet/cardinal circle
-                    const checkOverlap = (testX: number, testY: number) => {
-                      for (const [otherKey, otherPos] of Object.entries(conjunctionPositions)) {
-                        if (otherKey === "ASC") continue;
-                        const cx = otherPos.x;
-                        const cy = otherPos.y;
-                        const closestX = Math.max(testX - rectWidth / 2, Math.min(testX + rectWidth / 2, cx));
-                        const closestY = Math.max(testY - rectHeight / 2, Math.min(testY + rectHeight / 2, cy));
-                        const distToPlanet = Math.sqrt((closestX - cx) ** 2 + (closestY - cy) ** 2);
-                        if (distToPlanet < circleRadius + 10) return true;
-                      }
-                      return false;
-                    };
-
-                    // Try alternatives if overlap detected
-                    if (checkOverlap(degX, degY)) {
-                      const offset = 90;
-                      const alternatives = [
-                        { x: degX, y: degY + offset }, // Below
-                        { x: degX - offset, y: degY }, // Left
-                        { x: degX + offset, y: degY }, // Right
-                      ];
-                      for (const alt of alternatives) {
-                        if (!checkOverlap(alt.x, alt.y)) {
-                          degX = alt.x;
-                          degY = alt.y;
-                          break;
-                        }
-                      }
-                    }
-
-                    // Clamp to viewbox
-                    const padEdge = 10;
-                    degX = Math.max(padEdge + rectWidth / 2, Math.min(size - padEdge - rectWidth / 2, degX));
-                    degY = Math.max(padEdge + rectHeight / 2, Math.min(size - padEdge - rectHeight / 2, degY));
-
-                    const rectX = degX - rectWidth / 2;
-                    const rectY = degY - rectHeight / 2;
-
-                    return (
-                      <g key={`cardinal-deg-${i}`} pointerEvents="none">
-                        <rect
-                          x={rectX}
-                          y={rectY}
-                          width={rectWidth}
-                          height={rectHeight}
-                          rx={8}
-                          ry={8}
-                          fill="#0f172a"
-                          opacity={0.92}
-                          stroke="#FFD600"
-                          strokeWidth={1}
-                        />
-                        <text
-                          x={degX}
-                          y={degY + 1}
-                          fontSize="14"
-                          fontWeight="700"
-                          textAnchor="middle"
-                          dominantBaseline="middle"
-                          fill="#FFD600"
-                          style={{ paintOrder: "stroke fill" }}
-                        >
-                          {degText}
-                        </text>
-                      </g>
-                    );
-                  })()}
                 </g>
               );
             })}
@@ -884,7 +703,13 @@ export default function NatalChart({
       <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-1 md:gap-2 w-full mt-2 md:mt-3">
         <button
           key="ascendant"
-          onClick={() => setSelectedPlanet("ascendant")}
+          onClick={() => {
+            if (onPlanetClick) {
+              onPlanetClick("ascendant");
+            } else {
+              setSelectedPlanet("ascendant");
+            }
+          }}
           onMouseEnter={() => setHoveredPlanet("ascendant")}
           onMouseLeave={() => setHoveredPlanet(null)}
           className={`flex items-center gap-0.5 md:gap-1 px-1.5 md:px-2 py-0.5 md:py-1 rounded-md transition-all shadow-sm ${
@@ -915,7 +740,13 @@ export default function NatalChart({
         {Object.entries(planetPositions).map(([key, pos]) => (
           <button
             key={key}
-            onClick={() => setSelectedPlanet(key)}
+            onClick={() => {
+              if (onPlanetClick) {
+                onPlanetClick(key);
+              } else {
+                setSelectedPlanet(key);
+              }
+            }}
             onMouseEnter={() => setHoveredPlanet(key)}
             onMouseLeave={() => setHoveredPlanet(null)}
             className={`flex items-center gap-0.5 md:gap-1 px-1.5 md:px-2 py-0.5 md:py-1 rounded-md transition-all shadow-sm ${
@@ -1004,6 +835,7 @@ export default function NatalChart({
               : planetPositions[selectedPlanet]
           }
           onClose={() => setSelectedPlanet(null)}
+          onNavigateToProfile={onPlanetClick}
         />
       )}
     </div>

@@ -3,57 +3,57 @@ import { ASPECT_DETAILED } from './aspectDetailedInterpretations';
 export const PLANET_INFO: Record<string, { name: string; description: string; keywords: string }> = {
   sun: {
     name: 'Soleil',
-    description: 'Votre essence profonde, votre identité et votre volonté. Le Soleil représente qui vous êtes vraiment, votre énergie vitale et votre chemin de vie.',
+    description: 'Ton essence profonde, ton identité et ta volonté. Le Soleil représente qui tu es vraiment, ton énergie vitale et ton chemin de vie.',
     keywords: 'Identité • Ego • Volonté • Créativité • Vitalité'
   },
   moon: {
     name: 'Lune',
-    description: 'Vos émotions, votre monde intérieur et vos besoins affectifs. La Lune révèle comment vous réagissez émotionnellement et ce qui vous sécurise.',
+    description: 'Tes émotions, ton monde intérieur et tes besoins affectifs. La Lune révèle comment tu réagis émotionnellement et ce qui te sécurise.',
     keywords: 'Émotions • Intuition • Besoins • Mémoire • Famille'
   },
   mercury: {
     name: 'Mercure',
-    description: 'Votre façon de penser, communiquer et apprendre. Mercure gouverne votre intelligence, vos échanges et votre curiosité intellectuelle.',
+    description: 'Ta façon de penser, communiquer et apprendre. Mercure gouverne ton intelligence, tes échanges et ta curiosité intellectuelle.',
     keywords: 'Communication • Intellect • Apprentissage • Échanges'
   },
   venus: {
     name: 'Vénus',
-    description: 'Votre manière d\'aimer, vos valeurs et votre sens esthétique. Vénus dévoile ce qui vous attire, vos plaisirs et vos relations affectives.',
+    description: 'Ta manière d\'aimer, tes valeurs et ton sens esthétique. Vénus dévoile ce qui t\'attire, tes plaisirs et tes relations affectives.',
     keywords: 'Amour • Beauté • Plaisirs • Relations • Valeurs'
   },
   mars: {
     name: 'Mars',
-    description: 'Votre énergie d\'action, votre courage et vos désirs. Mars montre comment vous agissez, vous affirmez et poursuivez vos objectifs.',
+    description: 'Ton énergie d\'action, ton courage et tes désirs. Mars montre comment tu agis, tu t\'affirmes et tu poursuis tes objectifs.',
     keywords: 'Action • Courage • Désir • Énergie • Combativité'
   },
   jupiter: {
     name: 'Jupiter',
-    description: 'Votre expansion, votre chance et votre sagesse. Jupiter représente vos opportunités, votre optimisme et votre quête de sens.',
+    description: 'Ton expansion, ta chance et ta sagesse. Jupiter représente tes opportunités, ton optimisme et ta quête de sens.',
     keywords: 'Expansion • Chance • Sagesse • Abondance • Philosophie'
   },
   saturn: {
     name: 'Saturne',
-    description: 'Votre structure, vos responsabilités et vos leçons de vie. Saturne enseigne la discipline, la patience et la maturité.',
+    description: 'Ta structure, tes responsabilités et tes leçons de vie. Saturne enseigne la discipline, la patience et la maturité.',
     keywords: 'Discipline • Responsabilité • Temps • Structure • Sagesse'
   },
   uranus: {
     name: 'Uranus',
-    description: 'Votre originalité, vos innovations et votre liberté. Uranus impulse le changement, l\'indépendance et l\'avant-gardisme.',
+    description: 'Ton originalité, tes innovations et ta liberté. Uranus impulse le changement, l\'indépendance et l\'avant-gardisme.',
     keywords: 'Innovation • Liberté • Originalité • Changement • Révolution'
   },
   neptune: {
     name: 'Neptune',
-    description: 'Votre imagination, votre spiritualité et vos rêves. Neptune connecte à l\'invisible, l\'inspiration et la transcendance.',
+    description: 'Ton imagination, ta spiritualité et tes rêves. Neptune connecte à l\'invisible, l\'inspiration et la transcendance.',
     keywords: 'Intuition • Spiritualité • Rêves • Inspiration • Mystère'
   },
   pluto: {
     name: 'Pluton',
-    description: 'Votre transformation, votre pouvoir et votre renaissance. Pluton révèle vos profondeurs et votre capacité de métamorphose.',
+    description: 'Ta transformation, ton pouvoir et ta renaissance. Pluton révèle tes profondeurs et ta capacité de métamorphose.',
     keywords: 'Transformation • Pouvoir • Régénération • Profondeur'
   },
   ascendant: {
     name: 'Ascendant',
-    description: 'Votre masque social, votre apparence et votre façon de vous présenter au monde. L\'Ascendant est la porte d\'entrée de votre thème natal.',
+    description: 'Ton masque social, ton apparence et ta façon de te présenter au monde. L\'Ascendant est la porte d\'entrée de ton thème natal.',
     keywords: 'Apparence • Personnalité • Premier contact • Spontanéité'
   }
 };

@@ -77,7 +77,7 @@ export default function LandingPage({ onGetStarted, onOpenVoid, onOpenCoStar }: 
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0A0A0F] text-white overflow-hidden relative">
+    <div className="min-h-screen bg-[#111111] text-white overflow-hidden relative">
       <canvas
         ref={canvasRef}
         className="absolute inset-0 pointer-events-none"
@@ -85,9 +85,9 @@ export default function LandingPage({ onGetStarted, onOpenVoid, onOpenCoStar }: 
       />
 
       <div className="absolute inset-0">
-        <div className="absolute top-20 left-1/4 w-96 h-96 bg-[#1C1333]/20 rounded-full blur-[120px] animate-pulse"></div>
-        <div className="absolute bottom-20 right-1/4 w-96 h-96 bg-[#2A0F1F]/18 rounded-full blur-[120px] animate-pulse delay-300"></div>
-        <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-[#0F241C]/18 rounded-full blur-[120px] animate-pulse delay-500"></div>
+        <div className="absolute top-20 left-1/4 w-96 h-96 bg-[#1a1a1a]/30 rounded-full blur-[120px] animate-pulse"></div>
+        <div className="absolute bottom-20 right-1/4 w-96 h-96 bg-[#1a1a1a]/25 rounded-full blur-[120px] animate-pulse delay-300"></div>
+        <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-[#1a1a1a]/25 rounded-full blur-[120px] animate-pulse delay-500"></div>
       </div>
 
       <div className="relative container mx-auto px-4 md:px-6 py-8 md:py-12 z-10">
@@ -109,7 +109,7 @@ export default function LandingPage({ onGetStarted, onOpenVoid, onOpenCoStar }: 
 
           <button
             onClick={onGetStarted}
-            className="group relative inline-flex items-center gap-2 md:gap-3 bg-[#1C1333] text-white px-8 md:px-12 py-4 md:py-6 rounded-full text-base md:text-xl font-bold hover:bg-[#2A0F1F] transition-all duration-300 transform hover:scale-105 shadow-[0_0_30px_rgba(166,176,195,0.22)]"
+            className="group relative inline-flex items-center gap-2 md:gap-3 bg-[#222222] text-white px-8 md:px-12 py-4 md:py-6 rounded-full text-base md:text-xl font-bold hover:bg-[#2a2a2a] transition-all duration-300 transform hover:scale-105 shadow-[0_0_30px_rgba(166,176,195,0.22)]"
           >
             <div className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-400 to-purple-400 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-300"></div>
             <Sparkles className="w-5 h-5 md:w-6 md:h-6 group-hover:rotate-180 transition-transform duration-500 relative z-10" />
@@ -136,9 +136,9 @@ export default function LandingPage({ onGetStarted, onOpenVoid, onOpenCoStar }: 
           </div>
 
           <div className="group relative bg-[#1A1A22] rounded-3xl p-6 md:p-8 border border-[#2A2A33]/80 hover:border-[#A6B0C3]/40 transition-all duration-500 hover:scale-105 hover:shadow-[0_0_30px_rgba(166,176,195,0.12)]">
-            <div className="absolute inset-0 bg-[#0A0A0F] rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="absolute inset-0 bg-[#111111] rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             <div className="relative">
-              <div className="bg-[#0F241C] w-16 h-16 md:w-20 md:h-20 rounded-2xl flex items-center justify-center mb-4 md:mb-6 shadow-[0_10px_30px_rgba(15,36,28,0.4)] group-hover:shadow-[0_10px_40px_rgba(15,36,28,0.6)] transition-all duration-500">
+              <div className="bg-[#1a1a1a] w-16 h-16 md:w-20 md:h-20 rounded-2xl flex items-center justify-center mb-4 md:mb-6 shadow-[0_10px_30px_rgba(0,0,0,0.4)] group-hover:shadow-[0_10px_40px_rgba(0,0,0,0.6)] transition-all duration-500">
                 <Moon className="w-8 h-8 md:w-10 md:h-10 text-white" />
               </div>
               <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4 text-slate-200">Carte du Ciel</h3>
@@ -149,9 +149,9 @@ export default function LandingPage({ onGetStarted, onOpenVoid, onOpenCoStar }: 
           </div>
 
           <div className="group relative bg-[#1A1A22] rounded-3xl p-6 md:p-8 border border-[#2A2A33]/80 hover:border-[#A6B0C3]/40 transition-all duration-500 hover:scale-105 hover:shadow-[0_0_30px_rgba(166,176,195,0.12)]">
-            <div className="absolute inset-0 bg-[#0A0A0F] rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="absolute inset-0 bg-[#111111] rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             <div className="relative">
-              <div className="bg-[#1C1333] w-16 h-16 md:w-20 md:h-20 rounded-2xl flex items-center justify-center mb-4 md:mb-6 shadow-[0_10px_30px_rgba(28,19,51,0.4)] group-hover:shadow-[0_10px_40px_rgba(28,19,51,0.6)] transition-all duration-500">
+              <div className="bg-[#222222] w-16 h-16 md:w-20 md:h-20 rounded-2xl flex items-center justify-center mb-4 md:mb-6 shadow-[0_10px_30px_rgba(0,0,0,0.4)] group-hover:shadow-[0_10px_40px_rgba(0,0,0,0.6)] transition-all duration-500">
                 <Star className="w-8 h-8 md:w-10 md:h-10 text-white" />
               </div>
               <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4 text-slate-200">Interprétations</h3>
@@ -180,7 +180,7 @@ export default function LandingPage({ onGetStarted, onOpenVoid, onOpenCoStar }: 
 
         <div className="max-w-4xl mx-auto mb-12 md:mb-20">
           <div className="relative bg-[#1A1A22] rounded-3xl p-6 md:p-12 border border-[#2A2A33]/80 shadow-[0_0_40px_rgba(166,176,195,0.12)]">
-            <div className="absolute inset-0 bg-[#0A0A0F] opacity-70 rounded-3xl"></div>
+            <div className="absolute inset-0 bg-[#111111] opacity-70 rounded-3xl"></div>
             <div className="relative">
               <h2 className="text-2xl md:text-4xl font-bold mb-6 md:mb-8 text-center bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent">
                 Votre Thème Astral Complet
@@ -224,7 +224,7 @@ export default function LandingPage({ onGetStarted, onOpenVoid, onOpenCoStar }: 
           <p className="text-slate-500 mb-4 md:mb-6 text-base md:text-lg px-4">Prêt à explorer votre carte du ciel ?</p>
           <button
             onClick={onGetStarted}
-            className="group inline-flex items-center gap-2 md:gap-3 bg-[#1C1333]/90 text-white px-8 md:px-10 py-3 md:py-4 rounded-full text-base md:text-lg font-semibold hover:bg-[#2A0F1F]/90 transition-all duration-300 border border-[#2A2A33]/70 hover:border-[#A6B0C3]/40 hover:shadow-[0_0_30px_rgba(166,176,195,0.2)]"
+            className="group inline-flex items-center gap-2 md:gap-3 bg-[#222222]/90 text-white px-8 md:px-10 py-3 md:py-4 rounded-full text-base md:text-lg font-semibold hover:bg-[#2a2a2a]/90 transition-all duration-300 border border-[#2A2A33]/70 hover:border-[#A6B0C3]/40 hover:shadow-[0_0_30px_rgba(166,176,195,0.2)]"
           >
             <Sparkles className="w-4 h-4 md:w-5 md:h-5 group-hover:rotate-180 transition-transform duration-500" />
             Commencer maintenant
