@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Cinzel:wght@300;400&family=Spectral:wght@200;300&family=Playfair+Display:wght@300;400&family=Marcellus&family=Raleway:wght@100;200;300&family=Josefin+Sans:wght@100;200;300&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -18,12 +18,18 @@
   --border-soft: rgba(166, 176, 195, 0.18);
 }
 
+html {
+  overflow-x: hidden;
+  height: 100%;
+}
+
 body {
   margin: 0;
-  min-height: 100vh;
+  height: 100%;
   background: var(--bg-main);
   color: var(--text-primary);
   font-family: 'Cormorant Garamond', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  overflow-x: hidden;
 }
 
 .bg-cosmic { background: var(--bg-main); }
@@ -83,6 +89,67 @@ body {
 
 .animate-fade-in { animation: fade-in 0.8s ease-out forwards; }
 .void-fade-in    { animation: void-slide-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+@keyframes btn-gold-pulse {
+  0%, 100% { box-shadow: 0 0 12px rgba(212,175,55,0.4), 0 0 30px rgba(212,175,55,0.15), inset 0 0 20px rgba(255,215,0,0.05); }
+  50%      { box-shadow: 0 0 24px rgba(212,175,55,0.7), 0 0 60px rgba(212,175,55,0.3), inset 0 0 30px rgba(255,215,0,0.1); }
+}
+@keyframes btn-shimmer {
+  0%   { transform: translateX(-120%) skewX(-20deg); }
+  100% { transform: translateX(220%) skewX(-20deg); }
+}
+@keyframes btn-sparkle {
+  0%, 100% { transform: scale(1) rotate(0deg);   opacity: 0.8; }
+  25%      { transform: scale(1.3) rotate(15deg); opacity: 1; }
+  75%      { transform: scale(0.85) rotate(-10deg); opacity: 0.6; }
+}
+.btn-gold-pulse  { animation: btn-gold-pulse 2s ease-in-out infinite; }
+.btn-shimmer     { animation: btn-shimmer 2.4s ease-in-out infinite; }
+.btn-sparkle-l   { animation: btn-sparkle 1.8s ease-in-out infinite; }
+.btn-sparkle-r   { animation: btn-sparkle 1.8s ease-in-out infinite 0.6s; }
+
+/* ── Template D – Minimaliste Luxe ───────────────────────── */
+@keyframes d-line-glow {
+  0%,100% { opacity: 0.4; }
+  50% { opacity: 1; box-shadow: 0 0 10px rgba(212,175,55,0.7); }
+}
+@keyframes d-twinkle {
+  0%,100% { opacity: 0.15; transform: scale(0.9); }
+  50% { opacity: 0.9; transform: scale(1.25); }
+}
+@keyframes d-btn-pulse {
+  0%,100% { box-shadow: 0 0 12px rgba(212,175,55,0.12), inset 0 1px 0 rgba(212,175,55,0.15); }
+  50% { box-shadow: 0 0 28px rgba(212,175,55,0.28), inset 0 1px 0 rgba(212,175,55,0.25); }
+}
+@keyframes d-shimmer {
+  0%   { transform: translateX(-140%) skewX(-20deg); }
+  100% { transform: translateX(280%) skewX(-20deg); }
+}
+.d-top-line {
+  position: absolute; top: 0; left: 10%; right: 10%; height: 1px;
+  background: linear-gradient(90deg, transparent, #D4AF37, transparent);
+  animation: d-line-glow 3s ease-in-out infinite;
+  pointer-events: none;
+}
+.d-star {
+  position: absolute; border-radius: 50%;
+  background: radial-gradient(circle, #F5E6A0, #D4AF37);
+  animation: d-twinkle 3s ease-in-out infinite;
+  pointer-events: none;
+}
+.d-cross {
+  position: absolute; width: 10px; height: 10px;
+  pointer-events: none;
+  animation: d-twinkle 4s ease-in-out infinite;
+}
+.d-cross::before, .d-cross::after {
+  content: ''; position: absolute; background: #D4AF37; opacity: 0.55; border-radius: 2px;
+}
+.d-cross::before { width: 1px; height: 100%; left: 50%; top: 0; transform: translateX(-50%); }
+.d-cross::after  { width: 100%; height: 1px; top: 50%; left: 0; transform: translateY(-50%); }
+.d-dot-blink { animation: d-twinkle 2s ease-in-out infinite; }
+.d-btn       { animation: d-btn-pulse 3s ease-in-out infinite; }
+.d-btn-shimmer { animation: d-shimmer 3s ease-in-out infinite 1s; }
 
 /* ─── Root container ─────────────────────────────────────── */
 .void-root {
@@ -691,6 +758,33 @@ body {
   top: auto; bottom: -8px;
   animation: void-orbit-spin-rev 8s linear infinite;
 }
+
+/* YOU tab mobile compact layout: keep birth info + zodiac wheel above the fold */
+@media (max-width: 768px) {
+  .natal-top-compact {
+    gap: 6px !important;
+  }
+
+  .natal-birth-compact {
+    gap: 8px !important;
+  }
+
+  .natal-birth-compact .birth-info-label-simple {
+    font-size: 0.62rem !important;
+    margin-bottom: 2px !important;
+  }
+
+  .natal-birth-compact .birth-info-value-simple {
+    font-size: 0.82rem !important;
+    line-height: 1.2 !important;
+  }
+
+  .natal-chart-svg-mobile-fit {
+    width: min(100vw, 680px) !important;
+    max-width: none !important;
+    max-height: 70svh !important;
+  }
+}
 .void-ml-core {
   position: absolute;
   top: 50%; left: 50%;
@@ -854,12 +948,14 @@ body {
   inset: 0;
   background: #000000;
   overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: pan-x pan-y;
   font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
   -webkit-font-smoothing: antialiased;
 }
 
 .tv-stars-canvas {
-  position: absolute;
+  position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
@@ -976,14 +1072,14 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 25px;
-  padding: 40px 24px 0 24px;
+  padding: 70px 24px 0 24px;
   width: 100%;
   max-width: 520px;
 }
 .tv-question-item {
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.72);
   font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: 16px;
   font-weight: 500;
@@ -992,6 +1088,7 @@ body {
   text-align: center;
   cursor: pointer;
   padding: 8px 0;
+  text-shadow: 0 0 14px rgba(255,255,255,0.25);
   transition: color 0.3s ease, transform 0.3s ease;
   line-height: 1.5;
   animation: tv-question-float 0.4s ease-out forwards;
@@ -1023,7 +1120,7 @@ body {
   align-items: center;
   width: 100%;
   max-width: 520px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.45);
   border-radius: 6px;
   padding: 12px 16px;
   gap: 12px;
@@ -1032,8 +1129,8 @@ body {
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 .tv-input-wrap-v2:focus-within {
-  border-color: rgba(255, 255, 255, 0.25);
-  box-shadow: 0 0 24px rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 28px rgba(255, 255, 255, 0.10);
 }
 .tv-input-field-v2 {
   flex: 1;
@@ -1046,12 +1143,14 @@ body {
   font-weight: 500;
   letter-spacing: 2px;
   text-transform: uppercase;
-  caret-color: rgba(255, 255, 255, 0.6);
+  caret-color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
 }
 .tv-input-field-v2::placeholder {
-  color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.55);
   font-weight: 400;
   letter-spacing: 2px;
+  text-shadow: none;
 }
 .tv-input-field-v2:focus {
   outline: none;
@@ -1059,18 +1158,18 @@ body {
 .tv-send-icon-v2 {
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.65);
   cursor: pointer;
   padding: 4px;
   transition: color 0.3s ease, transform 0.2s ease;
   flex-shrink: 0;
 }
 .tv-send-icon-v2:hover:not(:disabled) {
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.95);
   transform: translateX(2px);
 }
 .tv-send-icon-v2:disabled {
-  opacity: 0.1;
+  opacity: 0.2;
   cursor: default;
 }
 
@@ -1081,13 +1180,15 @@ body {
   z-index: 10;
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.75);
   cursor: pointer;
   padding: 8px;
   transition: color 0.3s ease, opacity 0.3s ease;
+  text-shadow: 0 0 12px rgba(255,255,255,0.4);
 }
 .tv-corner-btn:hover {
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 0 18px rgba(255,255,255,0.6);
 }
 .tv-corner-left { left: 24px; }
 .tv-corner-right { right: 24px; }
@@ -1215,13 +1316,14 @@ body {
   max-width: 360px;
 }
 .tv-birth-hint {
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.75);
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 16px;
+  font-size: 17px;
   font-style: italic;
   text-align: center;
   line-height: 1.6;
   max-width: 320px;
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.35);
 }
 .tv-birth-fields {
   display: flex;
@@ -1233,31 +1335,38 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
-  color: rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.75);
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 12px;
-  letter-spacing: 1px;
+  font-size: 13px;
+  letter-spacing: 2px;
   text-transform: uppercase;
   margin-bottom: 6px;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
 }
 .tv-birth-input {
   width: 100%;
   background: transparent;
   border: none;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.45);
   padding: 8px 0;
   color: #ffffff;
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 18px;
-  font-weight: 300;
+  font-size: 20px;
+  font-weight: 400;
   outline: none;
-  transition: border-color 0.3s ease;
+  transition: border-color 0.3s ease, text-shadow 0.3s ease;
   -webkit-appearance: none;
   appearance: none;
   border-radius: 0;
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
+}
+.tv-birth-input::placeholder {
+  color: rgba(255, 255, 255, 0.45);
+  text-shadow: none;
 }
 .tv-birth-input:focus {
-  border-color: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.8);
+  text-shadow: 0 0 16px rgba(255, 255, 255, 0.7);
 }
 .tv-birth-input option {
   background: #000;
@@ -1265,22 +1374,26 @@ body {
 }
 .tv-birth-submit {
   background: none;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  color: rgba(255, 255, 255, 0.9);
   padding: 12px 40px;
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 16px;
-  letter-spacing: 1px;
+  font-size: 17px;
+  letter-spacing: 2px;
   cursor: pointer;
   transition: all 0.3s ease;
   margin-top: 8px;
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 18px rgba(255, 255, 255, 0.06);
 }
 .tv-birth-submit:hover:not(:disabled) {
   color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.4);
+  border-color: rgba(255, 255, 255, 0.85);
+  text-shadow: 0 0 18px rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 28px rgba(255, 255, 255, 0.12);
 }
 .tv-birth-submit:disabled {
-  opacity: 0.2;
+  opacity: 0.6;
   cursor: default;
 }
 
@@ -1325,7 +1438,7 @@ body {
 .tv-response-text {
   color: #ffffff;
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 300;
   line-height: 1.7;
   letter-spacing: 0.2px;
@@ -1409,7 +1522,7 @@ body {
     font-size: 16px;
   }
   .tv-response-text {
-    font-size: 19px;
+    font-size: 16px;
   }
   .tv-corner-btn {
     top: 16px;
@@ -1433,8 +1546,23 @@ body {
     letter-spacing: 2px;
   }
   .tv-questions-zone {
-    gap: 36px;
+    gap: 22px;
     padding: 0 16px;
+    position: absolute;
+    top: 125px;
+    bottom: 115px;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    max-width: 100%;
+    overflow: hidden;
+  }
+  .tv-page {
+    justify-content: flex-start;
+    overflow: hidden;
   }
   .tv-question-item {
     font-size: 17px;
@@ -1457,7 +1585,7 @@ body {
     font-size: 16px;
   }
   .tv-response-text {
-    font-size: 17px;
+    font-size: 15px;
   }
   .tv-category-btn {
     padding: 8px 10px;
@@ -1513,6 +1641,480 @@ body {
   letter-spacing: 3px;
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+
+/* ── Birth Info Section for NatalChart ── */
+
+/* Responsive SVG size in fullscreen mode */
+.natal-chart-svg-fullscreen {
+  width: max(100vw, 80vh);
+  height: max(100vw, 80vh);
+  transform: scale(1.15);
+  transform-origin: center center;
+}
+
+.natal-chart-svg {
+  max-width: 92%;
+  height: auto;
+  transform: none;
+}
+
+@media (max-width: 768px) {
+  .natal-chart-svg {
+    width: min(100vw, 680px) !important;
+    max-width: none !important;
+    transform: none !important;
+  }
+
+  .natal-chart-svg [filter] {
+    filter: none !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .natal-chart-svg-fullscreen {
+    width: min(98vw, 98vh);
+    height: min(98vw, 98vh);
+    transform: none;
+  }
+}
+
+.natal-chart-name {
+  font-size: clamp(1.55rem, 7vw, 2.25rem);
+  font-weight: 300;
+  background: linear-gradient(135deg, #FFB86B 0%, #FFD699 50%, #FFB86B 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 30px rgba(255, 184, 107, 0.3);
+  letter-spacing: 1.5px;
+  line-height: 1;
+  text-align: left;
+  margin: 0;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  filter: drop-shadow(0 0 20px rgba(255, 184, 107, 0.2));
+  animation: natal-name-glow 3s ease-in-out infinite;
+}
+
+@keyframes natal-name-glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 15px rgba(255, 184, 107, 0.2)) drop-shadow(0 0 25px rgba(255, 184, 107, 0.1));
+  }
+  50% {
+    filter: drop-shadow(0 0 25px rgba(255, 184, 107, 0.3)) drop-shadow(0 0 40px rgba(255, 184, 107, 0.15));
+  }
+}
+
+@media (max-width: 768px) {
+  .natal-chart-name {
+    font-size: clamp(1.45rem, 8vw, 1.9rem);
+  }
+}
+
+@media (max-width: 640px) {
+  .natal-chart-name {
+    font-size: clamp(1.35rem, 7.4vw, 1.75rem);
+  }
+}
+
+.natal-identity-panel {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  padding: 4px 4px 14px;
+  border-bottom: 1px solid rgba(255, 214, 153, 0.2);
+}
+
+.natal-identity-panel::after {
+  content: '';
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  bottom: -1px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 214, 153, 0.65), transparent);
+  pointer-events: none;
+}
+
+.natal-identity-panel__header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.natal-identity-panel__eyebrow {
+  margin: 0;
+  color: rgba(255, 214, 153, 0.78);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.natal-identity-panel__meta {
+  width: min(100%, 520px);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.natal-identity-panel__meta div {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.natal-identity-panel__meta span,
+.natal-identity-badge__text span {
+  color: rgba(255, 214, 153, 0.68);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.natal-identity-panel__meta strong {
+  max-width: 100%;
+  overflow: hidden;
+  color: rgba(245, 247, 250, 0.88);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 0.92rem;
+  font-weight: 300;
+  line-height: 1.12;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.natal-identity-panel__badges {
+  width: min(100%, 520px);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.natal-identity-badge {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 42px;
+  padding: 7px 6px;
+  border: 1px solid rgba(255, 214, 153, 0.24);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(255, 214, 153, 0.08), rgba(255, 255, 255, 0.025));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.natal-identity-badge__glyph {
+  flex: 0 0 auto;
+  color: #FFD699;
+  font-family: 'Segoe UI Symbol', 'Noto Sans Symbols 2', serif;
+  font-size: 1rem;
+  line-height: 1;
+  text-shadow: 0 0 10px rgba(255, 214, 153, 0.35);
+}
+
+.natal-identity-badge__text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.natal-identity-badge__text strong {
+  overflow: hidden;
+  color: #F5F0E6;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.natal-identity-panel__actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.natal-chart-wheel-stage {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  isolation: isolate;
+  overflow: visible;
+}
+
+.natal-chart-wheel-stage::after {
+  content: '';
+  position: absolute;
+  inset: 2% 0 4%;
+  z-index: -1;
+  border-radius: 50%;
+  background-image:
+    radial-gradient(circle at 18% 24%, rgba(255, 214, 153, 0.36) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 78% 30%, rgba(245, 247, 250, 0.28) 0 1px, transparent 1.7px),
+    radial-gradient(circle at 64% 78%, rgba(255, 214, 153, 0.24) 0 1px, transparent 1.8px),
+    radial-gradient(circle at 30% 70%, rgba(245, 247, 250, 0.20) 0 1px, transparent 1.9px),
+    radial-gradient(circle at 50% 50%, rgba(255, 214, 153, 0.055), transparent 62%);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.natal-chart-wheel-frame {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 34px 52px rgba(0, 0, 0, 0.50));
+}
+
+@media (max-width: 768px) {
+  .natal-chart-card {
+    gap: 6px !important;
+    padding: 6px 2px 10px !important;
+    border-radius: 20px !important;
+  }
+
+  .natal-identity-panel {
+    gap: 7px;
+    padding: 2px 8px 10px;
+  }
+
+  .natal-chart-wheel-stage {
+    min-height: min(66svh, 650px);
+    margin-top: -2px;
+  }
+
+  .natal-chart-wheel-frame {
+    min-height: inherit;
+  }
+}
+
+@media (max-width: 420px) {
+  .natal-identity-panel {
+    gap: 8px;
+    padding-bottom: 11px;
+  }
+
+  .natal-identity-panel__meta {
+    gap: 8px;
+  }
+
+  .natal-identity-panel__meta strong {
+    font-size: 0.82rem;
+  }
+
+  .natal-identity-panel__badges {
+    gap: 5px;
+  }
+
+  .natal-identity-badge {
+    min-height: 38px;
+    gap: 4px;
+    padding: 6px 4px;
+    border-radius: 8px;
+  }
+
+  .natal-identity-badge__glyph {
+    font-size: 0.92rem;
+  }
+
+  .natal-identity-badge__text strong {
+    font-size: 0.66rem;
+  }
+}
+
+.natal-chart-fullscreen-btn {
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: linear-gradient(135deg, rgba(255, 184, 107, 0.15) 0%, rgba(255, 184, 107, 0.08) 100%);
+  border: 2px solid rgba(255, 184, 107, 0.3);
+  color: #FFB86B;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0 20px rgba(255, 184, 107, 0.15), inset 0 0 20px rgba(255, 184, 107, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.natal-chart-fullscreen-btn:hover {
+  background: linear-gradient(135deg, rgba(255, 184, 107, 0.25) 0%, rgba(255, 184, 107, 0.15) 100%);
+  border-color: rgba(255, 184, 107, 0.5);
+  box-shadow: 0 0 30px rgba(255, 184, 107, 0.25), inset 0 0 30px rgba(255, 184, 107, 0.1);
+  transform: translateY(-2px);
+  animation: btn-glow 1.5s ease-in-out infinite;
+}
+
+.natal-chart-fullscreen-btn:active {
+  transform: translateY(0);
+}
+
+@keyframes btn-glow {
+  0%, 100% {
+    box-shadow: 0 0 30px rgba(255, 184, 107, 0.25), inset 0 0 30px rgba(255, 184, 107, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(255, 184, 107, 0.35), inset 0 0 40px rgba(255, 184, 107, 0.15);
+  }
+}
+
+@media (max-width: 768px) {
+  .natal-chart-fullscreen-btn {
+    padding: 8px 14px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 640px) {
+  .natal-chart-fullscreen-btn {
+    padding: 7px 12px;
+    font-size: 10px;
+  }
+}
+
+.birth-info-container-chart {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+/* ── Simple Birth Info (No Cards) ── */
+.birth-info-simple {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.birth-info-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.birth-info-label-simple {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #FFB86B;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  opacity: 0.8;
+  margin: 0;
+  filter: drop-shadow(0 0 6px rgba(255, 184, 107, 0.55)) drop-shadow(0 0 14px rgba(255, 184, 107, 0.25));
+}
+
+.birth-info-value-simple {
+  font-size: 14px;
+  color: #F5F7FA;
+  font-weight: 300;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  margin: 0;
+}
+
+.birth-info-card-chart {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 12px;
+  background: linear-gradient(135deg, rgba(255, 184, 107, 0.05) 0%, rgba(166, 176, 195, 0.03) 100%);
+  border: 1px solid rgba(255, 184, 107, 0.15);
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.birth-info-card-chart:hover {
+  background: linear-gradient(135deg, rgba(255, 184, 107, 0.1) 0%, rgba(166, 176, 195, 0.06) 100%);
+  border-color: rgba(255, 184, 107, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(255, 184, 107, 0.1);
+}
+
+.birth-info-icon-chart {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #FFB86B;
+  opacity: 0.8;
+}
+
+.birth-icon-date-chart {
+  background: rgba(255, 184, 107, 0.12);
+}
+
+.birth-icon-location-chart {
+  background: rgba(166, 176, 195, 0.12);
+  color: #A6B0C3;
+}
+
+.birth-info-icon-chart svg {
+  width: 20px;
+  height: 20px;
+}
+
+.birth-info-content-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.birth-info-label-chart {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #FFB86B;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  opacity: 0.8;
+  margin: 0;
+}
+
+.birth-info-value-chart {
+  font-size: 14px;
+  color: #F5F7FA;
+  font-weight: 300;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  margin: 0;
+  word-break: break-word;
+}
+
+@media (max-width: 640px) {
+  .birth-info-container-chart {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ── Pills ── */
@@ -1759,6 +2361,93 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════════
+   NATAL CHART FULLSCREEN — Mobile & Desktop Perfect Square
+   100vw/100vh, min(90vw,90vh), object-fit, overflow hidden
+   ═══════════════════════════════════════════════════════════ */
+.natal-chart-fullscreen {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #0a0a0a;
+  z-index: 50;
+}
+
+.natal-chart-fullscreen__container {
+  width: min(90vw, 90vh);
+  height: min(90vw, 90vh);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.natal-chart-fullscreen__svg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  aspect-ratio: 1 / 1;
+}
+
+.natal-chart-fullscreen__close {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 60;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   COSTAR LOGO — Eclipse solaire
+   ═══════════════════════════════════════════════════════════ */
+.costar-header {
+  width: 100%;
+  padding: clamp(14px, 3.8svh, 26px) 0 clamp(10px, 2.6svh, 18px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(180deg, #080808 0%, #101011 100%);
+}
+
+.logo-soleil {
+  width: clamp(58px, 14vw, 78px);
+  height: clamp(58px, 14vw, 78px);
+  object-fit: contain;
+  filter: drop-shadow(0 0 12px rgba(232, 201, 122, 0.45));
+  animation: pulse-eclipse 3s ease-in-out infinite;
+}
+
+.costar-daily-hero {
+  min-height: calc(100svh - 168px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(16px, 3.6svh, 30px);
+  padding-bottom: clamp(18px, 3.5svh, 36px);
+}
+
+@keyframes pulse-eclipse {
+  0%   { filter: drop-shadow(0 0 8px rgba(232, 201, 122, 0.25)); }
+  50%  { filter: drop-shadow(0 0 18px rgba(232, 201, 122, 0.55)); }
+  100% { filter: drop-shadow(0 0 8px rgba(232, 201, 122, 0.25)); }
+}
+
+.costar-title {
+  font-size: 22px;
+  font-weight: 300;
+  letter-spacing: 8px;
+  color: #F5C840;
+  text-shadow: 0 0 12px rgba(232, 201, 122, 0.4);
+  font-family: Georgia, serif;
+}
+
+/* ═══════════════════════════════════════════════════════════
    BOTTOM NAV BAR — Charte graphique premium
    Noir pur, minimalisme, clarté optimale
    ═══════════════════════════════════════════════════════════ */
@@ -1767,14 +2456,28 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 52px;
+  height: 50px;
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: space-around;
-  background: #ffffff;
+  touch-action: manipulation;
+  will-change: transform;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  background: rgba(245, 240, 230, 0.95);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border-top: 1px solid rgba(255, 184, 107, 0.35);
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.2), 0 -1px 0 rgba(255, 184, 107, 0.2);
   z-index: 1000;
-  padding: 2px 0;
+  padding: 0;
   padding-bottom: max(2px, env(safe-area-inset-bottom));
+  transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Hide bottom nav when in fullscreen mode */
+[data-fullscreen="true"] .bottom-nav {
+  display: none !important;
 }
 
 .bottom-nav__tab {
@@ -1782,51 +2485,55 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 3px;
   flex: 1;
-  padding: 4px 0;
+  padding: 2px 0;
   background: none;
   border: none;
   cursor: pointer;
-  color: #999999;
-  transition: all 0.3s ease;
+  color: rgba(60, 50, 35, 0.75);
+  transition: all 0.25s ease;
   -webkit-user-select: none;
   user-select: none;
   position: relative;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .bottom-nav__tab:active {
-  opacity: 0.7;
+  opacity: 0.6;
+  transform: scale(0.93);
 }
 
 .bottom-nav__tab:hover:not(.bottom-nav__tab--active) {
-  color: #666666;
+  color: rgba(80, 70, 55, 0.8);
 }
 
 .bottom-nav__tab--active {
-  color: #111111;
-  transform: translateY(-3px);
+  color: #1a1410;
+  transform: translateY(-2px);
+  filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.2));
 }
 
 .bottom-nav__icon {
-  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   display: flex;
   align-items: center;
   justify-content: center;
-  stroke-width: 2.5;
+  stroke-width: 1.75;
 }
 
 .bottom-nav__tab--active .bottom-nav__icon {
-  transform: scale(1);
+  transform: scale(1.1);
 }
 
 .bottom-nav__label {
-  font-size: 11px;
+  font-size: 8px;
   font-weight: 700;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-  transition: color 0.3s ease;
+  transition: color 0.25s ease, opacity 0.25s ease, max-height 0.25s ease;
 }
 
 /* Safe area compensation pour label */
@@ -1834,6 +2541,42 @@ body {
   .bottom-nav {
     padding-bottom: max(4px, env(safe-area-inset-bottom));
   }
+}
+
+.bottom-nav--compact {
+  height: 44px;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.bottom-nav--compact .bottom-nav__label {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+}
+
+.bottom-nav--compact .bottom-nav__tab {
+  gap: 0;
+  height: 44px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   APP SHELL — isolation du scroll pour nav iOS
+   ═══════════════════════════════════════════════════════════ */
+.app-shell {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #111111;
+}
+
+.app-content {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  padding-bottom: calc(50px + max(8px, env(safe-area-inset-bottom)));
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -1953,7 +2696,7 @@ body {
     font-size: 12px;
   }
   .bottom-nav {
-    height: 60px;
+    height: 50px;
   }
   .bottom-nav__label {
     font-size: 9px;

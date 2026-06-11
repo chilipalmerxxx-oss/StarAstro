@@ -1,6 +1,6 @@
-import { Home, Users, Sparkles, ShoppingBag, User, Star } from 'lucide-react';
+import { Home, Users, Sparkles, ShoppingBag, User, Star, Heart } from 'lucide-react';
 
-export type TabId = 'home' | 'friends' | 'void' | 'chart' | 'costar' | 'profile';
+export type TabId = 'home' | 'friends' | 'void' | 'chart' | 'costar' | 'profile' | 'love';
 
 interface Tab {
   id: TabId;
@@ -12,6 +12,7 @@ const TABS: Tab[] = [
   { id: 'home', label: 'HOME', icon: Home },
   { id: 'friends', label: 'FRIENDS', icon: Users },
   { id: 'void', label: 'VOID', icon: Sparkles },
+  { id: 'love', label: 'LOVE', icon: Heart },
   { id: 'costar', label: 'COSTAR', icon: Star },
   { id: 'chart', label: 'SHOP', icon: ShoppingBag },
   { id: 'profile', label: 'YOU', icon: User },
@@ -38,7 +39,7 @@ export default function BottomNavBar({ activeTab, onTabChange }: BottomNavBarPro
           >
             <Icon
               className="bottom-nav__icon"
-              style={{ width: isVoid ? 26 : 22, height: isVoid ? 26 : 22 }}
+              style={{ width: isVoid ? 22 : 18, height: isVoid ? 22 : 18 }}
             />
             <span className="bottom-nav__label">{tab.label}</span>
           </button>

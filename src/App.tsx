@@ -10,6 +10,10 @@ import TheVoid from './components/TheVoid';
 import AstralProfile from './components/AstralProfile';
 import FriendsPage from './components/FriendsPage';
 import CoStarPage from './components/CoStarPage';
+import CoStarPagePreview from './components/CoStarPagePreview';
+import CoStarHeroPreview from './components/CoStarHeroPreview';
+import YouPageWheelPreview from './components/YouPageWheelPreview';
+import LovePage from './components/LovePage';
 import BottomNavBar, { type TabId } from './components/BottomNavBar';
 import { calculateBirthChart } from './services/astrology';
 import { Supabase } from './lib/supabase';
@@ -55,6 +59,13 @@ const loadChartFromLocalStorage = (): ChartData | null => {
 };
 
 function App() {
+  const isCoStarPreviewRoute =
+    typeof window !== 'undefined' && window.location.hash === '#costar-preview-v2';
+  const isCoStarHeroPreviewRoute =
+    typeof window !== 'undefined' && window.location.hash === '#costar-hero-preview-v1';
+  const isYouPageWheelPreviewRoute =
+    typeof window !== 'undefined' && window.location.hash === '#you-page-preview-v1';
+
   const savedChart = loadChartFromLocalStorage();
   const [showLanding, setShowLanding] = useState(!savedChart);
   const [showVoid, setShowVoid] = useState(false);
@@ -78,6 +89,9 @@ function App() {
       document.body.scrollTop = 0;
       const root = document.getElementById('root');
       if (root) root.scrollTop = 0;
+      // Cible le conteneur scrollable principal (.app-content)
+      const appContent = document.querySelector('.app-content') as HTMLElement | null;
+      if (appContent) appContent.scrollTop = 0;
     };
     scrollToTop();
     // Retry après le rendu React
@@ -134,6 +148,10 @@ function App() {
         houses: chart.houses,
         aspects: chart.aspects,
       });
+      setShowLanding(false);
+      setShowVoid(false);
+      setShowCoStar(false);
+      setActiveTab('profile');
     } catch (error) {
       console.error('Error calculating chart:', error);
       alert('Une erreur est survenue lors du calcul du thème astral.');
@@ -148,6 +166,9 @@ function App() {
 
   const handleGetStarted = () => {
     setShowLanding(false);
+    setShowVoid(false);
+    setShowCoStar(false);
+    setActiveTab('home');
   };
 
   const handleBackToHome = () => {
@@ -160,9 +181,6 @@ function App() {
   };
 
   const handleTabChange = (tab: TabId) => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
     if (tab === 'void') {
       setShowLanding(false);
       setShowVoid(true);
@@ -202,6 +220,13 @@ function App() {
       setActiveTab('home');
       return;
     }
+    if (tab === 'love') {
+      setShowLanding(false);
+      setShowVoid(false);
+      setShowCoStar(false);
+      setActiveTab('love');
+      return;
+    }
     setShowLanding(false);
     setShowVoid(false);
     setShowCoStar(false);
@@ -217,17 +242,56 @@ function App() {
     setActiveTab('profile');
   };
 
+  if (isCoStarPreviewRoute) {
+    return (
+      <CoStarPagePreview
+        onClosePreview={() => {
+          window.location.hash = '';
+          window.location.reload();
+        }}
+      />
+    );
+  }
+
+  if (isCoStarHeroPreviewRoute) {
+    return (
+      <CoStarHeroPreview
+        userName={savedChart?.name}
+        onClosePreview={() => {
+          window.location.hash = '';
+          window.location.reload();
+        }}
+      />
+    );
+  }
+
+  if (isYouPageWheelPreviewRoute) {
+    return (
+      <YouPageWheelPreview
+        userName={savedChart?.name || chartData?.name || 'Gil'}
+        birthDateLabel={savedChart?.birthDate ? savedChart.birthDate.toLocaleString('fr-FR', { dateStyle: 'long', timeStyle: 'short' }) : undefined}
+        birthPlaceLabel={savedChart?.birthPlace || chartData?.birthPlace || 'Paris, France'}
+        onClosePreview={() => {
+          window.location.hash = '';
+          window.location.reload();
+        }}
+      />
+    );
+  }
+
   if (showCoStar) {
     return (
-      <div className="min-h-screen bg-[#111111] pb-20">
-        <CoStarPage 
-          onBack={() => {
-            setShowCoStar(false);
-            setActiveTab('home');
-          }} 
-          chartData={chartData} 
-          userName={chartData?.name} 
-        />
+      <div className="app-shell">
+        <div className="app-content">
+          <CoStarPage 
+            onBack={() => {
+              setShowCoStar(false);
+              setActiveTab('home');
+            }} 
+            chartData={chartData} 
+            userName={chartData?.name} 
+          />
+        </div>
         <BottomNavBar activeTab={activeTab} onTabChange={handleTabChange} />
       </div>
     );
@@ -239,22 +303,32 @@ function App() {
 
   if (showLanding) {
     return (
-      <div className="min-h-screen bg-[#111111] pb-20">
-        <LandingPage
-          onGetStarted={handleGetStarted}
-          onOpenVoid={() => setShowVoid(true)}
-          onOpenCoStar={() => setShowCoStar(true)}
-        />
-        <BottomNavBar activeTab={activeTab} onTabChange={handleTabChange} />
-      </div>
+      <LandingPage
+        onGetStarted={handleGetStarted}
+        onOpenVoid={() => setShowVoid(true)}
+      />
     );
   }
 
   // ── Friends tab ──
   if (activeTab === 'friends') {
     return (
-      <div className="min-h-screen bg-[#111111]">
-        <FriendsPage onBack={() => setActiveTab('home')} />
+      <div className="app-shell">
+        <div className="app-content">
+          <FriendsPage onBack={() => setActiveTab('home')} />
+        </div>
+        <BottomNavBar activeTab={activeTab} onTabChange={handleTabChange} />
+      </div>
+    );
+  }
+
+  // ── Love tab ──
+  if (activeTab === 'love') {
+    return (
+      <div className="app-shell">
+        <div className="app-content">
+          <LovePage />
+        </div>
         <BottomNavBar activeTab={activeTab} onTabChange={handleTabChange} />
       </div>
     );
@@ -263,17 +337,20 @@ function App() {
   // ── Profile / Astral tab ──
   if (activeTab === 'profile' && chartData) {
     return (
-      <div className="min-h-screen bg-[#111111] pb-20">
-        <AstralProfile
-          name={chartData.name}
-          birthDate={chartData.birthDate}
-          birthPlace={chartData.birthPlace}
-          planetPositions={chartData.planetPositions}
-          houses={chartData.houses}
-          aspects={chartData.aspects}
-          onOpenFriends={() => setActiveTab('friends')}
-          initialActivePlanet={selectedPlanetForProfile as any}
-        />
+      <div className="app-shell">
+        <div className="app-content">
+          <AstralProfile
+            name={chartData.name}
+            birthDate={chartData.birthDate}
+            birthPlace={chartData.birthPlace}
+            planetPositions={chartData.planetPositions}
+            houses={chartData.houses}
+            aspects={chartData.aspects}
+            onOpenFriends={() => setActiveTab('friends')}
+            initialActivePlanet={selectedPlanetForProfile as any}
+            fullscreenMode={true}
+          />
+        </div>
         <BottomNavBar activeTab={activeTab} onTabChange={(tab) => {
           setSelectedPlanetForProfile(null);
           handleTabChange(tab);
@@ -283,7 +360,8 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#111111]">
+    <div className="app-shell">
+      <div className="app-content">
       <div className="container mx-auto px-4 py-12">
         <div className="text-center mb-12">
           <div className="flex items-center justify-between mb-6">
@@ -372,7 +450,7 @@ function App() {
           onClose={() => setShowSavedCharts(false)}
         />
       )}
-
+      </div>
       <BottomNavBar activeTab={activeTab} onTabChange={handleTabChange} />
     </div>
   );

@@ -588,14 +588,14 @@ export function generateCoStarAnalysis(
       const domainP2 = planetDomain[p2] || 'une autre force planétaire';
       const domainP1Cap = domainP1.charAt(0).toUpperCase() + domainP1.slice(1);
 
-      return `${withArticleCap(p1Fr)} en ${p1Sign}${flavor} ${dynamic} ${withArticle(p2Fr)} en ${p2Sign}. Une résonance s'établit entre ${domainP1} et ${domainP2}. ${consequence}`;
+      return `${withArticleCap(p1Fr)}${flavor} ${dynamic} ${withArticle(p2Fr)}. Une résonance s'établit entre ${domainP1} et ${domainP2}. ${consequence}`;
     };
 
     // Fallback : aucun aspect disponible → lecture pure des signes
     if (priorityPool.length === 0) {
       const sunDesc = signDescription[sunSign] || 'une énergie singulière';
       const moonDesc = signDescription[moonSign] || 'une sensibilité particulière';
-      return `Le Soleil en ${sunSign} porte en toi ${sunDesc}. Cette énergie solaire guide tes choix depuis ton centre le plus profond — écoute-la.\n\nLa Lune en ${moonSign} teinte tes émotions de ${moonDesc}. Ces murmures intérieurs ne mentent jamais sur ce dont tu as vraiment besoin.`;
+      return `Le Soleil porte en toi ${sunDesc}. Cette énergie solaire guide tes choix depuis ton centre le plus profond — écoute-la.\n\nLa Lune teinte tes émotions de ${moonDesc}. Ces murmures intérieurs ne mentent jamais sur ce dont tu as vraiment besoin.`;
     }
 
     // Sélectionner 2 aspects distincts pour la journée
@@ -614,7 +614,7 @@ export function generateCoStarAnalysis(
       const compFr = translatePlanetLocal(complementPlanet);
       const compDomain = planetDomain[complementPlanet] || 'ton énergie';
       const compFlavor = signFlavor[compSign] || 'une couleur particulière';
-      para2 = `${withArticleCap(compFr)} en ${compSign} teinte ${compDomain} de ${compFlavor}. Laisse cette énergie enrichir ton regard sur la journée qui s'ouvre.`;
+      para2 = `${withArticleCap(compFr)} teinte ${compDomain} de ${compFlavor}. Laisse cette énergie enrichir ton regard sur la journée qui s'ouvre.`;
     }
 
     return `${buildParagraph(aspect1)}\n\n${para2}`;
@@ -693,8 +693,8 @@ export function generateCoStarAnalysis(
       if (p === 'Soleil') return cap ? 'Le ' : 'le ';
       return '';
     };
-    const p1s = (p1: string, s: string) => `${artDef(p1, true)}${p1}${s ? ` en ${s}` : ''}`;
-    const p1m = (p1: string, s: string) => `${artDef(p1, false)}${p1}${s ? ` en ${s}` : ''}`;
+    const p1s = (p1: string, _s: string) => `${artDef(p1, true)}${p1}`;
+    const p1m = (p1: string, _s: string) => `${artDef(p1, false)}${p1}`;
     type TplFn = (p1: string, s: string, p2: string) => string;
     const templates: Record<string, TplFn[]> = {
       Trigone: [
@@ -1032,7 +1032,7 @@ export function generateCoStarAnalysis(
     `Le jugement que tu portes sur toi-même consomme une énergie précieuse que tu pourrais investir ailleurs.`,
     `Ce que tu perds en cherchant la perfection, c'est la joie du chemin.`,
     // Créativité & expression
-    `Exprime ce que tu ressens — les émotions tues prennent de la place sans rien résoudre.`,
+    `Exprime ce que tu ressens — les émotions refoulées prennent de la place sans rien résoudre.`,
     `Ce que tu as envie de créer mérite une tentative, même maladroite.`,
     `L'art que tu portes en toi n'attend que ta permission pour exister.`,
     `Joue, expérimente, tente. L'univers récompense ceux qui osent.`,

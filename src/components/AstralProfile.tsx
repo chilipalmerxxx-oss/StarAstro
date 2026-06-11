@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import './AstralProfile.glow.css';
 import { RotateCcw } from 'lucide-react';
 import { getDetailedInterpretation, SIGN_SYMBOLS } from '../data/signDetailedInterpretations';
 import { PLANET_INFO, getAspectInterpretation } from '../data/interpretations';
@@ -51,6 +52,7 @@ interface AstralProfileProps {
   aspects?: any[];
   onOpenFriends: () => void;
   initialActivePlanet?: PlanetKey;
+  fullscreenMode?: boolean;
 }
 
 function getSignForPlanet(
@@ -74,6 +76,7 @@ export default function AstralProfile({
   aspects = [],
   onOpenFriends,
   initialActivePlanet,
+  fullscreenMode = false,
 }: AstralProfileProps) {
   const [activePlanet, setActivePlanet] = useState<PlanetKey>(initialActivePlanet || 'sun');
   const [activeAspect, setActiveAspect] = useState<any | null>(null);
@@ -152,7 +155,7 @@ export default function AstralProfile({
       <div ref={topRef} />
       {/* Roue Zodiacale en haut */}
       {birthDate && birthPlace && (
-        <div className="relative mb-8 pt-2 pb-8 px-4 before:absolute before:inset-0 before:bg-gradient-to-b before:from-[#1a1a1a] before:via-[#141414] before:to-[#111111] before:pointer-events-none before:opacity-80 after:absolute after:top-1/2 after:left-1/2 after:-translate-x-1/2 after:-translate-y-1/2 after:w-[500px] after:h-[500px] after:blur-3xl after:opacity-20 after:pointer-events-none after:rounded-full" style={{ '--tw-gradient-stops': 'rgb(160, 160, 160), rgb(120, 120, 120)' } as React.CSSProperties}>
+        <div className={`${fullscreenMode ? 'w-full' : 'relative mb-6 pt-2 pb-6 px-2 sm:px-4'} relative before:absolute before:inset-0 before:bg-gradient-to-b before:from-[#1a1a1a] before:via-[#141414] before:to-[#111111] before:pointer-events-none before:opacity-80 after:absolute after:top-1/2 after:left-1/2 after:-translate-x-1/2 after:-translate-y-1/2 after:w-[500px] after:h-[500px] after:blur-3xl after:opacity-20 after:pointer-events-none after:rounded-full`} style={{ '--tw-gradient-stops': 'rgb(160, 160, 160), rgb(120, 120, 120)' } as React.CSSProperties}>
           <style>{`
             .zodiac-space-bg::after {
               background: radial-gradient(circle, rgba(160, 160, 160, 0.15) 0%, rgba(120, 120, 120, 0.08) 40%, transparent 70%);
@@ -184,6 +187,7 @@ export default function AstralProfile({
               aspects={aspects}
               onAspectClick={handleAspectClick}
               onPlanetClick={(key) => handlePlanetClick(key as PlanetKey)}
+              fullscreenMode={fullscreenMode}
             />
           </div>
         </div>
@@ -194,7 +198,7 @@ export default function AstralProfile({
         {/* ── Header ── */}
         <header className="astral-profile__header">
           <h1 className="astral-profile__name">{name}</h1>
-          <p className="astral-profile__subtitle">Votre carte céleste</p>
+          <p className="astral-profile__subtitle">Ton thème astral</p>
         </header>
 
       {/* ── Sign pills ── */}
@@ -315,7 +319,7 @@ export default function AstralProfile({
       )}
 
       {/* ── CTA ── */}
-      <button className="astral-profile__cta" onClick={onOpenFriends}>
+      <button className="astral-profile__cta glow-blink" onClick={onOpenFriends}>
         <RotateCcw className="w-5 h-5" />
         Comparer avec un ami
       </button>

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { MapPin, Calendar, Clock } from 'lucide-react';
 
 interface BirthDataFormProps {
   onSubmit: (data: {
@@ -44,7 +43,6 @@ export default function BirthDataForm({ onSubmit, loading = false }: BirthDataFo
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
   const [selectedCityData, setSelectedCityData] = useState<any>(null);
-
   // Calcul approximatif du fuseau horaire basé sur la longitude
   const getTimezoneFromLongitude = (lon: number): number => {
     return Math.round(lon / 15);
@@ -167,105 +165,177 @@ export default function BirthDataForm({ onSubmit, loading = false }: BirthDataFo
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl p-8 max-w-2xl w-full">
-      <h2 className="text-3xl font-bold text-slate-800 mb-6">Votre Thème Astral</h2>
+    <div className="relative max-w-2xl w-full">
+      {/* Outer glow */}
+      <div className="absolute -inset-1 rounded-2xl bg-[radial-gradient(ellipse_at_50%_0%,rgba(212,175,55,0.10),transparent_60%)] blur-2xl pointer-events-none" />
 
-      <div className="space-y-6">
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">
-            Nom
-          </label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-            placeholder="Entrez votre nom"
-            required
-          />
+      <form
+        onSubmit={handleSubmit}
+        className="relative overflow-hidden bg-[#0E0E0E] border border-[rgba(212,175,55,0.22)] rounded-2xl p-10"
+        style={{ boxShadow: '0 0 60px rgba(212,175,55,0.04), inset 0 0 40px rgba(212,175,55,0.02)' }}
+      >
+        {/* Animated top gold line */}
+        <div className="d-top-line" />
+
+        {/* Stars */}
+        <div className="d-star" style={{ width:'2px', height:'2px', top:'8%', left:'12%', animationDelay:'0s' }} />
+        <div className="d-star" style={{ width:'1px', height:'1px', top:'14%', left:'78%', animationDelay:'0.7s' }} />
+        <div className="d-star" style={{ width:'3px', height:'3px', top:'20%', left:'92%', animationDelay:'1.4s', opacity:0.5 }} />
+        <div className="d-star" style={{ width:'1px', height:'1px', top:'35%', left:'4%', animationDelay:'2.1s' }} />
+        <div className="d-star" style={{ width:'2px', height:'2px', top:'62%', left:'95%', animationDelay:'0.4s' }} />
+        <div className="d-star" style={{ width:'1px', height:'1px', top:'72%', left:'7%', animationDelay:'1.8s' }} />
+        <div className="d-star" style={{ width:'2px', height:'2px', top:'85%', left:'88%', animationDelay:'1.1s' }} />
+        <div className="d-star" style={{ width:'1px', height:'1px', top:'90%', left:'30%', animationDelay:'2.6s' }} />
+        <div className="d-star" style={{ width:'3px', height:'3px', top:'50%', left:'2%', animationDelay:'0.9s', opacity:0.4 }} />
+        <div className="d-star" style={{ width:'1px', height:'1px', top:'5%', left:'55%', animationDelay:'1.6s' }} />
+        <div className="d-cross" style={{ top:'10%', left:'88%', animationDelay:'0.5s' }} />
+        <div className="d-cross" style={{ top:'78%', left:'5%', animationDelay:'2s', transform:'scale(0.7)' }} />
+
+        {/* Header */}
+        <div className="relative z-10 text-center mb-10">
+          <h2
+            className="text-2xl font-normal tracking-[0.22em] uppercase mb-3"
+            style={{
+              background: 'linear-gradient(135deg, #F5E6B0, #D4AF37, #F0D060)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+            }}
+          >
+            Votre Thème Astral
+          </h2>
+          <div className="flex items-center justify-center gap-2 text-[11px] text-[#8A7A5A] tracking-[0.2em] uppercase">
+            <span className="d-dot-blink inline-block w-1 h-1 rounded-full bg-[#D4AF37] opacity-70" />
+            Thème Natal
+            <span className="d-dot-blink inline-block w-1 h-1 rounded-full bg-[#D4AF37] opacity-70" style={{ animationDelay: '0.8s' }} />
+            Calculs Précis
+            <span className="d-dot-blink inline-block w-1 h-1 rounded-full bg-[#D4AF37] opacity-70" style={{ animationDelay: '1.6s' }} />
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="relative z-10 space-y-5">
+          {/* Nom */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
-              <Calendar className="inline w-4 h-4 mr-1" />
-              Date de naissance
+            <label className="block text-[10px] font-medium tracking-[0.3em] uppercase text-[#B09A6A] mb-2">
+              Nom
             </label>
             <input
               type="text"
-              value={dateDisplay}
-              onChange={handleDateChange}
-              placeholder="jj/mm/aaaa"
-              maxLength="10"
-              className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full px-4 py-3.5 bg-[#F8F5EE] border border-[rgba(212,175,55,0.35)] text-[#1A1200] rounded-lg outline-none transition-all duration-300 text-sm font-medium tracking-wide focus:border-[rgba(212,175,55,0.6)]"
+              style={{ boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.08)' }}
+              placeholder="Votre prénom ou nom"
               required
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
-              <Clock className="inline w-4 h-4 mr-1" />
-              Heure de naissance
-            </label>
-            <input
-              type="text"
-              value={timeDisplay}
-              onChange={handleTimeChange}
-              placeholder="hh:mm"
-              maxLength="5"
-              className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-              required
-            />
+          {/* Date & Heure */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-[10px] font-medium tracking-[0.3em] uppercase text-[#B09A6A] mb-2">
+                Date de naissance
+              </label>
+              <input
+                type="text"
+                value={dateDisplay}
+                onChange={handleDateChange}
+                placeholder="jj/mm/aaaa"
+                maxLength={10}
+                className="w-full px-4 py-3.5 bg-[#F8F5EE] border border-[rgba(212,175,55,0.35)] text-[#1A1200] rounded-lg outline-none transition-all duration-300 text-sm font-medium tracking-wide focus:border-[rgba(212,175,55,0.6)]"
+                style={{ boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.08)' }}
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-[10px] font-medium tracking-[0.3em] uppercase text-[#B09A6A] mb-2">
+                Heure de naissance
+              </label>
+              <input
+                type="text"
+                value={timeDisplay}
+                onChange={handleTimeChange}
+                placeholder="hh:mm"
+                maxLength={5}
+                className="w-full px-4 py-3.5 bg-[#F8F5EE] border border-[rgba(212,175,55,0.35)] text-[#1A1200] rounded-lg outline-none transition-all duration-300 text-sm font-medium tracking-wide focus:border-[rgba(212,175,55,0.6)]"
+                style={{ boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.08)' }}
+                required
+              />
+            </div>
           </div>
-        </div>
 
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">
-            <MapPin className="inline w-4 h-4 mr-1" />
-            Lieu de naissance
-          </label>
-          <div className="relative">
-            <input
-              type="text"
-              value={cityInput}
-              onChange={(e) => handleCityInputChange(e.target.value)}
-              onFocus={() => cityInput.length > 2 && setShowSuggestions(true)}
-              placeholder="Entrez le nom de votre ville"
-              className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-              required
-            />
-            {showSuggestions && (
-              <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-300 rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
-                {loadingSuggestions ? (
-                  <div className="px-4 py-3 text-slate-500 text-center">Recherche en cours...</div>
-                ) : suggestions.length > 0 ? (
-                  suggestions.map((city, idx) => (
-                    <button
-                      key={`${city.name}-${idx}`}
-                      type="button"
-                      onClick={() => handleSelectCity(city)}
-                      className="w-full text-left px-4 py-3 hover:bg-blue-50 transition border-b border-slate-100 last:border-b-0"
-                    >
-                      <div className="text-slate-700 font-medium">{city.name}</div>
-                      <div className="text-xs text-slate-500">{city.country}</div>
-                    </button>
-                  ))
-                ) : (
-                  <div className="px-4 py-3 text-slate-500 text-center">Aucune ville trouvée</div>
-                )}
-              </div>
+          {/* Lieu */}
+          <div>
+            <label className="block text-[10px] font-medium tracking-[0.3em] uppercase text-[#B09A6A] mb-2">
+              Lieu de naissance
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                value={cityInput}
+                onChange={(e) => handleCityInputChange(e.target.value)}
+                onFocus={() => cityInput.length > 2 && setShowSuggestions(true)}
+                placeholder="Votre ville de naissance"
+                className="w-full px-4 py-3.5 bg-[#F8F5EE] border border-[rgba(212,175,55,0.35)] text-[#1A1200] rounded-lg outline-none transition-all duration-300 text-sm font-medium tracking-wide focus:border-[rgba(212,175,55,0.6)]"
+                style={{ boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.08)' }}
+                required
+              />
+              {showSuggestions && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-[#0A0A0A] border border-[rgba(212,175,55,0.15)] rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] z-20 max-h-48 overflow-y-auto">
+                  {loadingSuggestions ? (
+                    <div className="px-4 py-3 text-[#8A7A5A] text-center text-xs tracking-widest uppercase">
+                      <span className="animate-pulse">Recherche…</span>
+                    </div>
+                  ) : suggestions.length > 0 ? (
+                    suggestions.map((city, idx) => (
+                      <button
+                        key={`${city.name}-${idx}`}
+                        type="button"
+                        onClick={() => handleSelectCity(city)}
+                        className="w-full text-left px-4 py-3 hover:bg-amber-400/5 transition-all duration-200 border-b border-[rgba(212,175,55,0.06)] last:border-b-0"
+                      >
+                        <div className="text-[#F5EDD5] font-medium text-sm">{city.name}</div>
+                        <div className="text-xs text-[#5A4A3A]">{city.country}</div>
+                      </button>
+                    ))
+                  ) : (
+                    <div className="px-4 py-3 text-[#8A7A5A] text-center text-xs">Aucune ville trouvée</div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Divider */}
+          <div className="h-px bg-gradient-to-r from-transparent via-[rgba(212,175,55,0.18)] to-transparent" />
+
+          {/* Submit */}
+          <button
+            type="submit"
+            disabled={loading}
+            className="d-btn relative w-full py-4 rounded-lg overflow-hidden disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 hover:scale-[1.01] active:scale-[0.99]"
+            style={{
+              background: 'linear-gradient(135deg, rgba(212,175,55,0.12), rgba(212,175,55,0.06))',
+              border: '1px solid rgba(212,175,55,0.65)',
+              color: '#E8CC6A',
+              fontSize: '11px',
+              fontWeight: 600,
+              letterSpacing: '0.35em',
+              textTransform: 'uppercase',
+            }}
+          >
+            <div className="d-btn-shimmer absolute top-0 bottom-0 w-1/3 bg-gradient-to-r from-transparent via-[rgba(212,175,55,0.18)] to-transparent pointer-events-none" />
+            <div className="d-top-line" style={{ top: 'auto', bottom: 0, left: '20%', right: '20%' }} />
+            {loading ? (
+              <span className="relative z-10 flex items-center justify-center gap-2">
+                <span className="w-4 h-4 border-2 border-[#D4AF37]/30 border-t-[#D4AF37] rounded-full animate-spin" />
+                Calcul en cours…
+              </span>
+            ) : (
+              <span className="relative z-10">✦ Générer mon thème astral ✦</span>
             )}
-          </div>
+          </button>
         </div>
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-4 rounded-lg font-semibold hover:from-blue-700 hover:to-cyan-700 transition transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-        >
-          {loading ? 'Calcul en cours...' : 'Générer mon thème astral'}
-        </button>
-      </div>
-    </form>
+      </form>
+    </div>
   );
 }

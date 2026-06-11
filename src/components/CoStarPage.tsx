@@ -58,6 +58,85 @@ export default function CoStarPage({ onBack, chartData, userName = 'Ami(e) des �
     return fallbackMoods[Math.abs(hash % fallbackMoods.length)];
   })();
 
+  // Superpouvoir & Défi adaptés à l'énergie du jour
+  const MOOD_EXTRAS: Record<string, { superpouvoir: string; defi: string }> = {
+    // ── Bélier ──
+    'Impulsif et vif':         { superpouvoir: 'Instinct foudroyant',  defi: 'Ne brûle pas les étapes.' },
+    'Direct et sans filtre':   { superpouvoir: 'Vérité brute',         defi: 'Ne blesse pas en voulant être honnête.' },
+    'Énergique et spontané':   { superpouvoir: 'Élan vital',           defi: 'Ne réponds pas trop vite.' },
+    'Ardent et décidé':        { superpouvoir: 'Détermination',        defi: 'Ne force pas une porte fermée.' },
+    'Courageux et frontal':    { superpouvoir: 'Audace',               defi: 'Ne confonds pas courage et témérité.' },
+    // ── Taureau ──
+    'Ancré et sensuel':        { superpouvoir: 'Présence',             defi: 'Ne t\'accroche pas à ce qui change.' },
+    'Patient et réceptif':     { superpouvoir: 'Endurance',            defi: 'Ne confonds pas patience et passivité.' },
+    'Calme et déterminé':      { superpouvoir: 'Solidité',             defi: 'Ne te ferme pas aux imprévus.' },
+    'Stable et indulgent':     { superpouvoir: 'Ancrage',              defi: 'Ne t\'oublie pas à force d\'indulgence.' },
+    'Solide et persistant':    { superpouvoir: 'Persévérance',         defi: 'Ne résiste pas quand il faut lâcher.' },
+    // ── Gémeaux ──
+    'Léger et curieux':        { superpouvoir: 'Curiosité',            defi: 'Ne survole pas tout sans aller au fond.' },
+    'Communicatif et agile':   { superpouvoir: 'Connexion',            defi: 'Ne parle pas plus que tu n\'écoutes.' },
+    'Vif et insaisissable':    { superpouvoir: 'Adaptabilité',         defi: 'Ne te disperse pas.' },
+    'Espiègle et alerte':      { superpouvoir: 'Vivacité',             defi: 'Ne joue pas avec les mots de façon blessante.' },
+    'Changeant et bavard':     { superpouvoir: 'Fluidité',             defi: 'Ne ghoste pas tes engagements.' },
+    // ── Cancer ──
+    'Émotionnel et intuitif':  { superpouvoir: 'Intuition',            defi: 'Ne noie pas la raison dans l\'émotion.' },
+    'Nostalgique et bienveillant': { superpouvoir: 'Empathie',         defi: 'Ne reste pas bloqué(e) dans le passé.' },
+    'Protecteur et poreux':    { superpouvoir: 'Bienveillance',        defi: 'Ne te perds pas dans les émotions des autres.' },
+    'Doux et mémoriel':        { superpouvoir: 'Tendresse',            defi: 'Ne laisse pas la nostalgie freiner l\'élan.' },
+    'Attaché et sensible':     { superpouvoir: 'Loyauté',              defi: 'Ne ghoste pas tes émotions.' },
+    // ── Lion ──
+    'Expressif et lumineux':   { superpouvoir: 'Magnétisme',           defi: 'Ne cherche pas l\'approbation à tout prix.' },
+    'Généreux et chaleureux':  { superpouvoir: 'Générosité',           defi: 'Ne t\'épuise pas à tout donner.' },
+    'Créatif et rayonnant':    { superpouvoir: 'Créativité',           defi: 'Ne dramatise pas un détail.' },
+    'Fier et magnanime':       { superpouvoir: 'Charisme',             defi: 'Ne prends pas les critiques pour des attaques.' },
+    'Flamboyant et loyal':     { superpouvoir: 'Leadership',           defi: 'Ne brûle pas trop fort trop longtemps.' },
+    // ── Vierge ──
+    'Analytique et attentif':  { superpouvoir: 'Clarté',               defi: 'Ne cherche pas la perfection dans chaque détail.' },
+    'Discret et précis':       { superpouvoir: 'Précision',            defi: 'Ne te caches pas derrière la discrétion.' },
+    'Ordonné et sobre':        { superpouvoir: 'Méthode',              defi: 'Ne rigidifie pas ce qui doit rester souple.' },
+    'Rigoureux et serviable':  { superpouvoir: 'Fiabilité',            defi: 'Ne t\'oublie pas à force de servir.' },
+    'Méticuleux et modeste':   { superpouvoir: 'Exactitude',           defi: 'Ne minimise pas ce que tu réussis.' },
+    // ── Balance ──
+    'Harmonieux et doux':      { superpouvoir: 'Diplomatie',           defi: 'Ne fuis pas la décision difficile.' },
+    'Élégant et indécis':      { superpouvoir: 'Élégance',             defi: 'Ne laisse pas l\'indécision choisir à ta place.' },
+    'Diplomate et raffiné':    { superpouvoir: 'Tact',                 defi: 'Ne lisse pas tout au point de te perdre.' },
+    'Gracieux et juste':       { superpouvoir: 'Justice',              defi: 'Ne sacrifie pas ta vérité pour garder la paix.' },
+    'Esthète et pacifique':    { superpouvoir: 'Harmonie',             defi: 'Ne réponds pas trop vite.' },
+    // ── Scorpion ──
+    'Intense et perceptif':    { superpouvoir: 'Perception',           defi: 'Ne retiens pas ce qui doit partir.' },
+    'Profond et magnétique':   { superpouvoir: 'Profondeur',           defi: 'Ne te perds pas dans tes propres abysses.' },
+    'Silencieux et transformateur': { superpouvoir: 'Transformation',  defi: 'Ne garde pas tout pour toi.' },
+    'Acéré et clairvoyant':    { superpouvoir: 'Lucidité',             defi: 'Ne te sers pas de la vérité comme d\'une arme.' },
+    'Tenace et secret':        { superpouvoir: 'Résilience',           defi: 'Ne transforme pas la discrétion en isolement.' },
+    // ── Sagittaire ──
+    'Optimiste et libre':      { superpouvoir: 'Vision',               defi: 'Ne fonce pas tête baissée.' },
+    'Expansif et direct':      { superpouvoir: 'Enthousiasme',         defi: 'Ne promets pas plus que tu ne peux tenir.' },
+    'Philosophe et enthousiaste': { superpouvoir: 'Sens',              defi: 'Ne reste pas dans les idées sans agir.' },
+    'Idéaliste et nomade':     { superpouvoir: 'Liberté',              defi: 'Ne fuis pas sous prétexte d\'explorer.' },
+    'Audacieux et décomplexé': { superpouvoir: 'Bravoure',             defi: 'Ne dramatise pas un obstacle mineur.' },
+    // ── Capricorne ──
+    'Structuré et patient':    { superpouvoir: 'Maîtrise',             defi: 'Ne t\'oublie pas dans le travail.' },
+    'Sobre et ambitieux':      { superpouvoir: 'Ambition',             defi: 'Ne sacrifie pas le présent pour un futur lointain.' },
+    'Discipliné et prévoyant': { superpouvoir: 'Discipline',           defi: 'Ne rigidifie pas un plan qui doit évoluer.' },
+    'Méthodique et austère':   { superpouvoir: 'Structure',            defi: 'Ne t\'isole pas derrière ton sérieux.' },
+    'Solide et accompli':      { superpouvoir: 'Accomplissement',      defi: 'Ne minimise pas le chemin parcouru.' },
+    // ── Verseau ──
+    'Décalé et électrique':    { superpouvoir: 'Innovation',           defi: 'Ne te coupe pas des gens qui t\'aiment.' },
+    'Original et libre':       { superpouvoir: 'Originalité',          defi: 'Ne confonds pas différence et distance.' },
+    'Visionnaire et détaché':  { superpouvoir: 'Vision',               defi: 'Ne reste pas dans ta tête.' },
+    'Rebelle et idéaliste':    { superpouvoir: 'Avant-garde',          defi: 'Ne rejette pas tout ce qui est établi.' },
+    'Frondeur et brillant':    { superpouvoir: 'Intelligence',         defi: 'Ne te bats pas contre des moulins.' },
+    // ── Poissons ──
+    'Rêveur et poreux':        { superpouvoir: 'Imagination',          defi: 'Ne te perds pas dans l\'imaginaire.' },
+    'Intuitif et sensible':    { superpouvoir: 'Sensibilité',          defi: 'Ne prends pas tout à cœur.' },
+    'Mystique et compassionnel': { superpouvoir: 'Compassion',         defi: 'Ne t\'effaces pas pour les autres.' },
+    'Mélancolique et inspiré': { superpouvoir: 'Inspiration',          defi: 'Ne laisse pas la mélancolie dicter ta journée.' },
+    'Doux et insaisissable':   { superpouvoir: 'Fluidité',             defi: 'Ne te noies pas dans le flou.' },
+  };
+
+  const moodBase = todayMood.split(' — ')[0].trim();
+  const moodExtras = MOOD_EXTRAS[moodBase] ?? { superpouvoir: 'Intuition', defi: 'Écoute ce que tu ressens vraiment.' };
+
   const [openAspects, setOpenAspects] = useState<Set<number>>(new Set());
 
   const toggleAspect = (index: number) => {
@@ -463,30 +542,78 @@ export default function CoStarPage({ onBack, chartData, userName = 'Ami(e) des �
   };
 
   return (
-    <div className="min-h-screen bg-[#131314] text-white overflow-hidden relative">
-      {/* Header */}
-      <div className="sticky top-0 z-40 bg-[#131314]/95 backdrop-blur-md border-b border-[#1E2035]/60">
-        <div className="container max-w-4xl mx-auto px-4 py-4 flex items-center justify-center">
-          <h1 className="text-2xl font-light tracking-widest bg-gradient-to-r from-amber-300 via-rose-300 to-violet-400 bg-clip-text text-transparent">co star</h1>
-        </div>
+    <div className="min-h-screen bg-[#131314] text-white relative pb-24">
+      {/* Header — Eclipse Logo */}
+      <div className="costar-header">
+        <svg className="logo-soleil" viewBox="0 0 100 100">
+          <defs>
+            <radialGradient id="haloG" cx="50%" cy="50%" r="50%">
+              <stop offset="0%"   stopColor="#FF9800" stopOpacity="0"/>
+              <stop offset="42%"  stopColor="#FF9800" stopOpacity="0"/>
+              <stop offset="54%"  stopColor="#E07000" stopOpacity="0.22"/>
+              <stop offset="62%"  stopColor="#FF9800" stopOpacity="0.75"/>
+              <stop offset="68%"  stopColor="#FFB030" stopOpacity="0.95"/>
+              <stop offset="74%"  stopColor="#E07800" stopOpacity="0.65"/>
+              <stop offset="83%"  stopColor="#C06000" stopOpacity="0.35"/>
+              <stop offset="92%"  stopColor="#904000" stopOpacity="0.14"/>
+              <stop offset="100%" stopColor="#904000" stopOpacity="0"/>
+            </radialGradient>
+            <radialGradient id="coronaG" cx="50%" cy="12%" r="50%">
+              <stop offset="0%"   stopColor="#FFE080" stopOpacity="0.30"/>
+              <stop offset="50%"  stopColor="#FFAA30" stopOpacity="0.08"/>
+              <stop offset="100%" stopColor="#FF7000" stopOpacity="0"/>
+            </radialGradient>
+            <radialGradient id="innerG" cx="50%" cy="44%" r="54%">
+              <stop offset="0%"   stopColor="#060606"/>
+              <stop offset="60%"  stopColor="#050505"/>
+              <stop offset="82%"  stopColor="#0B0500"/>
+              <stop offset="100%" stopColor="#180900"/>
+            </radialGradient>
+          </defs>
+          <circle cx="50" cy="50" r="50" fill="url(#haloG)"/>
+          <circle cx="50" cy="50" r="50" fill="url(#coronaG)"/>
+          <circle cx="50" cy="50" r="33" fill="url(#innerG)"/>
+          <circle cx="50" cy="50" r="33.5" fill="none" stroke="#1A0800" strokeWidth="1.2"/>
+          <circle cx="50" cy="50" r="33.5" fill="none" stroke="#FFD050" strokeWidth="0.4"/>
+          <path d="M 41,16.5 A 33.5,33.5 0 0,1 59,16.5" fill="none" stroke="#FFF5C0" strokeWidth="0.6" strokeLinecap="round" opacity="0.75"/>
+        </svg>
       </div>
 
       {/* Main Content */}
-      <div className="container max-w-4xl mx-auto px-4 py-8 md:py-12 space-y-12">
-        {/* Your Vibe */}
-        <section className="space-y-4">
-          <p className="text-sm text-zinc-300 uppercase tracking-widest">Ton énergie du jour</p>
-          <div className="space-y-2">
-            <h2 className="text-3xl md:text-4xl font-light leading-tight bg-gradient-to-r from-amber-200 via-rose-300 to-violet-300 bg-clip-text text-transparent">
-              {todayMood}
+      <div className="container max-w-4xl mx-auto px-4 pt-4 pb-10 md:pt-6 md:pb-12 space-y-12">
+        {/* Your Vibe + Défi — occupe toute la première page */}
+        <section
+          className="costar-daily-hero max-w-2xl mx-auto"
+        >
+          {/* Énergie du jour */}
+          <div className="space-y-3 text-center">
+            <p className="text-sm uppercase tracking-widest" style={{ color: '#FFD699', filter: 'drop-shadow(0 0 6px rgba(255, 184, 107, 0.55)) drop-shadow(0 0 14px rgba(255, 184, 107, 0.25))' }}>Ton énergie du jour</p>
+            <h2 className="text-3xl md:text-4xl font-light leading-tight bg-gradient-to-r from-sky-300 via-rose-300 to-violet-400 bg-clip-text text-transparent">
+              {todayMood.replace(/\s+—\s+/g, ', ')}
             </h2>
+          </div>
+
+          {/* Défi du jour */}
+          <div className="h-px w-24 bg-gradient-to-r from-transparent via-[#FFD699]/45 to-transparent"></div>
+
+          <div className="w-full space-y-2 text-center">
+            <p className="text-sm uppercase tracking-widest" style={{ color: '#FFD699', filter: 'drop-shadow(0 0 6px rgba(255, 184, 107, 0.55)) drop-shadow(0 0 14px rgba(255, 184, 107, 0.25))' }}>Ton défi du jour</p>
+            <div className="relative overflow-hidden rounded-2xl border border-[#D7B46A]/30 bg-[#090A10]/70 px-4 py-4 text-left md:px-5 md:py-5 shadow-[0_0_28px_rgba(215,180,106,0.12)] backdrop-blur-sm">
+              <div className="absolute inset-x-5 top-0 h-px bg-gradient-to-r from-transparent via-[#FFD699]/65 to-transparent"></div>
+              <div className="relative flex items-start gap-3">
+                <span className="mt-2 h-2 w-2 flex-shrink-0 rounded-full bg-[#FFD699] shadow-[0_0_14px_rgba(255,214,153,0.7)]"></span>
+                <p className="text-base md:text-lg font-light italic leading-relaxed text-[#F3E8D0]">
+                  "{moodExtras.defi}"
+                </p>
+              </div>
+            </div>
           </div>
         </section>
 
         {/* Your Day at a Glance */}
         <section className="space-y-6 border-t border-[#1E2035]/60 pt-12">
-          <p className="text-sm text-zinc-300 uppercase tracking-widest">Ta journée en un coup d'œil</p>
-          <ul className="space-y-3">
+          <p className="text-sm uppercase tracking-widest" style={{ color: '#FFD699', filter: 'drop-shadow(0 0 6px rgba(255, 184, 107, 0.55)) drop-shadow(0 0 14px rgba(255, 184, 107, 0.25))' }}>Ta journée en un coup d'œil</p>
+          <ul className="space-y-6">
             {analysis?.dayAtGlance.split('||').filter(s => s.trim().length > 0).map((advice, index) => (
               <li key={index} className="flex items-start gap-3">
                 <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-amber-400/60 flex-shrink-0"></span>
@@ -498,15 +625,15 @@ export default function CoStarPage({ onBack, chartData, userName = 'Ami(e) des �
 
         {/* Daily Quote */}
         <section className="space-y-6 border-t border-[#1E2035]/60 pt-12">
-          <p className="text-sm text-zinc-300 uppercase tracking-widest">Conseil du jour</p>
-          <div className="relative rounded-2xl border border-[#2A1F3A]/70 p-8 md:p-12 bg-[#0C0D18]/60 overflow-hidden group hover:shadow-[0_0_40px_rgba(251,146,60,0.10)] transition-all duration-500">
-            <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-violet-500/8 to-transparent rounded-full blur-2xl"></div>
+          <p className="text-sm uppercase tracking-widest" style={{ color: '#FFD699', filter: 'drop-shadow(0 0 6px rgba(255, 184, 107, 0.55)) drop-shadow(0 0 14px rgba(255, 184, 107, 0.25))' }}>Conseil du jour</p>
+          <div className="relative rounded-2xl overflow-hidden group transition-all duration-500 hover:shadow-[0_0_40px_rgba(200,160,80,0.20)]" style={{ border: '1px solid rgba(200,170,110,0.5)', background: 'linear-gradient(135deg, #FAF6EE 0%, #F3EDD8 100%)', padding: '2rem 3rem' }}>
+            <div className="absolute bottom-0 left-0 w-32 h-32 rounded-full blur-2xl" style={{ background: 'radial-gradient(circle, rgba(251,191,36,0.15) 0%, transparent 70%)' }}></div>
             <div className="relative">
-              <p className="text-2xl md:text-3xl font-light leading-relaxed text-zinc-100 mb-6">
+              <p className="text-xl md:text-2xl font-light leading-relaxed mb-6" style={{ color: '#3b2f1e' }}>
                 {selectedAdvice}
               </p>
-              <div className="flex items-center gap-2 text-sm text-zinc-500">
-                <Sparkles className="w-4 h-4 text-amber-300" />
+              <div className="flex items-center gap-2 text-sm" style={{ color: '#a07840' }}>
+                <Sparkles className="w-4 h-4" style={{ color: '#c8860a' }} />
                 <span>Message personnel de l'univers</span>
               </div>
             </div>
@@ -516,14 +643,14 @@ export default function CoStarPage({ onBack, chartData, userName = 'Ami(e) des �
         {/* Planetary Aspects */}
         <section className="space-y-6 border-t border-[#1E2035]/60 pt-12">
           <div>
-            <p className="text-sm text-zinc-300 uppercase tracking-widest">Transits du jour</p>
+            <p className="text-sm uppercase tracking-widest" style={{ color: '#FFD699', filter: 'drop-shadow(0 0 6px rgba(255, 184, 107, 0.55)) drop-shadow(0 0 14px rgba(255, 184, 107, 0.25))' }}>Transits du jour</p>
             <p className="text-xs text-zinc-600 mt-1">Positions actuelles des planètes en aspect avec ton thème natal</p>
           </div>
           <div className="space-y-3">
             {(analysis?.favorableAspects || []).map((aspect, index) => {
               const isOpen = openAspects.has(index);
               return (
-                <div key={index} className="rounded-lg border border-[#1E2035]/60 bg-[#0C0D18]/30 transition-all duration-300 hover:bg-[#0C0D18]/60 hover:border-[#2A1F3A]/80 hover:shadow-[0_0_20px_rgba(139,92,246,0.07)]">
+                <div key={index} className="rounded-lg border-4 border-[#A6B0C3] bg-[#3B2F1E]/90 transition-all duration-300 hover:bg-[#FFD699]/40 hover:border-[#D1D5DB]">
                   <button
                     type="button"
                     onClick={() => toggleAspect(index)}
