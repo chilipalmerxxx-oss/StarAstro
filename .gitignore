@@ -11,8 +11,7 @@ dist
 dist-ssr
 *.local
 
-.vscode/*
-!.vscode/extensions.json
+.vscode/
 .idea
 .DS_Store
 *.suo
@@ -23,3 +22,15 @@ dist-ssr
 .env
 
 .vercel
+
+# Local workbench files
+.github/*
+!.github/workflows/
+!.github/workflows/**
+dev-dist/
+project_temp/
+*.zip
+/CODE_SOURCE_*
+/*.html
+!/index.html
+/test-neptune-pluto.js
