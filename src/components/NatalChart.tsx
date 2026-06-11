@@ -296,7 +296,6 @@ export default function NatalChart({
       {!isFullscreen && (
       <div className={`natal-identity-panel natal-top-compact ${fullscreenMode ? 'natal-identity-panel--fullscreen' : ''}`}>
         <div className="natal-identity-panel__header">
-          <p className="natal-identity-panel__eyebrow">Carte natale</p>
           <h2 className="natal-chart-name">
             {name}
           </h2>

@@ -1680,14 +1680,14 @@ body {
 }
 
 .natal-chart-name {
-  font-size: clamp(1.55rem, 7vw, 2.25rem);
+  font-size: clamp(1.7rem, 7vw, 2.45rem);
   font-weight: 300;
-  background: linear-gradient(135deg, #FFB86B 0%, #FFD699 50%, #FFB86B 100%);
+  background: linear-gradient(135deg, #FFF6D8 0%, #FFD699 45%, #FFB86B 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   text-shadow: 0 0 30px rgba(255, 184, 107, 0.3);
-  letter-spacing: 1.5px;
+  letter-spacing: 0.02em;
   line-height: 1;
   text-align: left;
   margin: 0;
@@ -1720,22 +1720,45 @@ body {
 .natal-identity-panel {
   position: relative;
   width: 100%;
+  max-width: 620px;
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 10px;
-  padding: 4px 4px 14px;
-  border-bottom: 1px solid rgba(255, 214, 153, 0.2);
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid rgba(255, 214, 153, 0.22);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 16% 0%, rgba(255, 214, 153, 0.16), transparent 34%),
+    radial-gradient(circle at 92% 14%, rgba(166, 176, 195, 0.10), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.025));
+  box-shadow:
+    0 18px 48px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  overflow: hidden;
 }
 
 .natal-identity-panel::after {
   content: '';
   position: absolute;
-  left: 12%;
-  right: 12%;
-  bottom: -1px;
+  left: 18px;
+  right: 18px;
+  top: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 214, 153, 0.65), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 214, 153, 0.78), transparent);
+  pointer-events: none;
+}
+
+.natal-identity-panel::before {
+  content: '';
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  right: -58px;
+  top: -64px;
+  border: 1px solid rgba(255, 214, 153, 0.12);
+  border-radius: 50%;
+  box-shadow: 0 0 54px rgba(255, 214, 153, 0.08);
   pointer-events: none;
 }
 
@@ -1743,25 +1766,14 @@ body {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 4px;
-}
-
-.natal-identity-panel__eyebrow {
-  margin: 0;
-  color: rgba(255, 214, 153, 0.78);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-  font-size: 0.62rem;
-  font-weight: 700;
-  letter-spacing: 0.22em;
-  line-height: 1;
-  text-transform: uppercase;
+  gap: 0;
 }
 
 .natal-identity-panel__meta {
-  width: min(100%, 520px);
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+  gap: 8px;
 }
 
 .natal-identity-panel__meta div {
@@ -1769,7 +1781,11 @@ body {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 2px;
+  gap: 4px;
+  padding: 9px 10px;
+  border: 1px solid rgba(255, 214, 153, 0.14);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.16);
 }
 
 .natal-identity-panel__meta span,
@@ -1786,9 +1802,9 @@ body {
 .natal-identity-panel__meta strong {
   max-width: 100%;
   overflow: hidden;
-  color: rgba(245, 247, 250, 0.88);
+  color: rgba(245, 247, 250, 0.94);
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 0.92rem;
+  font-size: 1rem;
   font-weight: 300;
   line-height: 1.12;
   text-align: left;
@@ -1797,10 +1813,10 @@ body {
 }
 
 .natal-identity-panel__badges {
-  width: min(100%, 520px);
+  width: 100%;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 7px;
+  gap: 8px;
 }
 
 .natal-identity-badge {
@@ -1809,19 +1825,23 @@ body {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  min-height: 42px;
-  padding: 7px 6px;
+  min-height: 48px;
+  padding: 8px 7px;
   border: 1px solid rgba(255, 214, 153, 0.24);
-  border-radius: 10px;
-  background: linear-gradient(180deg, rgba(255, 214, 153, 0.08), rgba(255, 255, 255, 0.025));
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  background:
+    linear-gradient(180deg, rgba(255, 214, 153, 0.11), rgba(255, 255, 255, 0.03)),
+    rgba(0, 0, 0, 0.12);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 8px 20px rgba(0, 0, 0, 0.18);
 }
 
 .natal-identity-badge__glyph {
   flex: 0 0 auto;
   color: #FFD699;
   font-family: 'Segoe UI Symbol', 'Noto Sans Symbols 2', serif;
-  font-size: 1rem;
+  font-size: 1.06rem;
   line-height: 1;
   text-shadow: 0 0 10px rgba(255, 214, 153, 0.35);
 }
@@ -1837,7 +1857,7 @@ body {
   overflow: hidden;
   color: #F5F0E6;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-  font-size: 0.72rem;
+  font-size: 0.76rem;
   font-weight: 600;
   line-height: 1.1;
   text-overflow: ellipsis;
@@ -1890,13 +1910,23 @@ body {
 @media (max-width: 768px) {
   .natal-chart-card {
     gap: 6px !important;
-    padding: 6px 2px 10px !important;
+    padding: 8px 8px 10px !important;
     border-radius: 20px !important;
   }
 
   .natal-identity-panel {
-    gap: 7px;
-    padding: 2px 8px 10px;
+    gap: 8px;
+    padding: 10px;
+    border-radius: 16px;
+  }
+
+  .natal-identity-panel__meta div {
+    padding: 8px 9px;
+  }
+
+  .natal-identity-badge {
+    min-height: 42px;
+    padding: 7px 5px;
   }
 
   .natal-chart-wheel-stage {
@@ -1911,16 +1941,16 @@ body {
 
 @media (max-width: 420px) {
   .natal-identity-panel {
-    gap: 8px;
-    padding-bottom: 11px;
+    gap: 7px;
+    padding: 9px;
   }
 
   .natal-identity-panel__meta {
-    gap: 8px;
+    gap: 6px;
   }
 
   .natal-identity-panel__meta strong {
-    font-size: 0.82rem;
+    font-size: 0.84rem;
   }
 
   .natal-identity-panel__badges {
