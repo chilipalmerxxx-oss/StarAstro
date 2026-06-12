@@ -155,7 +155,7 @@ export default function AstralProfile({
       <div ref={topRef} />
       {/* Roue Zodiacale en haut */}
       {birthDate && birthPlace && (
-        <div className={`${fullscreenMode ? 'w-full' : 'relative mb-6 pt-2 pb-6 px-2 sm:px-4'} relative before:absolute before:inset-0 before:bg-gradient-to-b before:from-[#1a1a1a] before:via-[#141414] before:to-[#111111] before:pointer-events-none before:opacity-80 after:absolute after:top-1/2 after:left-1/2 after:-translate-x-1/2 after:-translate-y-1/2 after:w-[500px] after:h-[500px] after:blur-3xl after:opacity-20 after:pointer-events-none after:rounded-full`} style={{ '--tw-gradient-stops': 'rgb(160, 160, 160), rgb(120, 120, 120)' } as React.CSSProperties}>
+        <div className={`${fullscreenMode ? 'astral-profile-wheel-page w-full' : 'relative mb-6 pt-2 pb-6 px-2 sm:px-4'} relative before:absolute before:inset-0 before:bg-gradient-to-b before:from-[#1a1a1a] before:via-[#141414] before:to-[#111111] before:pointer-events-none before:opacity-80 after:absolute after:top-1/2 after:left-1/2 after:-translate-x-1/2 after:-translate-y-1/2 after:w-[500px] after:h-[500px] after:blur-3xl after:opacity-20 after:pointer-events-none after:rounded-full`} style={{ '--tw-gradient-stops': 'rgb(160, 160, 160), rgb(120, 120, 120)' } as React.CSSProperties}>
           <style>{`
             .zodiac-space-bg::after {
               background: radial-gradient(circle, rgba(160, 160, 160, 0.15) 0%, rgba(120, 120, 120, 0.08) 40%, transparent 70%);

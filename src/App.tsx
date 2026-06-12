@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Sparkles, ArrowLeft, History, User } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import LandingPage from './components/LandingPage';
 import BirthDataForm from './components/BirthDataForm';
 import NatalChart from './components/NatalChart';
-import Interpretation from './components/Interpretation';
-import AspectsList from './components/AspectsList';
 import SavedCharts from './components/SavedCharts';
 import TheVoid from './components/TheVoid';
 import AstralProfile from './components/AstralProfile';
@@ -362,23 +360,9 @@ function App() {
   return (
     <div className="app-shell">
       <div className="app-content">
-      <div className="container mx-auto px-4 py-12">
-        <div className="text-center mb-12">
+      <div className={chartData ? "natal-chart-screen" : "container mx-auto px-4 py-12"}>
+        <div className={chartData ? "natal-chart-screen__header" : "text-center mb-12"}>
           <div className="flex items-center justify-between mb-6">
-            <button
-              onClick={handleBackToHome}
-              className="inline-flex items-center gap-2 text-slate-300 hover:text-slate-100 transition"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              Retour à l'accueil
-            </button>
-            <button
-              onClick={() => setShowSavedCharts(true)}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-800 transition shadow-md"
-            >
-              <History className="w-5 h-5" />
-              Historique
-            </button>
           </div>
           <div className="flex items-center justify-center gap-3 mb-4">
             <Sparkles className="w-10 h-10 text-cyan-600" />
@@ -389,34 +373,11 @@ function App() {
           </p>
         </div>
 
-        <div className="flex flex-col items-center gap-8">
+        <div className={chartData ? "natal-chart-screen__body" : "flex flex-col items-center gap-8"}>
           {!chartData ? (
             <BirthDataForm onSubmit={handleSubmit} loading={loading} />
           ) : (
             <>
-              <div className="flex gap-3 relative z-50">
-                <button
-                  onClick={handleReset}
-                  className="bg-slate-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-slate-700 transition"
-                >
-                  Nouveau thème
-                </button>
-                <button
-                  onClick={() => setShowCoStar(true)}
-                  className="inline-flex items-center gap-2 px-5 py-3 bg-pink-600 text-white rounded-lg font-medium hover:bg-pink-700 transition shadow-md"
-                >
-                  <Sparkles className="w-5 h-5" />
-                  Co Star
-                </button>
-                <button
-                  onClick={() => setActiveTab('profile')}
-                  className="inline-flex items-center gap-2 px-5 py-3 bg-amber-600 text-white rounded-lg font-medium hover:bg-amber-700 transition shadow-md"
-                >
-                  <User className="w-5 h-5" />
-                  Interprétations
-                </button>
-              </div>
-
               <NatalChart
                 name={chartData.name}
                 birthDate={chartData.birthDate}
@@ -424,16 +385,8 @@ function App() {
                 planetPositions={chartData.planetPositions}
                 houses={chartData.houses}
                 aspects={chartData.aspects}
-                onPlanetClick={handlePlanetClick}
               />
 
-              <Interpretation
-                name={chartData.name}
-                planetPositions={chartData.planetPositions}
-                aspects={chartData.aspects}
-              />
-
-              <AspectsList aspects={chartData.aspects} />
             </>
           )}
         </div>

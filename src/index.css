@@ -1643,7 +1643,186 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
 }
 
+.astral-profile-wheel-page {
+  height: calc(100svh - 50px - max(8px, env(safe-area-inset-bottom)));
+  min-height: 620px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 10px 0;
+  overflow: hidden;
+  background: #171717;
+}
+
+.astral-profile-wheel-page .zodiac-wheel-container {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.astral-profile-wheel-page .natal-identity-panel {
+  flex: 0 0 auto;
+  margin-bottom: 0;
+}
+
+.astral-profile-wheel-page .natal-chart-card {
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.astral-profile-wheel-page .natal-chart-wheel-stage,
+.astral-profile-wheel-page .natal-chart-wheel-frame {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.astral-profile-wheel-page .natal-chart-svg {
+  width: min(100vw, calc((100svh - 50px) * 1.06), 1280px) !important;
+  max-width: none;
+}
+
 /* ── Birth Info Section for NatalChart ── */
+
+.natal-chart-screen {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  height: calc(100svh - 50px - max(8px, env(safe-area-inset-bottom)));
+  min-height: 620px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 10px 0;
+  overflow: hidden;
+  background: #171717;
+}
+
+.natal-chart-screen__header {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+  position: relative;
+  z-index: 4;
+}
+
+.natal-chart-screen__header > .flex:first-child {
+  margin-bottom: 0;
+}
+
+.natal-chart-screen__header > .flex:nth-child(2),
+.natal-chart-screen__header > p {
+  display: none;
+}
+
+.natal-chart-screen__body {
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.natal-chart-screen__actions {
+  position: static;
+  transform: none;
+  z-index: 5;
+  order: 1;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.natal-chart-screen__actions button {
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+}
+
+.natal-chart-screen .natal-identity-panel {
+  position: relative;
+  top: auto;
+  left: auto;
+  transform: none;
+  z-index: 5;
+  order: 0;
+  flex: 0 0 auto;
+}
+
+.natal-chart-screen .natal-chart-card.rounded-3xl {
+  order: 2;
+  width: 100%;
+  height: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.natal-chart-screen .natal-chart-wheel-stage,
+.natal-chart-screen .natal-chart-wheel-frame {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.natal-chart-screen .natal-chart-svg {
+  width: min(100vw, calc((100svh - 50px) * 1.06), 1280px) !important;
+  max-width: none;
+}
+
+.natal-chart-card > .grid.grid-cols-3,
+.natal-chart-card > .grid.grid-cols-3 + .w-full,
+.natal-chart-card > .w-full.mt-2.p-4 {
+  display: none;
+}
+
+.natal-chart-screen footer {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .natal-chart-screen {
+    padding: 8px 0;
+    height: calc(100svh - 50px - max(8px, env(safe-area-inset-bottom)));
+    min-height: 0;
+  }
+
+  .natal-chart-screen__body {
+    gap: 6px;
+  }
+
+  .natal-chart-screen__actions button {
+    padding: 7px 12px;
+    font-size: 0.76rem;
+  }
+
+  .natal-chart-screen .natal-chart-wheel-frame {
+    transform: translateY(12px);
+  }
+}
+
+.natal-chart-card.rounded-3xl {
+  background: #171717 !important;
+}
 
 /* Responsive SVG size in fullscreen mode */
 .natal-chart-svg-fullscreen {
@@ -1657,6 +1836,9 @@ body {
   max-width: 92%;
   height: auto;
   transform: none;
+  filter:
+    drop-shadow(0 30px 48px rgba(0, 0, 0, 0.62))
+    drop-shadow(0 0 28px rgba(255, 184, 107, 0.12));
 }
 
 @media (max-width: 768px) {
@@ -1680,193 +1862,150 @@ body {
 }
 
 .natal-chart-name {
-  font-size: clamp(1.7rem, 7vw, 2.45rem);
-  font-weight: 300;
-  background: linear-gradient(135deg, #FFF6D8 0%, #FFD699 45%, #FFB86B 100%);
+  font-size: clamp(1.28rem, 4.8vw, 1.86rem);
+  font-weight: 500;
+  background: linear-gradient(135deg, #FFF8ED 0%, #E6D7BD 48%, #BFAF92 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 30px rgba(255, 184, 107, 0.3);
-  letter-spacing: 0.02em;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.5);
+  letter-spacing: 0.035em;
   line-height: 1;
-  text-align: left;
+  text-align: center;
   margin: 0;
   font-family: 'Cormorant Garamond', Georgia, serif;
-  filter: drop-shadow(0 0 20px rgba(255, 184, 107, 0.2));
-  animation: natal-name-glow 3s ease-in-out infinite;
-}
-
-@keyframes natal-name-glow {
-  0%, 100% {
-    filter: drop-shadow(0 0 15px rgba(255, 184, 107, 0.2)) drop-shadow(0 0 25px rgba(255, 184, 107, 0.1));
-  }
-  50% {
-    filter: drop-shadow(0 0 25px rgba(255, 184, 107, 0.3)) drop-shadow(0 0 40px rgba(255, 184, 107, 0.15));
-  }
+  font-variant-ligatures: discretionary-ligatures;
+  filter: drop-shadow(0 0 8px rgba(246, 240, 228, 0.08));
 }
 
 @media (max-width: 768px) {
   .natal-chart-name {
-    font-size: clamp(1.45rem, 8vw, 1.9rem);
+    font-size: clamp(1.16rem, 5.8vw, 1.5rem);
+  }
+
+  .natal-identity-panel__header {
+    padding-right: 0;
   }
 }
 
 @media (max-width: 640px) {
   .natal-chart-name {
-    font-size: clamp(1.35rem, 7.4vw, 1.75rem);
+    font-size: clamp(1.08rem, 5.4vw, 1.4rem);
   }
 }
 
 .natal-identity-panel {
   position: relative;
   width: 100%;
-  max-width: 620px;
+  max-width: 500px;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  gap: 12px;
-  padding: 14px;
-  border: 1px solid rgba(255, 214, 153, 0.22);
-  border-radius: 18px;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 46px 13px;
+  margin-bottom: 0;
+  border: 1px solid rgba(232, 215, 168, 0.16);
+  border-radius: 16px;
   background:
-    radial-gradient(circle at 16% 0%, rgba(255, 214, 153, 0.16), transparent 34%),
-    radial-gradient(circle at 92% 14%, rgba(166, 176, 195, 0.10), transparent 30%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.025));
+    radial-gradient(circle at 50% -12%, rgba(255, 248, 237, 0.12), transparent 40%),
+    linear-gradient(135deg, rgba(31, 36, 44, 0.68), rgba(7, 9, 14, 0.62));
   box-shadow:
-    0 18px 48px rgba(0, 0, 0, 0.34),
+    0 16px 42px rgba(0, 0, 0, 0.32),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
   overflow: hidden;
+  backdrop-filter: blur(16px);
 }
 
 .natal-identity-panel::after {
   content: '';
-  position: absolute;
-  left: 18px;
-  right: 18px;
-  top: 0;
+  width: min(160px, 42%);
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 214, 153, 0.78), transparent);
-  pointer-events: none;
-}
-
-.natal-identity-panel::before {
-  content: '';
-  position: absolute;
-  width: 120px;
-  height: 120px;
-  right: -58px;
-  top: -64px;
-  border: 1px solid rgba(255, 214, 153, 0.12);
-  border-radius: 50%;
-  box-shadow: 0 0 54px rgba(255, 214, 153, 0.08);
+  order: 1;
+  background: linear-gradient(90deg, transparent, rgba(255, 230, 173, 0.62), transparent);
   pointer-events: none;
 }
 
 .natal-identity-panel__header {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: 0;
+  padding: 0;
+  order: 0;
 }
 
 .natal-identity-panel__meta {
   width: 100%;
-  display: grid;
-  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
-  gap: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 5px 10px;
+  order: 2;
 }
 
 .natal-identity-panel__meta div {
   min-width: 0;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 4px;
-  padding: 9px 10px;
-  border: 1px solid rgba(255, 214, 153, 0.14);
-  border-radius: 12px;
-  background: rgba(0, 0, 0, 0.16);
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border: 1px solid rgba(246, 240, 228, 0.10);
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(255, 253, 246, 0.06), rgba(0, 0, 0, 0.11)),
+    rgba(255, 255, 255, 0.025);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.055),
+    0 5px 12px rgba(0, 0, 0, 0.10);
 }
 
-.natal-identity-panel__meta span,
-.natal-identity-badge__text span {
-  color: rgba(255, 214, 153, 0.68);
+.natal-identity-panel__meta span {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  color: rgba(232, 226, 214, 0.78);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-  font-size: 0.58rem;
-  font-weight: 700;
-  letter-spacing: 0.15em;
-  line-height: 1;
-  text-transform: uppercase;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.045em;
+  line-height: 1.2;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.natal-identity-panel__meta span + span::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 3px;
+  margin: 0 10px 2px 0;
+  border-radius: 50%;
+  background: rgba(255, 230, 173, 0.48);
 }
 
 .natal-identity-panel__meta strong {
   max-width: 100%;
   overflow: hidden;
-  color: rgba(245, 247, 250, 0.94);
+  color: rgba(255, 253, 246, 0.86);
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 1rem;
-  font-weight: 300;
-  line-height: 1.12;
+  font-size: 0.74rem;
+  font-weight: 500;
+  line-height: 1.08;
   text-align: left;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.natal-identity-panel__badges {
-  width: 100%;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-}
-
-.natal-identity-badge {
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  min-height: 48px;
-  padding: 8px 7px;
-  border: 1px solid rgba(255, 214, 153, 0.24);
-  border-radius: 12px;
-  background:
-    linear-gradient(180deg, rgba(255, 214, 153, 0.11), rgba(255, 255, 255, 0.03)),
-    rgba(0, 0, 0, 0.12);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    0 8px 20px rgba(0, 0, 0, 0.18);
-}
-
-.natal-identity-badge__glyph {
-  flex: 0 0 auto;
-  color: #FFD699;
-  font-family: 'Segoe UI Symbol', 'Noto Sans Symbols 2', serif;
-  font-size: 1.06rem;
-  line-height: 1;
-  text-shadow: 0 0 10px rgba(255, 214, 153, 0.35);
-}
-
-.natal-identity-badge__text {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.natal-identity-badge__text strong {
-  overflow: hidden;
-  color: #F5F0E6;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-  font-size: 0.76rem;
-  font-weight: 600;
-  line-height: 1.1;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .natal-identity-panel__actions {
   display: flex;
-  justify-content: flex-start;
+  justify-content: flex-end;
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  z-index: 1;
 }
 
 .natal-chart-wheel-stage {
@@ -1904,10 +2043,22 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  filter: drop-shadow(0 34px 52px rgba(0, 0, 0, 0.50));
+  filter:
+    drop-shadow(0 34px 52px rgba(0, 0, 0, 0.54))
+    drop-shadow(0 0 34px rgba(255, 214, 153, 0.08));
 }
 
 @media (max-width: 768px) {
+  .astral-profile-wheel-page {
+    height: calc(100svh - 50px - max(8px, env(safe-area-inset-bottom)));
+    min-height: 0;
+    padding: 8px 0;
+  }
+
+  .astral-profile-wheel-page .natal-chart-wheel-frame {
+    transform: translateY(12px);
+  }
+
   .natal-chart-card {
     gap: 6px !important;
     padding: 8px 8px 10px !important;
@@ -1916,22 +2067,18 @@ body {
 
   .natal-identity-panel {
     gap: 8px;
-    padding: 10px;
-    border-radius: 16px;
+    padding: 10px 40px 12px;
+    margin-bottom: 0;
+    border-radius: 13px;
   }
 
-  .natal-identity-panel__meta div {
-    padding: 8px 9px;
-  }
-
-  .natal-identity-badge {
-    min-height: 42px;
-    padding: 7px 5px;
+  .natal-identity-panel__meta span {
+    font-size: 0.68rem;
   }
 
   .natal-chart-wheel-stage {
     min-height: min(66svh, 650px);
-    margin-top: -2px;
+    margin-top: 0;
   }
 
   .natal-chart-wheel-frame {
@@ -1941,8 +2088,9 @@ body {
 
 @media (max-width: 420px) {
   .natal-identity-panel {
-    gap: 7px;
-    padding: 9px;
+    gap: 6px;
+    padding: 9px 34px 10px;
+    margin-bottom: 0;
   }
 
   .natal-identity-panel__meta {
@@ -1950,53 +2098,39 @@ body {
   }
 
   .natal-identity-panel__meta strong {
-    font-size: 0.84rem;
+    font-size: 0.68rem;
   }
 
-  .natal-identity-panel__badges {
-    gap: 5px;
-  }
-
-  .natal-identity-badge {
-    min-height: 38px;
-    gap: 4px;
-    padding: 6px 4px;
-    border-radius: 8px;
-  }
-
-  .natal-identity-badge__glyph {
-    font-size: 0.92rem;
-  }
-
-  .natal-identity-badge__text strong {
-    font-size: 0.66rem;
-  }
 }
 
 .natal-chart-fullscreen-btn {
-  padding: 8px 16px;
-  border-radius: 10px;
-  font-size: 12px;
-  font-weight: 600;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  background: linear-gradient(135deg, rgba(255, 184, 107, 0.15) 0%, rgba(255, 184, 107, 0.08) 100%);
-  border: 2px solid rgba(255, 184, 107, 0.3);
-  color: #FFB86B;
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-radius: 999px;
+  background: rgba(255, 253, 246, 0.055);
+  border: 1px solid rgba(255, 230, 173, 0.20);
+  color: rgba(255, 230, 173, 0.82);
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 0 20px rgba(255, 184, 107, 0.15), inset 0 0 20px rgba(255, 184, 107, 0.05);
+  box-shadow:
+    0 8px 18px rgba(0, 0, 0, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
   position: relative;
   overflow: hidden;
 }
 
 .natal-chart-fullscreen-btn:hover {
-  background: linear-gradient(135deg, rgba(255, 184, 107, 0.25) 0%, rgba(255, 184, 107, 0.15) 100%);
-  border-color: rgba(255, 184, 107, 0.5);
-  box-shadow: 0 0 30px rgba(255, 184, 107, 0.25), inset 0 0 30px rgba(255, 184, 107, 0.1);
-  transform: translateY(-2px);
-  animation: btn-glow 1.5s ease-in-out infinite;
+  background: rgba(255, 230, 173, 0.12);
+  border-color: rgba(255, 230, 173, 0.42);
+  color: #FFF0C2;
+  box-shadow:
+    0 0 18px rgba(255, 184, 107, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transform: translateY(-1px);
 }
 
 .natal-chart-fullscreen-btn:active {
@@ -2014,15 +2148,15 @@ body {
 
 @media (max-width: 768px) {
   .natal-chart-fullscreen-btn {
-    padding: 8px 14px;
-    font-size: 11px;
+    width: 28px;
+    height: 28px;
   }
 }
 
 @media (max-width: 640px) {
   .natal-chart-fullscreen-btn {
-    padding: 7px 12px;
-    font-size: 10px;
+    width: 26px;
+    height: 26px;
   }
 }
 
