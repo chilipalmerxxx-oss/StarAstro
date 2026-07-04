@@ -57,16 +57,16 @@ const planetGlyphSizes: Record<string, number> = {
 };
 
 const planetGlyphOffsets: Record<string, { x: number; y: number }> = {
-  sun: { x: 0, y: 2 },
-  moon: { x: 0, y: 5 },
-  mercury: { x: 0, y: 2 },
-  venus: { x: 0, y: 2 },
-  mars: { x: 0, y: 2 },
-  jupiter: { x: -2, y: -1 },
-  saturn: { x: 0, y: 2 },
-  uranus: { x: 0, y: 5 },
-  neptune: { x: 0, y: 2 },
-  pluto: { x: 0, y: 2 },
+  sun: { x: 1, y: 4 },
+  moon: { x: 3, y: 3 },
+  mercury: { x: 0, y: 4 },
+  venus: { x: 0, y: 3 },
+  mars: { x: 0, y: 4 },
+  jupiter: { x: -2, y: -3 },
+  saturn: { x: 0, y: 4 },
+  uranus: { x: 0, y: 6 },
+  neptune: { x: 0, y: 3 },
+  pluto: { x: 0, y: 6 },
 };
 
 const planetNames: Record<string, string> = {
@@ -159,7 +159,7 @@ export default function NatalChart({
   };
 
   const detectConjunctions = () => {
-    const conjunctionThreshold = 2; // degrees of separation for conjunction grouping
+    const conjunctionThreshold = 5; // degrees of separation for overlap prevention
 
     // Collect planets + cardinal points in one array
     const cardinals = [
@@ -537,6 +537,13 @@ export default function NatalChart({
               const angle = i * 30;
               const mid = angle + 15;
               const signPoint = getXY(mid, (radiusHouses + radiusOuter) / 2);
+              const compactSignEmojis = new Set(["Cancer", "Lion", "Vierge", "Sagittaire"]);
+              const largeSignEmojis = new Set(["Taureau", "Scorpion", "Poissons"]);
+              const signEmojiSize = compactSignEmojis.has(sign.name)
+                ? "51"
+                : largeSignEmojis.has(sign.name)
+                  ? "59"
+                  : "55";
 
               return (
                 <g key={`zodiac-${i}`}>
@@ -561,7 +568,7 @@ export default function NatalChart({
                   <text
                     x={signPoint.x}
                     y={signPoint.y + 2}
-                    fontSize="47"
+                    fontSize={signEmojiSize}
                     textAnchor="middle"
                     dominantBaseline="middle"
                     style={{ filter: "drop-shadow(0 2px 5px rgba(0, 0, 0, 0.92)) drop-shadow(0 0 7px rgba(120, 128, 150, 0.18))" }}

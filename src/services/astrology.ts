@@ -228,11 +228,13 @@ export interface TransitAspect {
   transitSign: string;
 }
 
-// Calcule les aspects entre les planètes en transit aujourd'hui et le thème natal
-export function calculateTransitAspects(natalPositions: Record<string, PlanetPosition>): TransitAspect[] {
-  const today = new Date();
+// Calcule les aspects entre les planètes en transit à une date donnée et le thème natal
+export function calculateTransitAspects(
+  natalPositions: Record<string, PlanetPosition>,
+  transitDate = new Date()
+): TransitAspect[] {
   // Les longitudes écliptiques sont géocentriques, la lat/lon n'influence pas le signe
-  const transitPositions = calculatePlanetPositions({ date: today, latitude: 0, longitude: 0 });
+  const transitPositions = calculatePlanetPositions({ date: transitDate, latitude: 0, longitude: 0 });
 
   const aspects: TransitAspect[] = [];
 
@@ -266,8 +268,11 @@ export function calculateTransitAspects(natalPositions: Record<string, PlanetPos
 
 export interface CoStarAnalysis {
   mood: string;
+  dailyMove: string;
+  dailyChallenge: string;
   dayAtGlance: string;
   advice: string;
+  personalizationSeed: string;
   pillars: Array<{
     title: string;
     text: string;
@@ -295,6 +300,556 @@ const seededRandom = (seed: string): number => {
   return Math.abs(hash % 10000) / 10000;
 };
 
+const hashToInt = (seed: string): number => {
+  let hash = 0x12345678;
+  for (let i = 0; i < seed.length; i++) {
+    hash = Math.imul(hash ^ seed.charCodeAt(i), 0x9e3779b1);
+  }
+  return Math.abs(hash);
+};
+
+const getLocalDateKey = (date: Date): string =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+
+const getDateFromLocalDateKey = (dateKey: string): Date => {
+  const [year, month, day] = dateKey.split('-').map(Number);
+  return new Date(year, month - 1, day);
+};
+
+const formatSeedNumber = (value: unknown): string => {
+  const numberValue = Number(value);
+  return Number.isFinite(numberValue) ? numberValue.toFixed(3) : '';
+};
+
+const formatSeedDate = (value: unknown): string => {
+  if (value instanceof Date) return value.toISOString();
+  if (typeof value === 'string') return value;
+  return '';
+};
+
+const getCoStarPersonalizationSeed = (chartData: any, name: string): string => {
+  const planets = chartData?.planetPositions ?? {};
+  const planetSeed = ['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto']
+    .map(planetKey => {
+      const planet = planets[planetKey] ?? {};
+      return [
+        planetKey,
+        planet.sign ?? '',
+        formatSeedNumber(planet.longitude),
+        formatSeedNumber(planet.house),
+      ].join(':');
+    })
+    .join('|');
+  const houseSeed = Array.isArray(chartData?.houses)
+    ? chartData.houses.map((house: any) => formatSeedNumber(house?.cusp)).join('|')
+    : '';
+
+  return [
+    name?.trim().toLocaleLowerCase('fr-FR') || 'ami(e) des étoiles',
+    formatSeedDate(chartData?.birthDate),
+    chartData?.birthPlace ?? '',
+    planetSeed,
+    houseSeed,
+  ].join('|');
+};
+
+type ElementName = 'Feu' | 'Terre' | 'Air' | 'Eau';
+type ModalityName = 'Cardinal' | 'Fixe' | 'Mutable';
+type AspectTone = 'harmonique' | 'tendu' | 'mixte';
+
+interface CoStarProfile {
+  dominantElement: ElementName;
+  secondaryElement: ElementName;
+  dominantModality: ModalityName;
+  sunSign: string;
+  moonSign: string;
+  ascendantSign: string;
+  focusPlanet: string;
+  focusPlanetLabel: string;
+  focusSign: string;
+  focusHouse?: number;
+  aspectTone: AspectTone;
+  activeTransit?: TransitAspect;
+}
+
+interface CoStarDailyGuidance {
+  mood: string;
+  dailyMove: string;
+  dailyChallenge: string;
+}
+
+interface CoStarGuidanceSource {
+  energy: string[];
+  move: string[];
+  challenge: string[];
+}
+
+const PLANET_LABELS: Record<string, string> = {
+  sun: 'Soleil',
+  moon: 'Lune',
+  mercury: 'Mercure',
+  venus: 'Vénus',
+  mars: 'Mars',
+  jupiter: 'Jupiter',
+  saturn: 'Saturne',
+  uranus: 'Uranus',
+  neptune: 'Neptune',
+  pluto: 'Pluton',
+};
+
+const SIGN_PROFILES: Record<string, { element: ElementName; modality: ModalityName; energy: string; challenge: string }> = {
+  Bélier: { element: 'Feu', modality: 'Cardinal', energy: 'l’audace veut ouvrir une porte neuve', challenge: 'ne confonds pas vitesse et vérité' },
+  Taureau: { element: 'Terre', modality: 'Fixe', energy: 'ton corps réclame du concret et du fiable', challenge: 'ne t’attache pas à ce qui demande à bouger' },
+  Gémeaux: { element: 'Air', modality: 'Mutable', energy: 'l’esprit capte plusieurs signaux à la fois', challenge: 'ne disperse pas ton attention dans toutes les directions' },
+  Cancer: { element: 'Eau', modality: 'Cardinal', energy: 'l’intuition protège ce qui compte vraiment', challenge: 'ne laisse pas l’émotion décider seule' },
+  Lion: { element: 'Feu', modality: 'Fixe', energy: 'la présence veut rayonner sans demander permission', challenge: 'ne transforme pas le besoin d’expression en besoin d’approbation' },
+  Vierge: { element: 'Terre', modality: 'Mutable', energy: 'le détail juste peut remettre toute la journée en ordre', challenge: 'ne fais pas de la perfection une condition pour avancer' },
+  Balance: { element: 'Air', modality: 'Cardinal', energy: 'l’équilibre passe par une décision claire', challenge: 'ne sacrifie pas ta vérité pour garder la paix' },
+  Scorpion: { element: 'Eau', modality: 'Fixe', energy: 'la lucidité perce sous la surface', challenge: 'ne serre pas plus fort ce qui doit se transformer' },
+  Sagittaire: { element: 'Feu', modality: 'Mutable', energy: 'l’horizon s’élargit et redonne du sens', challenge: 'ne promets pas plus que ton présent ne peut porter' },
+  Capricorne: { element: 'Terre', modality: 'Cardinal', energy: 'une ambition calme cherche une structure', challenge: 'ne confonds pas maîtrise et dureté envers toi-même' },
+  Verseau: { element: 'Air', modality: 'Fixe', energy: 'l’idée différente devient une vraie ressource', challenge: 'ne t’isole pas au nom de ton indépendance' },
+  Poissons: { element: 'Eau', modality: 'Mutable', energy: 'l’imaginaire ouvre une voie plus subtile', challenge: 'ne laisse pas la compassion dissoudre tes limites' },
+};
+
+const ELEMENT_PROFILES: Record<ElementName, { energy: string[]; move: string[]; challenge: string[] }> = {
+  Feu: {
+    energy: [
+      'une envie d’agir revient franchement',
+      'l’élan revient quand tu passes à l’action',
+      'un élan courageux cherche sa forme',
+      'la vitalité monte dès que tu choisis une direction',
+      'ton instinct sait avant ton mental',
+      'l’envie de créer ou de décider devient plus forte',
+      'une intensité intérieure demande une direction',
+      'ta présence gagne en intensité quand tu arrêtes d’attendre',
+    ],
+    move: [
+      'Choisis une action visible et fais-la sans te disperser.',
+      'Transforme l’impulsion en décision simple.',
+      'Mets ton énergie dans une seule bataille utile.',
+      'Ose initier, mais garde un rythme respirable.',
+      'Fais quelque chose qui te rend fier sans chercher l’effet.',
+      'Utilise ton courage pour clarifier, pas pour forcer.',
+    ],
+    challenge: [
+      'Ne confonds pas intensité et urgence.',
+      'Ne brûle pas une étape juste parce que tu sens l’élan.',
+      'Ne fais pas porter aux autres ta pression intérieure.',
+      'Ne transforme pas une intuition juste en réaction trop rapide.',
+      'Ne cherche pas la victoire quand la clarté suffit.',
+      'Ne laisse pas la fierté parler plus fort que le besoin réel.',
+    ],
+  },
+  Terre: {
+    energy: [
+      'tu as besoin de concret',
+      'la journée se construit par petits gestes',
+      'ton corps devient une boussole plus fiable que le bruit mental',
+      'la stabilité revient quand tu simplifies',
+      'une patience active rend les choses possibles',
+      'tu retrouves de la stabilité dans ce qui dure',
+      'le réel te répond mieux que les suppositions',
+      'ton énergie devient claire quand elle devient concrète',
+    ],
+    move: [
+      'Pose une base concrète avant d’élargir le plan.',
+      'Fais moins, mais fais-le vraiment.',
+      'Range, trie ou consolide une chose qui te soutient.',
+      'Choisis le geste utile plutôt que le grand scénario.',
+      'Écoute ton corps avant de remplir ton agenda.',
+      'Avance par preuve, pas par pression.',
+    ],
+    challenge: [
+      'Ne confonds pas sécurité et immobilité.',
+      'Ne transforme pas la prudence en refus du changement.',
+      'Ne t’accroche pas à une forme qui a cessé de te nourrir.',
+      'Ne mesure pas ta valeur à ce que tu produis aujourd’hui.',
+      'Ne laisse pas le confort décider à ta place.',
+      'Ne rigidifie pas ce qui demande seulement à être ajusté.',
+    ],
+  },
+  Air: {
+    energy: [
+      'tu repères des liens que tu n’avais pas vus',
+      'une conversation peut déplacer toute la perspective',
+      'la clarté vient quand les idées circulent',
+      'ta curiosité réveille une piste importante',
+      'ça respire mieux quand tu nommes les choses',
+      'une idée légère peut ouvrir une porte sérieuse',
+      'ton recul devient une force si tu restes présent',
+      'les échanges peuvent ouvrir un angle neuf',
+    ],
+    move: [
+      'Pose une vraie question et écoute jusqu’au bout.',
+      'Écris l’idée avant qu’elle ne se dilue.',
+      'Choisis une conversation claire plutôt que dix signaux flous.',
+      'Mets de l’ordre dans tes pensées sans les enfermer.',
+      'Partage une idée seulement après l’avoir reliée au réel.',
+      'Laisse une information neuve changer ton angle.',
+    ],
+    challenge: [
+      'Ne remplace pas la présence par trop de mots.',
+      'Ne disperse pas ton attention dans tous les possibles.',
+      'Ne transforme pas le recul en distance affective.',
+      'Ne choisis pas une idée brillante si elle t’éloigne de toi.',
+      'Ne parle pas plus vite que ce que tu ressens.',
+      'Ne laisse pas le mental court-circuiter l’intuition simple.',
+    ],
+  },
+  Eau: {
+    energy: [
+      'ton intuition devient plus précise que tes explications',
+      'les ressentis subtils prennent plus de place',
+      'une émotion demande à être comprise, pas contrôlée',
+      'ta sensibilité capte la vérité avant les mots',
+      'l’intime prend plus de place que la performance',
+      'un ancien ressenti éclaire un choix actuel',
+      'ton calme revient quand tu respectes tes limites',
+      'la profondeur devient une ressource si tu restes ancré',
+    ],
+    move: [
+      'Nomme ce que tu ressens avant de répondre.',
+      'Protège ton calme comme une ressource précieuse.',
+      'Fais un geste de soin sans t’oublier dedans.',
+      'Laisse l’émotion informer le choix, pas le gouverner seule.',
+      'Crée une limite douce mais réelle.',
+      'Écoute le signal intérieur qui revient plusieurs fois.',
+    ],
+    challenge: [
+      'Ne prends pas une vague émotionnelle pour une vérité définitive.',
+      'Ne t’absorbe pas dans ce qui appartient aux autres.',
+      'Ne confonds pas compassion et effacement.',
+      'Ne laisse pas le passé écrire la réponse d’aujourd’hui.',
+      'Ne te protège pas en disparaissant.',
+      'Ne cherche pas à tout ressentir avant d’avancer.',
+    ],
+  },
+};
+
+const MODALITY_PROFILES: Record<ModalityName, { energy: string[]; move: string[]; challenge: string[] }> = {
+  Cardinal: {
+    energy: [
+      'quelque chose veut commencer simplement',
+      'l’initiative revient au centre',
+      'la journée répond bien aux décisions nettes',
+      'un nouveau départ devient plus clair',
+      'ton énergie demande un premier pas, même imparfait',
+    ],
+    move: [
+      'Initie une chose sans exiger que tout soit prêt.',
+      'Choisis le premier mouvement plutôt que le plan parfait.',
+      'Ouvre la porte, puis ajuste en marchant.',
+    ],
+    challenge: [
+      'Ne démarre pas trois choses pour éviter d’en choisir une.',
+      'Ne confonds pas commencer avec contrôler tout le déroulé.',
+      'Ne force pas une réponse immédiate là où une intention suffit.',
+    ],
+  },
+  Fixe: {
+    energy: [
+      'ce qui compte demande à être tenu',
+      'la constance devient magnétique',
+      'ta constance reprend de la force',
+      'ton énergie se concentre autour d’un axe stable',
+      'la journée favorise ce qui mérite d’être approfondi',
+    ],
+    move: [
+      'Reste fidèle à une priorité claire.',
+      'Consolide ce que tu as déjà commencé.',
+      'Tiens une promesse simple envers toi-même.',
+    ],
+    challenge: [
+      'Ne prends pas la résistance pour de la sagesse.',
+      'Ne reste pas figé par loyauté envers une ancienne version de toi.',
+      'Ne serre pas plus fort ce qui demande de l’espace.',
+    ],
+  },
+  Mutable: {
+    energy: [
+      'une transition devient plus lisible',
+      'l’adaptation ouvre une meilleure route',
+      'quelque chose évolue sans perdre son sens',
+      'la journée récompense la souplesse intelligente',
+      'un petit ajustement peut tout fluidifier',
+    ],
+    move: [
+      'Adapte le plan sans abandonner l’intention.',
+      'Laisse une information neuve modifier le chemin.',
+      'Fais de la souplesse une stratégie, pas une fuite.',
+    ],
+    challenge: [
+      'Ne change pas de direction juste pour éviter l’inconfort.',
+      'Ne transforme pas la flexibilité en dispersion.',
+      'Ne laisse pas l’avis des autres diluer ton centre.',
+    ],
+  },
+};
+
+const PLANET_PROFILES: Record<string, { energy: string[]; move: string[]; challenge: string[] }> = {
+  sun: {
+    energy: ['tu as besoin d’être plus aligné', 'ta volonté cherche une direction plus claire', 'le besoin d’être pleinement toi revient fort'],
+    move: ['Fais un choix qui respecte mieux ton centre.', 'Agis depuis ce qui te ressemble vraiment.', 'Montre une part de toi sans la surjouer.'],
+    challenge: ['Ne cherche pas à rayonner là où tu as surtout besoin d’être vrai.', 'Ne laisse pas l’ego parler à la place de l’élan sincère.', 'Ne confonds pas visibilité et alignement.'],
+  },
+  moon: {
+    energy: ['tes besoins émotionnels demandent plus d’attention', 'le ressenti passe au premier plan', 'ton monde intérieur donne le ton'],
+    move: ['Écoute ton besoin avant de répondre à la demande extérieure.', 'Protège un espace qui te nourrit.', 'Laisse ton ressenti être une information valable.'],
+    challenge: ['Ne nie pas un besoin simplement parce qu’il dérange le programme.', 'Ne laisse pas une humeur momentanée écrire toute l’histoire.', 'Ne demande pas aux autres de deviner ce que tu n’as pas nommé.'],
+  },
+  mercury: {
+    energy: ['ta pensée cherche des mots plus justes', 'les mots peuvent remettre de l’ordre', 'une idée peut devenir un levier très concret'],
+    move: ['Écris ou dis la phrase qui remet de l’ordre.', 'Clarifie une conversation au lieu de l’imaginer.', 'Vérifie l’information avant de conclure.'],
+    challenge: ['Ne te réfugie pas dans l’analyse si le cœur a déjà répondu.', 'Ne laisse pas le mental multiplier les scénarios inutiles.', 'Ne rends pas compliqué ce qui demande seulement d’être dit.'],
+  },
+  venus: {
+    energy: ['tes désirs cherchent plus de vérité', 'ce que tu aimes demande plus de clarté', 'la beauté devient un signal de justesse'],
+    move: ['Choisis ce qui te nourrit vraiment, pas ce qui impressionne.', 'Fais un geste de tendresse clair.', 'Honore une envie sans te perdre dedans.'],
+    challenge: ['Ne cherche pas l’harmonie au prix de ton désir réel.', 'Ne dis pas oui pour rester aimable.', 'Ne confonds pas manque et amour.'],
+  },
+  mars: {
+    energy: ['le courage revient avec plus de direction', 'ton énergie d’action demande une cible nette', 'la volonté revient par le corps et le mouvement'],
+    move: ['Donne une mission claire à ton énergie.', 'Bouge avant de ruminer.', 'Transforme la frustration en geste utile.'],
+    challenge: ['Ne fais pas de la colère un pilote automatique.', 'Ne force pas une porte qui demande une stratégie.', 'Ne gaspille pas ton énergie dans une réaction secondaire.'],
+  },
+  jupiter: {
+    energy: ['ton envie de grandir cherche une forme réaliste', 'la perspective s’élargit doucement', 'la confiance revient quand le sens est clair'],
+    move: ['Choisis une action qui élargit vraiment ton horizon.', 'Apprends, demande, explore une piste nouvelle.', 'Vise plus haut, puis ancre le premier pas.'],
+    challenge: ['Ne promets pas plus que tu ne peux habiter.', 'Ne prends pas l’optimisme pour un plan.', 'Ne cherche pas grand si le vrai appel est profond.'],
+  },
+  saturn: {
+    energy: ['une maturité calme devient disponible', 'la structure peut te redonner de la force', 'ce qui tient dans le temps reprend de la valeur'],
+    move: ['Pose une limite qui protège ton avenir.', 'Fais la chose sérieuse sans te punir avec elle.', 'Construis une base que demain pourra remercier.'],
+    challenge: ['Ne transforme pas la discipline en dureté.', 'Ne confonds pas lenteur et échec.', 'Ne laisse pas la peur du jugement rétrécir ton choix.'],
+  },
+};
+
+const getDateOrdinal = (dateKey: string): number => {
+  const [year, month, day] = dateKey.split('-').map(Number);
+  return Math.floor(Date.UTC(year, month - 1, day) / 86400000);
+};
+
+const pickDailyValue = <T,>(items: T[], seed: string, dateKey: string, salt: string): T =>
+  items[(getDateOrdinal(dateKey) + hashToInt(`${seed}|${dateKey}|${salt}`)) % items.length];
+
+const rankScores = <T extends string>(scores: Record<T, number>): T[] =>
+  (Object.keys(scores) as T[]).sort((a, b) => scores[b] - scores[a]);
+
+const getCoStarProfile = (
+  chartData: any,
+  transitAspects: TransitAspect[],
+  dateKey: string,
+  personalizationSeed: string
+): CoStarProfile => {
+  const planets = chartData?.planetPositions ?? {};
+  const elementScores: Record<ElementName, number> = { Feu: 0, Terre: 0, Air: 0, Eau: 0 };
+  const modalityScores: Record<ModalityName, number> = { Cardinal: 0, Fixe: 0, Mutable: 0 };
+  const planetWeights: Record<string, number> = {
+    sun: 4,
+    moon: 4,
+    mercury: 2,
+    venus: 2,
+    mars: 2,
+    jupiter: 1.2,
+    saturn: 1.2,
+    uranus: 0.8,
+    neptune: 0.8,
+    pluto: 0.8,
+  };
+
+  Object.entries(planetWeights).forEach(([planetKey, weight]) => {
+    const sign = planets[planetKey]?.sign;
+    const profile = sign ? SIGN_PROFILES[sign] : undefined;
+    if (!profile) return;
+    elementScores[profile.element] += weight;
+    modalityScores[profile.modality] += weight;
+  });
+
+  const ascendantSign = chartData?.houses?.[0]?.sign || planets.sun?.sign || 'Bélier';
+  const ascendantProfile = SIGN_PROFILES[ascendantSign];
+  if (ascendantProfile) {
+    elementScores[ascendantProfile.element] += 3;
+    modalityScores[ascendantProfile.modality] += 3;
+  }
+
+  const focusPlanets = ['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn'].filter(key => planets[key]);
+  const focusPlanet = pickDailyValue(focusPlanets.length ? focusPlanets : ['sun'], personalizationSeed, dateKey, 'focus-planet');
+
+  const aspects = Array.isArray(chartData?.aspects) ? chartData.aspects : [];
+  const tenseCount = aspects.filter((aspect: any) => aspect?.type === 'Carré' || aspect?.type === 'Opposition').length;
+  const harmonyCount = aspects.filter((aspect: any) => aspect?.type === 'Trigone' || aspect?.type === 'Sextile').length;
+  const aspectTone: AspectTone = tenseCount > harmonyCount + 1 ? 'tendu' : harmonyCount > tenseCount + 1 ? 'harmonique' : 'mixte';
+
+  const personalTransits = transitAspects.filter(transit => ['sun', 'moon', 'mercury', 'venus', 'mars'].includes(transit.natalPlanet));
+  const activeTransit = personalTransits.length
+    ? pickDailyValue(personalTransits.slice(0, 10), personalizationSeed, dateKey, 'active-transit')
+    : undefined;
+
+  const rankedElements = rankScores(elementScores);
+  const rankedModalities = rankScores(modalityScores);
+  const focusPosition = planets[focusPlanet];
+
+  return {
+    dominantElement: rankedElements[0],
+    secondaryElement: rankedElements[1] ?? rankedElements[0],
+    dominantModality: rankedModalities[0],
+    sunSign: planets.sun?.sign || 'Bélier',
+    moonSign: planets.moon?.sign || 'Taureau',
+    ascendantSign,
+    focusPlanet,
+    focusPlanetLabel: PLANET_LABELS[focusPlanet] || focusPlanet,
+    focusSign: focusPosition?.sign || planets.sun?.sign || 'Bélier',
+    focusHouse: focusPosition?.house,
+    aspectTone,
+    activeTransit,
+  };
+};
+
+const transitEnergyText = (transit?: TransitAspect): string | undefined => {
+  if (!transit) return undefined;
+  const aspectText: Record<string, string> = {
+    Trigone: 'les choses coulent avec plus de facilité',
+    Sextile: 'une petite ouverture devient disponible',
+    Conjonction: 'tout semble plus intense et plus présent',
+    Carré: 'une tension utile pousse à clarifier',
+    Opposition: 'deux envies cherchent un meilleur équilibre',
+  };
+  return aspectText[transit.type] || 'une énergie particulière demande ton attention';
+};
+
+const transitChallengeText = (transit?: TransitAspect): string | undefined => {
+  if (!transit) return undefined;
+  const aspectText: Record<string, string> = {
+    Trigone: 'Ne t’endors pas dans la facilité.',
+    Sextile: 'Ne laisse pas passer une ouverture discrète.',
+    Conjonction: 'Ne laisse pas cette intensité prendre toute la place.',
+    Carré: 'Ne transforme pas cette friction en conflit automatique.',
+    Opposition: 'Ne choisis pas un côté en oubliant l’autre.',
+  };
+  return aspectText[transit.type] || 'Reste attentif à ce que la journée réveille.';
+};
+
+const aspectToneEnergy: Record<AspectTone, string[]> = {
+  harmonique: [
+    'une progression fluide devient possible',
+    'les gestes simples et alignés portent loin',
+    'la facilité peut devenir une vraie force si tu l’habites',
+  ],
+  tendu: [
+    'la friction peut devenir une force utile',
+    'une tension peut t’aider à grandir',
+    'ce qui résiste peut montrer où agir',
+  ],
+  mixte: [
+    'tu cherches l’équilibre entre douceur et exigence',
+    'la journée demande de tenir deux vérités à la fois',
+    'une nuance importante apparaît entre élan et retenue',
+  ],
+};
+
+const aspectToneChallenge: Record<AspectTone, string[]> = {
+  harmonique: [
+    'Ne prends pas la fluidité pour une raison de remettre à demain.',
+    'Ne laisse pas la facilité devenir passivité.',
+    'Ne minimise pas ce qui se présente simplement parce que ça semble naturel.',
+  ],
+  tendu: [
+    'Ne confonds pas tension et mauvais signe.',
+    'Ne réponds pas à la friction par une dureté inutile.',
+    'Ne laisse pas un inconfort productif devenir une guerre intérieure.',
+  ],
+  mixte: [
+    'Ne simplifie pas trop vite une situation qui demande de la nuance.',
+    'Ne choisis pas le confort si la vérité demande un ajustement.',
+    'Ne te disperse pas entre deux directions sans nommer ce que tu veux vraiment.',
+  ],
+};
+
+const toShortEnergyText = (text: string): string => {
+  const trimmed = text.trim().replace(/[.!?]+$/g, '');
+  return trimmed.charAt(0).toLocaleUpperCase('fr-FR') + trimmed.slice(1);
+};
+
+const buildPersonalizedGuidance = (profile: CoStarProfile, dateKey: string, seed: string): CoStarDailyGuidance => {
+  const focusSignProfile = SIGN_PROFILES[profile.focusSign] ?? SIGN_PROFILES[profile.sunSign];
+  const guidanceSources: CoStarGuidanceSource[] = [
+    {
+      energy: [
+        'une énergie calme cherche une direction claire',
+        'quelque chose en toi se remet doucement en mouvement',
+        'tu avances mieux en choisissant l’essentiel',
+        'la journée demande une présence simple et vraie',
+        'ton énergie devient plus nette quand tu ralentis',
+        'une force tranquille revient au premier plan',
+        'un déclic discret peut changer ton rythme',
+        'tu as besoin de clarté plus que d’intensité',
+        'la journée t’invite à agir sans te disperser',
+        'une douceur lucide peut guider tes choix',
+      ],
+      move: [
+        'Choisis un geste simple et fais-le avec présence.',
+        'Commence par ce qui te rend plus clair.',
+        'Avance doucement, mais sans te quitter.',
+        'Fais moins, mais fais-le avec justesse.',
+        'Garde ton attention sur une seule priorité.',
+      ],
+      challenge: [
+        'Ne cherche pas à tout résoudre aujourd’hui.',
+        'Ne laisse pas l’agitation choisir à ta place.',
+        'Ne confonds pas lenteur et blocage.',
+        'Ne complique pas ce qui demande seulement de la présence.',
+        'Ne te disperse pas pour éviter l’essentiel.',
+      ],
+    },
+    ELEMENT_PROFILES[profile.dominantElement],
+    ELEMENT_PROFILES[profile.secondaryElement],
+    MODALITY_PROFILES[profile.dominantModality],
+    PLANET_PROFILES[profile.focusPlanet],
+    {
+      energy: [focusSignProfile.energy],
+      move: ['Réponds à ce que tu sens juste, sans forcer le rythme.'],
+      challenge: [focusSignProfile.challenge],
+    },
+    {
+      energy: aspectToneEnergy[profile.aspectTone],
+      move: [
+        'Transforme ce climat en choix concret.',
+        'Écoute ce que la situation t’apprend avant d’agir.',
+        'Avance avec nuance plutôt qu’avec certitude.',
+      ],
+      challenge: aspectToneChallenge[profile.aspectTone],
+    },
+  ];
+
+  const transitEnergy = transitEnergyText(profile.activeTransit);
+  const transitChallenge = transitChallengeText(profile.activeTransit);
+  if (transitEnergy && transitChallenge) {
+    guidanceSources.push({
+      energy: [transitEnergy],
+      move: ['Réponds par un geste conscient plutôt qu’une réaction.'],
+      challenge: [transitChallenge],
+    });
+  }
+
+  if (profile.focusHouse) {
+    guidanceSources.push({
+      energy: ['un point important demande ton attention'],
+      move: ['Fais un petit geste concret dans ce qui demande ton attention.'],
+      challenge: ['Ne laisse pas un seul sujet absorber toute ton attention.'],
+    });
+  }
+
+  const source = pickDailyValue(guidanceSources, seed, dateKey, 'guidance-source');
+  const index = hashToInt(`${seed}|${dateKey}|guidance-index`);
+
+  return {
+    mood: toShortEnergyText(source.energy[index % source.energy.length]),
+    dailyMove: toShortEnergyText(source.move[index % source.move.length]),
+    dailyChallenge: toShortEnergyText(source.challenge[index % source.challenge.length]),
+  };
+};
+
 // Helpers pour ajouter l'article défini devant les noms de planètes en français
 const withArticle = (name: string): string => {
   if (name === 'Soleil') return 'le Soleil';
@@ -309,16 +864,20 @@ const withArticleCap = (name: string): string => {
 
 export function generateCoStarAnalysis(
   chartData: any,
-  name: string
+  name: string,
+  dateKeyOverride?: string
 ): CoStarAnalysis {
   const planets = chartData.planetPositions;
+  const personalizationSeed = getCoStarPersonalizationSeed(chartData, name);
 
-  // Calculer les transits du jour (positions planétaires actuelles) en aspect avec le thème natal
-  const transitAspects = calculateTransitAspects(planets);
-  
-  // Déterminer la graine basée sur la date du jour (même pour toute la journée)
-  const today = new Date();
-  const dateKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  // Fixer les calculs à midi local pour garantir le même résultat pendant toute la journée.
+  const today = dateKeyOverride ? getDateFromLocalDateKey(dateKeyOverride) : new Date();
+  const dateKey = dateKeyOverride ?? getLocalDateKey(today);
+  const transitDate = getDateFromLocalDateKey(dateKey);
+  transitDate.setHours(12, 0, 0, 0);
+
+  // Calculer les transits du jour en aspect avec le thème natal.
+  const transitAspects = calculateTransitAspects(planets, transitDate);
   
   // Déterminer les signes clés
   const sunSign = planets.sun?.sign || 'Bélier';
@@ -326,97 +885,11 @@ export function generateCoStarAnalysis(
   const venusSign = planets.venus?.sign || 'Gémeaux';
   const marsSign = planets.mars?.sign || 'Cancer';
   
-  // Générer le mood basé sur les transits du jour — unique pour chaque jour de l'année
-  const generateMood = (): string => {
-    const signMoods: string[] = [
-      // Bélier
-      'Impulsif et vif', 'Direct et sans filtre', 'Énergique et spontané', 'Ardent et décidé', 'Courageux et frontal',
-      // Taureau
-      'Ancré et sensuel', 'Patient et réceptif', 'Calme et déterminé', 'Stable et indulgent', 'Solide et persistant',
-      // Gémeaux
-      'Léger et curieux', 'Communicatif et agile', 'Vif et insaisissable', 'Espiègle et alerte', 'Changeant et bavard',
-      // Cancer
-      'Émotionnel et intuitif', 'Nostalgique et bienveillant', 'Protecteur et poreux', 'Doux et mémoriel', 'Attaché et sensible',
-      // Lion
-      'Expressif et lumineux', 'Généreux et chaleureux', 'Créatif et rayonnant', 'Fier et magnanime', 'Flamboyant et loyal',
-      // Vierge
-      'Analytique et attentif', 'Discret et précis', 'Ordonné et sobre', 'Rigoureux et serviable', 'Méticuleux et modeste',
-      // Balance
-      'Harmonieux et doux', 'Élégant et indécis', 'Diplomate et raffiné', 'Gracieux et juste', 'Esthète et pacifique',
-      // Scorpion
-      'Intense et perceptif', 'Profond et magnétique', 'Silencieux et transformateur', 'Acéré et clairvoyant', 'Tenace et secret',
-      // Sagittaire
-      'Optimiste et libre', 'Expansif et direct', 'Philosophe et enthousiaste', 'Idéaliste et nomade', 'Audacieux et décomplexé',
-      // Capricorne
-      'Structuré et patient', 'Sobre et ambitieux', 'Discipliné et prévoyant', 'Méthodique et austère', 'Solide et accompli',
-      // Verseau
-      'Décalé et électrique', 'Original et libre', 'Visionnaire et détaché', 'Rebelle et idéaliste', 'Frondeur et brillant',
-      // Poissons
-      'Rêveur et poreux', 'Intuitif et sensible', 'Mystique et compassionnel', 'Mélancolique et inspiré', 'Doux et insaisissable',
-    ];
-
-    const tonalities: string[] = [
-      // Fluidité / harmonie
-      'tout s\'aligne sans effort',
-      'les choses se mettent en place',
-      'un courant favorable se dessine',
-      'l\'élan vient naturellement',
-      'quelque chose se dénoue',
-      // Ouverture / réceptivité
-      'une fenêtre s\'ouvre',
-      'ce qui semblait lointain se rapproche',
-      'les signaux sont là',
-      'l\'intuition guide les pas',
-      'quelque chose vaut la peine d\'être remarqué',
-      // Intensité / concentration
-      'l\'intensité est palpable',
-      'tout prend relief et profondeur',
-      'rien ne passe inaperçu',
-      'la concentration atteint son pic',
-      'l\'énergie est dense et chargée',
-      // Tension / croissance
-      'la pression est là, mais utile',
-      'les résistances poussent à avancer',
-      'un inconfort productif se fait sentir',
-      'quelque chose demande à être dépassé',
-      'le mouvement est forcé, et c\'est bien',
-      // Équilibre / choix
-      'une décision attend dans l\'ombre',
-      'deux directions se font face',
-      'l\'équilibre reste à trouver',
-      'ce qui résiste mérite d\'être regardé',
-      'un choix silencieux se pose',
-    ];
-
-    // Construire toutes les combinaisons (60 × 25 = 1500)
-    const all: string[] = [];
-    for (const base of signMoods) {
-      for (const tone of tonalities) {
-        all.push(`${base} — ${tone}`);
-      }
-    }
-
-    // Mélange déterministe basé sur l'année → même ordre toute l'année
-    const year = new Date().getFullYear().toString();
-    const shuffled = [...all];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(seededRandom(year + 'shuffle' + i) * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-
-    // Offset personnel basé sur les signes natals de l'utilisateur → chaque utilisateur a son propre parcours
-    const userSeed = `${sunSign}|${moonSign}|${marsSign}`;
-    const userHash = Math.abs([...userSeed].reduce((h, c) => Math.imul(h ^ c.charCodeAt(0), 0x9e3779b1), 0x12345678));
-    const personalOffset = userHash % shuffled.length;
-
-    // Indexer par jour de l'année + offset personnel → unique chaque jour ET propre à chaque utilisateur
-    const now = new Date();
-    const start = new Date(now.getFullYear(), 0, 0);
-    const dayOfYear = Math.floor((now.getTime() - start.getTime()) / 86400000);
-    return shuffled[(dayOfYear + personalOffset) % shuffled.length];
-  };
-
-  const mood = generateMood();
+  const coStarProfile = getCoStarProfile(chartData, transitAspects, dateKey, personalizationSeed);
+  const dailyGuidance = buildPersonalizedGuidance(coStarProfile, dateKey, personalizationSeed);
+  const mood = dailyGuidance.mood;
+  const dailyMove = dailyGuidance.dailyMove;
+  const dailyChallenge = dailyGuidance.dailyChallenge;
 
   // Générer la journée en un coup d'œil basé sur les aspects planétaires réels de l'utilisateur
   const generateDayAtGlance = (): string => {
@@ -695,6 +1168,13 @@ export function generateCoStarAnalysis(
     };
     const p1s = (p1: string, _s: string) => `${artDef(p1, true)}${p1}`;
     const p1m = (p1: string, _s: string) => `${artDef(p1, false)}${p1}`;
+    const polishDayAtGlanceLine = (text: string): string =>
+      text
+        .replace(/\s+—\s+/g, ', ')
+        .replace(/\s{2,}/g, ' ')
+        .replace(/\s+([,.;!?])/g, '$1')
+        .replace(/\s*:\s*/g, ' : ')
+        .trim();
     type TplFn = (p1: string, s: string, p2: string) => string;
     const templates: Record<string, TplFn[]> = {
       Trigone: [
@@ -875,11 +1355,8 @@ export function generateCoStarAnalysis(
 
     if (pool.length === 0) {
       return [
-        `Le cosmos est silencieux aujourd'hui. Profites-en pour souffler.`,
-        `Aucun transit majeur à signaler — c'est l'Univers qui te dit de lever le pied.`,
-        `Journée cosmiquement calme. Idéal pour procrastiner avec bonne conscience.`,
-        `Les planètes font une pause. Toi aussi, vas-y.`,
-      ];
+        `Aucun transit personnel ne domine aujourd’hui. Avance à ton rythme et laisse de la place à l’imprévu.`,
+      ].map(polishDayAtGlanceLine);
     }
 
     const usedTemplateIndices: Record<string, Set<number>> = {};
@@ -890,7 +1367,9 @@ export function generateCoStarAnalysis(
       const type = aspect.type as string;
       const sign = aspect.transitSign || '';
       const tpls = templates[type];
-      if (!tpls) return `${p1s(p1, sign)} forme un aspect avec ${nr(p2).a} ${p2} ${nr(p2).adj}. Une énergie particulière circule aujourd'hui entre ces deux forces.`;
+      if (!tpls) {
+        return polishDayAtGlanceLine(`${p1s(p1, sign)} forme un aspect avec ${nr(p2).a} ${p2} ${nr(p2).adj}. Ce transit attire ton attention sur un réglage concret à faire aujourd’hui.`);
+      }
       if (!usedTemplateIndices[type]) usedTemplateIndices[type] = new Set();
       let idx = Math.floor(seededRandom(seed + type + p1 + p2 + 'tpl') * tpls.length);
       let attempts = 0;
@@ -899,7 +1378,313 @@ export function generateCoStarAnalysis(
         attempts++;
       }
       usedTemplateIndices[type].add(idx);
-      return tpls[idx](p1, sign, p2);
+      return polishDayAtGlanceLine(tpls[idx](p1, sign, p2));
+    };
+
+    const planetFocus: Record<string, string> = {
+      sun: 'ton affirmation personnelle',
+      moon: 'ton équilibre émotionnel',
+      mercury: 'ta manière de penser',
+      venus: 'ta vie affective',
+      mars: 'ta capacité d’agir',
+      jupiter: 'ta confiance en l’avenir',
+      saturn: 'ton sens des responsabilités',
+      uranus: 'ton besoin de liberté',
+      neptune: 'ton intuition',
+      pluto: 'ta capacité de transformation',
+    };
+
+    const practicalMove: Record<string, string> = {
+      sun: 'faire un choix qui te ressemble',
+      moon: 'nommer ce que tu ressens',
+      mercury: 'clarifier un message ou une décision',
+      venus: 'exprimer clairement tes envies',
+      mars: 'agir de façon précise',
+      jupiter: 'oser un pas plus ambitieux',
+      saturn: 'poser une limite durable',
+      uranus: 'essayer une autre méthode',
+      neptune: 'écouter ton intuition sans oublier les faits',
+      pluto: 'laisser évoluer ce qui doit changer',
+    };
+
+    type ReadingTemplate = (transitFocus: string, natalFocus: string, move: string) => string;
+    const clearReadings: Record<string, ReadingTemplate[]> = {
+      Trigone: [
+        (transitFocus, natalFocus, move) => `Un accord se crée entre ${transitFocus} et ${natalFocus}. Profite de cet élan pour ${move}.`,
+        (transitFocus, natalFocus, move) => `Tout circule mieux entre ${transitFocus} et ${natalFocus}. Profite de cette fluidité pour ${move}.`,
+        (transitFocus, natalFocus, move) => `Aujourd’hui, ${transitFocus} et ${natalFocus} avancent naturellement ensemble. Appuie-toi sur cette fluidité pour ${move}.`,
+        (transitFocus, natalFocus, move) => `Le climat favorise à la fois ${transitFocus} et ${natalFocus}. Utilise cette aisance pour ${move}.`,
+      ],
+      Sextile: [
+        (transitFocus, natalFocus, move) => `Une ouverture relie ${transitFocus} à ${natalFocus}. Un premier pas suffit pour ${move}.`,
+        (transitFocus, natalFocus, move) => `Un soutien se crée entre ${transitFocus} et ${natalFocus}. Saisis l’occasion pour ${move}.`,
+        (transitFocus, natalFocus, move) => `Un lien favorable rapproche ${transitFocus} de ${natalFocus}. Une initiative simple peut suffire pour ${move}.`,
+        (transitFocus, natalFocus, move) => `Une possibilité se dessine entre ${transitFocus} et ${natalFocus}. À toi de l’activer : ${move}.`,
+      ],
+      Conjonction: [
+        (transitFocus, natalFocus, move) => `La rencontre entre ${transitFocus} et ${natalFocus} intensifie la journée. Canalise cet élan pour ${move}.`,
+        (transitFocus, natalFocus, move) => `Aujourd’hui, ${transitFocus} et ${natalFocus} se renforcent. Concentre-toi sur une chose : ${move}.`,
+        (transitFocus, natalFocus, move) => `Aujourd’hui, ${transitFocus} se mêle étroitement à ${natalFocus}. Donne une direction claire à cette intensité : ${move}.`,
+        (transitFocus, natalFocus, move) => `L’accent se pose sur ${transitFocus} autant que sur ${natalFocus}. Évite la dispersion et cherche à ${move}.`,
+      ],
+      Carré: [
+        (transitFocus, natalFocus, move) => `Une friction oppose ${transitFocus} à ${natalFocus}. Ralentis, puis commence par ${move}.`,
+        (transitFocus, natalFocus, move) => `Un décalage apparaît entre ${transitFocus} et ${natalFocus}. Ajuste-toi en commençant par ${move}.`,
+        (transitFocus, natalFocus, move) => `Aujourd’hui, ${transitFocus} et ${natalFocus} tirent dans des directions différentes. Transforme cette tension en cherchant à ${move}.`,
+        (transitFocus, natalFocus, move) => `Le contact entre ${transitFocus} et ${natalFocus} manque de souplesse. Ne force pas ; commence par ${move}.`,
+      ],
+      Opposition: [
+        (transitFocus, natalFocus, move) => `Tu peux hésiter entre ${transitFocus} et ${natalFocus}. Prends du recul, puis cherche à ${move}.`,
+        (transitFocus, natalFocus, move) => `Un tiraillement oppose ${transitFocus} à ${natalFocus}. Écoute les deux avant d’agir.`,
+        (transitFocus, natalFocus) => `Aujourd’hui, ${transitFocus} demande autant de place que ${natalFocus}. Cherche un équilibre avant d’agir.`,
+        (transitFocus, natalFocus, move) => `Deux élans se répondent sans encore s’accorder : ${transitFocus} et ${natalFocus}. Accueille cette nuance avant de choisir.`,
+      ],
+    };
+
+    const samePlanetReadings: Record<string, ReadingTemplate[]> = {
+      Trigone: [
+        (_transitFocus, natalFocus, move) => `Cette harmonie renforce ${natalFocus}. Appuie-toi sur cette cohérence pour ${move}.`,
+        (_transitFocus, natalFocus, move) => `Ici, ${natalFocus} gagne en fluidité. Profite de ce mouvement pour ${move}.`,
+      ],
+      Sextile: [
+        (_transitFocus, natalFocus, move) => `Une ouverture stimule ${natalFocus}. Saisis-la pour ${move}.`,
+        (_transitFocus, natalFocus, move) => `Aujourd’hui, ${natalFocus} devient plus facile à mobiliser. Un premier pas suffit pour ${move}.`,
+      ],
+      Conjonction: [
+        (_transitFocus, natalFocus, move) => `Toute l’attention se concentre sur ${natalFocus}. Canalise cet élan pour ${move}.`,
+        (_transitFocus, natalFocus, move) => `Aujourd’hui, ${natalFocus} s’intensifie. Garde un seul cap : ${move}.`,
+      ],
+      Carré: [
+        (_transitFocus, natalFocus, move) => `Une tension traverse ${natalFocus}. Ralentis, puis commence par ${move}.`,
+        (_transitFocus, natalFocus, move) => `Aujourd’hui, ${natalFocus} demande un ajustement. Évite de forcer et cherche à ${move}.`,
+      ],
+      Opposition: [
+        (_transitFocus, natalFocus) => `Deux besoins contraires traversent ${natalFocus}. Prends du recul avant d’agir.`,
+        (_transitFocus, natalFocus) => `Aujourd’hui, ${natalFocus} oscille entre deux directions. Laisse la tension retomber avant de choisir.`,
+      ],
+    };
+
+    const usedReadingIndices: Record<string, Set<number>> = {};
+    const usedTitleIndices: Record<string, Set<number>> = {};
+
+    const pickUnusedIndex = (preferred: number, count: number, used: Set<number>): number => {
+      let index = preferred % count;
+      let attempts = 0;
+      while (used.has(index) && attempts < count) {
+        index = (index + 1) % count;
+        attempts++;
+      }
+      used.add(index);
+      return index;
+    };
+
+    const improveDayAtGlanceLine = (_original: string, aspect: any): string => {
+      const p1Key = aspect.planet1 as string;
+      const p2Key = aspect.planet2 as string;
+      const p1 = tP(p1Key);
+      const p2 = tP(p2Key);
+      const type = aspect.type as string;
+      const sign = aspect.transitSign || '';
+      const signLabel = sign ? ` en ${sign}` : '';
+      const aspectArticle = type === 'Conjonction' || type === 'Opposition' ? 'une' : 'un';
+      const aspectLabel = type.toLocaleLowerCase('fr-FR');
+      const natalPlanet = `${nr(p2).a} ${p2} ${nr(p2).adj}`;
+      const titleTemplates = [
+        `${p1s(p1, sign)}${signLabel} forme ${aspectArticle} ${aspectLabel} avec ${natalPlanet}.`,
+        `${type} entre ${p1m(p1, sign)}${signLabel} et ${natalPlanet}.`,
+        `${p1s(p1, sign)}${signLabel} est en ${aspectLabel} avec ${natalPlanet}.`,
+      ];
+      const titleKey = `${type}|title`;
+      if (!usedTitleIndices[titleKey]) usedTitleIndices[titleKey] = new Set();
+      const preferredTitleIndex = getDateOrdinal(dateKey)
+        + hashToInt(`${personalizationSeed}|${p1Key}|${p2Key}|${type}|title`);
+      const titleIndex = pickUnusedIndex(preferredTitleIndex, titleTemplates.length, usedTitleIndices[titleKey]);
+      const generatedTitle = titleTemplates[titleIndex];
+      const title = generatedTitle;
+      const compactFocus: Record<string, string> = {
+        sun: 'ton cap',
+        moon: 'ton équilibre émotionnel',
+        mercury: 'ta communication',
+        venus: 'tes relations',
+        mars: 'ta façon d’agir',
+        jupiter: 'ta confiance',
+        saturn: 'tes limites',
+        uranus: 'ta liberté',
+        neptune: 'ton intuition',
+        pluto: 'ce que tu dois transformer',
+      };
+      const compactMove: Record<string, string> = {
+        sun: 'clarifie ton choix',
+        moon: 'nomme ce que tu ressens',
+        mercury: 'reformule avant de répondre',
+        venus: 'dis clairement ce que tu veux',
+        mars: 'choisis une action précise',
+        jupiter: 'ouvre une option plus large',
+        saturn: 'pose une limite nette',
+        uranus: 'essaie une autre méthode',
+        neptune: 'vérifie les faits',
+        pluto: 'lâche ce qui doit changer',
+      };
+      const transitFocus = compactFocus[p1Key] || planetFocus[p1Key] || 'ton élan';
+      const natalFocus = compactFocus[p2Key] || planetFocus[p2Key] || 'ton équilibre';
+      const move = compactMove[p2Key] || practicalMove[p2Key] || 'choisis simple';
+      const transitTextures: Record<string, string[]> = {
+        sun: [
+          'Ton cap devient plus net',
+          'Tu vois mieux ce que tu veux défendre',
+          'Une décision personnelle demande plus de clarté',
+        ],
+        moon: [
+          'Ton humeur met un besoin en évidence',
+          'Ce que tu ressens prend plus de place',
+          'Une réaction spontanée révèle ce qui compte vraiment',
+        ],
+        mercury: [
+          'Une idée change l’angle de la situation',
+          'Tes mots demandent plus de précision',
+          'Une conversation peut débloquer un malentendu',
+        ],
+        venus: [
+          'Un désir devient plus lisible',
+          'Une relation demande plus de nuance',
+          'Ce que tu apprécies vraiment devient plus évident',
+        ],
+        mars: [
+          'Ton énergie monte',
+          'Tu as envie d’agir vite',
+          'Ton élan a besoin d’une direction claire',
+        ],
+        jupiter: [
+          'Tu vois plus large',
+          'La confiance revient doucement',
+          'Une possibilité prend plus d’ampleur',
+        ],
+        saturn: [
+          'Une limite devient utile',
+          'Le réel te demande d’être plus simple',
+          'Une responsabilité te ramène à l’essentiel',
+        ],
+        uranus: [
+          'Tu as besoin d’air',
+          'Une autre méthode devient possible',
+          'L’imprévu ouvre une porte praticable',
+        ],
+        neptune: [
+          'Ton intuition parle plus fort',
+          'Un flou demande à être vérifié avec douceur',
+          'Un ressenti important remonte',
+        ],
+        pluto: [
+          'Un vieux réflexe remonte',
+          'Une vérité intérieure insiste',
+          'Un changement intérieur devient difficile à ignorer',
+        ],
+      };
+      const pickTexture = (options: string[] | undefined, salt: string): string => {
+        const values = options && options.length > 0 ? options : ['ce qui bouge en toi'];
+        const index = Math.floor(seededRandom(`${dateKey}|${personalizationSeed}|${p1Key}|${p2Key}|${type}|${salt}`) * values.length);
+        return values[index];
+      };
+      const transitTexture = pickTexture(transitTextures[p1Key], 'transit-texture');
+      const bridgeEffects: Record<string, string[]> = {
+        sun: [
+          'clarifie ce que tu veux vraiment décider',
+          'choisis une position plus nette',
+          'évite de jouer un rôle qui ne te ressemble pas',
+        ],
+        moon: [
+          'distingue ce que tu ressens de ce que tu dois faire',
+          'repère ce dont tu as besoin pour te sentir stable',
+          'nomme le besoin avant de réagir',
+        ],
+        mercury: [
+          'clarifie ce qui est un fait, un ressenti et une interprétation',
+          'reformule avant de répondre',
+          'choisis des mots simples pour éviter le malentendu',
+        ],
+        venus: [
+          'dis ce que tu attends sans tourner autour',
+          'mets des mots nets sur ce que tu veux',
+          'évite de deviner à la place des autres',
+        ],
+        mars: [
+          'choisis une action précise plutôt qu’une réaction rapide',
+          'dirige ton énergie au lieu de la disperser',
+          'avance sans confondre vitesse et efficacité',
+        ],
+        jupiter: [
+          'élargis l’option sans perdre le concret',
+          'fais confiance à l’ouverture, mais garde une mesure',
+          'vois plus grand sans promettre trop vite',
+        ],
+        saturn: [
+          'pose un cadre clair avant d’avancer',
+          'choisis une limite qui protège ton énergie',
+          'fais la chose sérieuse sans te punir avec elle',
+        ],
+        uranus: [
+          'essaie une méthode différente',
+          'sors d’un automatisme qui te fatigue',
+          'garde ta liberté sans tout renverser',
+        ],
+        neptune: [
+          'sépare intuition, peur et projection',
+          'vérifie les faits avant d’y croire trop fort',
+          'accorde-toi de la douceur sans abandonner la lucidité',
+        ],
+        pluto: [
+          'lâche un vieux réflexe qui te coûte trop',
+          'regarde ce qui doit vraiment changer',
+          'ne reprends pas le contrôle par habitude',
+        ],
+      };
+      const bridgeEffect = pickTexture(bridgeEffects[p2Key], 'bridge-effect');
+      const aspectBridge = p1Key === p2Key
+        ? `${transitTexture} : ${bridgeEffect}`
+        : `${transitTexture} ; ${bridgeEffect}`;
+      const readings = (p1Key === p2Key ? samePlanetReadings[type] : clearReadings[type]) || [
+        (left: string, right: string, action: string) => `Cette configuration met en relation ${left} et ${right}. Observe ce qui se présente, puis commence par ${action}.`,
+      ];
+      const readingKey = `${type}|${p1Key === p2Key ? 'same' : 'mixed'}`;
+      if (!usedReadingIndices[readingKey]) usedReadingIndices[readingKey] = new Set();
+      const preferredReadingIndex = (
+        getDateOrdinal(dateKey)
+        + hashToInt(`${personalizationSeed}|${p1Key}|${p2Key}|${type}|clear-reading`)
+      ) % readings.length;
+      const readingIndex = pickUnusedIndex(preferredReadingIndex, readings.length, usedReadingIndices[readingKey]);
+
+      const compactReadings: Record<string, string[]> = {
+        Trigone: [
+          `${aspectBridge}. Appuie-toi sur cette facilité pour ${move}, sans en faire un dossier.`,
+          `${transitFocus} et ${natalFocus} coopèrent. Choisis le geste qui simplifie la journée : ${move}.`,
+          `Le soutien est déjà là. Avance sans surjouer : ${move}. C’est assez bien pour aujourd’hui.`,
+        ],
+        Sextile: [
+          `${aspectBridge}. L’occasion est concrète : fais le premier pas, même petit.`,
+          `Une option devient praticable. Teste-la sans tout reconfigurer : ${move}.`,
+          `${transitTexture}. Avant de négocier avec tes doutes, fais juste le premier geste : ${move}.`,
+        ],
+        Conjonction: [
+          `${aspectBridge}. L’intensité est là : choisis une priorité, puis ${move}.`,
+          `Une priorité ressort plus fort que les autres. Donne-lui une direction simple : ${move}.`,
+          `${transitTexture}. Transforme l’élan en geste net : ${move}. Pas besoin de faire monter le volume.`,
+        ],
+        Carré: [
+          `${aspectBridge}. Il y a un frottement : ralentis, repère le vrai point dur, puis ${move}.`,
+          `Une résistance apparaît. Ne force pas : ajuste l’approche, puis ${move}.`,
+          `${transitTexture}. Réponds au sujet réel, pas au pic d’agacement : ${move}.`,
+        ],
+        Opposition: [
+          `${aspectBridge}. Deux besoins se font face : écoute les deux avant de choisir.`,
+          `${transitFocus} et ${natalFocus} demandent chacun leur espace. Cherche le compromis utile, pas le scénario parfait : ${move}.`,
+          `Un ajustement est nécessaire. Avant de répondre, respire ; ton ego survivra à vingt secondes de silence.`,
+        ],
+      };
+      const compactOptions = compactReadings[type] || [
+        `${transitFocus} active ${natalFocus}. ${move}.`,
+      ];
+
+      return polishDayAtGlanceLine(`${title} ${compactOptions[readingIndex % compactOptions.length]}`);
     };
 
     // Ordre de vitesse des planètes en transit : Lune > Mercure > Vénus > Soleil > Mars > Jupiter > Saturne...
@@ -910,18 +1695,32 @@ export function generateCoStarAnalysis(
       return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
     });
 
-    // Sélectionner jusqu'à 4 aspects distincts, en prioritisant les planètes les plus rapides
+    // Sélectionner jusqu'à 3 aspects en variant d'abord les planètes de transit et natales.
     const selected: any[] = [];
-    const usedPlanets = new Set<string>();
+    const usedTransitPlanets = new Set<string>();
+    const usedNatalPlanets = new Set<string>();
+    const usedPlanetPairs = new Set<string>();
+    const getPlanetPair = (aspect: any) => [aspect.planet1, aspect.planet2].sort().join('|');
+
     for (const aspect of sortedPool) {
-      if (!usedPlanets.has(aspect.planet1)) {
-        usedPlanets.add(aspect.planet1);
+      const pair = getPlanetPair(aspect);
+      if (
+        !usedTransitPlanets.has(aspect.planet1)
+        && !usedNatalPlanets.has(aspect.planet2)
+        && !usedPlanetPairs.has(pair)
+      ) {
+        usedTransitPlanets.add(aspect.planet1);
+        usedNatalPlanets.add(aspect.planet2);
+        usedPlanetPairs.add(pair);
         selected.push(aspect);
       }
-      if (selected.length >= 4) break;
+      if (selected.length >= 3) break;
     }
 
-    return selected.map((aspect, i) => buildHumorLine(aspect, dateKey + 'hline' + i));
+    return selected.map((aspect, i) => {
+      const original = buildHumorLine(aspect, dateKey + 'hline' + i);
+      return improveDayAtGlanceLine(original, aspect);
+    });
   };
 
   const dayAtGlance = generateHumorousAdvice().join('||');
@@ -1142,8 +1941,11 @@ export function generateCoStarAnalysis(
 
   return {
     mood,
+    dailyMove,
+    dailyChallenge,
     dayAtGlance,
     advice,
+    personalizationSeed,
     pillars,
     favorableAspects: allAspects,
   };

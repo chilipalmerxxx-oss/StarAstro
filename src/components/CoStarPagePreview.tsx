@@ -34,8 +34,8 @@ export default function CoStarPagePreview({ onClosePreview }: CoStarPagePreviewP
         <section className="costar-preview-hero" aria-label="Éclipse astrale">
           <img
             className="costar-preview-sun-image"
-            src="/costar-sun.png"
-            alt="Éclipse solaire"
+            src="/costar-solar-premium-background.png"
+            alt="Ciel étoilé avec constellations"
           />
         </section>
 

@@ -1,5 +1,7 @@
 ﻿import { useEffect, useRef, useState } from 'react';
 
+import type { CSSProperties } from 'react';
+
 interface LandingPageProps {
   onGetStarted: () => void;
   onOpenVoid?: () => void;
@@ -16,7 +18,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
     setIsRevealing(true);
     window.setTimeout(() => {
       onGetStarted();
-    }, 180);
+    }, 920);
   };
 
   useEffect(() => {
@@ -25,7 +27,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
     const cx = canvas.getContext('2d');
     if (!cx) return;
 
-    const resize = () => { canvas.width = innerWidth; canvas.height = innerHeight; };
+    const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
     resize();
     window.addEventListener('resize', resize);
 
@@ -165,7 +167,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
     let raf: number;
     const draw = () => {
       const W = canvas.width, H = canvas.height;
-      cx.clearRect(0, 0, W, H); cx.fillStyle = '#000000'; cx.fillRect(0, 0, W, H);
+      cx.clearRect(0, 0, W, H); cx.fillStyle = '#0d111b'; cx.fillRect(0, 0, W, H);
       const t = Date.now() * 0.001, R = Math.min(W * 0.135, H * 0.135, 112), px = W / 2, py = H / 2 - Math.min(H * 0.035, 24);
       const pulse = 0.72 + 0.28 * Math.sin(t * 1.35), slowPulse = 0.80 + 0.20 * Math.sin(t * 0.55);
 
@@ -263,25 +265,53 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
   }, []);
 
   return (
-    <div className={`fixed inset-0 w-full h-full ${isRevealing ? 'ns-shell-reveal' : ''}`} style={{ background: '#000000' }}>
+    <div className={`fixed inset-0 w-full h-full ${isRevealing ? 'ns-shell-reveal' : ''}`} style={{ background: '#0d111b' }}>
       <style>{`
         .ns-shell-reveal {
-          animation: ns-shell-transition 320ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+          animation: ns-shell-transition 920ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
         }
         @keyframes ns-shell-transition {
-          from { opacity: 1; transform: scale(1); filter: blur(0px); }
-          to { opacity: 0; transform: scale(1.012); filter: blur(1.6px); }
+          0% { opacity: 1; transform: scale(1); filter: blur(0px) brightness(1); }
+          68% { opacity: 1; transform: scale(1.012); filter: blur(0.2px) brightness(1.18); }
+          100% { opacity: 0; transform: scale(1.035); filter: blur(2px) brightness(1.55); }
+        }
+        @keyframes ns-canvas-open {
+          0% { transform: scale(1); filter: brightness(1) saturate(1); }
+          38% { transform: scale(1.012); filter: brightness(1.35) saturate(1.25); }
+          72% { transform: scale(1.03); filter: brightness(1.9) saturate(1.45); }
+          100% { transform: scale(1.055); filter: brightness(2.25) saturate(1.6) blur(1.2px); }
+        }
+        @keyframes ns-portal-iris {
+          0% { opacity: 0; transform: translate(-50%, -50%) scale(0.2); }
+          18% { opacity: 0.95; transform: translate(-50%, -50%) scale(0.62); }
+          58% { opacity: 0.9; transform: translate(-50%, -50%) scale(3.2); }
+          100% { opacity: 0; transform: translate(-50%, -50%) scale(7.5); }
+        }
+        @keyframes ns-portal-flash {
+          0% { opacity: 0; }
+          22% { opacity: 0; }
+          46% { opacity: 0.62; }
+          100% { opacity: 0; }
+        }
+        @keyframes ns-beam-idle {
+          0%, 100% { opacity: 0.16; transform: translateX(-50%) scaleY(0.88); }
+          50% { opacity: 0.34; transform: translateX(-50%) scaleY(1); }
+        }
+        @keyframes ns-beam-reveal {
+          0% { opacity: 0.18; transform: translateX(-50%) scaleY(0.35); }
+          34% { opacity: 0.95; transform: translateX(-50%) scaleY(1.08); }
+          100% { opacity: 0; transform: translateX(-50%) scaleY(1.28); }
         }
         @keyframes ns-breathe {
           0%, 100% {
-            box-shadow: 0 0 10px rgba(207,196,160,0.07), 0 0 28px rgba(207,196,160,0.03), inset 0 0 8px rgba(207,196,160,0.02);
-            border-color: rgba(225,205,147,0.56);
+            box-shadow: 0 0 12px rgba(242,210,140,0.12), 0 0 34px rgba(255,184,86,0.05), inset 0 0 10px rgba(255,232,171,0.04);
+            border-color: rgba(236,214,158,0.62);
             transform: scale(1);
           }
           50% {
-            box-shadow: 0 0 30px rgba(207,196,160,0.24), 0 0 70px rgba(207,196,160,0.1), inset 0 0 18px rgba(207,196,160,0.07);
-            border-color: rgba(236,214,158,0.86);
-            transform: scale(1.02);
+            box-shadow: 0 0 34px rgba(242,210,140,0.30), 0 0 78px rgba(255,184,86,0.14), inset 0 0 22px rgba(255,232,171,0.08);
+            border-color: rgba(255,231,180,0.92);
+            transform: scale(1.018);
           }
         }
         @keyframes ns-reveal {
@@ -303,18 +333,188 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
         .ns-canvas {
           animation: ns-reveal 1.6s cubic-bezier(0.33,0,0.2,1) both;
         }
+        .ns-shell-reveal .ns-canvas {
+          animation: ns-canvas-open 920ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .ns-portal-iris {
+          position: fixed;
+          left: 50%;
+          top: calc(50% - min(3.5vh, 24px));
+          width: min(34vw, 220px);
+          aspect-ratio: 1;
+          border-radius: 999px;
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(0.2);
+          pointer-events: none;
+          z-index: 12;
+          mix-blend-mode: screen;
+          background:
+            radial-gradient(circle, rgba(255,255,236,0.95) 0%, rgba(255,231,160,0.72) 16%, rgba(255,151,42,0.34) 38%, rgba(255,112,18,0.12) 58%, transparent 76%);
+          box-shadow: 0 0 46px rgba(255,210,120,0.42), 0 0 120px rgba(255,128,32,0.26);
+        }
+        .ns-shell-reveal .ns-portal-iris {
+          animation: ns-portal-iris 900ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .ns-portal-flash {
+          position: fixed;
+          inset: 0;
+          opacity: 0;
+          pointer-events: none;
+          z-index: 13;
+          mix-blend-mode: screen;
+          background:
+            radial-gradient(circle at 50% calc(50% - min(3.5vh, 24px)), rgba(255,248,220,0.78) 0%, rgba(255,203,116,0.26) 22%, rgba(255,141,50,0.09) 42%, transparent 68%);
+        }
+        .ns-shell-reveal .ns-portal-flash {
+          animation: ns-portal-flash 920ms ease-out forwards;
+        }
+        .ns-portal-beam {
+          position: fixed;
+          left: 50%;
+          top: calc(50% + min(9vh, 64px));
+          bottom: 116px;
+          width: 2px;
+          transform: translateX(-50%);
+          transform-origin: top;
+          z-index: 2;
+          pointer-events: none;
+          opacity: 0.18;
+          background: linear-gradient(180deg, transparent 0%, rgba(255,220,150,0.72) 28%, rgba(255,178,82,0.42) 70%, transparent 100%);
+          box-shadow: 0 0 16px rgba(255,190,92,0.28), 0 0 44px rgba(255,145,48,0.12);
+          animation: ns-beam-idle 4.2s ease-in-out infinite;
+        }
+        .ns-shell-reveal .ns-portal-beam {
+          z-index: 11;
+          animation: ns-beam-reveal 850ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
         .ns-portal-label {
           animation: ns-portal-fadein 1.4s ease both 0.4s;
           opacity: 0;
         }
+        .ns-eclipse-focus {
+          position: fixed;
+          left: 50%;
+          top: calc(50% - min(3.5vh, 24px));
+          z-index: 2;
+          width: min(38vw, 176px);
+          aspect-ratio: 1;
+          transform: translate(-50%, -50%);
+          border-radius: 999px;
+          pointer-events: none;
+          opacity: 0.82;
+          background:
+            radial-gradient(circle at 50% 50%, rgba(255,190,82,0.16) 0%, rgba(255,131,30,0.10) 18%, rgba(8,9,13,0.10) 35%, rgba(8,9,13,0.0) 55%),
+            radial-gradient(circle at 50% 50%, transparent 52%, rgba(255,214,128,0.20) 56%, transparent 64%),
+            radial-gradient(circle at 50% 50%, rgba(255,171,64,0.06) 0%, transparent 72%);
+          box-shadow:
+            0 0 40px rgba(255,190,88,0.16),
+            0 0 112px rgba(255,112,38,0.08),
+            inset 0 0 24px rgba(255,218,136,0.08);
+        }
+        .ns-brand-shell {
+          position: relative;
+          z-index: 1;
+          width: min(96vw, 560px);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 8px;
+        }
+        .ns-brand-shell::before {
+          content: '';
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          width: min(92vw, 700px);
+          height: 150px;
+          transform: translate(-50%, -50%);
+          border-radius: 999px;
+          background: radial-gradient(ellipse at center, rgba(0,0,0,0.54) 0%, rgba(0,0,0,0.28) 42%, transparent 72%);
+          filter: blur(2px);
+          pointer-events: none;
+          z-index: -1;
+        }
+        .ns-brand-rule {
+          width: min(62vw, 380px);
+          height: 1px;
+          background: linear-gradient(90deg, transparent 0%, rgba(255,230,172,0.24) 18%, rgba(255,236,188,0.74) 50%, rgba(255,230,172,0.24) 82%, transparent 100%);
+          box-shadow: 0 0 12px rgba(255,210,128,0.16);
+        }
+        .ns-brand-title {
+          margin: 0;
+          width: 100%;
+          font-family: 'Cormorant Garamond', serif;
+          font-size: clamp(30px, 7.2vw, 54px);
+          font-weight: 300;
+          letter-spacing: clamp(3.2px, 1.8vw, 10px);
+          text-indent: clamp(3.2px, 1.8vw, 10px);
+          line-height: 0.95;
+          text-align: center;
+          text-transform: uppercase;
+          color: rgba(255,255,255,0.10);
+          background: linear-gradient(180deg, rgba(255,255,255,0.38) 0%, rgba(255,244,220,0.10) 45%, rgba(157,178,214,0.05) 100%);
+          -webkit-background-clip: text;
+          background-clip: text;
+          -webkit-text-fill-color: rgba(255,255,255,0.08);
+          -webkit-text-stroke: 0.7px rgba(255,244,220,0.56);
+          text-shadow: 0 0 24px rgba(255,244,220,0.18), 0 0 5px rgba(255,255,255,0.20), 0 1px 3px rgba(0,0,0,0.74);
+          filter: drop-shadow(0 0 10px rgba(190,210,255,0.08));
+        }
+        .ns-brand-title__big {
+          display: inline-block;
+          font-size: 1.18em;
+          line-height: 0.78;
+          transform: translateY(0.03em);
+        }
+        .ns-brand-sigil {
+          position: relative;
+          width: min(44vw, 188px);
+          height: 34px;
+          margin-top: 1px;
+          opacity: 0.78;
+        }
+        .ns-trigram-line {
+          position: absolute;
+          left: 50%;
+          width: 86px;
+          height: 1px;
+          transform: translateX(-50%);
+          background: linear-gradient(90deg, transparent, rgba(255,232,176,0.72), transparent);
+          box-shadow: 0 0 10px rgba(255,210,128,0.16);
+        }
+        .ns-trigram-line--top {
+          top: 9px;
+        }
+        .ns-trigram-line--middle {
+          top: 17px;
+          width: 112px;
+        }
+        .ns-trigram-line--bottom {
+          top: 25px;
+        }
+        .ns-trigram-core {
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          width: 7px;
+          height: 7px;
+          border-radius: 999px;
+          background: #050506;
+          border: 1px solid rgba(255,232,176,0.78);
+          transform: translate(-50%, -50%);
+          box-shadow: 0 0 14px rgba(255,210,128,0.24), inset 0 0 5px rgba(255,232,176,0.08);
+        }
         .ns-btn {
-          min-height: 46px;
-          padding: 15px 44px;
+          min-height: 50px;
+          padding: 16px 52px;
           border-radius: 50px;
-          border: 1px solid rgba(230,210,152,0.72);
-          color: rgba(251,243,218,0.97);
-          background: linear-gradient(180deg, rgba(214,182,98,0.11) 0%, rgba(214,182,98,0.03) 100%);
-          backdrop-filter: blur(3px);
+          border: 1px solid rgba(255,230,176,0.62);
+          color: rgba(255,248,228,0.99);
+          background:
+            radial-gradient(circle at 50% 0%, rgba(255,231,176,0.20) 0%, transparent 52%),
+            linear-gradient(180deg, rgba(255,255,255,0.105) 0%, rgba(255,255,255,0.026) 100%),
+            rgba(5,5,7,0.50);
+          backdrop-filter: blur(10px) saturate(1.18);
           font-family: var(--ns-cta-font, 'Cormorant Garamond', serif);
           font-size: 15px;
           font-weight: var(--ns-cta-weight, 500);
@@ -322,45 +522,51 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
           text-indent: var(--ns-cta-indent, 5.5px);
           text-transform: none;
           cursor: pointer;
-          animation: ns-breathe 2.4s ease-in-out infinite;
+          animation: ns-breathe 4.2s ease-in-out infinite;
           transition: color 0.24s ease, background 0.24s ease, transform 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease, opacity 0.24s ease;
           outline: none;
           position: relative;
           overflow: hidden;
-          box-shadow: inset 0 1px 0 rgba(255,242,196,0.22), inset 0 -1px 0 rgba(80,56,18,0.3), inset 0 0 0 1px rgba(255,232,171,0.16), 0 0 10px rgba(212,175,95,0.12);
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.24), inset 0 -1px 0 rgba(80,56,18,0.24), inset 0 0 0 1px rgba(255,232,171,0.13), 0 14px 34px rgba(0,0,0,0.34), 0 0 22px rgba(212,175,95,0.16);
         }
         .ns-btn::before {
           content: '';
           position: absolute;
           inset: 2px;
           border-radius: 999px;
-          background: radial-gradient(ellipse at center, rgba(235,202,118,0.45) 0%, rgba(235,202,118,0.12) 46%, rgba(235,202,118,0.0) 78%);
-          animation: ns-core-pulse 2.2s ease-in-out infinite;
+          background:
+            linear-gradient(90deg, transparent 0%, rgba(255,248,226,0.20) 50%, transparent 100%),
+            radial-gradient(circle at 50% 0%, rgba(255,236,190,0.20), transparent 58%);
+          opacity: 0.92;
+          animation: ns-core-pulse 4.2s ease-in-out infinite;
           pointer-events: none;
         }
         .ns-btn::after {
           content: '';
           position: absolute;
-          inset: -3px;
+          inset: -4px;
           border-radius: 999px;
-          border: 1px solid rgba(233,206,129,0.32);
-          opacity: 0.5;
+          border: 1px solid rgba(255,223,154,0.24);
+          opacity: 0.55;
           transform: scale(0.98);
           transition: transform 0.24s ease, opacity 0.24s ease, border-color 0.24s ease;
-          animation: ns-ring-pulse 2.2s ease-in-out infinite;
+          animation: ns-ring-pulse 4.2s ease-in-out infinite;
           pointer-events: none;
         }
         .ns-btn:hover {
-          border-color: rgba(241,220,166,0.96);
+          border-color: rgba(255,240,205,0.95);
           color: rgba(255,248,228,0.99);
-          background: linear-gradient(180deg, rgba(223,191,103,0.15) 0%, rgba(223,191,103,0.05) 100%);
-          box-shadow: inset 0 1px 0 rgba(255,247,214,0.24), inset 0 -1px 0 rgba(80,56,18,0.34), 0 0 18px rgba(212,175,95,0.18), 0 0 38px rgba(212,175,95,0.06);
-          transform: translateY(-1px) scale(1.012);
+          background:
+            radial-gradient(circle at 50% 0%, rgba(255,238,198,0.30) 0%, transparent 55%),
+            linear-gradient(180deg, rgba(255,255,255,0.135) 0%, rgba(255,255,255,0.036) 100%),
+            rgba(8,6,5,0.55);
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.26), inset 0 -1px 0 rgba(80,56,18,0.28), 0 16px 36px rgba(0,0,0,0.34), 0 0 32px rgba(255,204,118,0.28), 0 0 78px rgba(255,145,48,0.12);
+          transform: translateY(-2px) scale(1.018);
         }
         .ns-btn:hover::after {
-          transform: scale(1.03);
-          opacity: 0.74;
-          border-color: rgba(243,221,168,0.7);
+          transform: scale(1.05);
+          opacity: 0.9;
+          border-color: rgba(255,232,176,0.9);
         }
         .ns-btn:active {
           transform: scale(0.98);
@@ -392,74 +598,86 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
           .ns-btn {
             letter-spacing: var(--ns-cta-mobile-spacing, 4.2px);
             text-indent: var(--ns-cta-mobile-indent, 4.2px);
+            padding-left: 34px;
+            padding-right: 34px;
+          }
+          .ns-portal-beam {
+            bottom: 106px;
+          }
+          .ns-brand-shell {
+            gap: 7px;
+          }
+          .ns-brand-rule {
+            width: min(72vw, 320px);
+          }
+          .ns-brand-sigil {
+            width: min(48vw, 168px);
+          }
+        }
+        @media (max-width: 390px) {
+          .ns-brand-title {
+            font-size: clamp(28px, 7vw, 32px);
+            letter-spacing: 3px;
+            text-indent: 3px;
+          }
+          .ns-btn {
+            width: min(86vw, 330px);
+            padding-left: 22px;
+            padding-right: 22px;
+          }
+          .ns-eclipse-focus {
+            width: min(44vw, 154px);
+          }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .ns-shell-reveal,
+          .ns-canvas,
+          .ns-shell-reveal .ns-canvas,
+          .ns-shell-reveal .ns-portal-iris,
+          .ns-shell-reveal .ns-portal-flash,
+          .ns-portal-beam,
+          .ns-shell-reveal .ns-portal-beam,
+          .ns-portal-label,
+          .ns-btn,
+          .ns-btn::before,
+          .ns-btn::after {
+            animation: none !important;
+            transition-duration: 80ms !important;
           }
         }
       `}</style>
-      <canvas ref={canvasRef} className="fixed inset-0 w-full h-full ns-canvas" />
+      <canvas ref={canvasRef} className="fixed inset-0 w-full h-full ns-canvas" aria-hidden="true" />
+      <div className="ns-eclipse-focus" aria-hidden="true" />
+      <div className="ns-portal-beam" aria-hidden />
+      <div className="ns-portal-iris" aria-hidden />
+      <div className="ns-portal-flash" aria-hidden />
       <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 1, backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`, opacity: 0.035 }} />
 
-      <div className="fixed left-0 right-0 z-10 flex flex-col items-center gap-2" style={{ top: 0, padding: '10px 24px 22px', background: 'linear-gradient(180deg,rgba(0,0,0,0.60) 0%,rgba(0,0,0,0.0) 100%)', backdropFilter: 'blur(2px)', position: 'relative', overflow: 'hidden' }}>
-        <div
-          aria-hidden
-          style={{
-            position: 'absolute',
-            top: -64,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            width: 'min(88vw, 760px)',
-            height: 220,
-            background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.42) 0%, rgba(0,0,0,0.22) 38%, rgba(0,0,0,0.0) 72%)',
-            pointerEvents: 'none',
-          }}
-        />
-        <h1
-          style={{
-            fontFamily: 'Cormorant Garamond, serif',
-            fontSize: 'clamp(32px, 9vw, 57px)',
-            fontWeight: 500,
-            letterSpacing: 'clamp(6px, 4vw, 17px)',
-            textIndent: 'clamp(6px, 4vw, 17px)',
-            textTransform: 'uppercase',
-            background: 'linear-gradient(180deg,#FFFDF6 0%,#F1E3B4 30%,#D9C89A 62%,#7A5420 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            filter: 'brightness(1.10) contrast(1.05) drop-shadow(0 0 2px rgba(255,241,210,0.28)) drop-shadow(0 0 6px rgba(212,175,95,0.18))',
-            marginBottom: 6,
-            position: 'relative',
-            zIndex: 1,
-          }}
-        >
-          NIGHTSTAR
-        </h1>
-          {/* Phrase supprimée selon la demande */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-          <span
-            style={{
-              fontFamily: 'Cormorant Garamond, serif',
-              fontSize: 15,
-              fontStyle: 'italic',
-              fontWeight: 400,
-              color: 'rgba(255,242,210,0.88)',
-              letterSpacing: 1.1,
-              lineHeight: 1.35,
-              marginTop: 1,
-              textAlign: 'center',
-              display: 'block',
-              textShadow: '0 1px 2px rgba(0,0,0,0.38)',
-            }}
-          >
-            Chaque âme possède sa constellation
-          </span>
+      <div className="fixed left-0 right-0 z-10 flex flex-col items-center" style={{ top: 0, padding: 'max(14px, env(safe-area-inset-top)) 18px 28px', background: 'linear-gradient(180deg,rgba(13,17,27,0.32) 0%,rgba(13,17,27,0.1) 44%,rgba(13,17,27,0) 100%)', backdropFilter: 'blur(1px)', position: 'fixed', overflow: 'visible' }}>
+        <div className="ns-brand-shell" aria-label="Nightstar">
+          <div className="ns-brand-rule" aria-hidden />
+          <h1 className="ns-brand-title">
+            <span className="ns-brand-title__big">N</span>IGHT<span className="ns-brand-title__big">S</span>TAR
+          </h1>
+          <div className="ns-brand-rule" aria-hidden />
+          <div className="ns-brand-sigil" aria-hidden>
+            <span className="ns-trigram-line ns-trigram-line--top" />
+            <span className="ns-trigram-line ns-trigram-line--middle" />
+            <span className="ns-trigram-line ns-trigram-line--bottom" />
+            <span className="ns-trigram-core" />
+          </div>
         </div>
       </div>
 
-      <div className="fixed left-0 right-0 z-10 flex flex-col items-center gap-3" style={{ bottom: 0, padding: '22px 24px 18px', background: 'linear-gradient(0deg,rgba(0,0,0,0.60) 0%,rgba(0,0,0,0.0) 100%)', backdropFilter: 'blur(2px)' }}>
+      <div className="fixed left-0 right-0 z-10 flex flex-col items-center gap-3" style={{ bottom: 0, padding: '26px 24px 22px', background: 'linear-gradient(0deg,rgba(13,17,27,0.76) 0%,rgba(13,17,27,0) 100%)', backdropFilter: 'blur(2px)' }}>
         <div style={{ width: 220, height: 1, background: 'linear-gradient(90deg,transparent,rgba(212,175,55,0.22),transparent)' }} />
         <button
           onClick={handleReveal}
           className="ns-btn"
           disabled={isRevealing}
           aria-busy={isRevealing}
+          aria-label={isRevealing ? 'Révélation du thème en cours' : 'Révéler mon thème Nightstar'}
+          data-od-id="nightstar-reveal-button"
           style={{
             display: 'flex',
             justifyContent: 'center',
@@ -476,7 +694,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
             '--ns-cta-indent': '4.6px',
             '--ns-cta-mobile-spacing': '3.4px',
             '--ns-cta-mobile-indent': '3.4px',
-          }}
+          } as CSSProperties}
         >
           <span className="relative z-10">
             {isRevealing
@@ -487,7 +705,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
         <p
           style={{
             fontFamily: 'Cormorant Garamond, serif',
-            fontSize: 11,
+            fontSize: 12.5,
             fontWeight: 400,
             color: 'rgba(246,224,165,0.74)',
             letterSpacing: 1.8,

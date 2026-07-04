@@ -20,8 +20,8 @@ export default function CoStarHeroPreview({ userName = 'Voyageur', onClosePrevie
       <div className="costar-hero-content">
         <img
           className="costar-hero-sun"
-          src="/costar-sun.png"
-          alt="Soleil mystique"
+          src="/costar-solar-premium-background.png"
+          alt="Ciel étoilé avec constellations"
         />
 
         <h1 className="costar-hero-title">Bonjour, {userName}</h1>

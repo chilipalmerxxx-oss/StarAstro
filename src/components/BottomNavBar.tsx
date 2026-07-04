@@ -1,6 +1,6 @@
-import { Home, Users, Sparkles, ShoppingBag, User, Star, Heart } from 'lucide-react';
+import { CircleDot, Home, Users, Sparkles, User, Star, Heart, TestTube2, X as XIcon } from 'lucide-react';
 
-export type TabId = 'home' | 'friends' | 'void' | 'chart' | 'costar' | 'profile' | 'love';
+export type TabId = 'home' | 'friends' | 'void' | 'costar' | 'profile' | 'you2' | 'love' | 'x' | 'y' | 'test';
 
 interface Tab {
   id: TabId;
@@ -14,8 +14,11 @@ const TABS: Tab[] = [
   { id: 'void', label: 'VOID', icon: Sparkles },
   { id: 'love', label: 'LOVE', icon: Heart },
   { id: 'costar', label: 'COSTAR', icon: Star },
-  { id: 'chart', label: 'SHOP', icon: ShoppingBag },
   { id: 'profile', label: 'YOU', icon: User },
+  { id: 'you2', label: 'YOU 2', icon: CircleDot },
+  { id: 'x', label: 'X', icon: XIcon },
+  { id: 'y', label: 'Y', icon: CircleDot },
+  { id: 'test', label: 'TEST', icon: TestTube2 },
 ];
 
 interface BottomNavBarProps {
@@ -28,7 +31,6 @@ export default function BottomNavBar({ activeTab, onTabChange }: BottomNavBarPro
     <nav className="bottom-nav">
       {TABS.map((tab) => {
         const isActive = activeTab === tab.id;
-        const isVoid = tab.id === 'void';
         const Icon = tab.icon;
         return (
           <button
@@ -37,10 +39,7 @@ export default function BottomNavBar({ activeTab, onTabChange }: BottomNavBarPro
             onClick={() => onTabChange(tab.id)}
             aria-label={tab.label}
           >
-            <Icon
-              className="bottom-nav__icon"
-              style={{ width: isVoid ? 22 : 18, height: isVoid ? 22 : 18 }}
-            />
+            <Icon className="bottom-nav__icon" style={{ width: 16, height: 16 }} />
             <span className="bottom-nav__label">{tab.label}</span>
           </button>
         );

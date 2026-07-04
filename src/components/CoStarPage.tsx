@@ -1,17 +1,6 @@
-import { useMemo, useState, useEffect } from 'react';
-import { Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
+import { useMemo, useState, useEffect, useRef } from 'react';
+import { Bell, Sparkles, ChevronDown, ChevronUp, User } from 'lucide-react';
 import { generateCoStarAnalysis } from '../services/astrology';
-
-interface AspectData {
-  planet1: string;
-  planet2: string;
-  type: string;
-  symbol: string;
-  color: string;
-  text: string;
-  transitSign?: string;
-  natalSign?: string;
-}
 
 interface CoStarPageProps {
   onBack: () => void;
@@ -19,43 +8,265 @@ interface CoStarPageProps {
   userName?: string;
 }
 
-export default function CoStarPage({ onBack, chartData, userName = 'Ami(e) des étoiles' }: CoStarPageProps) {
-  // Clé de date pour forcer le recalcul à minuit
-  const [dateKey, setDateKey] = useState(() => {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-  });
+const getLocalDateKey = (date = new Date()) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+
+const getMsUntilNextLocalMidnight = () => {
+  const now = new Date();
+  const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  return Math.max(0, nextMidnight.getTime() - now.getTime()) + 50;
+};
+
+const hashString = (value: string) => {
+  let hash = 0;
+  for (let i = 0; i < value.length; i++) {
+    hash = Math.imul(hash ^ value.charCodeAt(i), 0x9e3779b1);
+  }
+  return Math.abs(hash);
+};
+
+const getDateOrdinal = (dateKey: string) => {
+  const [year, month, day] = dateKey.split('-').map(Number);
+  return Math.floor(Date.UTC(year, month - 1, day) / 86400000);
+};
+
+const pickDailyText = (items: string[], seed: string, dateKey: string) =>
+  items[(getDateOrdinal(dateKey) + hashString(seed)) % items.length];
+
+const lowerFirst = (text: string) => text.charAt(0).toLocaleLowerCase('fr-FR') + text.slice(1);
+const withoutFinalPunctuation = (text: string) => text.trim().replace(/[.!?]+$/g, '');
+const GLANCE_HUMOR_BEATS = [
+  'Le drama reste au vestiaire.',
+  'Ton ego survivra.',
+  'Même Mercure approuve.',
+  'Pas besoin de série en trois saisons.',
+  'L’univers prend des notes.',
+] as const;
+
+const GLANCE_PLANET_FOCUS: Record<string, string> = {
+  Soleil: 'ton élan',
+  Lune: 'ton humeur',
+  Mercure: 'tes idées',
+  Vénus: 'ton charme',
+  Mars: 'ton moteur',
+  Jupiter: 'ta confiance',
+  Saturne: 'ta discipline',
+  Uranus: 'ton côté libre',
+  Neptune: 'ton intuition',
+  Pluton: 'ta lucidité',
+};
+
+type GlanceDetailTemplate = (left: string, right: string) => string;
+
+const GLANCE_ASPECT_TEMPLATES: Record<string, GlanceDetailTemplate[]> = {
+  Trigone: [
+    (left, right) => `Entre ${left} et ${right}: avance sans forcer.`,
+    (left, right) => `Bon courant ${left} / ${right}: fais simple.`,
+    (left, right) => `${left} et ${right} coopèrent: garde le geste léger.`,
+  ],
+  Sextile: [
+    (left, right) => `Petite porte ${left} / ${right}: tente le pas.`,
+    (left, right) => `Déclic entre ${left} et ${right}: ose léger.`,
+    (left, right) => `Ouverture côté ${left} et ${right}: un geste suffit.`,
+  ],
+  Conjonction: [
+    (left, right) => `Focus ${left} / ${right}: choisis une priorité.`,
+    (left, right) => `Fusion entre ${left} et ${right}: canalise, superstar.`,
+    (left, right) => `Gros signal ${left} / ${right}: évite le mode volcan.`,
+  ],
+  Carré: [
+    (left, right) => `Frottement ${left} / ${right}: ajuste avant le clash.`,
+    (left, right) => `${left} face à ${right}: respire avant le discours.`,
+    (left, right) => `Tension côté ${left} et ${right}: réponds, ne réagis pas.`,
+  ],
+  Opposition: [
+    (left, right) => `Face-à-face ${left} / ${right}: négocie sans théâtre.`,
+    (left, right) => `${left} d’un côté, ${right} de l’autre: arbitre calme.`,
+    (left, right) => `Tiraillement ${left} / ${right}: vise le compromis utile.`,
+  ],
+  Default: [
+    (left, right) => `Signal ${left} / ${right}: garde le geste simple.`,
+    (left, right) => `Entre ${left} et ${right}: choisis la réponse claire.`,
+    (left, right) => `Météo ${left} / ${right}: avance sans surjouer.`,
+  ],
+};
+
+const formatFallbackGlanceText = (text: string) => {
+  const firstSentence = text.split(/(?<=[.!?])\s+/)[0] || text;
+  const mainClause = firstSentence.split(/\s+[—–-]\s+|;\s+|\s+:\s+/)[0] || firstSentence;
+  const words = withoutFinalPunctuation(mainClause)
+    .replace(/^Aujourd'hui,\s*/i, '')
+    .replace(/\s+([,.;:!?])/g, '$1')
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (words.length <= 12) {
+    return words.join(' ') || 'Garde le geste simple aujourd’hui';
+  }
+
+  return `${words.slice(0, 12).join(' ')}...`;
+};
+
+const compactGlanceText = (text: string, aspectDescription = text, index = 0) => {
+  const cleanText = withoutFinalPunctuation(text.trim().replace(/\s+/g, ' '));
+  const visual = getDayAtGlanceVisual(aspectDescription);
+  const leftFocus = visual.planet1 ? GLANCE_PLANET_FOCUS[visual.planet1.name] : undefined;
+  const rightFocus = visual.planet2 ? GLANCE_PLANET_FOCUS[visual.planet2.name] : undefined;
+  const templates = visual.aspect
+    ? GLANCE_ASPECT_TEMPLATES[visual.aspect.name] ?? GLANCE_ASPECT_TEMPLATES.Default
+    : GLANCE_ASPECT_TEMPLATES.Default;
+  const templateIndex = (hashString(`${aspectDescription}|${cleanText}`) + index) % templates.length;
+  const uniqueText = leftFocus && rightFocus ? templates[templateIndex](leftFocus, rightFocus) : null;
+  const fallbackText = formatFallbackGlanceText(cleanText);
+  const mainText = uniqueText ?? (fallbackText.endsWith('...') ? fallbackText : `${fallbackText}.`);
+  const humor = GLANCE_HUMOR_BEATS[
+    (hashString(`${aspectDescription}|${cleanText}|humor`) + index) % GLANCE_HUMOR_BEATS.length
+  ];
+
+  return `${mainText} ${humor}`;
+};
+const splitDayAtGlanceAdvice = (text: string) => {
+  const cleanText = text.trim();
+  const sentences = cleanText.split(/(?<=[.!?])\s+/);
+  const aspectDescription = sentences[0] || cleanText;
+  const explanation = sentences.slice(1).join(' ');
+
+  return {
+    aspectDescription,
+    explanation,
+  };
+};
+
+const DAY_AT_GLANCE_PLANETS = [
+  { name: 'Soleil', glyph: '☉', color: '#f4c85d' },
+  { name: 'Lune', glyph: '☽', color: '#d9e2f0' },
+  { name: 'Mercure', glyph: '☿', color: '#67d4df' },
+  { name: 'Vénus', glyph: '♀', color: '#ef8fba' },
+  { name: 'Mars', glyph: '♂', color: '#ff7d70' },
+  { name: 'Jupiter', glyph: '♃', color: '#ddb77d' },
+  { name: 'Saturne', glyph: '♄', color: '#c5ad82' },
+  { name: 'Uranus', glyph: '♅', color: '#76b8ff' },
+  { name: 'Neptune', glyph: '♆', color: '#9c91ff' },
+  { name: 'Pluton', glyph: '♇', color: '#c784ed' },
+] as const;
+
+const DAY_AT_GLANCE_ASPECTS = [
+  { name: 'Trigone', glyph: '△', color: '#66d5a3' },
+  { name: 'Sextile', glyph: '⚹', color: '#77aaff' },
+  { name: 'Conjonction', glyph: '☌', color: '#f3bd6a' },
+  { name: 'Carré', glyph: '□', color: '#ff7f79' },
+  { name: 'Opposition', glyph: '☍', color: '#e78dbb' },
+] as const;
+
+const normalizeAstrologyLabel = (value: string) =>
+  value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('fr-FR');
+
+const getDayAtGlanceVisual = (aspectDescription: string) => {
+  const normalized = normalizeAstrologyLabel(aspectDescription);
+  const aspect = DAY_AT_GLANCE_ASPECTS.find(item => normalized.includes(normalizeAstrologyLabel(item.name)));
+  const planetMatches = DAY_AT_GLANCE_PLANETS
+    .flatMap((planet) => {
+      const needle = normalizeAstrologyLabel(planet.name);
+      const matches: Array<{ index: number; planet: typeof planet }> = [];
+      let start = 0;
+      while (start < normalized.length) {
+        const index = normalized.indexOf(needle, start);
+        if (index < 0) break;
+        matches.push({ index, planet });
+        start = index + needle.length;
+      }
+      return matches;
+    })
+    .sort((a, b) => a.index - b.index)
+    .slice(0, 2)
+    .map(match => match.planet);
+
+  return {
+    aspect,
+    planet1: planetMatches[0],
+    planet2: planetMatches[1],
+  };
+};
+
+const formatGlanceAspectLabel = (aspectDescription: string) => {
+  const visual = getDayAtGlanceVisual(aspectDescription);
+  if (visual.planet1 && visual.aspect && visual.planet2) {
+    return `${visual.planet1.name} ${visual.aspect.name.toLocaleLowerCase('fr-FR')} ${visual.planet2.name}`;
+  }
+
+  return withoutFinalPunctuation(aspectDescription).replace(/\s+/g, ' ');
+};
+
+export default function CoStarPage({ chartData, userName = 'Ami(e) des étoiles' }: CoStarPageProps) {
+  const [dateKey, setDateKey] = useState(() => getLocalDateKey());
+  const [isGlanceVisible, setIsGlanceVisible] = useState(false);
+  const [activeGlanceIndex, setActiveGlanceIndex] = useState(0);
+  const costarPageRef = useRef<HTMLDivElement>(null);
+  const glanceRef = useRef<HTMLElement>(null);
+  const glanceCarouselRef = useRef<HTMLUListElement>(null);
+  const glanceScrollTimeoutRef = useRef<number | null>(null);
+  const glanceScrollFrameRef = useRef<number | null>(null);
 
   useEffect(() => {
-    const checkMidnight = () => {
-      const d = new Date();
-      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-      setDateKey(prev => prev !== key ? key : prev);
+    const section = glanceRef.current;
+    if (!section || typeof IntersectionObserver === 'undefined') {
+      setIsGlanceVisible(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      setIsGlanceVisible(true);
+      observer.disconnect();
+    }, { threshold: 0.28 });
+
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    let timeoutId: number | undefined;
+
+    const syncDateKey = () => {
+      setDateKey(prev => {
+        const next = getLocalDateKey();
+        return prev === next ? prev : next;
+      });
     };
-    const interval = setInterval(checkMidnight, 60 * 1000);
-    return () => clearInterval(interval);
+
+    const scheduleNextMidnight = () => {
+      timeoutId = window.setTimeout(() => {
+        syncDateKey();
+        scheduleNextMidnight();
+      }, getMsUntilNextLocalMidnight());
+    };
+
+    scheduleNextMidnight();
+    window.addEventListener('focus', syncDateKey);
+    document.addEventListener('visibilitychange', syncDateKey);
+
+    return () => {
+      if (timeoutId !== undefined) {
+        window.clearTimeout(timeoutId);
+      }
+      window.removeEventListener('focus', syncDateKey);
+      document.removeEventListener('visibilitychange', syncDateKey);
+    };
   }, []);
 
   const analysis = useMemo(() => {
     if (chartData) {
-      return generateCoStarAnalysis(chartData, userName);
+      return generateCoStarAnalysis(chartData, userName, dateKey);
     }
     return null;
   }, [chartData, userName, dateKey]);
 
+  const personalizationSeed = analysis?.personalizationSeed ?? `${userName.trim().toLocaleLowerCase('fr-FR')}|costar-fallback`;
   const selectedAdvice = analysis?.advice || 'Écoute ton intuition aujourd\'hui';
 
   const todayMood = analysis?.mood || (() => {
-    const today = new Date();
-    const dateKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-    let hash = 0;
-    for (let i = 0; i < dateKey.length; i++) {
-      const c = dateKey.charCodeAt(i);
-      hash = ((hash << 5) - hash) + c;
-      hash = hash & hash;
-    }
     const fallbackMoods = ['Curieux', 'Énergique', 'Mystérieux', 'Serein', 'Passionné'];
-    return fallbackMoods[Math.abs(hash % fallbackMoods.length)];
+    return pickDailyText(fallbackMoods, `${personalizationSeed}|fallback-mood`, dateKey);
   })();
 
   // Superpouvoir & Défi adaptés à l'énergie du jour
@@ -136,6 +347,337 @@ export default function CoStarPage({ onBack, chartData, userName = 'Ami(e) des �
 
   const moodBase = todayMood.split(' — ')[0].trim();
   const moodExtras = MOOD_EXTRAS[moodBase] ?? { superpouvoir: 'Intuition', defi: 'Écoute ce que tu ressens vraiment.' };
+  const getDailyMove = (mood: string, currentDateKey: string, userSeed: string) => {
+    const normalizedMood = mood.toLowerCase();
+    const pick = (items: string[]) => pickDailyText(items, `${userSeed}|${mood}|move`, currentDateKey);
+
+    if (/impulsif|direct|énergique|ardent|courageux|audacieux|décomplexé/.test(normalizedMood)) {
+      return pick([
+        'Choisis une action claire et garde ton élan simple.',
+        'Agis vite sur une seule chose, pas sur tout à la fois.',
+        'Canalise ton feu dans un geste précis.',
+      ]);
+    }
+    if (/ancré|patient|calme|stable|solide|persistant/.test(normalizedMood)) {
+      return pick([
+        'Avance lentement, mais avec une intention très nette.',
+        'Pose une base concrète avant de chercher plus grand.',
+        'Choisis la constance plutôt que la preuve immédiate.',
+      ]);
+    }
+    if (/léger|curieux|communicatif|agile|vif|espiègle|changeant|bavard/.test(normalizedMood)) {
+      return pick([
+        'Pose une vraie question et écoute la réponse jusqu’au bout.',
+        'Garde une seule conversation vraiment vivante.',
+        'Transforme ta curiosité en attention réelle.',
+      ]);
+    }
+    if (/émotionnel|intuitif|nostalgique|protecteur|doux|attaché|sensible|mélancolique|poreux/.test(normalizedMood)) {
+      return pick([
+        'Protège ton calme avant de répondre au monde.',
+        'Nomme ce que tu ressens avant de le laisser décider.',
+        'Garde une frontière douce autour de ton énergie.',
+      ]);
+    }
+    if (/expressif|lumineux|généreux|chaleureux|créatif|rayonnant|fier|flamboyant|loyal/.test(normalizedMood)) {
+      return pick([
+        'Montre ce qui te tient à cœur sans chercher l’effet.',
+        'Offre ta présence sans jouer un rôle.',
+        'Laisse ton enthousiasme éclairer une chose simple.',
+      ]);
+    }
+    if (/analytique|attentif|discret|précis|ordonné|sobre|rigoureux|méticuleux|modeste/.test(normalizedMood)) {
+      return pick([
+        'Garde l’essentiel et laisse le détail respirer.',
+        'Améliore une chose sans vouloir tout corriger.',
+        'Remplace le contrôle par une méthode légère.',
+      ]);
+    }
+    if (/harmonieux|élégant|indécis|diplomate|raffiné|gracieux|juste|esthète|pacifique/.test(normalizedMood)) {
+      return pick([
+        'Dis oui seulement quand ton corps dit oui aussi.',
+        'Choisis la paix qui ne te fait pas disparaître.',
+        'Fais de la clarté une forme de douceur.',
+      ]);
+    }
+    if (/intense|perceptif|profond|magnétique|silencieux|transformateur|acéré|clairvoyant|tenace|secret/.test(normalizedMood)) {
+      return pick([
+        'Dis la vérité avec douceur, mais ne la dilue pas.',
+        'Laisse partir une tension que tu n’as plus à porter.',
+        'Regarde le fond des choses sans t’y enfermer.',
+      ]);
+    }
+    if (/optimiste|libre|expansif|philosophe|enthousiaste|idéaliste|nomade/.test(normalizedMood)) {
+      return pick([
+        'Vise plus large, puis choisis un premier pas concret.',
+        'Donne une direction pratique à ton envie d’ailleurs.',
+        'Fais tenir ta grande idée dans une action d’aujourd’hui.',
+      ]);
+    }
+    if (/structuré|ambitieux|discipliné|prévoyant|méthodique|austère|accompli/.test(normalizedMood)) {
+      return pick([
+        'Fais une chose solide avant d’en promettre trois.',
+        'Avance avec rigueur sans oublier de respirer.',
+        'Construis la suite sans durcir le présent.',
+      ]);
+    }
+    if (/décalé|électrique|original|visionnaire|détaché|rebelle|frondeur|brillant/.test(normalizedMood)) {
+      return pick([
+        'Garde ton angle unique, puis rends-le partageable.',
+        'Teste une idée neuve sans rompre tout l’équilibre.',
+        'Rends ton intuition futuriste utile à quelqu’un.',
+      ]);
+    }
+    if (/rêveur|mystique|compassionnel|inspiré|insaisissable/.test(normalizedMood)) {
+      return pick([
+        'Donne une forme simple à ce que tu ressens.',
+        'Ancre ton intuition dans un geste très concret.',
+        'Garde ta compassion ouverte, mais pas sans limites.',
+      ]);
+    }
+
+    return pick([
+      'Suis le signal le plus calme, pas le plus bruyant.',
+      'Choisis la réponse qui te laisse respirer.',
+      'Reviens à ce qui reste vrai quand l’agitation baisse.',
+    ]);
+  };
+  const getDailyChallenge = (mood: string, fallbackDefi: string, currentDateKey: string, userSeed: string) => {
+    const normalizedMood = mood.toLowerCase();
+    const pick = (items: string[]) => pickDailyText(items, `${userSeed}|${mood}|challenge`, currentDateKey);
+
+    if (/impulsif|direct|énergique|ardent|courageux|audacieux|décomplexé/.test(normalizedMood)) {
+      return pick([
+        fallbackDefi,
+        'Ne transforme pas l’urgence intérieure en pression sur les autres.',
+        'Garde ton courage, mais vérifie la direction avant d’accélérer.',
+      ]);
+    }
+    if (/ancré|patient|calme|stable|solide|persistant/.test(normalizedMood)) {
+      return pick([
+        fallbackDefi,
+        'Ne confonds pas sécurité et immobilité.',
+        'Laisse une petite place à ce qui arrive sans prévenir.',
+      ]);
+    }
+    if (/léger|curieux|communicatif|agile|vif|espiègle|changeant|bavard/.test(normalizedMood)) {
+      return pick([
+        fallbackDefi,
+        'Ne remplace pas la présence par trop de mots.',
+        'Choisis une piste à approfondir au lieu d’en ouvrir dix.',
+      ]);
+    }
+    if (/émotionnel|intuitif|nostalgique|protecteur|doux|attaché|sensible|mélancolique|poreux/.test(normalizedMood)) {
+      return pick([
+        fallbackDefi,
+        'Ne prends pas une vague émotionnelle pour une vérité définitive.',
+        'Protège ton cœur sans fermer la porte à ce qui est simple.',
+      ]);
+    }
+    if (/expressif|lumineux|généreux|chaleureux|créatif|rayonnant|fier|flamboyant|loyal/.test(normalizedMood)) {
+      return pick([
+        fallbackDefi,
+        'Ne cherche pas à être vu avant de te sentir aligné.',
+        'Donne sans transformer ta générosité en performance.',
+      ]);
+    }
+    if (/analytique|attentif|discret|précis|ordonné|sobre|rigoureux|méticuleux|modeste/.test(normalizedMood)) {
+      return pick([
+        fallbackDefi,
+        'Ne laisse pas le détail voler toute la place à l’élan.',
+        'Corrige ce qui compte, pas tout ce qui dépasse.',
+      ]);
+    }
+    if (/harmonieux|élégant|indécis|diplomate|raffiné|gracieux|juste|esthète|pacifique/.test(normalizedMood)) {
+      return pick([
+        fallbackDefi,
+        'Ne garde pas la paix au prix de ta propre clarté.',
+        'Une décision imparfaite vaut mieux qu’un équilibre figé.',
+      ]);
+    }
+    if (/intense|perceptif|profond|magnétique|silencieux|transformateur|acéré|clairvoyant|tenace|secret/.test(normalizedMood)) {
+      return pick([
+        fallbackDefi,
+        'Ne fais pas de ton intuition un tribunal intérieur.',
+        'Laisse la transformation agir sans tout contrôler.',
+      ]);
+    }
+    if (/optimiste|libre|expansif|philosophe|enthousiaste|idéaliste|nomade/.test(normalizedMood)) {
+      return pick([
+        fallbackDefi,
+        'Ne promets pas à ton futur une énergie que ton présent n’a pas.',
+        'Garde ton horizon large, mais tes engagements précis.',
+      ]);
+    }
+    if (/structuré|ambitieux|discipliné|prévoyant|méthodique|austère|accompli/.test(normalizedMood)) {
+      return pick([
+        fallbackDefi,
+        'Ne fais pas de la maîtrise une armure contre le vivant.',
+        'Avance sérieusement sans transformer la journée en examen.',
+      ]);
+    }
+    if (/décalé|électrique|original|visionnaire|détaché|rebelle|frondeur|brillant/.test(normalizedMood)) {
+      return pick([
+        fallbackDefi,
+        'Ne confonds pas indépendance et isolement.',
+        'Garde l’idée brillante, mais rends-la habitable pour les autres.',
+      ]);
+    }
+    if (/rêveur|mystique|compassionnel|inspiré|insaisissable/.test(normalizedMood)) {
+      return pick([
+        fallbackDefi,
+        'Ne laisse pas l’empathie dissoudre tes limites.',
+        'Ancre ton rêve avant qu’il ne t’éparpille.',
+      ]);
+    }
+
+    return pick([
+      fallbackDefi,
+      `Aujourd'hui, ${lowerFirst(fallbackDefi)}`,
+      `Point de vigilance: ${lowerFirst(fallbackDefi)}`,
+      `Le défi: ${lowerFirst(fallbackDefi)}`,
+    ]);
+  };
+
+  const dailyMove = withoutFinalPunctuation(analysis?.dailyMove ?? getDailyMove(moodBase, dateKey, personalizationSeed));
+  const dailyChallenge = withoutFinalPunctuation(analysis?.dailyChallenge ?? getDailyChallenge(moodBase, moodExtras.defi, dateKey, personalizationSeed));
+  const displayDate = new Date(`${dateKey}T12:00:00`).toLocaleDateString('fr-FR', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  });
+  const displayWeekday = new Date(`${dateKey}T12:00:00`).toLocaleDateString('fr-FR', {
+    weekday: 'long',
+  });
+  const dayAtGlanceItems = useMemo(
+    () => analysis?.dayAtGlance.split('||').filter(s => s.trim().length > 0) ?? [],
+    [analysis?.dayAtGlance],
+  );
+  const activeGlance = useMemo(() => {
+    const advice = dayAtGlanceItems[activeGlanceIndex] ?? dayAtGlanceItems[0];
+    return advice ? splitDayAtGlanceAdvice(advice) : null;
+  }, [activeGlanceIndex, dayAtGlanceItems]);
+
+  const syncActiveGlanceFromScroll = () => {
+    const list = glanceCarouselRef.current;
+    if (!list) return;
+
+    const items = Array.from(list.querySelectorAll<HTMLElement>('.costar-glance-item'));
+    const listCenter = list.scrollLeft + list.clientWidth / 2;
+    let nextIndex = 0;
+    let closestDistance = Number.POSITIVE_INFINITY;
+
+    items.forEach((item, index) => {
+      const itemCenter = item.offsetLeft + item.offsetWidth / 2;
+      const distance = Math.abs(itemCenter - listCenter);
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        nextIndex = index;
+      }
+    });
+
+    setActiveGlanceIndex(prev => (prev === nextIndex ? prev : nextIndex));
+  };
+  const handleGlanceScroll = () => {
+    if (glanceScrollFrameRef.current === null) {
+      glanceScrollFrameRef.current = window.requestAnimationFrame(() => {
+        glanceScrollFrameRef.current = null;
+        syncActiveGlanceFromScroll();
+      });
+    }
+
+    if (glanceScrollTimeoutRef.current !== null) {
+      window.clearTimeout(glanceScrollTimeoutRef.current);
+    }
+
+    glanceScrollTimeoutRef.current = window.setTimeout(() => {
+      glanceScrollTimeoutRef.current = null;
+      syncActiveGlanceFromScroll();
+    }, 90);
+  };
+  const selectGlanceIndex = (index: number) => {
+    if (glanceScrollTimeoutRef.current !== null) {
+      window.clearTimeout(glanceScrollTimeoutRef.current);
+      glanceScrollTimeoutRef.current = null;
+    }
+
+    setActiveGlanceIndex(index);
+
+    window.requestAnimationFrame(() => {
+      const list = glanceCarouselRef.current;
+      const item = list?.querySelectorAll<HTMLElement>('.costar-glance-item')[index];
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      item?.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'nearest', inline: 'center' });
+    });
+  };
+
+  useEffect(() => {
+    setActiveGlanceIndex(prev => {
+      if (dayAtGlanceItems.length === 0) return 0;
+      return Math.min(prev, dayAtGlanceItems.length - 1);
+    });
+  }, [dayAtGlanceItems.length]);
+
+  useEffect(() => () => {
+    if (glanceScrollTimeoutRef.current !== null) {
+      window.clearTimeout(glanceScrollTimeoutRef.current);
+    }
+    if (glanceScrollFrameRef.current !== null) {
+      window.cancelAnimationFrame(glanceScrollFrameRef.current);
+    }
+  }, []);
+
+  useEffect(() => {
+    const page = costarPageRef.current;
+    if (!page) return undefined;
+
+    const scroller = page.closest<HTMLElement>('.app-content--costar');
+    let frame: number | null = null;
+    let lastProgress = -1;
+
+    const readScrollTop = () =>
+      scroller?.scrollTop ?? window.scrollY ?? document.documentElement.scrollTop ?? 0;
+
+    const syncBackgroundScroll = () => {
+      frame = null;
+      const viewportHeight = scroller?.clientHeight || window.innerHeight || 1;
+      const rawProgress = readScrollTop() / Math.max(1, viewportHeight * 0.42);
+      const clamped = Math.min(1, Math.max(0, rawProgress));
+      const eased = 1 - Math.pow(1 - clamped, 3);
+      const nextProgress = Math.round(eased * 1000) / 1000;
+
+      if (Math.abs(nextProgress - lastProgress) >= 0.004) {
+        page.style.setProperty('--costar-scroll-progress', nextProgress.toFixed(3));
+        page.style.setProperty('--costar-scroll-offset', `${(-6.5 * nextProgress).toFixed(3)}svh`);
+        page.style.setProperty('--costar-background-opacity', (1 - nextProgress * 0.58).toFixed(3));
+        page.style.setProperty('--costar-readability-opacity', (nextProgress * 0.92).toFixed(3));
+        lastProgress = nextProgress;
+      }
+    };
+
+    const requestSync = () => {
+      if (frame === null) {
+        frame = window.requestAnimationFrame(syncBackgroundScroll);
+      }
+    };
+
+    syncBackgroundScroll();
+    const scrollTarget = scroller ?? window;
+    scrollTarget.addEventListener('scroll', requestSync, { passive: true });
+    window.addEventListener('resize', requestSync);
+
+    return () => {
+      if (frame !== null) {
+        window.cancelAnimationFrame(frame);
+      }
+      scrollTarget.removeEventListener('scroll', requestSync);
+      window.removeEventListener('resize', requestSync);
+      page.style.removeProperty('--costar-scroll-progress');
+      page.style.removeProperty('--costar-scroll-offset');
+      page.style.removeProperty('--costar-background-opacity');
+      page.style.removeProperty('--costar-readability-opacity');
+    };
+  }, []);
 
   const [openAspects, setOpenAspects] = useState<Set<number>>(new Set());
 
@@ -542,97 +1084,175 @@ export default function CoStarPage({ onBack, chartData, userName = 'Ami(e) des �
   };
 
   return (
-    <div className="min-h-screen bg-[#131314] text-white relative pb-24">
+    <div ref={costarPageRef} className="costar-page min-h-screen bg-[#131314] text-white relative pb-8">
+      <div className="costar-scroll-planet" aria-hidden="true" />
       {/* Header — Eclipse Logo */}
-      <div className="costar-header">
-        <svg className="logo-soleil" viewBox="0 0 100 100">
-          <defs>
-            <radialGradient id="haloG" cx="50%" cy="50%" r="50%">
-              <stop offset="0%"   stopColor="#FF9800" stopOpacity="0"/>
-              <stop offset="42%"  stopColor="#FF9800" stopOpacity="0"/>
-              <stop offset="54%"  stopColor="#E07000" stopOpacity="0.22"/>
-              <stop offset="62%"  stopColor="#FF9800" stopOpacity="0.75"/>
-              <stop offset="68%"  stopColor="#FFB030" stopOpacity="0.95"/>
-              <stop offset="74%"  stopColor="#E07800" stopOpacity="0.65"/>
-              <stop offset="83%"  stopColor="#C06000" stopOpacity="0.35"/>
-              <stop offset="92%"  stopColor="#904000" stopOpacity="0.14"/>
-              <stop offset="100%" stopColor="#904000" stopOpacity="0"/>
-            </radialGradient>
-            <radialGradient id="coronaG" cx="50%" cy="12%" r="50%">
-              <stop offset="0%"   stopColor="#FFE080" stopOpacity="0.30"/>
-              <stop offset="50%"  stopColor="#FFAA30" stopOpacity="0.08"/>
-              <stop offset="100%" stopColor="#FF7000" stopOpacity="0"/>
-            </radialGradient>
-            <radialGradient id="innerG" cx="50%" cy="44%" r="54%">
-              <stop offset="0%"   stopColor="#060606"/>
-              <stop offset="60%"  stopColor="#050505"/>
-              <stop offset="82%"  stopColor="#0B0500"/>
-              <stop offset="100%" stopColor="#180900"/>
-            </radialGradient>
-          </defs>
-          <circle cx="50" cy="50" r="50" fill="url(#haloG)"/>
-          <circle cx="50" cy="50" r="50" fill="url(#coronaG)"/>
-          <circle cx="50" cy="50" r="33" fill="url(#innerG)"/>
-          <circle cx="50" cy="50" r="33.5" fill="none" stroke="#1A0800" strokeWidth="1.2"/>
-          <circle cx="50" cy="50" r="33.5" fill="none" stroke="#FFD050" strokeWidth="0.4"/>
-          <path d="M 41,16.5 A 33.5,33.5 0 0,1 59,16.5" fill="none" stroke="#FFF5C0" strokeWidth="0.6" strokeLinecap="round" opacity="0.75"/>
-        </svg>
+      <div className="costar-header costar-header--astrolabe">
+        <button className="costar-header-profile" type="button" aria-label="Profil">
+          <User size={17} strokeWidth={1.45} />
+        </button>
+        <div className="costar-header-balance" aria-hidden="true"></div>
       </div>
 
       {/* Main Content */}
-      <div className="container max-w-4xl mx-auto px-4 pt-4 pb-10 md:pt-6 md:pb-12 space-y-12">
+      <div className="container max-w-4xl mx-auto px-4 pt-4 pb-4 md:pt-6 md:pb-6 space-y-12">
         {/* Your Vibe + Défi — occupe toute la première page */}
         <section
           className="costar-daily-hero max-w-2xl mx-auto"
         >
+          <div className="costar-hero-redesign">
+            <div className="costar-hero-date">
+              <span>{displayDate}</span>
+              <strong>{displayWeekday}</strong>
+            </div>
+
+            <div className="costar-hero-orbit" aria-hidden="true">
+              <span className="costar-hero-orbit-ring"></span>
+              <span className="costar-hero-orbit-ring"></span>
+              <span className="costar-hero-orbit-ring"></span>
+              <span className="costar-hero-moon"></span>
+            </div>
+
+            <div className="costar-hero-copy-block text-center">
+              <p className="costar-eyebrow">Ton énergie du jour</p>
+              <h2 className="costar-hero-title">
+                {todayMood.replace(/\s+—\s+/g, ', ')}
+              </h2>
+            </div>
+
+            <div className="costar-planet-bridge" aria-hidden="true">
+              <span className="costar-planet-bridge__planet costar-planet-bridge__planet--mars">♂</span>
+              <span className="costar-planet-bridge__line"></span>
+              <span className="costar-planet-bridge__star">✦</span>
+              <span className="costar-planet-bridge__line"></span>
+              <span className="costar-planet-bridge__planet costar-planet-bridge__planet--saturn">♄</span>
+            </div>
+
+            <div className="costar-hero-guidance">
+              <p>{dailyChallenge}</p>
+              <span>{dailyMove}</span>
+            </div>
+          </div>
           {/* Énergie du jour */}
           <div className="space-y-3 text-center">
-            <p className="text-sm uppercase tracking-widest" style={{ color: '#FFD699', filter: 'drop-shadow(0 0 6px rgba(255, 184, 107, 0.55)) drop-shadow(0 0 14px rgba(255, 184, 107, 0.25))' }}>Ton énergie du jour</p>
+            <p className="costar-section-title text-sm uppercase tracking-widest -translate-y-2">Ton énergie du jour</p>
             <h2 className="text-3xl md:text-4xl font-light leading-tight bg-gradient-to-r from-sky-300 via-rose-300 to-violet-400 bg-clip-text text-transparent">
               {todayMood.replace(/\s+—\s+/g, ', ')}
             </h2>
           </div>
 
           {/* Défi du jour */}
-          <div className="h-px w-24 bg-gradient-to-r from-transparent via-[#FFD699]/45 to-transparent"></div>
+          <div className="costar-challenge-separator h-px w-24 bg-gradient-to-r from-transparent via-[#FFD699]/45 to-transparent"></div>
 
           <div className="w-full space-y-2 text-center">
-            <p className="text-sm uppercase tracking-widest" style={{ color: '#FFD699', filter: 'drop-shadow(0 0 6px rgba(255, 184, 107, 0.55)) drop-shadow(0 0 14px rgba(255, 184, 107, 0.25))' }}>Ton défi du jour</p>
-            <div className="relative overflow-hidden rounded-2xl border border-[#D7B46A]/30 bg-[#090A10]/70 px-4 py-4 text-left md:px-5 md:py-5 shadow-[0_0_28px_rgba(215,180,106,0.12)] backdrop-blur-sm">
+            <p className="costar-section-title text-sm uppercase tracking-widest -translate-y-2">Ton défi du jour</p>
+            <div className="costar-challenge-card relative overflow-hidden rounded-2xl border border-[#D7B46A]/30 bg-[#090A10]/70 px-4 py-4 text-left md:px-5 md:py-5 shadow-[0_0_28px_rgba(215,180,106,0.12)] backdrop-blur-sm">
               <div className="absolute inset-x-5 top-0 h-px bg-gradient-to-r from-transparent via-[#FFD699]/65 to-transparent"></div>
-              <div className="relative flex items-start gap-3">
-                <span className="mt-2 h-2 w-2 flex-shrink-0 rounded-full bg-[#FFD699] shadow-[0_0_14px_rgba(255,214,153,0.7)]"></span>
-                <p className="text-base md:text-lg font-light italic leading-relaxed text-[#F3E8D0]">
-                  "{moodExtras.defi}"
-                </p>
+              <div className="relative space-y-3">
+                <div className="flex items-start gap-3">
+                  <span className="mt-0.5 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border border-emerald-300/25 bg-emerald-400/10 text-base font-light text-emerald-200 shadow-[0_0_18px_rgba(110,231,183,0.18)]" aria-hidden="true">✓</span>
+                  <p className="text-base md:text-lg font-light leading-relaxed text-emerald-100">
+                    {dailyMove}
+                  </p>
+                </div>
+                <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+                <div className="flex items-start gap-3">
+                  <span className="mt-0.5 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border border-rose-300/25 bg-rose-500/10 text-base font-light text-rose-200 shadow-[0_0_18px_rgba(251,113,133,0.16)]" aria-hidden="true">✕</span>
+                  <p className="text-base md:text-lg font-light italic leading-relaxed text-rose-100">
+                    {dailyChallenge}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </section>
 
+        <div className="costar-section-divider" aria-hidden="true"></div>
+
         {/* Your Day at a Glance */}
-        <section className="space-y-6 border-t border-[#1E2035]/60 pt-12">
-          <p className="text-sm uppercase tracking-widest" style={{ color: '#FFD699', filter: 'drop-shadow(0 0 6px rgba(255, 184, 107, 0.55)) drop-shadow(0 0 14px rgba(255, 184, 107, 0.25))' }}>Ta journée en un coup d'œil</p>
-          <ul className="space-y-6">
-            {analysis?.dayAtGlance.split('||').filter(s => s.trim().length > 0).map((advice, index) => (
-              <li key={index} className="flex items-start gap-3">
-                <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-amber-400/60 flex-shrink-0"></span>
-                <p className="text-base leading-relaxed text-zinc-300">{advice.trim()}</p>
-              </li>
-            ))}
+        <section ref={glanceRef} className={`costar-glance ${isGlanceVisible ? 'is-visible' : ''}`}>
+          <div className="costar-glance-header">
+            <p className="costar-section-title text-sm uppercase tracking-widest -translate-y-2">Ta journée en un coup d'œil</p>
+            <div aria-hidden="true"></div>
+          </div>
+          <ul ref={glanceCarouselRef} className="costar-glance-list" onScroll={handleGlanceScroll}>
+            {dayAtGlanceItems.map((advice, index) => {
+              const { aspectDescription } = splitDayAtGlanceAdvice(advice);
+              const visual = getDayAtGlanceVisual(aspectDescription);
+
+              return (
+                <li
+                  key={advice}
+                  className={`costar-glance-item ${index === activeGlanceIndex ? 'is-active' : ''}`}
+                  aria-current={index === activeGlanceIndex ? 'true' : undefined}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => selectGlanceIndex(index)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      selectGlanceIndex(index);
+                    }
+                  }}
+                >
+                  <div
+                    className="costar-glance-aspect"
+                    aria-label={aspectDescription}
+                    style={{
+                      background: `radial-gradient(ellipse at center, ${visual.aspect?.color || '#e9c98b'}18 0%, transparent 70%)`,
+                    }}
+                  >
+                    {visual.planet1 && (
+                      <span className="costar-glance-planet" style={{ color: visual.planet1.color }}>
+                        <strong>{visual.planet1.glyph}</strong>
+                      </span>
+                    )}
+                    {visual.planet1 && visual.aspect && <span className="costar-glance-constellation-node" aria-hidden="true"></span>}
+                    {visual.aspect && (
+                      <span className="costar-glance-aspect-mark" style={{ color: visual.aspect.color }}>
+                        <strong>{visual.aspect.glyph}</strong>
+                      </span>
+                    )}
+                    {visual.aspect && visual.planet2 && <span className="costar-glance-constellation-node" aria-hidden="true"></span>}
+                    {visual.planet2 && (
+                      <span className="costar-glance-planet" style={{ color: visual.planet2.color }}>
+                        <strong>{visual.planet2.glyph}</strong>
+                      </span>
+                    )}
+                  </div>
+                  <div className="costar-glance-text">
+                    <span className="costar-glance-text-point" aria-hidden="true"></span>
+                    <p className="costar-glance-title">{formatGlanceAspectLabel(aspectDescription)}</p>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
+          {activeGlance && (
+            <div className="costar-glance-detail" aria-live="polite">
+              <p>
+                {compactGlanceText(
+                  activeGlance.explanation || activeGlance.aspectDescription,
+                  activeGlance.aspectDescription,
+                  activeGlanceIndex,
+                )}
+              </p>
+            </div>
+          )}
         </section>
 
+        <div className="costar-section-divider" aria-hidden="true"></div>
+
         {/* Daily Quote */}
-        <section className="space-y-6 border-t border-[#1E2035]/60 pt-12">
-          <p className="text-sm uppercase tracking-widest" style={{ color: '#FFD699', filter: 'drop-shadow(0 0 6px rgba(255, 184, 107, 0.55)) drop-shadow(0 0 14px rgba(255, 184, 107, 0.25))' }}>Conseil du jour</p>
-          <div className="relative rounded-2xl overflow-hidden group transition-all duration-500 hover:shadow-[0_0_40px_rgba(200,160,80,0.20)]" style={{ border: '1px solid rgba(200,170,110,0.5)', background: 'linear-gradient(135deg, #FAF6EE 0%, #F3EDD8 100%)', padding: '2rem 3rem' }}>
+        <section className="costar-daily-advice space-y-6 border-t border-[#1E2035]/60 pt-12">
+          <p className="costar-section-title text-sm uppercase tracking-widest -translate-y-2">Conseil du jour</p>
+          <div className="costar-daily-advice-card relative rounded-2xl overflow-hidden group transition-all duration-500 hover:shadow-[0_0_40px_rgba(200,160,80,0.20)]" style={{ border: '1px solid rgba(200,170,110,0.5)', background: 'linear-gradient(135deg, #FAF6EE 0%, #F3EDD8 100%)', padding: '2rem 3rem' }}>
             <div className="absolute bottom-0 left-0 w-32 h-32 rounded-full blur-2xl" style={{ background: 'radial-gradient(circle, rgba(251,191,36,0.15) 0%, transparent 70%)' }}></div>
             <div className="relative">
-              <p className="text-xl md:text-2xl font-light leading-relaxed mb-6" style={{ color: '#3b2f1e' }}>
+              <p className="costar-daily-advice-quote text-xl md:text-2xl font-light leading-relaxed mb-6" style={{ color: '#3b2f1e' }}>
                 {selectedAdvice}
               </p>
-              <div className="flex items-center gap-2 text-sm" style={{ color: '#a07840' }}>
+              <div className="costar-daily-advice-signature flex items-center gap-2 text-sm" style={{ color: '#a07840' }}>
                 <Sparkles className="w-4 h-4" style={{ color: '#c8860a' }} />
                 <span>Message personnel de l'univers</span>
               </div>
@@ -640,8 +1260,47 @@ export default function CoStarPage({ onBack, chartData, userName = 'Ami(e) des �
           </div>
         </section>
 
+        <div className="costar-section-divider" aria-hidden="true"></div>
+
+        {/* Premium Transit Alerts */}
+        <section className="costar-premium-section space-y-6 border-t border-[#1E2035]/60 pt-12">
+          <div className="costar-premium-banner relative overflow-hidden">
+            <div className="absolute inset-px rounded-[1.7rem] border border-white/[0.04]"></div>
+            <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-[#FFE6AD]/85 to-transparent"></div>
+            <div className="absolute -right-14 -top-14 h-40 w-40 rounded-full bg-[#FFD699]/12 blur-3xl"></div>
+            <div className="absolute -left-16 bottom-0 h-36 w-36 rounded-full bg-sky-300/10 blur-3xl"></div>
+
+            <div className="relative space-y-6">
+              <div className="flex items-start gap-4">
+                <span className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-[#FFD699]/35 bg-[radial-gradient(circle_at_35%_20%,rgba(255,255,255,0.22),rgba(255,214,153,0.10)_45%,rgba(9,10,16,0.95)_100%)] text-[#FFE6AD] shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_0_26px_rgba(255,184,107,0.18)]">
+                  <Bell className="h-5 w-5" strokeWidth={1.6} aria-hidden="true" />
+                </span>
+                <div className="space-y-2">
+                  <span className="inline-flex rounded-full border border-[#FFD699]/25 bg-[#FFD699]/8 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-[#FFD699]">
+                    Premium
+                  </span>
+                  <h3 className="text-2xl font-light leading-tight text-zinc-50 md:text-3xl">
+                    Ne rate pas les grands tournants de ton ciel
+                  </h3>
+                </div>
+              </div>
+
+              <p className="max-w-xl text-base font-light leading-relaxed text-zinc-300">
+                Reçois une alerte quand un transit majeur active ton thème natal, avec une lecture claire sur ce que ça réveille en toi.
+              </p>
+
+              <button
+                type="button"
+                className="inline-flex w-full items-center justify-center rounded-full border border-[#FFE6AD]/55 bg-gradient-to-r from-[#FFE6AD] via-[#F2D28D] to-[#C79645] px-5 py-3.5 text-sm font-bold uppercase tracking-[0.2em] text-[#100D08] shadow-[0_0_30px_rgba(255,184,107,0.22),inset_0_1px_0_rgba(255,255,255,0.45)] transition-all duration-300 hover:scale-[1.01] hover:shadow-[0_0_44px_rgba(255,184,107,0.34),inset_0_1px_0_rgba(255,255,255,0.55)] md:w-auto"
+              >
+                Activer les alertes premium
+              </button>
+            </div>
+          </div>
+        </section>
+
         {/* Planetary Aspects */}
-        <section className="space-y-6 border-t border-[#1E2035]/60 pt-12">
+        <section className="hidden space-y-6 border-t border-[#1E2035]/60 pt-12">
           <div>
             <p className="text-sm uppercase tracking-widest" style={{ color: '#FFD699', filter: 'drop-shadow(0 0 6px rgba(255, 184, 107, 0.55)) drop-shadow(0 0 14px rgba(255, 184, 107, 0.25))' }}>Transits du jour</p>
             <p className="text-xs text-zinc-600 mt-1">Positions actuelles des planètes en aspect avec ton thème natal</p>

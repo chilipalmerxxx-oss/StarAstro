@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { registerSW } from 'virtual:pwa-register';
 import App from './App.tsx';
+import ThemeToggle from './components/ThemeToggle.tsx';
 import './index.css';
 
 registerSW({
@@ -21,6 +22,7 @@ registerSW({
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
+    <ThemeToggle />
     <App />
   </StrictMode>
 );

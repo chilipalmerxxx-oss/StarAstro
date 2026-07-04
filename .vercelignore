@@ -1,0 +1,14 @@
+node_modules
+dist
+dev-dist
+project_temp
+.git
+.github
+.vscode
+*.zip
+*.log
+*.html
+!index.html
+CODE_SOURCE_*
+test-neptune-pluto.js
+Nightstar-Local-Llama.code-workspace

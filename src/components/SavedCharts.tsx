@@ -7,6 +7,9 @@ interface SavedChart {
   name: string;
   birth_date: string;
   birth_place: string;
+  latitude?: number;
+  longitude?: number;
+  timezone_offset?: number;
   created_at: string;
   planet_positions: any;
   houses: any;
@@ -52,6 +55,9 @@ export default function SavedCharts({ onLoadChart, onClose }: SavedChartsProps) 
       name: chart.name,
       birthDate: new Date(chart.birth_date),
       birthPlace: chart.birth_place,
+      latitude: chart.latitude,
+      longitude: chart.longitude,
+      timezoneOffset: chart.timezone_offset,
       planetPositions: chart.planet_positions,
       houses: chart.houses,
       aspects: chart.aspects,
