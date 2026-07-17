@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo, type FormEvent, type MouseEvent } from 'react';
-import { ArrowRight, Calendar, ChevronDown, Clock, MapPin, Pencil, Save, Sparkles, X } from 'lucide-react';
+import { ArrowRight, Calendar, ChevronDown, Clock, MapPin, Sparkles, X } from 'lucide-react';
 import { getDetailedInterpretation } from '../data/signDetailedInterpretations';
 import { PLANET_INFO, getAspectInterpretation } from '../data/interpretations';
 import NatalChart from './NatalChart';
@@ -769,26 +769,26 @@ export default function AstralProfile({
       <div ref={topRef} />
       {/* Roue Zodiacale en haut */}
       {birthDate && birthPlace && (<>
-        <div className={`${fullscreenMode ? 'astral-profile-wheel-page w-full' : 'relative mb-6 pt-2 pb-6 px-2 sm:px-4'}${isYou2 ? ' astral-profile-wheel-page--you2' : ''} relative before:absolute before:inset-0 before:bg-gradient-to-b before:from-[#0d0d10] before:via-[#09090c] before:to-[#06070a] before:pointer-events-none before:opacity-95 after:absolute after:top-1/2 after:left-1/2 after:-translate-x-1/2 after:-translate-y-1/2 after:w-[500px] after:h-[500px] after:blur-3xl after:opacity-20 after:pointer-events-none after:rounded-full`} style={{ '--tw-gradient-stops': 'rgb(40, 39, 42), rgb(18, 18, 22)' } as React.CSSProperties}>
+        <div className={`${fullscreenMode ? 'astral-profile-wheel-page w-full' : 'relative mb-6 pt-2 pb-6 px-2 sm:px-4'}${isYou2 ? ' astral-profile-wheel-page--you2' : ''} relative before:absolute before:inset-0 before:bg-gradient-to-b before:from-[#040508] before:via-[#030406] before:to-[#020305] before:pointer-events-none before:opacity-100 after:absolute after:top-1/2 after:left-1/2 after:-translate-x-1/2 after:-translate-y-1/2 after:w-[500px] after:h-[500px] after:blur-3xl after:opacity-10 after:pointer-events-none after:rounded-full`} style={{ '--tw-gradient-stops': 'rgb(10, 11, 14), rgb(3, 4, 6)' } as React.CSSProperties}>
           <style>{`
             .zodiac-space-bg::after {
-              background: radial-gradient(circle, rgba(160, 160, 160, 0.15) 0%, rgba(120, 120, 120, 0.08) 40%, transparent 70%);
+              background: radial-gradient(circle, rgba(90, 90, 100, 0.08) 0%, rgba(40, 40, 50, 0.04) 40%, transparent 70%);
             }
             @keyframes float-glow {
               0%, 100% { 
-                box-shadow: 0 0 60px rgba(160, 160, 160, 0.15), 
-                           0 0 100px rgba(120, 120, 120, 0.08),
-                           inset 0 0 100px rgba(160, 160, 160, 0.05);
+                box-shadow: 0 0 40px rgba(0, 0, 0, 0.35), 
+                           0 0 80px rgba(0, 0, 0, 0.2),
+                           inset 0 0 80px rgba(0, 0, 0, 0.12);
               }
               50% { 
-                box-shadow: 0 0 100px rgba(160, 160, 160, 0.25), 
-                           0 0 150px rgba(120, 120, 120, 0.12),
-                           inset 0 0 120px rgba(160, 160, 160, 0.08);
+                box-shadow: 0 0 56px rgba(0, 0, 0, 0.42), 
+                           0 0 100px rgba(0, 0, 0, 0.24),
+                           inset 0 0 90px rgba(0, 0, 0, 0.16);
               }
             }
             .zodiac-wheel-container {
               animation: float-glow 5s ease-in-out infinite;
-              filter: drop-shadow(0 0 30px rgba(160, 160, 160, 0.1));
+              filter: drop-shadow(0 0 24px rgba(0, 0, 0, 0.35));
             }
           `}</style>
           <div className={`relative z-10 zodiac-wheel-container${isYou2 ? ' zodiac-wheel-container--you2' : ''}`} data-you2-focus={activeAspect ? 'aspect' : activePlanet}>
@@ -808,24 +808,25 @@ export default function AstralProfile({
               houses={houses}
               aspects={aspects}
               onAspectClick={handleAspectClick}
-              onPlanetClick={(key) => handlePlanetClick(key as PlanetKey)}
               fullscreenMode={fullscreenMode}
             />
-            {onEditBirthData && (
-              <div className="astral-profile__edit-theme-bar">
-                <button
-                  type="button"
-                  className="astral-profile__edit-theme-button"
-                  onClick={() => setIsEditingBirthData(true)}
-                >
-                  <Pencil size={15} strokeWidth={1.8} aria-hidden="true" />
-                  <span>Modifier mon thème</span>
-                </button>
-              </div>
-            )}
             </div>
           </div>
         </div>
+        {onEditBirthData && (
+          <div className="astral-profile__edit-theme-bar">
+            <button
+              type="button"
+              className="astral-profile__edit-theme-button"
+              onClick={() => setIsEditingBirthData(true)}
+              aria-label="Générer un nouveau thème astral avec de nouvelles coordonnées"
+            >
+              <Sparkles size={16} strokeWidth={1.9} aria-hidden="true" />
+              <span>Nouveau thème</span>
+            </button>
+            <p className="astral-profile__edit-theme-hint">Nouvelles coordonnées de naissance</p>
+          </div>
+        )}
         <div className="astral-profile__gold-divider" aria-hidden="true" />
         {onEditBirthData && isEditingBirthData && (
           <div className="astral-profile__birth-editor" role="dialog" aria-modal="true" aria-labelledby="birth-editor-title">
@@ -840,8 +841,8 @@ export default function AstralProfile({
               </button>
 
               <div className="astral-profile__birth-editor-heading">
-                <span>Thème natal</span>
-                <h2 id="birth-editor-title">Modifier mes infos de naissance</h2>
+                <span>Nouveau thème astral</span>
+                <h2 id="birth-editor-title">Nouvelles coordonnées de naissance</h2>
               </div>
 
               <form className="astral-profile__birth-editor-form" onSubmit={handleBirthEditSubmit}>
@@ -925,7 +926,7 @@ export default function AstralProfile({
                     ))}
                   </datalist>
                   <small className="astral-profile__birth-editor-help">
-                    Tape ta ville ou choisis une suggestion pour recalculer ton thème.
+                    Date, heure et lieu exacts : le thème est recalculé avec les nouvelles coordonnées.
                   </small>
                 </label>
 
@@ -965,8 +966,8 @@ export default function AstralProfile({
                     type="submit"
                     disabled={editBirthDataLoading || !editPlace.trim()}
                   >
-                    <Save size={15} strokeWidth={1.8} aria-hidden="true" />
-                    <span>{editBirthDataLoading ? 'Mise à jour...' : 'Enregistrer'}</span>
+                    <Sparkles size={15} strokeWidth={1.8} aria-hidden="true" />
+                    <span>{editBirthDataLoading ? 'Calcul en cours...' : 'Générer le thème'}</span>
                   </button>
                 </div>
               </form>

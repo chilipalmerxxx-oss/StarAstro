@@ -1657,7 +1657,7 @@ body {
   justify-content: center;
   padding: 10px 0;
   overflow: hidden;
-  background: #1d1f28;
+  background: #050608;
 }
 
 .astral-profile-wheel-page .zodiac-wheel-container {
@@ -6258,56 +6258,67 @@ body {
 }
 
 .astral-profile__edit-theme-bar {
-  position: absolute;
-  z-index: 38;
-  left: 50%;
-  bottom: 31px;
-  transform: translateX(-50%);
   display: flex;
-  justify-content: center;
-  width: min(92vw, 420px);
-  pointer-events: none;
-}
-
-.astral-profile__edit-theme-button {
-  pointer-events: auto;
-  display: inline-flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 34px;
-  padding: 8px 13px;
-  color: rgba(246, 239, 226, 0.9);
+  width: 100%;
+  margin: 6px auto 14px;
+  padding: 0 16px;
+}
+
+.astral-profile__edit-theme-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 44px;
+  padding: 12px 22px;
+  color: #1a140f;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.018)),
-    rgba(8, 9, 13, 0.78);
-  border: 1px solid rgba(232, 216, 190, 0.18);
+    linear-gradient(180deg, #ffe8bc 0%, #f0c878 48%, #d9a84e 100%);
+  border: 1px solid rgba(255, 236, 196, 0.55);
   border-radius: 999px;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 14px 30px rgba(0, 0, 0, 0.34);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  font-size: 11px;
+    0 10px 28px rgba(0, 0, 0, 0.38),
+    0 0 28px rgba(240, 196, 110, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  font-size: 12px;
   font-weight: 700;
-  letter-spacing: 1.1px;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
-  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  opacity: 1;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
 }
 
 .astral-profile__edit-theme-button:hover,
 .astral-profile__edit-theme-button:focus-visible {
-  color: #fff8e8;
-  border-color: rgba(244, 221, 180, 0.36);
+  color: #120e0a;
+  border-color: rgba(255, 244, 214, 0.75);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.028)),
-    rgba(10, 11, 16, 0.88);
+    linear-gradient(180deg, #fff0d0 0%, #f6d28a 48%, #e2b55a 100%);
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.42),
+    0 0 36px rgba(255, 210, 120, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.65);
+  filter: brightness(1.04);
   transform: translateY(-1px);
+  opacity: 1;
 }
 
 .astral-profile__edit-theme-button:focus-visible {
-  outline: 1px solid rgba(244, 221, 180, 0.62);
+  outline: 2px solid rgba(255, 220, 150, 0.85);
   outline-offset: 3px;
+}
+
+.astral-profile__edit-theme-hint {
+  margin: 0;
+  color: rgba(236, 220, 190, 0.62);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-align: center;
 }
 
 .astral-profile__birth-editor {
@@ -6633,14 +6644,15 @@ body {
 
 @media (max-width: 560px) {
   .astral-profile__edit-theme-bar {
-    bottom: 26px;
+    margin: 4px auto 12px;
+    padding: 0 12px;
   }
 
   .astral-profile__edit-theme-button {
     max-width: calc(100vw - 34px);
-    min-height: 32px;
-    padding: 7px 11px;
-    font-size: 10px;
+    min-height: 44px;
+    padding: 12px 20px;
+    font-size: 11.5px;
   }
 
   .astral-profile__birth-editor {
@@ -7741,12 +7753,6 @@ body {
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.25px;
-}
-
-.app-content--you .astral-profile__pill-sign::before {
-  content: "Â·";
-  margin-right: 7px;
-  color: rgba(231, 208, 171, 0.38);
 }
 
 /* Signature reading â€” black lacquer, double champagne line, editorial details */
@@ -8890,14 +8896,30 @@ html[data-theme="light"] .app-content--you .astral-profile__collapse-bottom {
 }
 
 html[data-theme="light"] .app-content--you .astral-profile__edit-theme-button {
-  color: #332a25;
+  color: #1a140f;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.76), rgba(235, 227, 216, 0.58)),
-    rgba(238, 230, 218, 0.88);
-  border-color: rgba(116, 94, 68, 0.24);
+    linear-gradient(180deg, #ffe8bc 0%, #efc474 48%, #d6a24a 100%);
+  border-color: rgba(160, 120, 55, 0.35);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.86),
-    0 12px 28px rgba(74, 55, 38, 0.14);
+    0 10px 26px rgba(90, 60, 25, 0.2),
+    0 0 22px rgba(220, 170, 70, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+html[data-theme="light"] .app-content--you .astral-profile__edit-theme-button:hover,
+html[data-theme="light"] .app-content--you .astral-profile__edit-theme-button:focus-visible {
+  color: #120e0a;
+  border-color: rgba(140, 100, 40, 0.45);
+  background:
+    linear-gradient(180deg, #fff0d0 0%, #f5cf84 48%, #e0b154 100%);
+  box-shadow:
+    0 14px 30px rgba(90, 60, 25, 0.24),
+    0 0 28px rgba(230, 180, 70, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+html[data-theme="light"] .app-content--you .astral-profile__edit-theme-hint {
+  color: rgba(90, 72, 60, 0.62);
 }
 
 html[data-theme="light"] .astral-profile__birth-editor {
@@ -9349,22 +9371,9 @@ html:not([data-theme="light"]) .app-content--you .astral-profile__section-card--
   text-shadow: none;
 }
 
-.app-content--you .astral-profile__sign-pill .astral-profile__pill-house::before {
-  content: "Â·";
-  margin-right: 7px;
-  color: rgba(220, 210, 194, 0.38);
-  font-size: 11px;
-  font-weight: 500;
-  line-height: 1.1;
-}
-
 html[data-theme="light"] .app-content--you .astral-profile__sign-pill .astral-profile__pill-house {
   color: rgba(62, 54, 62, 0.72);
   text-shadow: none;
-}
-
-html[data-theme="light"] .app-content--you .astral-profile__sign-pill .astral-profile__pill-house::before {
-  color: rgba(62, 54, 62, 0.46);
 }
 
 .app-content--you .astral-profile__description-planet-house {
@@ -13326,22 +13335,22 @@ html[data-theme="light"] .costar-page,
   padding: max(8px, env(safe-area-inset-top)) 0 0 !important;
   overflow: hidden !important;
   background:
-    radial-gradient(ellipse at 50% 24%, rgba(255, 247, 231, 0.86), transparent 46%),
-    radial-gradient(ellipse at 50% 76%, rgba(206, 183, 151, 0.34), transparent 58%),
-    linear-gradient(180deg, #f7f2ea 0%, #ece3d8 48%, #d9ccbd 100%) !important;
+    radial-gradient(ellipse at 50% 18%, rgba(28, 30, 40, 0.55), transparent 48%),
+    radial-gradient(ellipse at 50% 72%, rgba(12, 13, 18, 0.9), transparent 58%),
+    linear-gradient(180deg, #050608 0%, #07080c 42%, #030406 100%) !important;
 }
 
 .app-content--you .astral-profile-wheel-page::before {
   background:
-    radial-gradient(ellipse at 50% 30%, rgba(255, 250, 240, 0.72), transparent 42%),
-    linear-gradient(180deg, rgba(250, 244, 234, 0.92), rgba(223, 211, 196, 0.88)) !important;
+    radial-gradient(ellipse at 50% 28%, rgba(18, 20, 28, 0.55), transparent 46%),
+    linear-gradient(180deg, rgba(4, 5, 8, 0.96), rgba(2, 3, 5, 0.98)) !important;
   opacity: 1 !important;
 }
 
 .app-content--you .astral-profile-wheel-page::after {
   background:
-    radial-gradient(circle, rgba(197, 162, 104, 0.18), transparent 64%) !important;
-  opacity: 0.55 !important;
+    radial-gradient(circle, rgba(120, 110, 90, 0.06), transparent 64%) !important;
+  opacity: 0.35 !important;
 }
 
 .app-content--you .astral-profile-wheel-page .zodiac-wheel-container {
@@ -13364,9 +13373,55 @@ html[data-theme="light"] .costar-page,
   box-sizing: border-box !important;
 }
 
-.app-content--you .astral-profile__edit-theme-bar,
+.app-content--you .astral-profile__edit-theme-bar {
+  position: relative;
+  z-index: 4;
+  left: auto;
+  bottom: auto;
+  transform: none;
+  width: 100%;
+  margin: 4px auto 16px;
+  pointer-events: auto;
+}
+
 .app-content--you .astral-profile__edit-theme-button {
-  display: none !important;
+  display: inline-flex !important;
+  min-height: 46px;
+  padding: 12px 24px;
+  color: #1a140f !important;
+  background:
+    linear-gradient(180deg, #ffe8bc 0%, #f0c878 48%, #d9a84e 100%) !important;
+  border: 1px solid rgba(255, 236, 196, 0.55) !important;
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.38),
+    0 0 28px rgba(240, 196, 110, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55) !important;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  opacity: 1;
+}
+
+.app-content--you .astral-profile__edit-theme-button:hover,
+.app-content--you .astral-profile__edit-theme-button:focus-visible {
+  color: #120e0a !important;
+  border-color: rgba(255, 244, 214, 0.75) !important;
+  background:
+    linear-gradient(180deg, #fff0d0 0%, #f6d28a 48%, #e2b55a 100%) !important;
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.42),
+    0 0 36px rgba(255, 210, 120, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.65) !important;
+  filter: brightness(1.04);
+  transform: translateY(-1px);
+}
+
+.app-content--you .astral-profile__edit-theme-hint {
+  color: rgba(236, 220, 190, 0.68);
+  font-size: 11px;
+  font-weight: 500;
 }
 
 .app-content--you .astral-profile-wheel-page .natal-chart-card {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Maximize2, X } from "lucide-react";
+import { Maximize2 } from "lucide-react";
 
 interface NatalChartProps {
   name: string;
@@ -94,81 +94,6 @@ const planetColors: Record<string, string> = {
   neptune: "#8B5CF6",
   pluto: "#A855F7",
   ascendant: "#1e293b",
-};
-
-const planetMicroDescriptions: Record<string, string> = {
-  sun: "Il décrit ton centre vital, ton besoin de créer et la manière dont tu affirmes ta présence. Là où il se place, tu cherches à rayonner avec cohérence.",
-  moon: "Elle révèle ton monde intérieur, tes besoins affectifs et la façon dont tu cherches la sécurité. Elle parle de mémoire, d’instinct et de protection.",
-  mercury: "Il montre ta manière de penser, d’apprendre et de transmettre. Sa position précise ton langage mental, ta curiosité et ton rapport aux idées.",
-  venus: "Elle indique ton rapport à l’amour, au plaisir et à la valeur personnelle. Elle révèle ce qui t’attire, ce que tu désires et ce que tu veux préserver.",
-  mars: "Il représente ton énergie d’action, ton courage et ta manière d’affirmer tes désirs. Il montre comment tu avances, combats et prends position.",
-  jupiter: "Il ouvre les zones d’expansion, de confiance et d’opportunité. Sa position montre où tu grandis, où tu espères et où tu cherches du sens.",
-  saturn: "Il parle de structure, de maturité et de responsabilité. Là où il se place, la vie demande rigueur, patience et construction durable.",
-  uranus: "Il indique ton besoin de liberté, d’innovation et de rupture avec les automatismes. Il réveille ce qui refuse d’être enfermé.",
-  neptune: "Il révèle l’imaginaire, l’intuition et la part invisible de ton thème. Sa position parle d’idéal, d’inspiration et de sensibilité subtile.",
-  pluto: "Il symbolise les transformations profondes, le pouvoir intérieur et les renaissances. Il montre où tu changes radicalement de peau.",
-  ascendant: "Il décrit ton entrée dans le monde, ton style spontané et l’impression que tu dégages. C’est la première vibration de ton thème.",
-};
-
-const planetPreviewVisuals: Record<string, { accent: string; surface: string; glow: string; ring?: boolean }> = {
-  sun: {
-    accent: "#F7D85A",
-    glow: "rgba(247, 216, 90, 0.45)",
-    surface: "radial-gradient(circle at 34% 26%, #fff8b7 0 9%, transparent 20%), radial-gradient(circle at 55% 52%, #ffb43a 0 28%, #f25a23 58%, #4d1208 100%)",
-  },
-  moon: {
-    accent: "#DDE7F5",
-    glow: "rgba(221, 231, 245, 0.34)",
-    surface: "radial-gradient(circle at 35% 25%, #ffffff 0 7%, transparent 18%), radial-gradient(circle at 64% 38%, rgba(51,60,72,.72) 0 8%, transparent 13%), radial-gradient(circle at 50% 54%, #d9dde4 0 20%, #828d9b 56%, #252c36 100%)",
-  },
-  mercury: {
-    accent: "#D6B985",
-    glow: "rgba(214, 185, 133, 0.34)",
-    surface: "radial-gradient(circle at 32% 25%, #f8dfb7 0 7%, transparent 18%), radial-gradient(circle at 66% 46%, rgba(54,39,30,.62) 0 9%, transparent 14%), radial-gradient(circle at 50% 54%, #c6a06e 0 18%, #7e6045 52%, #2d2521 100%)",
-  },
-  venus: {
-    accent: "#F1D082",
-    glow: "rgba(241, 208, 130, 0.38)",
-    surface: "radial-gradient(circle at 34% 25%, #fff0c2 0 8%, transparent 19%), repeating-linear-gradient(-18deg, #f4d89a 0 10px, #bf8046 11px 19px, #f0bf77 20px 31px)",
-  },
-  mars: {
-    accent: "#F2734E",
-    glow: "rgba(242, 115, 78, 0.38)",
-    surface: "radial-gradient(circle at 34% 25%, #ffd2a0 0 7%, transparent 18%), radial-gradient(circle at 65% 50%, rgba(65,23,15,.7) 0 11%, transparent 18%), linear-gradient(145deg, #d85f35, #8c3325 52%, #2c1514)",
-  },
-  jupiter: {
-    accent: "#F4D66D",
-    glow: "rgba(244, 214, 109, 0.34)",
-    surface: "radial-gradient(ellipse at 70% 58%, #a5442e 0 7%, transparent 17%), repeating-linear-gradient(0deg, #7f4928 0 9px, #dda264 10px 19px, #f3d49a 20px 31px)",
-  },
-  saturn: {
-    accent: "#F3D879",
-    glow: "rgba(243, 216, 121, 0.34)",
-    ring: true,
-    surface: "radial-gradient(circle at 34% 25%, #fff1b8 0 7%, transparent 18%), repeating-linear-gradient(0deg, #84673d 0 9px, #d9ba76 10px 20px, #f2dca2 21px 31px)",
-  },
-  uranus: {
-    accent: "#A8F3F2",
-    glow: "rgba(168, 243, 242, 0.3)",
-    ring: true,
-    surface: "radial-gradient(circle at 34% 25%, #ffffff 0 7%, transparent 18%), radial-gradient(circle at 54% 54%, #b8f2f4 0 21%, #53c8d8 58%, #17495f 100%)",
-  },
-  neptune: {
-    accent: "#78AFFF",
-    glow: "rgba(120, 175, 255, 0.36)",
-    surface: "radial-gradient(circle at 34% 25%, #dcecff 0 7%, transparent 18%), radial-gradient(circle at 58% 58%, #4ca7ff 0 24%, #245bdc 58%, #0b1b6a 100%)",
-  },
-  pluto: {
-    accent: "#D0A6FF",
-    glow: "rgba(208, 166, 255, 0.32)",
-    surface: "radial-gradient(circle at 34% 25%, #f1d9ff 0 7%, transparent 18%), radial-gradient(circle at 58% 48%, #c8a480 0 14%, transparent 26%), linear-gradient(145deg, #a48676, #593d48 50%, #201329)",
-  },
-  ascendant: {
-    accent: "#B8D8FF",
-    glow: "rgba(184, 216, 255, 0.34)",
-    ring: true,
-    surface: "radial-gradient(circle at 34% 25%, #ffffff 0 7%, transparent 18%), radial-gradient(circle at 58% 55%, #7258ff 0 18%, transparent 34%), linear-gradient(145deg, #23314d, #101725 50%, #050812)",
-  },
 };
 
 export default function NatalChart({
@@ -349,19 +274,6 @@ export default function NatalChart({
 
   const cardinalPoints = getCardinalPoints();
   const focusedPlanet = hoveredPlanet || selectedPlanet;
-  const activePlanet = hoveredPlanet || selectedPlanet;
-  const activePlanetPosition = activePlanet
-    ? activePlanet === "ascendant"
-      ? {
-          sign: houses[0]?.sign || "",
-          signDegree: houses[0]?.signDegree || 0,
-          house: 1,
-        }
-      : planetPositions[activePlanet]
-    : null;
-  const activePlanetVisual = activePlanet
-    ? planetPreviewVisuals[activePlanet] || planetPreviewVisuals.ascendant
-    : null;
   const aspectTouchesFocusedPlanet = (aspect: any) => (
     !focusedPlanet ||
     aspect.planet1 === focusedPlanet ||
@@ -1273,106 +1185,6 @@ export default function NatalChart({
           </svg>
 
         </div>
-
-        {activePlanet && activePlanetPosition && activePlanetVisual && (
-          <div
-            className="absolute left-1/2 top-3 z-20 w-[min(92vw,390px)] -translate-x-1/2 overflow-hidden rounded-[28px]"
-            style={{
-              pointerEvents: selectedPlanet === activePlanet ? "auto" : "none",
-              minHeight: 198,
-              padding: "22px 22px 20px",
-              border: `1px solid ${activePlanetVisual.accent}52`,
-              background:
-                "radial-gradient(circle at 84% 12%, rgba(246, 217, 91, 0.19), transparent 34%), linear-gradient(145deg, rgba(4, 5, 6, 0.98), rgba(17, 16, 10, 0.94) 52%, rgba(2, 2, 2, 0.98))",
-              boxShadow: `0 26px 70px rgba(0, 0, 0, 0.64), 0 0 24px ${activePlanetVisual.glow}, inset 0 1px 0 rgba(255, 255, 255, 0.1)`,
-              backdropFilter: "blur(20px)",
-              color: "#FFFFFF",
-            }}
-          >
-            <div
-              className="absolute inset-0 opacity-[0.13]"
-              style={{
-                backgroundImage:
-                  "linear-gradient(120deg, transparent 0 20%, rgba(247, 216, 90, 0.28) 21% 22%, transparent 23% 100%), linear-gradient(rgba(255,255,255,.22) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.16) 1px, transparent 1px)",
-                backgroundSize: "100% 100%, 28px 28px, 28px 28px",
-              }}
-            />
-
-            <div
-              className="absolute right-5 top-5 h-[88px] w-[88px]"
-              style={{ filter: `drop-shadow(0 0 18px ${activePlanetVisual.glow})` }}
-            >
-              {activePlanetVisual.ring && (
-                <div
-                  className="absolute left-1/2 top-1/2 h-[22px] w-[112px] -translate-x-1/2 -translate-y-1/2 rotate-[-16deg] rounded-full border"
-                  style={{ borderColor: `${activePlanetVisual.accent}99` }}
-                />
-              )}
-              <div
-                className="absolute inset-2 overflow-hidden rounded-full border border-white/20"
-                style={{
-                  background: activePlanetVisual.surface,
-                  boxShadow: "inset -14px -16px 22px rgba(0,0,0,.74), inset 8px 7px 13px rgba(255,255,255,.2)",
-                }}
-              >
-                <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_30%_24%,rgba(255,255,255,.42),transparent_22%),radial-gradient(circle_at_78%_76%,rgba(0,0,0,.88),transparent_52%)]" />
-              </div>
-            </div>
-
-            {selectedPlanet === activePlanet && (
-              <button
-                onClick={() => setSelectedPlanet(null)}
-                className="absolute right-3 top-3 z-30 grid h-7 w-7 place-items-center rounded-full border border-white/15 bg-black/40 text-white/80 backdrop-blur-md transition hover:bg-white/15 hover:text-white"
-                aria-label="Fermer l'encart"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            )}
-
-            <div className="relative z-10 max-w-[225px] pr-4">
-              <div
-                className="mb-4 h-px w-20 rounded-full"
-                style={{
-                  background: `linear-gradient(90deg, ${activePlanetVisual.accent}, transparent)`,
-                  boxShadow: `0 0 14px ${activePlanetVisual.glow}`,
-                }}
-              />
-              <div
-                className="text-[2.05rem] font-medium leading-none tracking-[0.01em]"
-                style={{
-                  color: "#FAF7EC",
-                  fontFamily: "Georgia, 'Times New Roman', serif",
-                  textShadow: "0 2px 14px rgba(0,0,0,.72)",
-                }}
-              >
-                {planetNames[activePlanet]}
-              </div>
-              <div
-                className="mt-2 text-[0.66rem] font-semibold uppercase tracking-[0.2em]"
-                style={{ color: "rgba(255,255,255,0.62)" }}
-              >
-                {activePlanetPosition.sign} {activePlanetPosition.signDegree.toFixed(1)}° / Maison {activePlanetPosition.house}
-              </div>
-              <p
-                className="mt-4 max-w-[268px] text-[0.88rem] font-normal leading-[1.55]"
-                style={{
-                  color: "rgba(246, 242, 226, 0.84)",
-                  fontFamily: "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
-                }}
-              >
-                {planetMicroDescriptions[activePlanet]}
-              </p>
-            </div>
-
-            <div
-              className="absolute bottom-4 right-5 h-1 w-20 rounded-full"
-              style={{
-                background: `linear-gradient(90deg, transparent, ${activePlanetVisual.accent}, #ffffff)`,
-                boxShadow: `0 0 16px ${activePlanetVisual.glow}`,
-              }}
-            />
-          </div>
-        )}
 
         {hoveredAspect !== null && aspects[hoveredAspect] && (
           <div
