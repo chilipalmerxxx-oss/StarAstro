@@ -1,6 +1,5 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { registerSW } from 'virtual:pwa-register';
 import App from './App.tsx';
 import ThemeToggle from './components/ThemeToggle.tsx';
 import './index.css';
@@ -25,7 +24,7 @@ function showBootError(error: unknown) {
   `;
 }
 
-// Always try to drop leftover service workers so shared links open the live deploy.
+// Always remove leftover service workers from previous deploys.
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker
     .getRegistrations()
@@ -42,15 +41,6 @@ if (window.caches?.keys) {
     .keys()
     .then((keys) => Promise.all(keys.map((key) => caches.delete(key))))
     .catch(() => undefined);
-}
-
-if (!import.meta.env.DEV) {
-  // selfDestroying SW: installs, clears old caches, then unregisters itself.
-  try {
-    registerSW({ immediate: true });
-  } catch (error) {
-    console.warn('[Nightstar] service worker setup skipped', error);
-  }
 }
 
 try {

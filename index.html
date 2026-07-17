@@ -6,55 +6,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>AstroThème</title>
 
-    <!-- Force recipients with an old PWA/service-worker cache onto the latest deploy once. -->
+    <!-- Bust stale service workers before the app boots. -->
     <script>
       (function () {
-        var BUILD = 'ns-2026-07-17-v5';
-        var KEY = 'nightstar-build-id';
-        try {
-          if (localStorage.getItem(KEY) === BUILD) return;
-        } catch (e) {}
-
-        var finish = function () {
-          try { localStorage.setItem(KEY, BUILD); } catch (e) {}
-          var url = new URL(window.location.href);
-          if (url.searchParams.get('nsboot') === '1') {
-            url.searchParams.delete('nsboot');
-            window.location.replace(url.pathname + url.search + url.hash);
-            return;
-          }
-          url.searchParams.set('nsboot', '1');
-          window.location.replace(url.pathname + url.search + url.hash);
-        };
-
-        var tasks = [];
         if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
-          tasks.push(
-            navigator.serviceWorker.getRegistrations().then(function (regs) {
-              return Promise.all(regs.map(function (reg) { return reg.unregister(); }));
-            })
-          );
+          navigator.serviceWorker.getRegistrations().then(function (regs) {
+            regs.forEach(function (reg) { reg.unregister(); });
+          });
         }
         if (window.caches && caches.keys) {
-          tasks.push(
-            caches.keys().then(function (keys) {
-              return Promise.all(keys.map(function (key) { return caches.delete(key); }));
-            })
-          );
+          caches.keys().then(function (keys) {
+            keys.forEach(function (key) { caches.delete(key); });
+          });
         }
-
-        Promise.all(tasks).then(finish).catch(finish);
       })();
     </script>
 
-    <!-- PWA -->
-    <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="theme-color" content="#111111" />
-
-    <!-- iOS PWA -->
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="AstroThème" />
     <link rel="apple-touch-icon" href="/icons/icon.svg" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com">

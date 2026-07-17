@@ -14,43 +14,15 @@ process.env.TMPDIR = localTempDir;
 export default defineConfig({
   plugins: [
     react(),
+    // PWA disabled: old service workers were trapping recipients on an outdated shell.
+    // Re-enable later only with network-first HTML and no index.html precache.
     VitePWA({
-      disable: process.env.NIGHTSTAR_OPEN_DESIGN_BUILD === '1',
-      // Kill stale service workers from older deploys so shared links don't stay stuck.
-      selfDestroying: true,
+      disable: true,
+      injectRegister: false,
       registerType: 'autoUpdate',
-      includeAssets: ['icons/icon.svg'],
-      manifest: {
-        name: 'AstroThème',
-        short_name: 'AstroThème',
-        description: 'Votre thème astral personnalisé',
-        theme_color: '#111111',
-        background_color: '#111111',
-        display: 'standalone',
-        orientation: 'portrait',
-        start_url: '/',
-        icons: [
-          {
-            src: 'icons/icon.svg',
-            sizes: 'any',
-            type: 'image/svg+xml',
-            purpose: 'any',
-          },
-          {
-            src: 'icons/icon.svg',
-            sizes: 'any',
-            type: 'image/svg+xml',
-            purpose: 'maskable',
-          },
-        ],
-      },
+      manifest: false,
       workbox: {
         cleanupOutdatedCaches: true,
-        clientsClaim: true,
-        skipWaiting: true,
-      },
-      devOptions: {
-        enabled: false,
       },
     }),
   ],

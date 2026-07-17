@@ -43,9 +43,14 @@
   ],
   "rewrites": [
     {
-      "source": "/((?!assets/|icons/|sw\\.js|workbox-.*\\.js|manifest\\.webmanifest|.*\\..*).*)",
+      "source": "/go",
+      "destination": "/go.html"
+    },
+    {
+      "source": "/((?!assets/|icons/|go\\.html|sw\\.js|workbox-.*\\.js|manifest\\.webmanifest|.*\\..*).*)",
       "destination": "/index.html"
     }
   ]
 }
+
 
