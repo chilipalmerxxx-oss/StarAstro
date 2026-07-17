@@ -43,23 +43,25 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,webmanifest}'],
-        maximumFileSizeToCacheInBytes: 12 * 1024 * 1024,
+        // Keep precache tiny for mobile: heavy images/videos must NOT be installed into the SW.
+        globPatterns: ['index.html', 'assets/*.js', 'assets/*.css', 'icons/*.svg', 'manifest.webmanifest'],
+        globIgnores: ['**/costar-**', '**/*-4k.*', '**/*.mp4', '**/*.jpg', '**/*.jpeg', '**/*.png'],
+        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
         cleanupOutdatedCaches: true,
         clientsClaim: true,
         skipWaiting: true,
-        // Always try network first for app shell so shared links get the latest deploy.
         navigateFallback: '/index.html',
+        navigateFallbackDenylist: [/^\/api\//, /\.[a-zA-Z0-9]+$/],
         runtimeCaching: [
           {
             urlPattern: ({ request }) => request.mode === 'navigate',
             handler: 'NetworkFirst',
             options: {
               cacheName: 'nightstar-pages',
-              networkTimeoutSeconds: 4,
+              networkTimeoutSeconds: 3,
               expiration: {
-                maxEntries: 8,
-                maxAgeSeconds: 60 * 60 * 24,
+                maxEntries: 4,
+                maxAgeSeconds: 60 * 60,
               },
             },
           },
@@ -70,8 +72,8 @@ export default defineConfig({
             options: {
               cacheName: 'nightstar-assets',
               expiration: {
-                maxEntries: 40,
-                maxAgeSeconds: 60 * 60 * 24 * 7,
+                maxEntries: 24,
+                maxAgeSeconds: 60 * 60 * 24,
               },
             },
           },
