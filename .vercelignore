@@ -9,6 +9,7 @@ project_temp
 *.log
 *.html
 !index.html
+!public/go.html
 CODE_SOURCE_*
 test-neptune-pluto.js
 Nightstar-Local-Llama.code-workspace
