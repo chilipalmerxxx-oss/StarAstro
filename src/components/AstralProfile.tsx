@@ -647,6 +647,46 @@ export default function AstralProfile({
     });
   };
 
+  const scrollToPremiumReading = (event: MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    const root = event.currentTarget.closest('.min-h-screen') as HTMLElement | null;
+    const premium = (root ?? document).querySelector(
+      '.astral-profile__action-suite--eclipse, .astral-profile__premium-cta',
+    ) as HTMLElement | null;
+    const scroller = event.currentTarget.closest('.app-content') as HTMLElement | null;
+    if (!premium) return;
+
+    if (scroller) {
+      const containerRect = scroller.getBoundingClientRect();
+      const targetRect = premium.getBoundingClientRect();
+      scroller.scrollTo({
+        top: scroller.scrollTop + targetRect.top - containerRect.top - 18,
+        behavior: 'smooth',
+      });
+      return;
+    }
+
+    premium.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+
+  const renderPremiumTeaser = () => (
+    <div className="astral-profile__premium-teaser">
+      <p className="astral-profile__premium-teaser-text">
+        Ceci n’est qu’un aperçu. La lecture complète révèle les liens entre planètes, maisons et aspects.
+      </p>
+      <button
+        type="button"
+        className="astral-profile__premium-teaser-btn"
+        onMouseDown={(event) => event.preventDefault()}
+        onClick={scrollToPremiumReading}
+      >
+        <span>Découvrir la lecture complète</span>
+        <ArrowRight size={14} strokeWidth={1.7} aria-hidden="true" />
+      </button>
+    </div>
+  );
+
   const renderAspectDescription = (aspect: any, className = 'astral-profile__content astral-profile__content--inline') => (
     <div className={`${className}${usesAstroAspectBackground(aspect) ? ' astro-aspect-background astro-aspect-background--active' : ''}`} key={`${aspect.planet1}-${aspect.type}-${aspect.planet2}`} ref={contentRef}>
       {usesAstroAspectBackground(aspect) && renderAstroAspectBackground()}
@@ -672,6 +712,7 @@ export default function AstralProfile({
           {paragraph}
         </p>
       ))}
+      {renderPremiumTeaser()}
       <button
         type="button"
         className="astral-profile__collapse-bottom"
@@ -710,6 +751,7 @@ export default function AstralProfile({
           Interprétation détaillée bientôt disponible.
         </p>
       )}
+      {renderPremiumTeaser()}
       <button
         type="button"
         className="astral-profile__collapse-bottom"

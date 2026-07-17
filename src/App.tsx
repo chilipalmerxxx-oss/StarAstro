@@ -24,6 +24,7 @@ import BottomNavBar, { type TabId } from './components/BottomNavBar';
 import type { OnboardingBirthData } from './components/Onboarding';
 import PremiumOnboardingY from './components/PremiumOnboardingY';
 import { calculateBirthChart } from './services/astrology';
+import { parseBirthDateTime } from './lib/birthDate';
 import { Supabase } from './lib/supabase';
 import { getSessionId } from './lib/session';
 
@@ -88,7 +89,7 @@ function App() {
     typeof window !== 'undefined' && window.location.hash === '#compatibility-test';
 
   const savedChart = loadChartFromLocalStorage();
-  const [showLanding, setShowLanding] = useState(!savedChart);
+  const [showLanding, setShowLanding] = useState(true);
   const [showVoid, setShowVoid] = useState(false);
   const [showCoStar, setShowCoStar] = useState(false);
   const [chartData, setChartData] = useState<ChartData | null>(savedChart);
@@ -133,7 +134,7 @@ function App() {
     setLoading(true);
 
     try {
-      const birthDateTime = new Date(`${data.date}T${data.time}`);
+      const birthDateTime = parseBirthDateTime(data.date, data.time, data.timezoneOffset);
 
       const chart = calculateBirthChart({
         date: birthDateTime,
@@ -188,7 +189,7 @@ function App() {
     setLoading(true);
 
     try {
-      const birthDateTime = new Date(`${data.date}T${data.time}`);
+      const birthDateTime = parseBirthDateTime(data.date, data.time, data.timezoneOffset);
       const chart = calculateBirthChart({
         date: birthDateTime,
         latitude: data.latitude,
@@ -227,7 +228,7 @@ function App() {
         aspects: chart.aspects,
       });
       localStorage.setItem(ONBOARDING_STORAGE_KEY, 'true');
-      setShowLanding(false);
+      setShowLanding(true);
       setShowVoid(false);
       setShowCoStar(false);
       setActiveTab('home');
@@ -252,7 +253,7 @@ function App() {
     setLoading(true);
 
     try {
-      const birthDateTime = new Date(`${data.date}T${data.time}`);
+      const birthDateTime = parseBirthDateTime(data.date, data.time, data.timezoneOffset);
       const chart = calculateBirthChart({
         date: birthDateTime,
         latitude: data.latitude,
@@ -518,7 +519,7 @@ function App() {
   if (showLanding) {
     if (chartData) {
       return (
-        <div className="app-shell app-shell--home-dashboard">
+        <div className="app-shell app-shell--home-dashboard app-shell--tide-home">
           <div className="app-content app-content--home-dashboard">
             <HomeDashboard
               chartData={chartData}

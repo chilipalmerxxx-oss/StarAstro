@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import DetailModal from "./DetailModal";
-import { Maximize2 } from "lucide-react";
+import { Maximize2, X } from "lucide-react";
 
 interface NatalChartProps {
   name: string;
@@ -97,6 +96,81 @@ const planetColors: Record<string, string> = {
   ascendant: "#1e293b",
 };
 
+const planetMicroDescriptions: Record<string, string> = {
+  sun: "Il décrit ton centre vital, ton besoin de créer et la manière dont tu affirmes ta présence. Là où il se place, tu cherches à rayonner avec cohérence.",
+  moon: "Elle révèle ton monde intérieur, tes besoins affectifs et la façon dont tu cherches la sécurité. Elle parle de mémoire, d’instinct et de protection.",
+  mercury: "Il montre ta manière de penser, d’apprendre et de transmettre. Sa position précise ton langage mental, ta curiosité et ton rapport aux idées.",
+  venus: "Elle indique ton rapport à l’amour, au plaisir et à la valeur personnelle. Elle révèle ce qui t’attire, ce que tu désires et ce que tu veux préserver.",
+  mars: "Il représente ton énergie d’action, ton courage et ta manière d’affirmer tes désirs. Il montre comment tu avances, combats et prends position.",
+  jupiter: "Il ouvre les zones d’expansion, de confiance et d’opportunité. Sa position montre où tu grandis, où tu espères et où tu cherches du sens.",
+  saturn: "Il parle de structure, de maturité et de responsabilité. Là où il se place, la vie demande rigueur, patience et construction durable.",
+  uranus: "Il indique ton besoin de liberté, d’innovation et de rupture avec les automatismes. Il réveille ce qui refuse d’être enfermé.",
+  neptune: "Il révèle l’imaginaire, l’intuition et la part invisible de ton thème. Sa position parle d’idéal, d’inspiration et de sensibilité subtile.",
+  pluto: "Il symbolise les transformations profondes, le pouvoir intérieur et les renaissances. Il montre où tu changes radicalement de peau.",
+  ascendant: "Il décrit ton entrée dans le monde, ton style spontané et l’impression que tu dégages. C’est la première vibration de ton thème.",
+};
+
+const planetPreviewVisuals: Record<string, { accent: string; surface: string; glow: string; ring?: boolean }> = {
+  sun: {
+    accent: "#F7D85A",
+    glow: "rgba(247, 216, 90, 0.45)",
+    surface: "radial-gradient(circle at 34% 26%, #fff8b7 0 9%, transparent 20%), radial-gradient(circle at 55% 52%, #ffb43a 0 28%, #f25a23 58%, #4d1208 100%)",
+  },
+  moon: {
+    accent: "#DDE7F5",
+    glow: "rgba(221, 231, 245, 0.34)",
+    surface: "radial-gradient(circle at 35% 25%, #ffffff 0 7%, transparent 18%), radial-gradient(circle at 64% 38%, rgba(51,60,72,.72) 0 8%, transparent 13%), radial-gradient(circle at 50% 54%, #d9dde4 0 20%, #828d9b 56%, #252c36 100%)",
+  },
+  mercury: {
+    accent: "#D6B985",
+    glow: "rgba(214, 185, 133, 0.34)",
+    surface: "radial-gradient(circle at 32% 25%, #f8dfb7 0 7%, transparent 18%), radial-gradient(circle at 66% 46%, rgba(54,39,30,.62) 0 9%, transparent 14%), radial-gradient(circle at 50% 54%, #c6a06e 0 18%, #7e6045 52%, #2d2521 100%)",
+  },
+  venus: {
+    accent: "#F1D082",
+    glow: "rgba(241, 208, 130, 0.38)",
+    surface: "radial-gradient(circle at 34% 25%, #fff0c2 0 8%, transparent 19%), repeating-linear-gradient(-18deg, #f4d89a 0 10px, #bf8046 11px 19px, #f0bf77 20px 31px)",
+  },
+  mars: {
+    accent: "#F2734E",
+    glow: "rgba(242, 115, 78, 0.38)",
+    surface: "radial-gradient(circle at 34% 25%, #ffd2a0 0 7%, transparent 18%), radial-gradient(circle at 65% 50%, rgba(65,23,15,.7) 0 11%, transparent 18%), linear-gradient(145deg, #d85f35, #8c3325 52%, #2c1514)",
+  },
+  jupiter: {
+    accent: "#F4D66D",
+    glow: "rgba(244, 214, 109, 0.34)",
+    surface: "radial-gradient(ellipse at 70% 58%, #a5442e 0 7%, transparent 17%), repeating-linear-gradient(0deg, #7f4928 0 9px, #dda264 10px 19px, #f3d49a 20px 31px)",
+  },
+  saturn: {
+    accent: "#F3D879",
+    glow: "rgba(243, 216, 121, 0.34)",
+    ring: true,
+    surface: "radial-gradient(circle at 34% 25%, #fff1b8 0 7%, transparent 18%), repeating-linear-gradient(0deg, #84673d 0 9px, #d9ba76 10px 20px, #f2dca2 21px 31px)",
+  },
+  uranus: {
+    accent: "#A8F3F2",
+    glow: "rgba(168, 243, 242, 0.3)",
+    ring: true,
+    surface: "radial-gradient(circle at 34% 25%, #ffffff 0 7%, transparent 18%), radial-gradient(circle at 54% 54%, #b8f2f4 0 21%, #53c8d8 58%, #17495f 100%)",
+  },
+  neptune: {
+    accent: "#78AFFF",
+    glow: "rgba(120, 175, 255, 0.36)",
+    surface: "radial-gradient(circle at 34% 25%, #dcecff 0 7%, transparent 18%), radial-gradient(circle at 58% 58%, #4ca7ff 0 24%, #245bdc 58%, #0b1b6a 100%)",
+  },
+  pluto: {
+    accent: "#D0A6FF",
+    glow: "rgba(208, 166, 255, 0.32)",
+    surface: "radial-gradient(circle at 34% 25%, #f1d9ff 0 7%, transparent 18%), radial-gradient(circle at 58% 48%, #c8a480 0 14%, transparent 26%), linear-gradient(145deg, #a48676, #593d48 50%, #201329)",
+  },
+  ascendant: {
+    accent: "#B8D8FF",
+    glow: "rgba(184, 216, 255, 0.34)",
+    ring: true,
+    surface: "radial-gradient(circle at 34% 25%, #ffffff 0 7%, transparent 18%), radial-gradient(circle at 58% 55%, #7258ff 0 18%, transparent 34%), linear-gradient(145deg, #23314d, #101725 50%, #050812)",
+  },
+};
+
 export default function NatalChart({
   name,
   birthDate,
@@ -107,12 +181,21 @@ export default function NatalChart({
   onAspectClick,
   onPlanetClick,
   fullscreenMode = false,
-  enableNavigation = false,
 }: NatalChartProps) {
   const [selectedPlanet, setSelectedPlanet] = useState<string | null>(null);
   const [hoveredPlanet, setHoveredPlanet] = useState<string | null>(null);
   const [hoveredAspect, setHoveredAspect] = useState<number | null>(null);
   const [selectedAspect, setSelectedAspect] = useState<number | null>(null);
+
+  const handlePlanetSelection = (key: string) => {
+    setSelectedPlanet(key);
+    onPlanetClick?.(key);
+  };
+
+  const handleAspectSelection = (aspect: (typeof aspects)[number], index: number) => {
+    setSelectedAspect(index);
+    onAspectClick?.(aspect);
+  };
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isMobileWheel, setIsMobileWheel] = useState(false);
 
@@ -266,6 +349,19 @@ export default function NatalChart({
 
   const cardinalPoints = getCardinalPoints();
   const focusedPlanet = hoveredPlanet || selectedPlanet;
+  const activePlanet = hoveredPlanet || selectedPlanet;
+  const activePlanetPosition = activePlanet
+    ? activePlanet === "ascendant"
+      ? {
+          sign: houses[0]?.sign || "",
+          signDegree: houses[0]?.signDegree || 0,
+          house: 1,
+        }
+      : planetPositions[activePlanet]
+    : null;
+  const activePlanetVisual = activePlanet
+    ? planetPreviewVisuals[activePlanet] || planetPreviewVisuals.ascendant
+    : null;
   const aspectTouchesFocusedPlanet = (aspect: any) => (
     !focusedPlanet ||
     aspect.planet1 === focusedPlanet ||
@@ -360,16 +456,47 @@ export default function NatalChart({
                 x2="100%"
                 y2="100%"
               >
-                <stop offset="0%" stopColor="#050608" />
+                <stop offset="0%" stopColor="#17130F" />
+                <stop offset="46%" stopColor="#08090D" />
                 <stop offset="100%" stopColor="#000000" />
               </linearGradient>
 
               <linearGradient id="goldRingGradient" x1="16%" y1="8%" x2="86%" y2="92%">
-                <stop offset="0%" stopColor="#F8F2D8" />
-                <stop offset="30%" stopColor="#E8D7A8" />
-                <stop offset="62%" stopColor="#B7C7E6" />
-                <stop offset="100%" stopColor="#F4E8C2" />
+                <stop offset="0%" stopColor="#FFF7D7" />
+                <stop offset="23%" stopColor="#CFAF6C" />
+                <stop offset="52%" stopColor="#F7E7B6" />
+                <stop offset="72%" stopColor="#AEBBD1" />
+                <stop offset="100%" stopColor="#FFF2C8" />
               </linearGradient>
+
+              <linearGradient id="champagneRingGradient" x1="10%" y1="0%" x2="92%" y2="100%">
+                <stop offset="0%" stopColor="#FFF9DE" />
+                <stop offset="28%" stopColor="#D2B574" />
+                <stop offset="56%" stopColor="#F4E8C2" />
+                <stop offset="78%" stopColor="#B9C7DC" />
+                <stop offset="100%" stopColor="#FFF1BF" />
+              </linearGradient>
+
+              <linearGradient id="planetBevelGradient" x1="12%" y1="6%" x2="88%" y2="94%">
+                <stop offset="0%" stopColor="#FFFFFF" />
+                <stop offset="22%" stopColor="#FFE9AE" />
+                <stop offset="54%" stopColor="#B78F45" />
+                <stop offset="78%" stopColor="#D8E3F8" />
+                <stop offset="100%" stopColor="#FFF2C8" />
+              </linearGradient>
+
+              <radialGradient id="wheelSurfaceGlow" cx="38%" cy="26%" r="72%">
+                <stop offset="0%" stopColor="rgba(255, 246, 218, 0.16)" />
+                <stop offset="36%" stopColor="rgba(188, 168, 120, 0.07)" />
+                <stop offset="74%" stopColor="rgba(30, 32, 40, 0.02)" />
+                <stop offset="100%" stopColor="rgba(0, 0, 0, 0)" />
+              </radialGradient>
+
+              <radialGradient id="planetDiscGradient" cx="38%" cy="28%" r="70%">
+                <stop offset="0%" stopColor="#27252B" />
+                <stop offset="48%" stopColor="#090A10" />
+                <stop offset="100%" stopColor="#020307" />
+              </radialGradient>
 
               <linearGradient
                 id="houseGradient"
@@ -479,6 +606,17 @@ export default function NatalChart({
                 <feDropShadow dx="0" dy="0" stdDeviation="7" floodColor="#FFE6AD" floodOpacity="0.26" />
                 <feDropShadow dx="0" dy="0" stdDeviation="14" floodColor="#FFB86B" floodOpacity="0.12" />
               </filter>
+
+              <filter id="wheelGrain" x="-20%" y="-20%" width="140%" height="140%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.82" numOctaves="2" seed="17" result="noise" />
+                <feColorMatrix
+                  in="noise"
+                  type="matrix"
+                  values="0 0 0 0 0.95 0 0 0 0 0.86 0 0 0 0 0.68 0 0 0 0.28 0"
+                  result="grain"
+                />
+                <feBlend in="SourceGraphic" in2="grain" mode="soft-light" />
+              </filter>
             </defs>
 
             <circle
@@ -495,10 +633,50 @@ export default function NatalChart({
             <circle
               cx={center}
               cy={center}
+              r={radiusOuter + 14}
+              fill="none"
+              stroke="rgba(255, 241, 191, 0.18)"
+              strokeWidth="1.2"
+              strokeDasharray="1 14"
+              opacity="0.72"
+            />
+
+            <circle
+              cx={center}
+              cy={center}
+              r={radiusOuter + 7}
+              fill="none"
+              stroke="url(#champagneRingGradient)"
+              strokeWidth="1.1"
+              opacity="0.62"
+            />
+
+            <circle
+              cx={center}
+              cy={center}
               r={radiusOuter}
               fill="url(#zodiacGradient)"
-              stroke="url(#goldRingGradient)"
-              strokeWidth="5"
+              stroke="url(#champagneRingGradient)"
+              strokeWidth="4.4"
+            />
+
+            <circle
+              cx={center}
+              cy={center}
+              r={radiusOuter - 4}
+              fill="url(#wheelSurfaceGlow)"
+              opacity="0.82"
+              style={{ pointerEvents: "none" }}
+            />
+
+            <circle
+              cx={center}
+              cy={center}
+              r={radiusOuter - 8}
+              fill="rgba(255, 255, 255, 0.035)"
+              filter="url(#wheelGrain)"
+              opacity="0.68"
+              style={{ pointerEvents: "none" }}
             />
 
             <circle
@@ -506,9 +684,19 @@ export default function NatalChart({
               cy={center}
               r={radiusOuter - 18}
               fill="none"
-              stroke="rgba(210, 222, 245, 0.26)"
-              strokeWidth="1.5"
-              opacity="0.8"
+              stroke="rgba(244, 232, 194, 0.34)"
+              strokeWidth="1.15"
+              opacity="0.86"
+            />
+
+            <circle
+              cx={center}
+              cy={center}
+              r={radiusOuter - 30}
+              fill="none"
+              stroke="rgba(185, 199, 220, 0.18)"
+              strokeWidth="0.9"
+              opacity="0.82"
             />
 
             {Array.from({ length: 72 }, (_, i) => {
@@ -525,9 +713,9 @@ export default function NatalChart({
                   y1={inner.y}
                   x2={outer.x}
                   y2={outer.y}
-                  stroke={isMajor ? "#E8D7A8" : "rgba(210, 222, 245, 0.42)"}
-                  strokeWidth={isMajor ? "2.2" : isMedium ? "1.35" : "0.8"}
-                  opacity={isMajor ? "0.94" : isMedium ? "0.66" : "0.42"}
+                  stroke={isMajor ? "#F4E8C2" : isMedium ? "rgba(210, 222, 245, 0.42)" : "rgba(232, 215, 168, 0.34)"}
+                  strokeWidth={isMajor ? "1.9" : isMedium ? "1.15" : "0.7"}
+                  opacity={isMajor ? "0.9" : isMedium ? "0.58" : "0.36"}
                   strokeLinecap="round"
                 />
               );
@@ -559,9 +747,9 @@ export default function NatalChart({
                     y1={getXY(angle, radiusHouses).y}
                     x2={getXY(angle, radiusOuter).x}
                     y2={getXY(angle, radiusOuter).y}
-                    stroke="rgba(232, 215, 168, 0.72)"
-                    strokeWidth="2.4"
-                    opacity="0.86"
+                    stroke="rgba(244, 232, 194, 0.62)"
+                    strokeWidth="1.8"
+                    opacity="0.82"
                     strokeLinecap="round"
                   />
 
@@ -584,8 +772,28 @@ export default function NatalChart({
               cy={center}
               r={radiusHouses}
               fill="url(#houseGradient)"
-              stroke="url(#goldRingGradient)"
-              strokeWidth="3"
+              stroke="url(#champagneRingGradient)"
+              strokeWidth="2.6"
+              opacity="0.82"
+            />
+
+            <circle
+              cx={center}
+              cy={center}
+              r={radiusHouses + 8}
+              fill="none"
+              stroke="rgba(255, 241, 191, 0.28)"
+              strokeWidth="0.9"
+              opacity="0.72"
+            />
+
+            <circle
+              cx={center}
+              cy={center}
+              r={radiusHouses - 9}
+              fill="none"
+              stroke="rgba(185, 199, 220, 0.18)"
+              strokeWidth="0.8"
               opacity="0.78"
             />
 
@@ -614,20 +822,20 @@ export default function NatalChart({
                     y1={y1}
                     x2={x2}
                     y2={y2}
-                    stroke="#E8D7A8"
-                    strokeWidth="1.7"
+                    stroke="#F4E8C2"
+                    strokeWidth="1.45"
                     strokeDasharray="none"
-                    opacity="0.7"
+                    opacity="0.64"
                   />
                   <line
                     x1={sx1}
                     y1={sy1}
                     x2={sx2}
                     y2={sy2}
-                    stroke="rgba(232, 215, 168, 0.68)"
-                    strokeWidth="1.7"
+                    stroke="rgba(244, 232, 194, 0.58)"
+                    strokeWidth="1.3"
                     strokeLinecap="round"
-                    opacity="0.8"
+                    opacity="0.7"
                   />
                 </g>
               );
@@ -669,10 +877,30 @@ export default function NatalChart({
               cy={center}
               r={radiusInner}
               fill="url(#natalCenterInk)"
-              stroke="url(#goldRingGradient)"
-              strokeWidth="1.6"
-              opacity="0.86"
+              stroke="url(#champagneRingGradient)"
+              strokeWidth="1.8"
+              opacity="0.9"
               filter="url(#zodiacGlow)"
+            />
+
+            <circle
+              cx={center}
+              cy={center}
+              r={radiusInner + 9}
+              fill="none"
+              stroke="rgba(255, 241, 191, 0.22)"
+              strokeWidth="0.9"
+              opacity="0.76"
+            />
+
+            <circle
+              cx={center}
+              cy={center}
+              r={radiusInner - 12}
+              fill="none"
+              stroke="rgba(185, 199, 220, 0.16)"
+              strokeWidth="0.8"
+              opacity="0.78"
             />
 
             <circle
@@ -747,13 +975,15 @@ export default function NatalChart({
                   }
                   strokeLinecap="round"
                   style={{
-                    transition: "all 0.2s",
+                    cursor: onAspectClick ? "pointer" : "default",
+                    transition: "stroke-width 0.32s ease, opacity 0.32s ease, filter 0.32s ease",
                     filter: isHighlighted || (focusedPlanet && isFocused)
-                      ? "drop-shadow(0 0 5px currentColor)"
+                      ? "drop-shadow(0 0 4px currentColor)"
                       : "none",
                   }}
                   onMouseEnter={() => setHoveredAspect(i)}
                   onMouseLeave={() => setHoveredAspect(null)}
+                  onClick={() => handleAspectSelection(asp, i)}
                 />
               );
             })}
@@ -771,25 +1001,34 @@ export default function NatalChart({
               const glyphOffset = planetGlyphOffsets[key] || { x: 0, y: 2 };
 
               return (
-                <g key={`planet-${key}`} opacity={isDimmed ? 0.34 : 1}>
+                <g
+                  key={`planet-${key}`}
+                  opacity={isDimmed ? 0.38 : 1}
+                  style={{
+                    transition: "opacity 0.32s ease, filter 0.32s ease",
+                    filter: isHighlighted
+                      ? "drop-shadow(0 0 10px rgba(255, 230, 173, 0.34))"
+                      : "none",
+                  }}
+                >
                   <line
                     x1={lineX}
                     y1={lineY}
                     x2={x}
                     y2={y}
                     stroke={isHighlighted ? "#FFB86B" : "#E8D7A8"}
-                    strokeWidth={isHighlighted ? "2.5" : "1.4"}
+                    strokeWidth={isHighlighted ? "2.4" : "1.4"}
                     opacity={isDimmed ? "0.18" : isHighlighted ? "0.78" : "0.42"}
-                    filter="url(#zodiacGlow)"
+                    strokeLinecap="round"
                   />
 
                   {/* Outer glow halo */}
                   <circle
                     cx={x}
                     cy={y}
-                    r={isHighlighted ? "55" : "49"}
+                    r={isHighlighted ? "56" : "50"}
                     fill={planetColors[key] || "#64748b"}
-                    opacity={isDimmed ? "0.05" : isHighlighted ? "0.18" : "0.11"}
+                    opacity={isDimmed ? "0.04" : isHighlighted ? "0.16" : "0.08"}
                     filter="url(#premiumPlanetGlow)"
                     style={{ pointerEvents: "none" }}
                   />
@@ -799,9 +1038,9 @@ export default function NatalChart({
                     cy={y}
                     r={isHighlighted ? "52" : "46"}
                     fill="none"
-                    stroke={isHighlighted ? "#FFE6AD" : "rgba(244, 232, 194, 0.56)"}
-                    strokeWidth={isHighlighted ? "3.4" : "2.6"}
-                    opacity={isDimmed ? "0.10" : isHighlighted ? "0.74" : "0.48"}
+                    stroke="url(#planetBevelGradient)"
+                    strokeWidth={isHighlighted ? "2.7" : "1.8"}
+                    opacity={isDimmed ? "0.1" : isHighlighted ? "0.82" : "0.58"}
                     filter="url(#premiumPlanetGlow)"
                     style={{ pointerEvents: "none" }}
                   />
@@ -811,13 +1050,15 @@ export default function NatalChart({
                     cx={x}
                     cy={y}
                     r={isHighlighted ? "48" : "42"}
-                    fill="rgba(10, 11, 17, 0.96)"
-                    stroke={isHighlighted ? "#FFF0C2" : "rgba(255, 230, 173, 0.9)"}
-                    strokeWidth={isHighlighted ? "5" : "3.6"}
+                    fill="url(#planetDiscGradient)"
+                    stroke="url(#planetBevelGradient)"
+                    strokeWidth={isHighlighted ? "4" : "2.9"}
                     filter="url(#planetDiscShine)"
                     style={{
-                      transition: "all 0.2s",
+                      transition: "all 0.32s ease",
+                      cursor: "pointer",
                     }}
+                    onClick={() => handlePlanetSelection(key)}
                     onMouseEnter={() => setHoveredPlanet(key)}
                     onMouseLeave={() => setHoveredPlanet(null)}
                   />
@@ -828,7 +1069,18 @@ export default function NatalChart({
                     cy={y}
                     r={isHighlighted ? "38" : "33"}
                     fill={planetColors[key] || "#64748b"}
-                    opacity={isHighlighted ? "0.6" : "0.42"}
+                    opacity={isHighlighted ? "0.54" : "0.36"}
+                    style={{ pointerEvents: "none" }}
+                  />
+
+                  <circle
+                    cx={x}
+                    cy={y}
+                    r={isHighlighted ? "44" : "38"}
+                    fill="none"
+                    stroke="rgba(255, 255, 255, 0.12)"
+                    strokeWidth="0.8"
+                    opacity={isDimmed ? "0.08" : "0.62"}
                     style={{ pointerEvents: "none" }}
                   />
 
@@ -838,8 +1090,19 @@ export default function NatalChart({
                     cy={y}
                     r={isHighlighted ? "40" : "35"}
                     fill="none"
-                    stroke={isHighlighted ? "rgba(255, 230, 173, 0.92)" : "rgba(255, 230, 173, 0.48)"}
-                    strokeWidth={isHighlighted ? "1.4" : "1.1"}
+                    stroke={isHighlighted ? "rgba(255, 241, 191, 0.78)" : "rgba(255, 241, 191, 0.34)"}
+                    strokeWidth={isHighlighted ? "1.2" : "0.9"}
+                    style={{ pointerEvents: "none" }}
+                  />
+
+                  <ellipse
+                    cx={x - 13}
+                    cy={y - 15}
+                    rx={isHighlighted ? "15" : "11"}
+                    ry={isHighlighted ? "6" : "4.5"}
+                    fill="rgba(255, 255, 255, 0.26)"
+                    opacity={isDimmed ? "0.06" : isHighlighted ? "0.46" : "0.24"}
+                    transform={`rotate(-24 ${x - 13} ${y - 15})`}
                     style={{ pointerEvents: "none" }}
                   />
 
@@ -848,6 +1111,7 @@ export default function NatalChart({
                       transform={`translate(${x + glyphOffset.x}, ${y + glyphOffset.y}) scale(${isMobileWheel ? (isHighlighted ? 0.66 : 0.58) : (isHighlighted ? 0.6 : 0.52)}) translate(-4, 6)`}
                       style={{
                         pointerEvents: "none",
+                        transition: "all 0.32s ease",
                         filter: "drop-shadow(0 1px 2px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 5px rgba(150, 180, 255, 0.45))",
                       }}
                     >
@@ -878,7 +1142,7 @@ export default function NatalChart({
                       paintOrder="stroke fill"
                       filter="url(#premiumPlanetGlow)"
                       style={{
-                        transition: "all 0.2s",
+                        transition: "all 0.32s ease",
                         pointerEvents: "none",
                         filter: "drop-shadow(0 1px 2px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 8px rgba(255, 255, 255, 0.42)) drop-shadow(0 0 12px rgba(150, 180, 255, 0.38))",
                       }}
@@ -899,11 +1163,20 @@ export default function NatalChart({
                 const { x: lx, y: ly } = getXY(point.angle, labelR);
                 return (
                   <g key={`cardinal-${i}`}>
-                    <text x={lx} y={ly}
-                      fontSize="32" fontWeight="900"
-                      textAnchor="middle" dominantBaseline="middle"
-                      fill="#E8D7A8"
-                      style={{ fontFamily: "serif", letterSpacing: "1px", filter: "drop-shadow(0 0 4px rgba(150, 180, 255, 0.22))" }}>
+                    <text
+                      x={lx}
+                      y={ly}
+                      fontSize="30"
+                      fontWeight="700"
+                      textAnchor="middle"
+                      dominantBaseline="middle"
+                      fill="#F4E8C2"
+                      style={{
+                        fontFamily: "Cormorant Garamond, Georgia, Times New Roman, serif",
+                        letterSpacing: "1.1px",
+                        filter: "drop-shadow(0 1px 2px rgba(0, 0, 0, 0.58)) drop-shadow(0 0 3px rgba(255, 232, 180, 0.18))",
+                      }}
+                    >
                       {point.label}
                     </text>
                   </g>
@@ -921,30 +1194,75 @@ export default function NatalChart({
               const isDimmed = Boolean(focusedPlanet && focusedPlanet !== "ascendant");
 
               return (
-                <g key={`cardinal-${i}`} opacity={isDimmed ? 0.34 : 1}>
+                <g
+                  key={`cardinal-${i}`}
+                  opacity={isDimmed ? 0.38 : 1}
+                  style={{
+                    transition: "opacity 0.32s ease, filter 0.32s ease",
+                    filter: isHighlighted
+                      ? "drop-shadow(0 0 10px rgba(255, 230, 173, 0.3))"
+                      : "none",
+                  }}
+                >
                   <line x1={lineX} y1={lineY} x2={x} y2={y}
                     stroke={isHighlighted ? "#FFB86B" : "#E8D7A8"}
                     strokeWidth={isHighlighted ? "2.4" : "1.4"}
-                    opacity={isDimmed ? "0.18" : isHighlighted ? "0.78" : "0.42"} />
+                    opacity={isDimmed ? "0.18" : isHighlighted ? "0.78" : "0.42"}
+                    strokeLinecap="round" />
+                  <circle cx={x} cy={y}
+                    r={isHighlighted ? "54" : "48"}
+                    fill="#1e293b"
+                    opacity={isDimmed ? "0.04" : isHighlighted ? "0.14" : "0.08"}
+                    filter="url(#premiumPlanetGlow)"
+                    style={{ pointerEvents: "none" }}
+                  />
+                  <circle cx={x} cy={y}
+                    r={isHighlighted ? "50" : "44"}
+                    fill="none"
+                    stroke="url(#planetBevelGradient)"
+                    strokeWidth={isHighlighted ? "2.4" : "1.7"}
+                    opacity={isDimmed ? "0.1" : isHighlighted ? "0.78" : "0.54"}
+                    filter="url(#premiumPlanetGlow)"
+                    style={{ pointerEvents: "none" }}
+                  />
                   <circle cx={x} cy={y}
                     r={isHighlighted ? "48" : "42"}
-                    fill="rgba(7, 8, 12, 0.94)"
-                    stroke={isHighlighted ? "#FFE6AD" : "rgba(232, 215, 168, 0.62)"}
-                    strokeWidth={isHighlighted ? "4.5" : "2.4"}
-                    filter="url(#planetDepthShadow)"
-                    style={{ transition: "all 0.2s" }}
+                    fill="url(#planetDiscGradient)"
+                    stroke="url(#planetBevelGradient)"
+                    strokeWidth={isHighlighted ? "3.8" : "2.7"}
+                    filter="url(#planetDiscShine)"
+                    style={{ transition: "all 0.32s ease", cursor: "pointer" }}
+                    onClick={() => handlePlanetSelection("ascendant")}
                     onMouseEnter={() => setHoveredPlanet("ascendant")}
                     onMouseLeave={() => setHoveredPlanet(null)}
                   />
+                  <circle cx={x} cy={y}
+                    r={isHighlighted ? "40" : "35"}
+                    fill="none"
+                    stroke={isHighlighted ? "rgba(255, 241, 191, 0.72)" : "rgba(255, 241, 191, 0.34)"}
+                    strokeWidth={isHighlighted ? "1.1" : "0.9"}
+                    style={{ pointerEvents: "none" }}
+                  />
+                  <ellipse
+                    cx={x - 13}
+                    cy={y - 15}
+                    rx={isHighlighted ? "14" : "10"}
+                    ry={isHighlighted ? "5.8" : "4.2"}
+                    fill="rgba(255, 255, 255, 0.24)"
+                    opacity={isDimmed ? "0.06" : isHighlighted ? "0.44" : "0.22"}
+                    transform={`rotate(-24 ${x - 13} ${y - 15})`}
+                    style={{ pointerEvents: "none" }}
+                  />
                   <text x={x} y={y + 1}
-                    fontSize={isHighlighted ? "34" : "30"}
-                    fontWeight="900" textAnchor="middle" dominantBaseline="middle"
-                    fill="#F8FAFC"
+                    fontSize={isHighlighted ? "32" : "28"}
+                    fontWeight="700" textAnchor="middle" dominantBaseline="middle"
+                    fill="#F4E8C2"
                     style={{
-                      transition: "all 0.2s",
+                      transition: "all 0.32s ease",
                       pointerEvents: "none",
-                      fontFamily: "serif",
-                      filter: "drop-shadow(0 1px 2px rgba(0, 0, 0, 0.92)) drop-shadow(0 0 5px rgba(150, 180, 255, 0.42))",
+                      fontFamily: "Cormorant Garamond, Georgia, Times New Roman, serif",
+                      letterSpacing: "0.8px",
+                      filter: "drop-shadow(0 1px 2px rgba(0, 0, 0, 0.84)) drop-shadow(0 0 4px rgba(255, 232, 180, 0.26))",
                     }}>
                     ASC
                   </text>
@@ -956,43 +1274,103 @@ export default function NatalChart({
 
         </div>
 
-        {hoveredPlanet && (
+        {activePlanet && activePlanetPosition && activePlanetVisual && (
           <div
-            className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10"
+            className="absolute left-1/2 top-3 z-20 w-[min(92vw,390px)] -translate-x-1/2 overflow-hidden rounded-[28px]"
             style={{
-              pointerEvents: "none",
-              minWidth: 190,
-              padding: "12px 16px",
-              border: "1px solid rgba(232, 215, 168, 0.28)",
-              borderRadius: 14,
-              background: "linear-gradient(180deg, rgba(8, 12, 22, 0.94), rgba(3, 6, 13, 0.88))",
-              boxShadow: "0 18px 42px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.08)",
-              backdropFilter: "blur(14px)",
-              color: "#F8FAFC",
+              pointerEvents: selectedPlanet === activePlanet ? "auto" : "none",
+              minHeight: 198,
+              padding: "22px 22px 20px",
+              border: `1px solid ${activePlanetVisual.accent}52`,
+              background:
+                "radial-gradient(circle at 84% 12%, rgba(246, 217, 91, 0.19), transparent 34%), linear-gradient(145deg, rgba(4, 5, 6, 0.98), rgba(17, 16, 10, 0.94) 52%, rgba(2, 2, 2, 0.98))",
+              boxShadow: `0 26px 70px rgba(0, 0, 0, 0.64), 0 0 24px ${activePlanetVisual.glow}, inset 0 1px 0 rgba(255, 255, 255, 0.1)`,
+              backdropFilter: "blur(20px)",
+              color: "#FFFFFF",
             }}
           >
             <div
-              className="text-base font-bold"
+              className="absolute inset-0 opacity-[0.13]"
               style={{
-                color: "#F4E8C2",
-                fontFamily: "'Cormorant Garamond', Georgia, serif",
-                fontSize: "1.05rem",
-                letterSpacing: "0.02em",
+                backgroundImage:
+                  "linear-gradient(120deg, transparent 0 20%, rgba(247, 216, 90, 0.28) 21% 22%, transparent 23% 100%), linear-gradient(rgba(255,255,255,.22) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.16) 1px, transparent 1px)",
+                backgroundSize: "100% 100%, 28px 28px, 28px 28px",
               }}
+            />
+
+            <div
+              className="absolute right-5 top-5 h-[88px] w-[88px]"
+              style={{ filter: `drop-shadow(0 0 18px ${activePlanetVisual.glow})` }}
             >
-              {planetNames[hoveredPlanet]} {planetGlyphs[hoveredPlanet]}
+              {activePlanetVisual.ring && (
+                <div
+                  className="absolute left-1/2 top-1/2 h-[22px] w-[112px] -translate-x-1/2 -translate-y-1/2 rotate-[-16deg] rounded-full border"
+                  style={{ borderColor: `${activePlanetVisual.accent}99` }}
+                />
+              )}
+              <div
+                className="absolute inset-2 overflow-hidden rounded-full border border-white/20"
+                style={{
+                  background: activePlanetVisual.surface,
+                  boxShadow: "inset -14px -16px 22px rgba(0,0,0,.74), inset 8px 7px 13px rgba(255,255,255,.2)",
+                }}
+              >
+                <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_30%_24%,rgba(255,255,255,.42),transparent_22%),radial-gradient(circle_at_78%_76%,rgba(0,0,0,.88),transparent_52%)]" />
+              </div>
             </div>
-            <div className="text-sm mt-1" style={{ color: "rgba(210, 222, 245, 0.82)" }}>
-              {hoveredPlanet === "ascendant"
-                ? `${houses[0]?.sign} ${houses[0]?.signDegree.toFixed(2)}°`
-                : `${planetPositions[hoveredPlanet].sign} ${planetPositions[hoveredPlanet].signDegree.toFixed(2)}°`}
+
+            {selectedPlanet === activePlanet && (
+              <button
+                onClick={() => setSelectedPlanet(null)}
+                className="absolute right-3 top-3 z-30 grid h-7 w-7 place-items-center rounded-full border border-white/15 bg-black/40 text-white/80 backdrop-blur-md transition hover:bg-white/15 hover:text-white"
+                aria-label="Fermer l'encart"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+
+            <div className="relative z-10 max-w-[225px] pr-4">
+              <div
+                className="mb-4 h-px w-20 rounded-full"
+                style={{
+                  background: `linear-gradient(90deg, ${activePlanetVisual.accent}, transparent)`,
+                  boxShadow: `0 0 14px ${activePlanetVisual.glow}`,
+                }}
+              />
+              <div
+                className="text-[2.05rem] font-medium leading-none tracking-[0.01em]"
+                style={{
+                  color: "#FAF7EC",
+                  fontFamily: "Georgia, 'Times New Roman', serif",
+                  textShadow: "0 2px 14px rgba(0,0,0,.72)",
+                }}
+              >
+                {planetNames[activePlanet]}
+              </div>
+              <div
+                className="mt-2 text-[0.66rem] font-semibold uppercase tracking-[0.2em]"
+                style={{ color: "rgba(255,255,255,0.62)" }}
+              >
+                {activePlanetPosition.sign} {activePlanetPosition.signDegree.toFixed(1)}° / Maison {activePlanetPosition.house}
+              </div>
+              <p
+                className="mt-4 max-w-[268px] text-[0.88rem] font-normal leading-[1.55]"
+                style={{
+                  color: "rgba(246, 242, 226, 0.84)",
+                  fontFamily: "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
+                }}
+              >
+                {planetMicroDescriptions[activePlanet]}
+              </p>
             </div>
-            <div className="text-sm" style={{ color: "rgba(232, 215, 168, 0.72)" }}>
-              Maison{" "}
-              {hoveredPlanet === "ascendant"
-                ? "1"
-                : planetPositions[hoveredPlanet].house}
-            </div>
+
+            <div
+              className="absolute bottom-4 right-5 h-1 w-20 rounded-full"
+              style={{
+                background: `linear-gradient(90deg, transparent, ${activePlanetVisual.accent}, #ffffff)`,
+                boxShadow: `0 0 16px ${activePlanetVisual.glow}`,
+              }}
+            />
           </div>
         )}
 
@@ -1037,13 +1415,13 @@ export default function NatalChart({
 
 
 
-      {!isFullscreen && (
+      {!isFullscreen && !fullscreenMode && (
         <>
           <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-1 md:gap-2 w-full mt-2 md:mt-3">
             <button
               key="ascendant"
               onClick={() => {
-                setSelectedPlanet("ascendant");
+                handlePlanetSelection("ascendant");
               }}
               onMouseEnter={() => setHoveredPlanet("ascendant")}
               onMouseLeave={() => setHoveredPlanet(null)}
@@ -1076,7 +1454,7 @@ export default function NatalChart({
               <button
                 key={key}
                 onClick={() => {
-                  setSelectedPlanet(key);
+                  handlePlanetSelection(key);
                 }}
                 onMouseEnter={() => setHoveredPlanet(key)}
                 onMouseLeave={() => setHoveredPlanet(null)}
@@ -1118,7 +1496,7 @@ export default function NatalChart({
 
       {/* Accordéon aspects annulé, retour à l'affichage initial */}
 
-      {!isFullscreen && (
+      {!isFullscreen && !fullscreenMode && (
       <div className="w-full mt-2 p-4 md:p-5 bg-gradient-to-r from-blue-900 to-indigo-900 rounded-xl shadow-md border border-blue-800">
         <h3 className="text-base md:text-lg font-bold text-white mb-2">
           Partager cette carte
@@ -1143,25 +1521,6 @@ export default function NatalChart({
       </div>
       )}
 
-      {selectedPlanet && (
-        <DetailModal
-          planetKey={selectedPlanet}
-          position={
-            selectedPlanet === "ascendant"
-              ? {
-                  longitude: houses[0]?.cusp || 0,
-                  latitude: 0,
-                  distance: 0,
-                  sign: houses[0]?.sign || "",
-                  signDegree: houses[0]?.signDegree || 0,
-                  house: 1,
-                }
-              : planetPositions[selectedPlanet]
-          }
-          onClose={() => setSelectedPlanet(null)}
-          onNavigateToProfile={enableNavigation ? onPlanetClick : undefined}
-        />
-      )}
     </div>
     </>
   );

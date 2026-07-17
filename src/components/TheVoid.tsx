@@ -73,6 +73,7 @@ const EsotericConstellation = () => (
 
 type EsotericIcon = () => JSX.Element;
 import { calculateBirthChart } from '../services/astrology';
+import { parseBirthDateTime } from '../lib/birthDate';
 
 // ─── Cities ─────────────────────────────────────────────────
 const CITIES = [
@@ -939,7 +940,7 @@ export default function TheVoid({ onBack }: { onBack?: () => void }) {
   const computeChart = useCallback((bd: VoidBirthData) => {
     try {
       const city = CITIES.find(c => c.name === bd.city) || CITIES[0];
-      const dateTime = new Date(`${bd.date}T${bd.time}`);
+      const dateTime = parseBirthDateTime(bd.date, bd.time, city.tz);
       const ch = calculateBirthChart({ date: dateTime, latitude: bd.latitude || city.lat, longitude: bd.longitude || city.lon });
       const info: ChartInfo = { planetPositions: ch.planetPositions, aspects: ch.aspects };
       setChartInfo(info);

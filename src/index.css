@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Crimson+Pro:wght@300;400;500&family=Cinzel:wght@300;400&family=Spectral:wght@200;300&family=Playfair+Display:wght@300;400&family=Marcellus&family=Raleway:wght@100;200;300&family=Josefin+Sans:wght@100;200;300&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Crimson+Pro:wght@300;400;500&family=Cinzel:wght@300;400&family=Spectral:wght@200;300&family=Playfair+Display:wght@300;400&family=Marcellus&family=Raleway:wght@100;200;300&family=Josefin+Sans:wght@100;200;300&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -46,7 +46,7 @@ body {
 .border-soft { border-color: var(--border-soft); }
 
 /* -----------------------------------------------------------
-   THE VOID — Full Design System
+   THE VOID â€” Full Design System
    Palette: Deep #0B0E13 | Accent #FFB86B | Text #FFF | Sec #A6B0C3 | Danger #FF6B6B
    Typography: Title 28px SemiBold | Body 16px Regular | Micro 13px Medium
    Grid: 8px base
@@ -111,7 +111,7 @@ body {
 .btn-sparkle-l   { animation: btn-sparkle 1.8s ease-in-out infinite; }
 .btn-sparkle-r   { animation: btn-sparkle 1.8s ease-in-out infinite 0.6s; }
 
-/* -- Template D – Minimaliste Luxe ------------------------- */
+/* -- Template D â€“ Minimaliste Luxe ------------------------- */
 @keyframes d-line-glow {
   0%,100% { opacity: 0.4; }
   50% { opacity: 1; box-shadow: 0 0 10px rgba(212,175,55,0.7); }
@@ -906,8 +906,8 @@ body {
 }
 
 /* -----------------------------------------------------------
-   THE VOID — Redesign "Néant"
-   Pure black · Centered input · Radical simplicity
+   THE VOID â€” Redesign "NÃ©ant"
+   Pure black Â· Centered input Â· Radical simplicity
    Font: Cormorant Garamond (serif, elegant, esoteric)
    ----------------------------------------------------------- */
 
@@ -3361,7 +3361,7 @@ body {
 }
 
 /* -----------------------------------------------------------
-   NATAL CHART FULLSCREEN — Mobile & Desktop Perfect Square
+   NATAL CHART FULLSCREEN â€” Mobile & Desktop Perfect Square
    100vw/100vh, min(90vw,90vh), object-fit, overflow hidden
    ----------------------------------------------------------- */
 .natal-chart-fullscreen {
@@ -3401,7 +3401,7 @@ body {
 }
 
 /* -----------------------------------------------------------
-   COSTAR LOGO — Eclipse solaire
+   COSTAR LOGO â€” Eclipse solaire
    ----------------------------------------------------------- */
 .costar-header {
   position: relative;
@@ -3857,8 +3857,8 @@ body {
 }
 
 /* -----------------------------------------------------------
-   BOTTOM NAV BAR — Charte graphique premium
-   Noir pur, minimalisme, clarté optimale
+   BOTTOM NAV BAR â€” Charte graphique premium
+   Noir pur, minimalisme, clartÃ© optimale
    ----------------------------------------------------------- */
 .bottom-nav {
   position: fixed;
@@ -4044,7 +4044,7 @@ body {
 }
 
 /* -----------------------------------------------------------
-   APP SHELL — isolation du scroll pour nav iOS
+   APP SHELL â€” isolation du scroll pour nav iOS
    ----------------------------------------------------------- */
 .app-shell {
   position: fixed;
@@ -4095,7 +4095,7 @@ body {
   padding: 24px 16px 120px;
   color: #ffffff;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-  animation: void-slide-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: none;
 }
 
 .friends-page__header {
@@ -4265,7 +4265,7 @@ body {
 
 
 
-/* Global luminosity pass — keeps the night palette while lifting surfaces. */
+/* Global luminosity pass â€” keeps the night palette while lifting surfaces. */
 .void-card,
 .void-hist-card,
 .void-result-card,
@@ -5803,7 +5803,7 @@ body {
   }
 }
 
-/* Premium concept — Celestial Manuscript */
+/* Premium concept â€” Celestial Manuscript */
 .app-content--you .astral-profile__action-suite--manuscript {
   color: #2d1e12;
   border-color: rgba(112, 72, 35, 0.58);
@@ -5972,7 +5972,7 @@ body {
   z-index: 1;
 }
 
-/* Premium concept — Eclipse */
+/* Premium concept â€” Eclipse */
 .app-content--you .astral-profile__action-suite--eclipse {
   border-color: rgba(231, 216, 191, 0.19);
   border-radius: 38px 38px 17px 17px;
@@ -7045,7 +7045,7 @@ body {
   }
 }
 
-/* Sable Lunaire — pale mineral dust and abstract crater reliefs */
+/* Sable Lunaire â€” pale mineral dust and abstract crater reliefs */
 .app-content--you {
   background-image:
     url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E"),
@@ -7416,7 +7416,7 @@ body {
   }
 }
 
-/* You page — cosmic black palette */
+/* You page â€” cosmic black palette */
 .app-content--you,
 .app-content--you .astral-profile-wheel-page {
   background: #06070a;
@@ -7744,12 +7744,12 @@ body {
 }
 
 .app-content--you .astral-profile__pill-sign::before {
-  content: "·";
+  content: "Â·";
   margin-right: 7px;
   color: rgba(231, 208, 171, 0.38);
 }
 
-/* Signature reading — black lacquer, double champagne line, editorial details */
+/* Signature reading â€” black lacquer, double champagne line, editorial details */
 .app-content--you .astral-profile__action-suite {
   border-color: rgba(235, 207, 162, 0.24);
   border-radius: 20px;
@@ -8062,7 +8062,7 @@ body {
   margin-top: 8px;
 }
 
-/* Lower planet/aspect rows — celestial cartouche */
+/* Lower planet/aspect rows â€” celestial cartouche */
 .app-content--you .astral-profile__accordion-card {
   position: relative;
   isolation: isolate;
@@ -8159,7 +8159,7 @@ body {
     linear-gradient(180deg, #0c0c10 0%, #08090d 48%, #050609 100%);
 }
 
-/* Small rows — spatial halo, brighter corner jewellery and stronger hierarchy */
+/* Small rows â€” spatial halo, brighter corner jewellery and stronger hierarchy */
 .app-content--you .astral-profile__accordion-card {
   background: transparent;
   box-shadow: none;
@@ -8432,50 +8432,58 @@ body {
 }
 
 .app-content--you .astral-profile__content--accordion {
-  padding: 34px 14px 20px;
+  padding: 28px 16px 18px;
 }
 
+/* Pack C — Spectral calibré: Crimson title (solid), Spectral body 400 */
 .app-content--you .astral-profile__content--accordion .astral-profile__title {
-  max-width: 90%;
-  margin: 0 auto 17px;
-  color: #eee4dc;
-  background: linear-gradient(102deg, #fff9f1 0%, #d7b9b2 38%, #f2ded2 66%, #bfa5a2 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  max-width: 92%;
+  margin: 0 auto 14px;
+  color: #f7f0e8 !important;
+  background: none !important;
+  background-image: none !important;
+  background-clip: border-box !important;
+  -webkit-background-clip: border-box !important;
+  -webkit-text-fill-color: #f7f0e8 !important;
   font-family: 'Crimson Pro', 'Spectral', Georgia, serif;
-  font-size: clamp(20px, 5vw, 23px);
+  font-size: clamp(21px, 5.2vw, 24px);
   font-weight: 400;
-  line-height: 1.12;
-  letter-spacing: 0.35px;
+  line-height: 1.18;
+  letter-spacing: -0.01em;
   text-wrap: balance;
   text-shadow: none;
-  filter:
-    drop-shadow(0 2px 9px rgba(0, 0, 0, 0.72))
-    drop-shadow(0 0 11px rgba(207, 166, 158, 0.13));
+  filter: none;
+  box-shadow: none !important;
+  border: 0 !important;
 }
 
 .app-content--you .astral-profile__content--accordion .astral-profile__sign-subtitle {
-  margin-bottom: 37px;
-  color: rgba(224, 221, 218, 0.7);
+  margin-bottom: 28px;
+  color: rgba(224, 221, 218, 0.62);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-  font-size: 13px;
-  letter-spacing: 0.8px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
 }
 
 .app-content--you .astral-profile__content--accordion .astral-profile__paragraph {
-  max-width: 65ch;
-  margin: 0 auto 22px;
-  color: rgba(245, 243, 240, 0.86);
-  font-family: 'Spectral', Georgia, serif;
+  max-width: min(58ch, 100%);
+  width: 100%;
+  margin: 0 auto 18px;
+  padding: 0 2px;
+  color: rgba(245, 243, 240, 0.84);
+  font-family: 'Spectral', Georgia, 'Times New Roman', serif;
   font-size: clamp(14px, 3.5vw, 15px);
-  font-weight: 300;
-  line-height: 1.78;
+  font-weight: 400;
   letter-spacing: 0.08px;
   text-align: justify;
   text-align-last: left;
   hyphens: none;
   overflow-wrap: break-word;
+}
+
+.app-content--you .astral-profile__content--accordion .astral-profile__paragraph:first-of-type {
+  color: rgba(250, 248, 245, 0.9);
 }
 
 .app-content--you .astral-profile__content--accordion .astral-profile__paragraph:first-of-type::first-letter {
@@ -9255,7 +9263,7 @@ html[data-theme="light"] .void-page textarea:focus-visible {
   transform: translateY(-0.1px);
 }
 
-/* You — smoked glass reserved for the two large Planètes / Aspects cards. */
+/* You â€” smoked glass reserved for the two large PlanÃ¨tes / Aspects cards. */
 html:not([data-theme="light"]) .app-content--you .astral-profile__section-card {
   position: relative;
   isolation: isolate;
@@ -9327,7 +9335,7 @@ html:not([data-theme="light"]) .app-content--you .astral-profile__section-card--
   transform: translateY(-2px) scale(1.008);
 }
 
-/* You — natal house number beside the sign in compact planet rows. */
+/* You â€” natal house number beside the sign in compact planet rows. */
 .app-content--you .astral-profile__sign-pill .astral-profile__pill-house {
   flex-shrink: 0;
   margin-left: 2px;
@@ -9342,7 +9350,7 @@ html:not([data-theme="light"]) .app-content--you .astral-profile__section-card--
 }
 
 .app-content--you .astral-profile__sign-pill .astral-profile__pill-house::before {
-  content: "·";
+  content: "Â·";
   margin-right: 7px;
   color: rgba(220, 210, 194, 0.38);
   font-size: 11px;
@@ -11767,7 +11775,7 @@ html[data-theme="light"] .costar-page {
   display: none !important;
 }
 
-/* CoStar section title lock: every section label matches "Ton défi du jour". */
+/* CoStar section title lock: every section label matches "Ton dÃ©fi du jour". */
 .costar-page .costar-section-title,
 .costar-page .costar-glance-header .costar-section-title {
   display: block !important;
@@ -12903,7 +12911,7 @@ html[data-theme="light"] .costar-page,
   display: none !important;
 }
 
-/* CoStar background: fixed moon layer with scroll-based readability damping. */
+/* CoStar background: fixed textured layer with scroll-based readability damping. */
 .app-content--costar {
   position: relative;
   isolation: isolate;
@@ -12939,10 +12947,10 @@ html[data-theme="light"] .costar-page,
 .costar-scroll-planet::before {
   inset: 0;
   background:
-    url('/costar-lune-background.png') center top / cover no-repeat;
-  filter: brightness(0.72) contrast(1.08) saturate(0.96);
+    url('/fond_individuel_3.png') center center / 100% 100% no-repeat;
+  filter: brightness(0.82) contrast(1.08) saturate(1.04);
   opacity: var(--costar-background-opacity, 1);
-  transform: translate3d(0, var(--costar-scroll-offset, 0svh), 0) scale(1.035);
+  transform: none;
   transform-origin: 50% 0%;
   will-change: transform, opacity;
 }
@@ -13302,6 +13310,10 @@ html[data-theme="light"] .costar-page,
 /* YOU saved layout restore: parameters from commit 0906d88. */
 .app-content--you {
   padding-bottom: 0 !important;
+  background:
+    radial-gradient(ellipse at 50% 24%, rgba(255, 244, 220, 0.72), transparent 44%),
+    radial-gradient(ellipse at 50% 78%, rgba(211, 190, 162, 0.32), transparent 58%),
+    linear-gradient(180deg, #f5f0e7 0%, #e8dfd2 48%, #d7cbbd 100%) !important;
 }
 
 .app-content--you .astral-profile-wheel-page {
@@ -13313,7 +13325,23 @@ html[data-theme="light"] .costar-page,
   justify-content: flex-start !important;
   padding: max(8px, env(safe-area-inset-top)) 0 0 !important;
   overflow: hidden !important;
-  background: #171717 !important;
+  background:
+    radial-gradient(ellipse at 50% 24%, rgba(255, 247, 231, 0.86), transparent 46%),
+    radial-gradient(ellipse at 50% 76%, rgba(206, 183, 151, 0.34), transparent 58%),
+    linear-gradient(180deg, #f7f2ea 0%, #ece3d8 48%, #d9ccbd 100%) !important;
+}
+
+.app-content--you .astral-profile-wheel-page::before {
+  background:
+    radial-gradient(ellipse at 50% 30%, rgba(255, 250, 240, 0.72), transparent 42%),
+    linear-gradient(180deg, rgba(250, 244, 234, 0.92), rgba(223, 211, 196, 0.88)) !important;
+  opacity: 1 !important;
+}
+
+.app-content--you .astral-profile-wheel-page::after {
+  background:
+    radial-gradient(circle, rgba(197, 162, 104, 0.18), transparent 64%) !important;
+  opacity: 0.55 !important;
 }
 
 .app-content--you .astral-profile-wheel-page .zodiac-wheel-container {
@@ -13328,8 +13356,12 @@ html[data-theme="light"] .costar-page,
 
 .app-content--you .astral-profile-wheel-page .natal-identity-panel {
   flex: 0 0 auto !important;
+  width: 100% !important;
+  max-width: 100% !important;
   margin-bottom: 0 !important;
   transform: translateY(-2px) !important;
+  align-self: stretch !important;
+  box-sizing: border-box !important;
 }
 
 .app-content--you .astral-profile__edit-theme-bar,
@@ -13348,6 +13380,8 @@ html[data-theme="light"] .costar-page,
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
+  gap: 0 !important;
+  background: transparent !important;
 }
 
 .app-content--you .astral-profile-wheel-page .natal-chart-wheel-stage,
@@ -13358,7 +13392,7 @@ html[data-theme="light"] .costar-page,
 }
 
 .app-content--you .astral-profile-wheel-page .natal-chart-wheel-frame {
-  transform: none !important;
+  transform: translateY(clamp(34px, 5.2svh, 58px)) !important;
 }
 
 .app-content--you .astral-profile-wheel-page .natal-chart-svg {
@@ -13375,7 +13409,7 @@ html[data-theme="light"] .costar-page,
   }
 
   .app-content--you .astral-profile-wheel-page .natal-chart-wheel-frame {
-    transform: none !important;
+    transform: translateY(clamp(38px, 5.6svh, 58px)) !important;
   }
 
   .app-content--you .astral-profile-wheel-page .natal-chart-svg {
@@ -13844,4 +13878,427 @@ html[data-theme="light"] .costar-page,
     transition: opacity 180ms ease !important;
     transform: none !important;
   }
+}
+
+
+/* ==========================================================================
+   CoStar premium card redesign
+   ========================================================================== */
+.costar-page .costar-premium-section {
+  padding-top: clamp(20px, 3.6svh, 32px) !important;
+  border-top: 0 !important;
+}
+
+.costar-page .costar-premium-section::after {
+  display: none !important;
+}
+
+.costar-page .costar-premium-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  overflow: hidden;
+  min-height: 210px;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 220, 170, 0.22);
+  background: #0a0a0f;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 22px 48px rgba(0, 0, 0, 0.32),
+    0 0 40px rgba(255, 190, 120, 0.08);
+}
+
+.costar-page .costar-premium-card__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.costar-page .costar-premium-card__bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center right;
+  opacity: 0.88;
+  transform: scale(1.02);
+}
+
+.costar-page .costar-premium-card__veil {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(105deg, rgba(6, 6, 10, 0.92) 0%, rgba(6, 6, 10, 0.72) 42%, rgba(6, 6, 10, 0.28) 72%, rgba(6, 6, 10, 0.55) 100%),
+    linear-gradient(180deg, rgba(255, 220, 170, 0.08) 0%, transparent 38%, rgba(0, 0, 0, 0.35) 100%);
+}
+
+.costar-page .costar-premium-card__content {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  align-content: center;
+  gap: 12px;
+  padding: 22px 20px 22px;
+  max-width: 100%;
+}
+
+.costar-page .costar-premium-card__badge {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 220, 170, 0.32);
+  background: rgba(255, 214, 153, 0.1);
+  color: #f3d59a;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.costar-page .costar-premium-card__title {
+  margin: 0;
+  max-width: 18ch;
+  color: #fffaf0 !important;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(1.45rem, 5.6vw, 1.85rem);
+  font-weight: 450;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.costar-page .costar-premium-card__text {
+  margin: 0;
+  max-width: 34ch;
+  color: rgba(255, 246, 230, 0.68) !important;
+  font-size: 0.92rem;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  text-wrap: pretty;
+}
+
+.costar-page .costar-premium-card__cta {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  margin-top: 4px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 999px;
+  color: #100d08 !important;
+  font-size: 0.72rem;
+  font-weight: 750 !important;
+  letter-spacing: 0.12em !important;
+  text-transform: uppercase;
+  background: linear-gradient(100deg, #fff0c8 0%, #f6d992 45%, #d9a95a 100%) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.62),
+    0 10px 26px rgba(0, 0, 0, 0.28),
+    0 0 28px rgba(255, 184, 107, 0.2) !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.costar-page .costar-premium-card__cta:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.04);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 14px 30px rgba(0, 0, 0, 0.3),
+    0 0 36px rgba(255, 190, 112, 0.26) !important;
+}
+
+.costar-page .costar-premium-card__cta:active {
+  transform: scale(0.985);
+}
+
+.costar-page .costar-premium-card__art {
+  position: absolute;
+  z-index: 1;
+  right: -8%;
+  bottom: -18%;
+  width: min(46vw, 180px);
+  aspect-ratio: 1;
+  pointer-events: none;
+  opacity: 0.78;
+  mix-blend-mode: screen;
+  filter: saturate(1.05) brightness(1.05);
+}
+
+.costar-page .costar-premium-card__art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  mask-image: radial-gradient(circle at 50% 50%, #000 0 52%, transparent 74%);
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 0 52%, transparent 74%);
+}
+
+/* Kill old premium banner layout rules if residual classes appear */
+.costar-page .costar-premium-banner {
+  display: none !important;
+}
+
+@media (min-width: 480px) {
+  .costar-page .costar-premium-card {
+    min-height: 220px;
+  }
+
+  .costar-page .costar-premium-card__content {
+    padding: 26px 28px;
+    max-width: 68%;
+  }
+
+  .costar-page .costar-premium-card__art {
+    right: 2%;
+    bottom: -12%;
+    width: 190px;
+    opacity: 0.88;
+  }
+}
+
+@media (max-width: 379px) {
+  .costar-page .costar-premium-card__art {
+    opacity: 0.42;
+    width: 120px;
+    right: -10%;
+  }
+
+  .costar-page .costar-premium-card__cta {
+    width: 100%;
+  }
+}
+
+
+/* ==========================================================================
+   Expanded description panels — SAME background for every open case
+   Swap only --you-expanded-panel-bg (image), do not touch text styles
+   ========================================================================== */
+.app-content--you .astral-profile {
+  --you-expanded-panel-bg: url('/you-expanded-panel-bg.jpg');
+}
+
+.app-content--you .astral-profile__accordion-card .astral-profile__content--accordion,
+.app-content--you .astral-profile__content--accordion {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-top: 1px solid rgba(255, 240, 220, 0.08) !important;
+  background:
+    linear-gradient(180deg, rgba(6, 7, 12, 0.42) 0%, rgba(6, 7, 12, 0.55) 100%),
+    var(--you-expanded-panel-bg) center center / cover no-repeat,
+    #08090d !important;
+  background-blend-mode: normal !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    inset 0 0 0 1px rgba(255, 250, 240, 0.03) !important;
+}
+
+/* Keep special aspect décor off so every open case looks the same */
+.app-content--you .astro-aspect-background__stars,
+.app-content--you .astro-aspect-background__grain,
+.app-content--you .astro-aspect-background__halo,
+.app-content--you .astro-aspect-background__circle {
+  display: none !important;
+}
+
+.app-content--you .astro-aspect-background.astro-aspect-background--active {
+  background:
+    linear-gradient(180deg, rgba(6, 7, 12, 0.42) 0%, rgba(6, 7, 12, 0.55) 100%),
+    var(--you-expanded-panel-bg) center center / cover no-repeat,
+    #08090d !important;
+}
+
+/* ==========================================================================
+   Fix weird box/frame in the middle of expanded descriptions
+   ========================================================================== */
+
+/* Decorative corner frame + side rails only on closed rows, not full open card */
+.app-content--you .astral-profile__accordion-card--active::before,
+.app-content--you .astral-profile__accordion-card--active::after {
+  display: none !important;
+  content: none !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+
+/* Expanded panel: image only, no inset "case" border */
+.app-content--you .astral-profile__accordion-card .astral-profile__content--accordion,
+.app-content--you .astral-profile__content--accordion {
+  border-top: 1px solid rgba(255, 240, 220, 0.06) !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Title must not paint a solid gradient box behind the text */
+.app-content--you .astral-profile__content--accordion .astral-profile__title {
+  background-image: linear-gradient(102deg, #fff9f1 0%, #d7b9b2 38%, #f2ded2 66%, #bfa5a2 100%) !important;
+  background-color: transparent !important;
+  background-clip: text !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  box-shadow: none !important;
+  border: 0 !important;
+}
+
+/* House / orb meta: no blocky full-width "case" feel */
+.app-content--you .astral-profile__description-planet-house {
+  flex-basis: auto !important;
+  margin-top: 0 !important;
+}
+
+.app-content--you .astral-profile__description-meta {
+  display: inline-flex !important;
+  width: auto !important;
+  max-width: 100%;
+  padding: 0 !important;
+  border: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+
+/* Hide residual aspect BG layers that can leave empty stacked boxes */
+.app-content--you .astro-aspect-background > [class*="astro-aspect-background__"] {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  opacity: 0 !important;
+}
+
+/* Empty paragraphs from split should not reserve a weird strip */
+.app-content--you .astral-profile__content--accordion .astral-profile__paragraph:empty {
+  display: none !important;
+}
+
+/* Pack C overrides — beat later gradient/title box fixes */
+.app-content--you .astral-profile__content--accordion .astral-profile__title {
+  color: #f7f0e8 !important;
+  background: none !important;
+  background-image: none !important;
+  -webkit-text-fill-color: #f7f0e8 !important;
+  background-clip: border-box !important;
+  -webkit-background-clip: border-box !important;
+  filter: none !important;
+  font-family: 'Crimson Pro', 'Spectral', Georgia, serif !important;
+  font-weight: 400 !important;
+}
+
+.app-content--you .astral-profile__content--accordion .astral-profile__paragraph {
+  font-family: 'Spectral', Georgia, 'Times New Roman', serif !important;
+  font-weight: 400 !important;
+  max-width: min(58ch, 100%) !important;
+  text-align: justify !important;
+  text-align-last: left !important;
+}
+
+/* ==========================================================================
+   Premium teaser at end of open descriptions (discreet)
+   ========================================================================== */
+.astral-profile__premium-teaser {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  width: min(100%, 34ch);
+  margin: 8px auto 6px;
+  padding: 16px 14px 14px;
+  border-top: 1px solid rgba(255, 230, 190, 0.1);
+  text-align: center;
+}
+
+.astral-profile__premium-teaser-text {
+  margin: 0;
+  max-width: 30ch;
+  color: rgba(235, 228, 218, 0.48);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.45;
+  letter-spacing: 0.01em;
+  text-wrap: balance;
+}
+
+.astral-profile__premium-teaser-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 38px;
+  padding: 0 16px;
+  border: 1px solid rgba(241, 212, 158, 0.28);
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)),
+    rgba(255, 214, 153, 0.06);
+  color: rgba(243, 221, 180, 0.88);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 8px 20px rgba(0, 0, 0, 0.18);
+  transition:
+    color 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease,
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.astral-profile__premium-teaser-btn:hover {
+  color: #f8e7c4;
+  border-color: rgba(241, 212, 158, 0.42);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 214, 153, 0.08)),
+    rgba(255, 214, 153, 0.08);
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 10px 24px rgba(0, 0, 0, 0.22),
+    0 0 18px rgba(255, 200, 130, 0.08);
+}
+
+.astral-profile__premium-teaser-btn:active {
+  transform: scale(0.985);
+}
+
+.astral-profile__premium-teaser-btn svg {
+  opacity: 0.75;
+  flex-shrink: 0;
+}
+
+.app-content--you .astral-profile__premium-teaser {
+  margin-top: 4px;
+  margin-bottom: 2px;
+}
+
+html[data-theme="light"] .astral-profile__premium-teaser {
+  border-top-color: rgba(90, 70, 80, 0.12);
+}
+
+html[data-theme="light"] .astral-profile__premium-teaser-text {
+  color: rgba(70, 58, 66, 0.55);
+}
+
+html[data-theme="light"] .astral-profile__premium-teaser-btn {
+  color: rgba(92, 68, 40, 0.82);
+  border-color: rgba(160, 120, 70, 0.28);
+  background: rgba(255, 245, 225, 0.55);
+  box-shadow: none;
+}
+
+html[data-theme="light"] .astral-profile__premium-teaser-btn:hover {
+  color: rgba(70, 50, 28, 0.95);
+  border-color: rgba(160, 120, 70, 0.4);
+  background: rgba(255, 248, 232, 0.85);
+  box-shadow: none;
 }

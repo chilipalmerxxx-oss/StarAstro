@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect, useRef } from 'react';
-import { Bell, Sparkles, ChevronDown, ChevronUp, User } from 'lucide-react';
+import { Sparkles, ChevronDown, ChevronUp, User } from 'lucide-react';
 import { generateCoStarAnalysis } from '../services/astrology';
 
 interface CoStarPageProps {
@@ -1263,40 +1263,30 @@ export default function CoStarPage({ chartData, userName = 'Ami(e) des étoiles'
         <div className="costar-section-divider" aria-hidden="true"></div>
 
         {/* Premium Transit Alerts */}
-        <section className="costar-premium-section space-y-6 border-t border-[#1E2035]/60 pt-12">
-          <div className="costar-premium-banner relative overflow-hidden">
-            <div className="absolute inset-px rounded-[1.7rem] border border-white/[0.04]"></div>
-            <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-[#FFE6AD]/85 to-transparent"></div>
-            <div className="absolute -right-14 -top-14 h-40 w-40 rounded-full bg-[#FFD699]/12 blur-3xl"></div>
-            <div className="absolute -left-16 bottom-0 h-36 w-36 rounded-full bg-sky-300/10 blur-3xl"></div>
+        <section className="costar-premium-section" aria-label="Premium">
+          <article className="costar-premium-card">
+            <div className="costar-premium-card__bg" aria-hidden="true">
+              <img src="/costar-premium-bg.jpg" alt="" decoding="async" />
+              <div className="costar-premium-card__veil" />
+            </div>
 
-            <div className="relative space-y-6">
-              <div className="flex items-start gap-4">
-                <span className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-[#FFD699]/35 bg-[radial-gradient(circle_at_35%_20%,rgba(255,255,255,0.22),rgba(255,214,153,0.10)_45%,rgba(9,10,16,0.95)_100%)] text-[#FFE6AD] shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_0_26px_rgba(255,184,107,0.18)]">
-                  <Bell className="h-5 w-5" strokeWidth={1.6} aria-hidden="true" />
-                </span>
-                <div className="space-y-2">
-                  <span className="inline-flex rounded-full border border-[#FFD699]/25 bg-[#FFD699]/8 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-[#FFD699]">
-                    Premium
-                  </span>
-                  <h3 className="text-2xl font-light leading-tight text-zinc-50 md:text-3xl">
-                    Ne rate pas les grands tournants de ton ciel
-                  </h3>
-                </div>
-              </div>
-
-              <p className="max-w-xl text-base font-light leading-relaxed text-zinc-300">
+            <div className="costar-premium-card__content">
+              <span className="costar-premium-card__badge">Premium</span>
+              <h3 className="costar-premium-card__title">
+                Ne rate pas les grands tournants de ton ciel
+              </h3>
+              <p className="costar-premium-card__text">
                 Reçois une alerte quand un transit majeur active ton thème natal, avec une lecture claire sur ce que ça réveille en toi.
               </p>
-
-              <button
-                type="button"
-                className="inline-flex w-full items-center justify-center rounded-full border border-[#FFE6AD]/55 bg-gradient-to-r from-[#FFE6AD] via-[#F2D28D] to-[#C79645] px-5 py-3.5 text-sm font-bold uppercase tracking-[0.2em] text-[#100D08] shadow-[0_0_30px_rgba(255,184,107,0.22),inset_0_1px_0_rgba(255,255,255,0.45)] transition-all duration-300 hover:scale-[1.01] hover:shadow-[0_0_44px_rgba(255,184,107,0.34),inset_0_1px_0_rgba(255,255,255,0.55)] md:w-auto"
-              >
-                Activer les alertes premium
+              <button type="button" className="costar-premium-card__cta">
+                Activer les alertes
               </button>
             </div>
-          </div>
+
+            <div className="costar-premium-card__art" aria-hidden="true">
+              <img src="/costar-premium-art.jpg" alt="" decoding="async" />
+            </div>
+          </article>
         </section>
 
         {/* Planetary Aspects */}

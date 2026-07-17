@@ -50,7 +50,7 @@ export default defineConfig({
         skipWaiting: true,
       },
       devOptions: {
-        enabled: true,
+        enabled: false,
       },
     }),
   ],
