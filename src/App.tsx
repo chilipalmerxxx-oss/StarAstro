@@ -1,9 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Sparkles } from 'lucide-react';
 import LandingPage from './components/LandingPage';
-import BirthDataForm from './components/BirthDataForm';
-import NatalChart from './components/NatalChart';
-import SavedCharts from './components/SavedCharts';
 import TheVoid from './components/TheVoid';
 import AstralProfile from './components/AstralProfile';
 import You2Page from './components/You2Page';
@@ -310,10 +306,11 @@ function App() {
   };
 
   const handleGetStarted = () => {
+    // New visitors must enter the current onboarding — never the legacy AstroThème form.
     setShowLanding(false);
     setShowVoid(false);
     setShowCoStar(false);
-    setActiveTab('home');
+    setActiveTab('y');
   };
 
   const handleBackToHome = () => {
@@ -651,54 +648,45 @@ function App() {
     );
   }
 
+  // Fallback: no matching screen — never show the legacy AstroThème form to visitors.
+  if (!chartData) {
+    return (
+      <PremiumOnboardingY
+        onComplete={handleOnboardingComplete}
+        onSkipAccount={handleOnboardingAccountSkip}
+        onExit={() => {
+          setShowLanding(true);
+          setActiveTab('home');
+        }}
+      />
+    );
+  }
+
   return (
-    <div className="app-shell">
-      <div className="app-content">
-      <div className={chartData ? "natal-chart-screen" : "container mx-auto px-4 py-12"}>
-        <div className={chartData ? "natal-chart-screen__header" : "text-center mb-12"}>
-          <div className="flex items-center justify-between mb-6">
-          </div>
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <Sparkles className="w-10 h-10 text-cyan-600" />
-            <h1 className="text-5xl font-bold text-white">AstroThème</h1>
-          </div>
-          <p className="text-lg text-slate-300">
-            Découvrez votre thème astral basé sur des calculs astronomiques précis
-          </p>
-        </div>
-
-        <div className={chartData ? "natal-chart-screen__body" : "flex flex-col items-center gap-8"}>
-          {!chartData ? (
-            <BirthDataForm onSubmit={handleSubmit} loading={loading} />
-          ) : (
-            <>
-              <NatalChart
-                name={chartData.name}
-                birthDate={chartData.birthDate}
-                birthPlace={chartData.birthPlace}
-                planetPositions={chartData.planetPositions}
-                houses={chartData.houses}
-                aspects={chartData.aspects}
-              />
-
-            </>
-          )}
-        </div>
-
-        <footer className="text-center mt-16 text-sm text-slate-400">
-          <p>Calculs astronomiques réalisés avec astronomy-engine</p>
-          <p className="mt-1">Les positions planétaires sont calculées avec précision scientifique</p>
-        </footer>
-      </div>
-
-      {showSavedCharts && (
-        <SavedCharts
-          onLoadChart={handleLoadChart}
-          onClose={() => setShowSavedCharts(false)}
+    <div className="app-shell app-shell--you">
+      <div className="app-content app-content--you">
+        <AstralProfile
+          name={chartData.name}
+          birthDate={chartData.birthDate}
+          birthPlace={chartData.birthPlace}
+          birthLatitude={chartData.latitude}
+          birthLongitude={chartData.longitude}
+          birthTimezoneOffset={chartData.timezoneOffset}
+          planetPositions={chartData.planetPositions}
+          houses={chartData.houses}
+          aspects={chartData.aspects}
+          fullscreenMode={true}
+          onEditBirthData={handleEditBirthData}
+          editBirthDataLoading={loading}
         />
-      )}
       </div>
-      <BottomNavBar activeTab={activeTab} onTabChange={handleTabChange} />
+      <BottomNavBar
+        activeTab={activeTab}
+        onTabChange={(tab) => {
+          setSelectedPlanetForProfile(null);
+          handleTabChange(tab);
+        }}
+      />
     </div>
   );
 }
