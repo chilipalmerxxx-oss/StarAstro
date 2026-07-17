@@ -6,6 +6,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>AstroThème</title>
 
+    <!-- Force recipients with an old PWA/service-worker cache onto the latest deploy once. -->
+    <script>
+      (function () {
+        var BUILD = 'ns-2026-07-17-v5';
+        var KEY = 'nightstar-build-id';
+        try {
+          if (localStorage.getItem(KEY) === BUILD) return;
+        } catch (e) {}
+
+        var finish = function () {
+          try { localStorage.setItem(KEY, BUILD); } catch (e) {}
+          var url = new URL(window.location.href);
+          if (url.searchParams.get('nsboot') === '1') {
+            url.searchParams.delete('nsboot');
+            window.location.replace(url.pathname + url.search + url.hash);
+            return;
+          }
+          url.searchParams.set('nsboot', '1');
+          window.location.replace(url.pathname + url.search + url.hash);
+        };
+
+        var tasks = [];
+        if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
+          tasks.push(
+            navigator.serviceWorker.getRegistrations().then(function (regs) {
+              return Promise.all(regs.map(function (reg) { return reg.unregister(); }));
+            })
+          );
+        }
+        if (window.caches && caches.keys) {
+          tasks.push(
+            caches.keys().then(function (keys) {
+              return Promise.all(keys.map(function (key) { return caches.delete(key); }));
+            })
+          );
+        }
+
+        Promise.all(tasks).then(finish).catch(finish);
+      })();
+    </script>
+
     <!-- PWA -->
     <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="theme-color" content="#111111" />

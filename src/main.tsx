@@ -25,41 +25,29 @@ function showBootError(error: unknown) {
   `;
 }
 
-if (import.meta.env.DEV) {
-  navigator.serviceWorker?.getRegistrations()
+// Always try to drop leftover service workers so shared links open the live deploy.
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker
+    .getRegistrations()
     .then((registrations) => {
       registrations.forEach((registration) => {
         registration.unregister().catch(() => undefined);
       });
     })
     .catch(() => undefined);
-} else {
-  // Lightweight update path — never block first paint.
-  try {
-    let refreshing = false;
-    navigator.serviceWorker?.addEventListener('controllerchange', () => {
-      if (refreshing) return;
-      // Only reload if a controller already existed (true update), not first install.
-      if (!navigator.serviceWorker.controller) return;
-      refreshing = true;
-      window.location.reload();
-    });
+}
 
-    registerSW({
-      immediate: true,
-      onRegisteredSW(_swUrl, registration) {
-        if (!registration) return;
-        const check = () => registration.update().catch(() => undefined);
-        window.setTimeout(check, 2500);
-        window.setInterval(check, 30 * 60 * 1000);
-        document.addEventListener('visibilitychange', () => {
-          if (document.visibilityState === 'visible') check();
-        });
-      },
-      onRegisterError(error) {
-        console.warn('[Nightstar] service worker registration failed', error);
-      },
-    });
+if (window.caches?.keys) {
+  caches
+    .keys()
+    .then((keys) => Promise.all(keys.map((key) => caches.delete(key))))
+    .catch(() => undefined);
+}
+
+if (!import.meta.env.DEV) {
+  // selfDestroying SW: installs, clears old caches, then unregisters itself.
+  try {
+    registerSW({ immediate: true });
   } catch (error) {
     console.warn('[Nightstar] service worker setup skipped', error);
   }
@@ -81,7 +69,6 @@ try {
 }
 
 window.addEventListener('error', (event) => {
-  // Surface first fatal runtime error if root stayed empty.
   if (rootEl && rootEl.childElementCount === 0) {
     showBootError(event.error || event.message);
   }

@@ -16,6 +16,8 @@ export default defineConfig({
     react(),
     VitePWA({
       disable: process.env.NIGHTSTAR_OPEN_DESIGN_BUILD === '1',
+      // Kill stale service workers from older deploys so shared links don't stay stuck.
+      selfDestroying: true,
       registerType: 'autoUpdate',
       includeAssets: ['icons/icon.svg'],
       manifest: {
@@ -43,41 +45,9 @@ export default defineConfig({
         ],
       },
       workbox: {
-        // Keep precache tiny for mobile: heavy images/videos must NOT be installed into the SW.
-        globPatterns: ['index.html', 'assets/*.js', 'assets/*.css', 'icons/*.svg', 'manifest.webmanifest'],
-        globIgnores: ['**/costar-**', '**/*-4k.*', '**/*.mp4', '**/*.jpg', '**/*.jpeg', '**/*.png'],
-        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
         cleanupOutdatedCaches: true,
         clientsClaim: true,
         skipWaiting: true,
-        navigateFallback: '/index.html',
-        navigateFallbackDenylist: [/^\/api\//, /\.[a-zA-Z0-9]+$/],
-        runtimeCaching: [
-          {
-            urlPattern: ({ request }) => request.mode === 'navigate',
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'nightstar-pages',
-              networkTimeoutSeconds: 3,
-              expiration: {
-                maxEntries: 4,
-                maxAgeSeconds: 60 * 60,
-              },
-            },
-          },
-          {
-            urlPattern: ({ request }) =>
-              request.destination === 'script' || request.destination === 'style',
-            handler: 'StaleWhileRevalidate',
-            options: {
-              cacheName: 'nightstar-assets',
-              expiration: {
-                maxEntries: 24,
-                maxAgeSeconds: 60 * 60 * 24,
-              },
-            },
-          },
-        ],
       },
       devOptions: {
         enabled: false,
