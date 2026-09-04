@@ -72,26 +72,26 @@ const EsotericConstellation = () => (
 );
 
 type EsotericIcon = () => JSX.Element;
-import { calculateBirthChart } from '../services/astrology';
-import { parseBirthDateTime } from '../lib/birthDate';
+import { calculateBirthChart, type Aspect, type PlanetPosition } from '../services/astrology';
+import { getTimeZoneFromCoordinates, parseBirthDateTime } from '../lib/birthDate';
 
 // ─── Cities ─────────────────────────────────────────────────
 const CITIES = [
-  { name: 'Paris', lat: 48.8566, lon: 2.3522, tz: 1 },
-  { name: 'Lyon', lat: 45.7640, lon: 4.8357, tz: 1 },
-  { name: 'Marseille', lat: 43.2965, lon: 5.3698, tz: 1 },
-  { name: 'Toulouse', lat: 43.6047, lon: 1.4442, tz: 1 },
-  { name: 'Bordeaux', lat: 44.8378, lon: -0.5792, tz: 1 },
-  { name: 'Lille', lat: 50.6292, lon: 3.0573, tz: 1 },
-  { name: 'Nice', lat: 43.7102, lon: 7.2620, tz: 1 },
-  { name: 'Nantes', lat: 47.2184, lon: -1.5536, tz: 1 },
-  { name: 'Strasbourg', lat: 48.5734, lon: 7.7521, tz: 1 },
-  { name: 'Montpellier', lat: 43.6108, lon: 3.8767, tz: 1 },
-  { name: 'Bruxelles', lat: 50.8503, lon: 4.3517, tz: 1 },
-  { name: 'Genève', lat: 46.2044, lon: 6.1432, tz: 1 },
-  { name: 'Londres', lat: 51.5074, lon: -0.1278, tz: 0 },
-  { name: 'New York', lat: 40.7128, lon: -74.0060, tz: -5 },
-  { name: 'Los Angeles', lat: 34.0522, lon: -118.2437, tz: -8 },
+  { name: 'Paris', lat: 48.8566, lon: 2.3522 },
+  { name: 'Lyon', lat: 45.7640, lon: 4.8357 },
+  { name: 'Marseille', lat: 43.2965, lon: 5.3698 },
+  { name: 'Toulouse', lat: 43.6047, lon: 1.4442 },
+  { name: 'Bordeaux', lat: 44.8378, lon: -0.5792 },
+  { name: 'Lille', lat: 50.6292, lon: 3.0573 },
+  { name: 'Nice', lat: 43.7102, lon: 7.2620 },
+  { name: 'Nantes', lat: 47.2184, lon: -1.5536 },
+  { name: 'Strasbourg', lat: 48.5734, lon: 7.7521 },
+  { name: 'Montpellier', lat: 43.6108, lon: 3.8767 },
+  { name: 'Bruxelles', lat: 50.8503, lon: 4.3517 },
+  { name: 'Genève', lat: 46.2044, lon: 6.1432 },
+  { name: 'Londres', lat: 51.5074, lon: -0.1278 },
+  { name: 'New York', lat: 40.7128, lon: -74.0060 },
+  { name: 'Los Angeles', lat: 34.0522, lon: -118.2437 },
 ];
 
 // ─── Types ──────────────────────────────────────────────────
@@ -331,8 +331,8 @@ const ASPECT_VERBS: Record<string, string[]> = {
 
 // ─── Générateur de réponses personnalisées ──────────────────
 interface ChartInfo {
-  planetPositions: Record<string, { sign: string; signDegree?: number; [key: string]: any }>;
-  aspects: Array<{ planet1: string; planet2: string; type: string; angle: number }>;
+  planetPositions: Record<string, PlanetPosition>;
+  aspects: Aspect[];
 }
 
 // Templates par catégorie — chaque fonction reçoit le thème complet
@@ -913,7 +913,6 @@ export default function TheVoid({ onBack }: { onBack?: () => void }) {
   const [screen, setScreen] = useState<Screen>(savedBD ? 'void' : 'birth-form');
   const [question, setQuestion] = useState('');
   const [resp, setResp] = useState<VoidResponse | null>(null);
-  const [_cat, setCat] = useState('general');
   const [displayed, setDisplayed] = useState('');
   const [revealing, setRevealing] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -940,8 +939,11 @@ export default function TheVoid({ onBack }: { onBack?: () => void }) {
   const computeChart = useCallback((bd: VoidBirthData) => {
     try {
       const city = CITIES.find(c => c.name === bd.city) || CITIES[0];
-      const dateTime = parseBirthDateTime(bd.date, bd.time, city.tz);
-      const ch = calculateBirthChart({ date: dateTime, latitude: bd.latitude || city.lat, longitude: bd.longitude || city.lon });
+      const latitude = bd.latitude || city.lat;
+      const longitude = bd.longitude || city.lon;
+      const timeZone = getTimeZoneFromCoordinates(latitude, longitude);
+      const dateTime = parseBirthDateTime(bd.date, bd.time, timeZone);
+      const ch = calculateBirthChart({ date: dateTime, latitude, longitude });
       const info: ChartInfo = { planetPositions: ch.planetPositions, aspects: ch.aspects };
       setChartInfo(info);
       setChartSum(`☉ ${ch.planetPositions.sun?.sign || '?'} · ☽ ${ch.planetPositions.moon?.sign || '?'}`);
@@ -1096,7 +1098,7 @@ export default function TheVoid({ onBack }: { onBack?: () => void }) {
     setBlocked(false); setScreen('result'); setLoading(true);
     setFeedback(null); setPinned(false); setHearted(false);
     setLoaderText(LOADER_TEXTS[Math.floor(Math.random() * LOADER_TEXTS.length)]);
-    const c = detectCategory(q); setCat(c);
+    const c = detectCategory(q);
     setTimeout(() => {
       const r = getVoidResponse(q, responses);
       setResp(r); setLoading(false); setRevealing(true);
@@ -1110,7 +1112,11 @@ export default function TheVoid({ onBack }: { onBack?: () => void }) {
   const doShare = useCallback(() => {
     if (!resp) return;
     const t = `✨ The Void :\n\n« ${resp.text} »\n\n— ${PS[resp.planet]} ${PN[resp.planet]} en ${resp.sign}`;
-    navigator.share ? navigator.share({ text: t }).catch(() => {}) : navigator.clipboard.writeText(t).catch(() => {});
+    if (navigator.share) {
+      void navigator.share({ text: t }).catch(() => undefined);
+    } else {
+      void navigator.clipboard.writeText(t).catch(() => undefined);
+    }
   }, [resp]);
 
   const doPin = useCallback(() => {
@@ -1265,7 +1271,7 @@ export default function TheVoid({ onBack }: { onBack?: () => void }) {
                     {history.slice(0, 5).map((e, i) => (
                       <button key={i} onClick={() => {
                         setShowMenu(false);
-                        setQuestion(e.question); setResp(e.response); setCat(detectCategory(e.question));
+                        setQuestion(e.question); setResp(e.response);
                         setDisplayed(e.response.text); setRevealing(false); setLoading(false);
                         setFeedback(e.liked); setPinned(e.pinned); setScreen('result');
                       }} className="tv-menu-hist-item">

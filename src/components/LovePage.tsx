@@ -44,28 +44,6 @@ const ELEMENT_LABELS: Record<string, string> = {
   water: 'eau',
 };
 
-const MODALITY_LABELS: Record<string, string> = {
-  cardinal: 'cardinal',
-  fixed: 'fixe',
-  mutable: 'mutable',
-};
-
-const MODALITY_PLURALS: Record<string, string> = {
-  cardinal: 'cardinaux',
-  fixed: 'fixes',
-  mutable: 'mutables',
-};
-
-const ASPECT_DESCS: Record<number, string> = {
-  0: 'une conjonction de signes : mêmes réflexes amoureux, même rythme, et parfois les mêmes angles morts.',
-  1: 'un semi-sextile : deux langages proches en apparence, mais des priorités qui ne se devinent pas toutes seules.',
-  2: 'un sextile : l’accord se construit facilement, avec de la curiosité, du dialogue et des ajustements naturels.',
-  3: 'un carré : une tension réelle, stimulante si elle devient une conversation plutôt qu’un bras de fer.',
-  4: 'un trigone : une circulation naturelle entre les deux signes, avec une compréhension presque instinctive.',
-  5: 'un quinconce : l’attirance existe, mais la relation demande traduction, patience et un peu de mode d’emploi.',
-  6: 'une opposition : deux pôles complémentaires, capables de se révéler autant que de se provoquer.',
-};
-
 function getElementInsight(el1: string, el2: string): string {
   if (el1 === el2) {
     const sameElementInsights: Record<string, string> = {
@@ -251,54 +229,6 @@ function getInstantReading(score: number, s1: number, s2: number): InstantReadin
   return axes.map(axis => ({ ...axis, verdict: getAxisVerdict(axis.id, axis.score) }));
 }
 
-type RelationshipKey = {
-  title: string;
-  text: string;
-  practice: string;
-};
-
-function getRelationshipKey(score: number, s1: number, s2: number): RelationshipKey {
-  const first = SIGNS[s1];
-  const second = SIGNS[s2];
-  const diff = Math.abs(s1 - s2);
-  const distance = Math.min(diff, 12 - diff);
-  const elementKey = `${first.element}-${second.element}`;
-
-  if (distance === 3 || distance === 6) {
-    return {
-      title: 'Clarifier les besoins',
-      text: `${first.name} et ${second.name} ne réagissent pas toujours au même signal. Les non-dits peuvent vite devenir un sport de combat.`,
-      practice: 'À privilégier : dire le besoin précis derrière chaque désaccord.',
-    };
-  }
-  if (SAME_PAIRS.has(elementKey)) {
-    return {
-      title: 'Préserver l’autonomie',
-      text: 'Vos réflexes se ressemblent, ce qui aide beaucoup. Garder un espace à soi évite de transformer la fusion en abonnement illimité.',
-      practice: 'À privilégier : soutenir un projet personnel de l’autre, sans le piloter.',
-    };
-  }
-  if (COMPAT_PAIRS.has(elementKey)) {
-    return {
-      title: 'Structurer la relation',
-      text: 'Votre complémentarité aide le lien à respirer. Elle devient vraiment forte quand elle s’incarne dans des habitudes simples.',
-      practice: 'À privilégier : créer un rendez-vous régulier, même court, consacré au lien.',
-    };
-  }
-  if (score >= 75) {
-    return {
-      title: 'Aborder les sujets sensibles',
-      text: 'La compatibilité est bonne, mais elle ne lit pas dans les pensées. Les sujets évités finissent toujours par prendre une voix plus forte.',
-      practice: 'À privilégier : poser une question directe et écouter la réponse sans préparer la défense.',
-    };
-  }
-  return {
-    title: 'Traduire vos attentes',
-    text: `${first.name} et ${second.name} n’expriment pas l’attachement de la même manière. Ce n’est pas un problème si chacun donne la légende de sa carte.`,
-    practice: 'À privilégier : préciser ce qui permet à chacun de se sentir choisi.',
-  };
-}
-
 const PAIR_VERDICTS: Record<string, string> = {
   '0-0': 'Impulsion jumelle',
   '0-1': 'Élan terrestre',
@@ -467,16 +397,6 @@ function getPairDesc(s1: number, s2: number): string {
   return POETIC_PAIR_DESCS[key] || PAIR_DESCS[key] || '';
 }
 
-function getPairSubtitle(s1: number, s2: number): string {
-  const description = getPairDesc(s1, s2);
-  const opening = (description.split('—')[0] || description.split('.')[0] || description)
-    .trim()
-    .replace(/[.,;:]$/, '');
-
-  if (opening) return opening;
-  return `${SIGNS[s1].name} et ${SIGNS[s2].name}, une alchimie singulière`;
-}
-
 const POETIC_PAIR_DESCS: Record<string, string> = {
   '0-0': "Deux impulsions franches se reconnaissent vite. C’est vivant, direct, parfois un peu trop rapide pour la tendresse.",
   '0-1': "L’un veut foncer, l’autre veut sécuriser. Le lien devient fort quand l’élan respecte le besoin de preuve.",
@@ -558,7 +478,7 @@ const POETIC_PAIR_DESCS: Record<string, string> = {
   '11-11': "Deux sensibilités se devinent facilement. L’amour peut être très tendre, presque silencieux, s’il reste ancré.",
 };
 
-function getCompatibilityDescription(score: number, s1: number, s2: number): string {
+function getCompatibilityDescription(s1: number, s2: number): string {
   const key = `${Math.min(s1, s2)}-${Math.max(s1, s2)}`;
   return POETIC_PAIR_DESCS[key] || getPairDesc(s1, s2);
 }
@@ -569,7 +489,10 @@ function withoutFinalPeriod(text: string): string {
 
 function playSoftSelectChime() {
   try {
-    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const AudioContextConstructor = window.AudioContext
+      || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (!AudioContextConstructor) return;
+    const ctx = new AudioContextConstructor();
     const t = ctx.currentTime;
     const master = ctx.createGain();
     master.gain.setValueAtTime(0.0001, t);
@@ -590,13 +513,16 @@ function playSoftSelectChime() {
     });
 
     setTimeout(() => ctx.close(), 260);
-  } catch (_) { /* silently ignore if AudioContext unavailable */ }
+  } catch { /* AudioContext is optional. */ }
 }
 
 // ─── Astral whoosh via Web Audio API ─────────────────────
 function playAstralWhoosh() {
   try {
-    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const AudioContextConstructor = window.AudioContext
+      || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (!AudioContextConstructor) return;
+    const ctx = new AudioContextConstructor();
     const t = ctx.currentTime;
     const totalDuration = 3.5;
 
@@ -660,7 +586,7 @@ function playAstralWhoosh() {
     subO.start(t); subO.stop(t + 0.5);
 
     setTimeout(() => ctx.close(), (totalDuration + 0.5) * 1000);
-  } catch (_) { /* silently ignore if AudioContext unavailable */ }
+  } catch { /* AudioContext is optional. */ }
 }
 
 // ─── Glow keyframes injected once ────────────────────────
@@ -1056,7 +982,7 @@ export default function LovePage() {
   const hasResult = score !== null && label !== null && animatedScore !== null;
   const relationshipVerdict = hasResult ? getRelationshipVerdict(score!, sign1!, sign2!) : '';
   const pairResultLine = hasResult ? getPairResultLine(sign1!, sign2!) : '';
-  const compatibilityDescription = hasResult ? getCompatibilityDescription(score!, sign1!, sign2!) : '';
+  const compatibilityDescription = hasResult ? getCompatibilityDescription(sign1!, sign2!) : '';
   const isMobileViewport = typeof window !== 'undefined' && window.matchMedia('(max-width: 480px)').matches;
   const compactResult = hasResult && isMobileViewport;
 
@@ -1834,288 +1760,6 @@ function LovePremiumSalesPage({ onBack }: { onBack: () => void }) {
   );
 }
 
-function LoveResultPanel({
-  sign1,
-  sign2,
-  score,
-  label,
-  title,
-  description,
-  axes,
-  compact,
-  onOpenFullReport,
-}: {
-  sign1: number;
-  sign2: number;
-  score: number;
-  label: { title: string; desc: string; color: string };
-  title: string;
-  description: string;
-  axes: InstantReadingAxis[];
-  compact: boolean;
-  onOpenFullReport: () => void;
-}) {
-  const first = SIGNS[sign1];
-  const second = SIGNS[sign2];
-  const firstColor = first.element === 'fire' ? '#D98FA2' : ELEMENT_COLORS[first.element];
-  const secondColor = second.element === 'air' ? '#E8C77D' : ELEMENT_COLORS[second.element];
-  const scoreColor = score >= 88 ? '#E8C77D' : '#D8A84E';
-  const specks = [
-    ['14%', '15%', 0.18],
-    ['82%', '13%', 0.2],
-    ['9%', '34%', 0.16],
-    ['91%', '39%', 0.15],
-    ['50%', '18%', 0.22],
-    ['23%', '73%', 0.14],
-    ['76%', '76%', 0.16],
-  ] as const;
-
-  return (
-    <section
-      className="love-result-panel w-full"
-      style={{
-        position: 'relative',
-        overflow: 'hidden',
-        flexShrink: 0,
-        boxSizing: 'border-box',
-        marginTop: compact ? 0 : 4,
-        padding: compact ? '26px 21px 24px' : '34px 38px 34px',
-        borderRadius: compact ? 30 : 38,
-        border: '1px solid rgba(216,168,78,0.36)',
-        background: `radial-gradient(circle at 50% 21%, ${label.color}12, transparent 28%), radial-gradient(circle at 50% 33%, rgba(216,168,78,0.13), transparent 34%), linear-gradient(180deg, rgba(255,255,255,0.026), rgba(255,255,255,0.006) 32%, rgba(255,255,255,0.018)), rgba(7,8,11,0.96)`,
-        boxShadow: '0 28px 78px rgba(0,0,0,0.56), inset 0 1px 0 rgba(255,255,255,0.06), inset 0 0 0 1px rgba(255,223,174,0.035)',
-        animation: 'love-rise .72s ease both',
-      }}
-    >
-      {specks.map(([left, top, opacity], index) => (
-        <span
-          key={`${left}-${top}`}
-          className="love-result-speck"
-          style={{ left, top, opacity, animationDelay: `${index * 180}ms` }}
-          aria-hidden="true"
-        />
-      ))}
-
-      <div className="relative z-10 flex flex-col items-center text-center">
-        <div className="love-result-kicker" style={{ color: '#E8C77D' }}>
-          <span aria-hidden="true" style={{ display: 'block', marginBottom: compact ? 10 : 12, fontSize: compact ? 19 : 22, lineHeight: 1 }}>✶</span>
-          Compatibilité astrale
-        </div>
-        <p
-          style={{
-            margin: compact ? '12px 0 0' : '14px 0 0',
-            color: 'rgba(242,232,216,0.74)',
-            fontFamily: 'Cormorant Garamond, Georgia, serif',
-            fontSize: 'clamp(21px, 5.7vw, 30px)',
-            lineHeight: 1.06,
-            fontWeight: 360,
-          }}
-        >
-          Explorez la signature de votre lien
-        </p>
-
-        <div
-          className="relative w-full"
-          style={{
-            marginTop: compact ? 34 : 50,
-            minHeight: compact ? 164 : 204,
-          }}
-        >
-          <svg
-            aria-hidden="true"
-            className="pointer-events-none absolute left-1/2 top-0 -translate-x-1/2"
-            width="100%"
-            height={compact ? 132 : 158}
-            viewBox="0 0 360 150"
-            preserveAspectRatio="none"
-            style={{
-              maxWidth: compact ? 330 : 500,
-              opacity: 0.92,
-              filter: 'drop-shadow(0 0 12px rgba(216,168,78,0.24))',
-            }}
-          >
-            <defs>
-              <radialGradient id={`love-center-aura-${sign1}-${sign2}`} cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="#F7C46F" stopOpacity="0.45" />
-                <stop offset="46%" stopColor="#D8A84E" stopOpacity="0.12" />
-                <stop offset="100%" stopColor="#D8A84E" stopOpacity="0" />
-              </radialGradient>
-              <linearGradient id={`love-premium-bridge-${sign1}-${sign2}`} x1="62" x2="298" y1="70" y2="70" gradientUnits="userSpaceOnUse">
-                <stop stopColor={firstColor} stopOpacity="0.68" />
-                <stop offset="0.5" stopColor="#E8C77D" stopOpacity="0.88" />
-                <stop offset="1" stopColor={secondColor} stopOpacity="0.72" />
-              </linearGradient>
-              <linearGradient id={`love-premium-bridge-soft-${sign1}-${sign2}`} x1="62" x2="298" y1="70" y2="70" gradientUnits="userSpaceOnUse">
-                <stop stopColor={firstColor} stopOpacity="0.22" />
-                <stop offset="0.5" stopColor="#F2E8D8" stopOpacity="0.34" />
-                <stop offset="1" stopColor={secondColor} stopOpacity="0.22" />
-              </linearGradient>
-            </defs>
-            <circle className="love-result-orbit" cx="180" cy="70" r="47" fill="none" stroke="rgba(216,168,78,0.18)" strokeWidth="0.75" />
-            <circle className="love-result-orbit" cx="180" cy="70" r="30" fill="none" stroke="rgba(216,168,78,0.12)" strokeWidth="0.75" />
-            <circle cx="180" cy="70" r="54" fill={`url(#love-center-aura-${sign1}-${sign2})`} />
-            <path className="love-bridge-line" pathLength={1} d="M64 70 C106 20, 140 20, 180 70 S254 120, 296 70" fill="none" stroke={`url(#love-premium-bridge-${sign1}-${sign2})`} strokeWidth="1.2" strokeLinecap="round" />
-            <path className="love-bridge-line love-bridge-line--soft" pathLength={1} d="M64 70 C106 120, 140 120, 180 70 S254 20, 296 70" fill="none" stroke={`url(#love-premium-bridge-soft-${sign1}-${sign2})`} strokeWidth="1" strokeLinecap="round" />
-            <g className="love-center-star" style={{ transformOrigin: '180px 70px' }}>
-              <path d="M180 47 L185 65 L203 70 L185 75 L180 93 L175 75 L157 70 L175 65 Z" fill="#F7C46F" opacity="0.95" />
-              <circle cx="180" cy="70" r="4.5" fill="#FFF0BF" opacity="0.98" />
-            </g>
-            <circle className="love-bridge-node" cx="64" cy="70" r="2.8" fill={firstColor} style={{ animationDelay: '180ms' }} />
-            <circle className="love-bridge-node" cx="296" cy="70" r="2.8" fill={secondColor} style={{ animationDelay: '320ms' }} />
-          </svg>
-
-          <div className="relative z-10 flex w-full items-start justify-between">
-            {[{ sign: first, color: firstColor, side: 'left' as const }, { sign: second, color: secondColor, side: 'right' as const }].map(({ sign, color, side }) => (
-              <div
-                key={`${side}-${sign.id}`}
-                className={`love-result-sign love-result-sign--${side} flex flex-col items-center`}
-                style={{
-                  width: compact ? '38%' : '34%',
-                  minWidth: 0,
-                  color,
-                }}
-                aria-hidden="true"
-              >
-                <span
-                  className="love-result-medallion love-result-zodiac flex items-center justify-center"
-                  style={{
-                    width: 'clamp(92px, 27vw, 128px)',
-                    height: 'clamp(92px, 27vw, 128px)',
-                    borderRadius: 999,
-                    border: `1px solid ${color}88`,
-                    background: `radial-gradient(circle at 50% 42%, ${color}28, rgba(255,255,255,0.028) 48%, rgba(6,6,8,0.8)), linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.006))`,
-                    color,
-                    fontSize: 'clamp(38px, 11vw, 56px)',
-                    boxShadow: `0 0 32px ${color}22, inset 0 1px 0 rgba(255,255,255,0.08)`,
-                  }}
-                >
-                  {sign.glyph}
-                </span>
-                <span
-                  style={{
-                    marginTop: compact ? 14 : 18,
-                    color,
-                    fontFamily: 'Cinzel, Cormorant Garamond, Georgia, serif',
-                    fontSize: 'clamp(10px, 2.8vw, 13px)',
-                    letterSpacing: compact ? 3.2 : 4.4,
-                    textTransform: 'uppercase',
-                    fontWeight: 600,
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  {sign.name}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div style={{ marginTop: compact ? 20 : 28, width: '100%' }}>
-          <div className="flex items-center justify-center gap-4" aria-hidden="true">
-            <span style={{ width: compact ? 20 : 34, height: 1, background: 'linear-gradient(90deg, transparent, rgba(232,199,125,0.7))' }} />
-            <span style={{ color: '#E8C77D', fontSize: compact ? 16 : 19, lineHeight: 1 }}>✦</span>
-            <span style={{ width: compact ? 20 : 34, height: 1, background: 'linear-gradient(90deg, rgba(232,199,125,0.7), transparent)' }} />
-          </div>
-          <h2
-            style={{
-              margin: compact ? '8px auto 0' : '10px auto 0',
-              maxWidth: 470,
-              color: '#F2E8D8',
-              fontFamily: 'Cormorant Garamond, Georgia, serif',
-              fontSize: 'clamp(48px, 13.8vw, 76px)',
-              lineHeight: 0.92,
-              fontWeight: 360,
-              letterSpacing: 0,
-              textShadow: '0 0 22px rgba(242,232,216,0.15), 0 14px 42px rgba(0,0,0,0.5)',
-            }}
-          >
-            {title}
-          </h2>
-          <div className="flex items-center justify-center gap-4" style={{ marginTop: compact ? 16 : 20 }}>
-            <span style={{ width: compact ? 54 : 88, height: 1, background: 'linear-gradient(90deg, transparent, rgba(216,168,78,0.45))' }} />
-            <p
-              style={{
-                margin: 0,
-                color: scoreColor,
-                fontFamily: 'Cormorant Garamond, Georgia, serif',
-                fontSize: 'clamp(42px, 11vw, 56px)',
-                lineHeight: 0.9,
-                fontWeight: 360,
-                textShadow: '0 0 18px rgba(216,168,78,0.22)',
-              }}
-            >
-              {score}<small style={{ fontSize: '0.45em', marginLeft: 6 }}>%</small>
-            </p>
-            <span style={{ width: compact ? 54 : 88, height: 1, background: 'linear-gradient(90deg, rgba(216,168,78,0.45), transparent)' }} />
-          </div>
-          <p
-            style={{
-              margin: compact ? '22px auto 0' : '26px auto 0',
-              maxWidth: 420,
-              color: 'rgba(242,232,216,0.78)',
-              fontFamily: 'Cormorant Garamond, Georgia, serif',
-              fontSize: 'clamp(21px, 5.4vw, 29px)',
-              lineHeight: 1.3,
-              fontWeight: 360,
-            }}
-          >
-            {withoutFinalPeriod(description)}
-          </p>
-        </div>
-
-        <InstantReadingReport
-          key={`${sign1}-${sign2}`}
-          axes={axes}
-          compact={compact}
-          embedded
-        />
-
-        <p
-          style={{
-            margin: compact ? '28px auto 0' : '36px auto 0',
-            maxWidth: 460,
-            color: 'rgba(242,232,216,0.76)',
-            fontFamily: 'Cormorant Garamond, Georgia, serif',
-            fontSize: 'clamp(22px, 5.9vw, 31px)',
-            lineHeight: 1.34,
-            fontWeight: 360,
-          }}
-        >
-          Entre vous, la curiosité, l'élan et la réponse<br />
-          créent une <span style={{ color: '#E8C77D' }}>alchimie vivante</span>
-        </p>
-
-        <div style={{ marginTop: compact ? 30 : 38, width: '100%' }}>
-          <div style={{ width: '46%', height: 1, margin: '0 auto 18px', background: 'linear-gradient(90deg, transparent, rgba(216,168,78,0.4), transparent)' }} />
-          <button
-            type="button"
-            onClick={onOpenFullReport}
-            className="love-result-action love-interactive flex w-full items-center justify-center gap-4"
-            style={{
-              minHeight: 58,
-              padding: compact ? '15px 18px' : '18px 24px',
-              borderRadius: 999,
-              border: '1px solid rgba(232,199,125,0.72)',
-              background: 'linear-gradient(180deg, rgba(63,46,30,0.52), rgba(12,10,9,0.86))',
-              color: '#E8C77D',
-              fontFamily: 'Cinzel, Cormorant Garamond, Georgia, serif',
-              fontSize: 'clamp(10px, 2.8vw, 13px)',
-              fontWeight: 600,
-              letterSpacing: compact ? 2.2 : 3.4,
-              textTransform: 'uppercase',
-              boxShadow: '0 0 26px rgba(216,168,78,0.18), inset 0 1px 0 rgba(255,243,205,0.11)',
-              cursor: 'pointer',
-            }}
-          >
-            <Sparkles size={compact ? 16 : 20} strokeWidth={1.25} />
-            Découvrir la lecture complète
-          </button>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 function SignCard({ sign, label, onClick, quiet = false }: {
   sign: typeof SIGNS[0] | null;
   label: string;
@@ -2213,42 +1857,6 @@ function SignCard({ sign, label, onClick, quiet = false }: {
   );
 }
 
-function RelationshipKeyCard({ insight, compact }: { insight: RelationshipKey; compact: boolean }) {
-  return (
-    <section
-      className="w-full flex-shrink-0"
-      style={{
-        position: 'relative',
-        overflow: 'hidden',
-        marginTop: compact ? 12 : 14,
-        padding: compact ? '15px 15px 16px' : '17px 17px 18px',
-        borderRadius: 14,
-        border: '1px solid rgba(229,196,164,0.25)',
-        background: 'radial-gradient(circle at 0% 0%, rgba(229,196,164,0.12), transparent 40%), linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01)), rgba(8,6,9,0.88)',
-        boxShadow: '0 16px 38px rgba(0,0,0,0.26), inset 0 1px 0 rgba(255,255,255,0.06)',
-      }}
-    >
-      <div className="absolute left-1/2 top-0 h-px -translate-x-1/2" style={{ width: '38%', background: 'linear-gradient(90deg, transparent, rgba(238,207,176,0.62), transparent)' }} />
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2" style={{ color: '#DCBF9B', fontSize: 8.4, letterSpacing: 2.4, textTransform: 'uppercase', fontWeight: 800 }}>
-          <Sparkles size={10} strokeWidth={1.45} />
-          Clé du lien
-        </div>
-        <span style={{ width: 28, height: 1, background: 'rgba(229,196,164,0.22)' }} />
-      </div>
-      <h3 style={{ margin: '8px 0 0', color: '#FFF6EF', fontFamily: 'Cormorant Garamond, Georgia, serif', fontSize: compact ? 20 : 22, lineHeight: 1.06, fontWeight: 550 }}>
-        {insight.title}
-      </h3>
-      <p style={{ margin: '8px 0 0', color: '#EDE4E6', fontSize: compact ? 12.5 : 13.1, lineHeight: 1.48, fontWeight: 450, textShadow: '0 1px 2px rgba(0,0,0,0.35)' }}>
-        {insight.text}
-      </p>
-      <p style={{ margin: '10px 0 0', paddingTop: 10, borderTop: '1px solid rgba(229,196,164,0.14)', color: '#EBC69F', fontSize: compact ? 11.8 : 12.4, lineHeight: 1.45, fontWeight: 520, fontStyle: 'italic' }}>
-        {insight.practice}
-      </p>
-    </section>
-  );
-}
-
 function InstantReadingReport({ axes, compact, embedded = false }: { axes: InstantReadingAxis[]; compact: boolean; embedded?: boolean }) {
   const revealKey = axes.map(axis => axis.score).join('-');
 
@@ -2259,7 +1867,7 @@ function InstantReadingReport({ axes, compact, embedded = false }: { axes: Insta
     return () => timers.forEach(timer => window.clearTimeout(timer));
   }, [revealKey]);
 
-  if (false && embedded) {
+  if (embedded && axes.length === 0) {
     return (
       <section
         className="love-instant-reading w-full"

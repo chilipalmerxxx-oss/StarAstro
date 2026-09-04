@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import { VitePWA } from 'vite-plugin-pwa';
 import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
@@ -12,25 +11,23 @@ process.env.TMPDIR = localTempDir;
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [
-    react(),
-    // PWA disabled: old service workers were trapping recipients on an outdated shell.
-    // Re-enable later only with network-first HTML and no index.html precache.
-    VitePWA({
-      disable: true,
-      injectRegister: false,
-      registerType: 'autoUpdate',
-      manifest: false,
-      workbox: {
-        cleanupOutdatedCaches: true,
-      },
-    }),
-  ],
+  plugins: [react()],
   server: {
-    host: true,
-    allowedHosts: true,
+    // Keep the development server private by default. Use an explicit host
+    // locally when LAN testing is intentionally required.
+    host: '127.0.0.1',
   },
   optimizeDeps: {
     exclude: ['lucide-react'],
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('/src/data/')) return 'interpretation-data';
+          if (id.includes('/src/components/NatalChart.tsx')) return 'natal-chart';
+        },
+      },
+    },
   },
 });

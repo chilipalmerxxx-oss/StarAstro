@@ -1,53 +1,50 @@
-import { useState, useEffect, useCallback } from 'react';
+import { lazy, useState, useEffect, useCallback } from 'react';
 import LandingPage from './components/LandingPage';
-import TheVoid from './components/TheVoid';
-import AstralProfile from './components/AstralProfile';
-import You2Page from './components/You2Page';
-import FriendsPage from './components/FriendsPage';
-import CoStarPage from './components/CoStarPage';
-import CoStarPagePreview from './components/CoStarPagePreview';
-import CoStarHeroPreview from './components/CoStarHeroPreview';
-import CoStarBackgroundExamplesPage from './components/CoStarBackgroundExamplesPage';
-import YouPageWheelPreview from './components/YouPageWheelPreview';
-import LandingOrnamentPreview from './components/LandingOrnamentPreview';
-import LandingTitlePreview from './components/LandingTitlePreview';
-import HomeDashboard from './components/HomeDashboard';
-import LovePage from './components/LovePage';
-import XPage from './components/XPage';
-import TestCompatibilityPage from './components/TestCompatibilityPage';
 import compatibilityArtwork from './assets/compatibilite-premium-astrologie.png';
 import BottomNavBar, { type TabId } from './components/BottomNavBar';
-import type { OnboardingBirthData } from './components/Onboarding';
-import PremiumOnboardingY from './components/PremiumOnboardingY';
-import { calculateBirthChart } from './services/astrology';
-import { parseBirthDateTime } from './lib/birthDate';
-import { Supabase } from './lib/supabase';
-import { getSessionId } from './lib/session';
+import { getTimeZoneFromCoordinates, getTimezoneOffsetHours, parseBirthDateTime } from './lib/birthDate';
+import { getOrCreateSupabaseUserId, isSupabaseConfigured, Supabase } from './lib/supabase';
+import type { BirthInput, ChartData } from './types/chart';
+import type { Aspect, House, PlanetPosition } from './services/astrology';
 
-interface ChartData {
-  name: string;
-  birthDate: Date;
-  birthPlace: string;
-  latitude?: number;
-  longitude?: number;
-  timezoneOffset?: number;
-  planetPositions: Record<string, any>;
-  houses: any[];
-  aspects: any[];
-}
+const TheVoid = lazy(() => import('./components/TheVoid'));
+const AstralProfile = lazy(() => import('./components/AstralProfile'));
+const You2Page = lazy(() => import('./components/You2Page'));
+const FriendsPage = lazy(() => import('./components/FriendsPage'));
+const CoStarPage = lazy(() => import('./components/CoStarPage'));
+const CoStarPagePreview = lazy(() => import('./components/CoStarPagePreview'));
+const CoStarHeroPreview = lazy(() => import('./components/CoStarHeroPreview'));
+const CoStarBackgroundExamplesPage = lazy(() => import('./components/CoStarBackgroundExamplesPage'));
+const YouPageWheelPreview = lazy(() => import('./components/YouPageWheelPreview'));
+const LandingOrnamentPreview = lazy(() => import('./components/LandingOrnamentPreview'));
+const LandingTitlePreview = lazy(() => import('./components/LandingTitlePreview'));
+const HomeDashboard = lazy(() => import('./components/HomeDashboard'));
+const LovePage = lazy(() => import('./components/LovePage'));
+const XPage = lazy(() => import('./components/XPage'));
+const TestCompatibilityPage = lazy(() => import('./components/TestCompatibilityPage'));
+const PremiumOnboardingY = lazy(() => import('./components/PremiumOnboardingY'));
+
+type CalculatedChart = {
+  planetPositions: Record<string, PlanetPosition>;
+  houses: House[];
+  aspects: Aspect[];
+};
 
 // Fonctions pour la persistance des données
 const saveChartToLocalStorage = (chart: ChartData | null) => {
-  if (!chart) {
-    localStorage.removeItem('astroThemeChart');
-    return;
-  }
+  try {
+    if (!chart) {
+      localStorage.removeItem('astroThemeChart');
+      return;
+    }
 
-  const dataToSave = {
-    ...chart,
-    birthDate: chart.birthDate.toISOString(), // Convertir Date en string
-  };
-  localStorage.setItem('astroThemeChart', JSON.stringify(dataToSave));
+    localStorage.setItem('astroThemeChart', JSON.stringify({
+      ...chart,
+      birthDate: chart.birthDate.toISOString(),
+    }));
+  } catch (error) {
+    console.error('Unable to persist chart locally:', error);
+  }
 };
 
 const loadChartFromLocalStorage = (): ChartData | null => {
@@ -55,16 +52,121 @@ const loadChartFromLocalStorage = (): ChartData | null => {
     const saved = localStorage.getItem('astroThemeChart');
     if (!saved) return null;
 
-    const data = JSON.parse(saved);
+    const data = JSON.parse(saved) as Partial<ChartData> & { birthDate?: string };
+    const birthDate = new Date(data.birthDate || '');
+    if (
+      !data.name
+      || !data.birthPlace
+      || !Number.isFinite(birthDate.getTime())
+      || !Number.isFinite(data.latitude)
+      || !Number.isFinite(data.longitude)
+      || Number(data.latitude) < -90
+      || Number(data.latitude) > 90
+      || Number(data.longitude) < -180
+      || Number(data.longitude) > 180
+      || !data.planetPositions
+      || typeof data.planetPositions !== 'object'
+      || Array.isArray(data.planetPositions)
+      || !Array.isArray(data.houses)
+      || !Array.isArray(data.aspects)
+    ) {
+      localStorage.removeItem('astroThemeChart');
+      return null;
+    }
+
+    const latitude = data.latitude as number;
+    const longitude = data.longitude as number;
+    const timeZone = data.timeZone || getTimeZoneFromCoordinates(latitude, longitude);
     return {
-      ...data,
-      birthDate: new Date(data.birthDate), // Convertir string en Date
+      id: data.id,
+      name: data.name,
+      birthDate,
+      birthPlace: data.birthPlace,
+      latitude,
+      longitude,
+      timeZone,
+      timezoneOffset: data.timezoneOffset ?? getTimezoneOffsetHours(birthDate, timeZone),
+      planetPositions: data.planetPositions,
+      houses: data.houses,
+      aspects: data.aspects,
     };
   } catch (error) {
     console.error('Error loading chart from localStorage:', error);
     return null;
   }
 };
+
+async function saveChartOnline(
+  input: BirthInput,
+  birthDate: Date,
+  calculated: CalculatedChart,
+  existingId?: string,
+): Promise<string | undefined> {
+  if (!isSupabaseConfigured) return existingId;
+
+  const userId = await getOrCreateSupabaseUserId();
+  const payload = {
+    name: input.name,
+    birth_date: birthDate.toISOString(),
+    birth_place: input.place,
+    latitude: input.latitude,
+    longitude: input.longitude,
+    timezone_offset: input.timezoneOffset,
+    planet_positions: calculated.planetPositions,
+    houses: calculated.houses,
+    aspects: calculated.aspects,
+    user_id: userId,
+    session_id: null,
+  };
+
+  const query = existingId
+    ? Supabase.from('birth_charts').update(payload).eq('id', existingId)
+    : Supabase.from('birth_charts').insert(payload);
+  const { data, error } = await query.select('id').single();
+  if (error) throw error;
+  return data.id as string;
+}
+
+async function calculateAndSaveChart(input: BirthInput, existingId?: string) {
+  const timeZone = getTimeZoneFromCoordinates(input.latitude, input.longitude);
+  const birthDate = parseBirthDateTime(input.date, input.time, timeZone);
+  const normalizedInput: BirthInput = {
+    ...input,
+    timeZone,
+    timezoneOffset: getTimezoneOffsetHours(birthDate, timeZone),
+  };
+  const { calculateBirthChart } = await import('./services/astrology');
+  const calculated = calculateBirthChart({
+    date: birthDate,
+    latitude: input.latitude,
+    longitude: input.longitude,
+  });
+  let onlineSaveFailed = false;
+  let id = existingId;
+
+  try {
+    id = await saveChartOnline(normalizedInput, birthDate, calculated, existingId);
+  } catch (error) {
+    onlineSaveFailed = true;
+    console.error('Online chart save failed:', error);
+  }
+
+  const chart: ChartData = {
+    id,
+    name: normalizedInput.name,
+    birthDate,
+    birthPlace: normalizedInput.place,
+    latitude: input.latitude,
+    longitude: input.longitude,
+    timeZone: normalizedInput.timeZone,
+    timezoneOffset: normalizedInput.timezoneOffset,
+    planetPositions: calculated.planetPositions,
+    houses: calculated.houses,
+    aspects: calculated.aspects,
+  };
+
+  return { chart, onlineSaveFailed };
+}
 
 const ONBOARDING_STORAGE_KEY = 'nightstarOnboardingComplete';
 
@@ -84,15 +186,12 @@ function App() {
   const isCompatibilityTestRoute =
     typeof window !== 'undefined' && window.location.hash === '#compatibility-test';
 
-  const savedChart = loadChartFromLocalStorage();
   const [showLanding, setShowLanding] = useState(true);
   const [showVoid, setShowVoid] = useState(false);
   const [showCoStar, setShowCoStar] = useState(false);
-  const [chartData, setChartData] = useState<ChartData | null>(savedChart);
+  const [chartData, setChartData] = useState<ChartData | null>(() => loadChartFromLocalStorage());
   const [loading, setLoading] = useState(false);
-  const [showSavedCharts, setShowSavedCharts] = useState(false);
   const [activeTab, setActiveTab] = useState<TabId>('home');
-  const [selectedPlanetForProfile, setSelectedPlanetForProfile] = useState<string | null>(null);
 
   // Sauvegarder les données quand chartData change
   useEffect(() => {
@@ -118,111 +217,15 @@ function App() {
     return () => clearTimeout(t);
   }, [activeTab, showCoStar, showVoid, showLanding]);
 
-  const handleSubmit = async (data: {
-    name: string;
-    date: string;
-    time: string;
-    place: string;
-    latitude: number;
-    longitude: number;
-    timezoneOffset: number;
-  }) => {
+  const handleOnboardingComplete = useCallback(async (data: BirthInput) => {
     setLoading(true);
 
     try {
-      const birthDateTime = parseBirthDateTime(data.date, data.time, data.timezoneOffset);
-
-      const chart = calculateBirthChart({
-        date: birthDateTime,
-        latitude: data.latitude,
-        longitude: data.longitude,
-      });
-
-      const { data: { user } } = await Supabase.auth.getUser();
-
-      const { error } = await Supabase.from('birth_charts').insert({
-        name: data.name,
-        birth_date: birthDateTime.toISOString(),
-        birth_place: data.place,
-        latitude: data.latitude,
-        longitude: data.longitude,
-        timezone_offset: data.timezoneOffset,
-        planet_positions: chart.planetPositions,
-        houses: chart.houses,
-        aspects: chart.aspects,
-        user_id: user?.id || null,
-        session_id: user ? null : getSessionId(),
-      });
-
-      if (error) {
-        console.error('Error saving to database:', error);
+      const { chart, onlineSaveFailed } = await calculateAndSaveChart(data);
+      setChartData(chart);
+      if (onlineSaveFailed) {
+        alert('Votre thème reste disponible sur cet appareil, mais la sauvegarde en ligne a échoué.');
       }
-
-      setChartData({
-        name: data.name,
-        birthDate: birthDateTime,
-        birthPlace: data.place,
-        latitude: data.latitude,
-        longitude: data.longitude,
-        timezoneOffset: data.timezoneOffset,
-        planetPositions: chart.planetPositions,
-        houses: chart.houses,
-        aspects: chart.aspects,
-      });
-      setShowLanding(false);
-      setShowVoid(false);
-      setShowCoStar(false);
-      setActiveTab('profile');
-    } catch (error) {
-      console.error('Error calculating chart:', error);
-      alert('Une erreur est survenue lors du calcul du thème astral.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleOnboardingComplete = useCallback(async (data: OnboardingBirthData) => {
-    setLoading(true);
-
-    try {
-      const birthDateTime = parseBirthDateTime(data.date, data.time, data.timezoneOffset);
-      const chart = calculateBirthChart({
-        date: birthDateTime,
-        latitude: data.latitude,
-        longitude: data.longitude,
-      });
-
-      const { data: { user } } = await Supabase.auth.getUser();
-
-      const { error } = await Supabase.from('birth_charts').insert({
-        name: data.name,
-        birth_date: birthDateTime.toISOString(),
-        birth_place: data.place,
-        latitude: data.latitude,
-        longitude: data.longitude,
-        timezone_offset: data.timezoneOffset,
-        planet_positions: chart.planetPositions,
-        houses: chart.houses,
-        aspects: chart.aspects,
-        user_id: user?.id || null,
-        session_id: user ? null : getSessionId(),
-      });
-
-      if (error) {
-        console.error('Error saving onboarding chart to database:', error);
-      }
-
-      setChartData({
-        name: data.name,
-        birthDate: birthDateTime,
-        birthPlace: data.place,
-        latitude: data.latitude,
-        longitude: data.longitude,
-        timezoneOffset: data.timezoneOffset,
-        planetPositions: chart.planetPositions,
-        houses: chart.houses,
-        aspects: chart.aspects,
-      });
       localStorage.setItem(ONBOARDING_STORAGE_KEY, 'true');
       setShowLanding(true);
       setShowVoid(false);
@@ -237,57 +240,15 @@ function App() {
     }
   }, []);
 
-  const handleOnboardingAccountSkip = useCallback(() => {
-    localStorage.setItem(ONBOARDING_STORAGE_KEY, 'true');
-    setShowLanding(false);
-    setShowVoid(false);
-    setShowCoStar(false);
-    setActiveTab('home');
-  }, []);
-
-  const handleEditBirthData = useCallback(async (data: OnboardingBirthData) => {
+  const handleEditBirthData = useCallback(async (data: BirthInput) => {
     setLoading(true);
 
     try {
-      const birthDateTime = parseBirthDateTime(data.date, data.time, data.timezoneOffset);
-      const chart = calculateBirthChart({
-        date: birthDateTime,
-        latitude: data.latitude,
-        longitude: data.longitude,
-      });
-
-      const { data: { user } } = await Supabase.auth.getUser();
-
-      const { error } = await Supabase.from('birth_charts').insert({
-        name: data.name,
-        birth_date: birthDateTime.toISOString(),
-        birth_place: data.place,
-        latitude: data.latitude,
-        longitude: data.longitude,
-        timezone_offset: data.timezoneOffset,
-        planet_positions: chart.planetPositions,
-        houses: chart.houses,
-        aspects: chart.aspects,
-        user_id: user?.id || null,
-        session_id: user ? null : getSessionId(),
-      });
-
-      if (error) {
-        console.error('Error saving edited chart to database:', error);
+      const { chart, onlineSaveFailed } = await calculateAndSaveChart(data, chartData?.id);
+      setChartData(chart);
+      if (onlineSaveFailed) {
+        alert('Les modifications sont enregistrées sur cet appareil, mais pas encore en ligne.');
       }
-
-      setChartData({
-        name: data.name,
-        birthDate: birthDateTime,
-        birthPlace: data.place,
-        latitude: data.latitude,
-        longitude: data.longitude,
-        timezoneOffset: data.timezoneOffset,
-        planetPositions: chart.planetPositions,
-        houses: chart.houses,
-        aspects: chart.aspects,
-      });
-      setSelectedPlanetForProfile(null);
       setShowLanding(false);
       setShowVoid(false);
       setShowCoStar(false);
@@ -299,11 +260,7 @@ function App() {
     } finally {
       setLoading(false);
     }
-  }, []);
-
-  const handleReset = () => {
-    setChartData(null);
-  };
+  }, [chartData?.id]);
 
   const handleGetStarted = () => {
     // New visitors must enter the current onboarding — never the legacy AstroThème form.
@@ -311,15 +268,6 @@ function App() {
     setShowVoid(false);
     setShowCoStar(false);
     setActiveTab('y');
-  };
-
-  const handleBackToHome = () => {
-    setShowLanding(true);
-    setChartData(null);
-  };
-
-  const handleLoadChart = (chart: ChartData) => {
-    setChartData(chart);
   };
 
   const handleTabChange = (tab: TabId) => {
@@ -395,15 +343,6 @@ function App() {
     setActiveTab(tab);
   };
 
-  const handlePlanetClick = (planetKey: string) => {
-    if (!chartData) return;
-    setSelectedPlanetForProfile(planetKey);
-    setShowLanding(false);
-    setShowVoid(false);
-    setShowCoStar(false);
-    setActiveTab('profile');
-  };
-
   if (isCoStarPreviewRoute) {
     return (
       <CoStarPagePreview
@@ -418,7 +357,7 @@ function App() {
   if (isCoStarHeroPreviewRoute) {
     return (
       <CoStarHeroPreview
-        userName={savedChart?.name}
+        userName={chartData?.name}
         onClosePreview={() => {
           window.location.hash = '';
           window.location.reload();
@@ -441,9 +380,9 @@ function App() {
   if (isYouPageWheelPreviewRoute) {
     return (
       <YouPageWheelPreview
-        userName={savedChart?.name || chartData?.name || 'Gil'}
-        birthDateLabel={savedChart?.birthDate ? savedChart.birthDate.toLocaleString('fr-FR', { dateStyle: 'long', timeStyle: 'short' }) : undefined}
-        birthPlaceLabel={savedChart?.birthPlace || chartData?.birthPlace || 'Paris, France'}
+        userName={chartData?.name || 'Gil'}
+        birthDateLabel={chartData?.birthDate ? chartData.birthDate.toLocaleString('fr-FR', { dateStyle: 'long', timeStyle: 'short', timeZone: chartData.timeZone }) : undefined}
+        birthPlaceLabel={chartData?.birthPlace || 'Paris, France'}
         onClosePreview={() => {
           window.location.hash = '';
           window.location.reload();
@@ -500,7 +439,7 @@ function App() {
               setShowCoStar(false);
               setActiveTab('home');
             }} 
-            chartData={chartData} 
+            chartData={chartData ?? undefined}
             userName={chartData?.name} 
           />
         </div>
@@ -586,7 +525,6 @@ function App() {
     return (
       <PremiumOnboardingY
         onComplete={handleOnboardingComplete}
-        onSkipAccount={handleOnboardingAccountSkip}
         onExit={() => handleTabChange('home')}
       />
     );
@@ -603,19 +541,15 @@ function App() {
             birthPlace={chartData.birthPlace}
             birthLatitude={chartData.latitude}
             birthLongitude={chartData.longitude}
-            birthTimezoneOffset={chartData.timezoneOffset}
+            birthTimeZone={chartData.timeZone}
             planetPositions={chartData.planetPositions}
             houses={chartData.houses}
             aspects={chartData.aspects}
-            initialActivePlanet={selectedPlanetForProfile as any}
             onEditBirthData={handleEditBirthData}
             editBirthDataLoading={loading}
           />
         </div>
-        <BottomNavBar activeTab={activeTab} onTabChange={(tab) => {
-          setSelectedPlanetForProfile(null);
-          handleTabChange(tab);
-        }} />
+        <BottomNavBar activeTab={activeTab} onTabChange={handleTabChange} />
       </div>
     );
   }
@@ -630,20 +564,16 @@ function App() {
             birthPlace={chartData.birthPlace}
             birthLatitude={chartData.latitude}
             birthLongitude={chartData.longitude}
-            birthTimezoneOffset={chartData.timezoneOffset}
+            birthTimeZone={chartData.timeZone}
             planetPositions={chartData.planetPositions}
             houses={chartData.houses}
             aspects={chartData.aspects}
-            initialActivePlanet={selectedPlanetForProfile as any}
             fullscreenMode={true}
             onEditBirthData={handleEditBirthData}
             editBirthDataLoading={loading}
           />
         </div>
-        <BottomNavBar activeTab={activeTab} onTabChange={(tab) => {
-          setSelectedPlanetForProfile(null);
-          handleTabChange(tab);
-        }} />
+        <BottomNavBar activeTab={activeTab} onTabChange={handleTabChange} />
       </div>
     );
   }
@@ -653,7 +583,6 @@ function App() {
     return (
       <PremiumOnboardingY
         onComplete={handleOnboardingComplete}
-        onSkipAccount={handleOnboardingAccountSkip}
         onExit={() => {
           setShowLanding(true);
           setActiveTab('home');
@@ -671,7 +600,7 @@ function App() {
           birthPlace={chartData.birthPlace}
           birthLatitude={chartData.latitude}
           birthLongitude={chartData.longitude}
-          birthTimezoneOffset={chartData.timezoneOffset}
+          birthTimeZone={chartData.timeZone}
           planetPositions={chartData.planetPositions}
           houses={chartData.houses}
           aspects={chartData.aspects}
@@ -682,10 +611,7 @@ function App() {
       </div>
       <BottomNavBar
         activeTab={activeTab}
-        onTabChange={(tab) => {
-          setSelectedPlanetForProfile(null);
-          handleTabChange(tab);
-        }}
+        onTabChange={handleTabChange}
       />
     </div>
   );

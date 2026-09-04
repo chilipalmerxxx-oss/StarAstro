@@ -14357,3 +14357,60 @@ html[data-theme="light"] .astral-profile__premium-teaser-btn:hover {
   background: rgba(255, 248, 232, 0.85);
   box-shadow: none;
 }
+/* Safe fallback shown before or outside React when the app cannot render. */
+.boot-error {
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: #050608;
+  color: #f4efe6;
+  font-family: system-ui, sans-serif;
+  text-align: center;
+}
+
+.boot-error > div {
+  max-width: 28rem;
+}
+
+.boot-error p:first-child {
+  margin: 0 0 8px;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.55;
+}
+
+.boot-error h1 {
+  margin: 0 0 12px;
+  font-size: 1.35rem;
+  font-weight: 600;
+}
+
+.boot-error p:not(:first-child) {
+  margin: 0 0 18px;
+  line-height: 1.5;
+  opacity: 0.78;
+}
+
+.boot-error button {
+  appearance: none;
+  border: 0;
+  border-radius: 999px;
+  padding: 12px 18px;
+  background: linear-gradient(180deg, #ffe8bc, #d9a84e);
+  color: #1a140f;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.route-loading {
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  background: #050608;
+  color: #d9a84e;
+  font: 600 0.8rem/1 system-ui, sans-serif;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
