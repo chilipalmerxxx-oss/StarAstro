@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo, type FormEvent, type MouseEvent } from 'react';
+﻿import { useState, useRef, useEffect, useMemo, type FormEvent, type MouseEvent } from 'react';
 import { ArrowRight, Calendar, ChevronDown, Clock, MapPin, Sparkles, X } from 'lucide-react';
 import { getDetailedInterpretation } from '../data/signDetailedInterpretations';
 import { PLANET_INFO, getAspectInterpretation } from '../data/interpretations';
@@ -791,6 +791,10 @@ export default function AstralProfile({
               filter: drop-shadow(0 0 24px rgba(0, 0, 0, 0.35));
             }
           `}</style>
+          <div className="stars-layer-2" aria-hidden="true">
+            <div className="star-drift star-drift--one" />
+            <div className="star-drift star-drift--two" />
+          </div>
           <div className={`relative z-10 zodiac-wheel-container${isYou2 ? ' zodiac-wheel-container--you2' : ''}`} data-you2-focus={activeAspect ? 'aspect' : activePlanet}>
             {isYou2 && (
               <>
@@ -813,20 +817,6 @@ export default function AstralProfile({
             </div>
           </div>
         </div>
-        {onEditBirthData && (
-          <div className="astral-profile__edit-theme-bar">
-            <button
-              type="button"
-              className="astral-profile__edit-theme-button"
-              onClick={() => setIsEditingBirthData(true)}
-              aria-label="Générer un nouveau thème astral avec de nouvelles coordonnées"
-            >
-              <Sparkles size={16} strokeWidth={1.9} aria-hidden="true" />
-              <span>Nouveau thème</span>
-            </button>
-            <p className="astral-profile__edit-theme-hint">Nouvelles coordonnées de naissance</p>
-          </div>
-        )}
         <div className="astral-profile__gold-divider" aria-hidden="true" />
         {onEditBirthData && isEditingBirthData && (
           <div className="astral-profile__birth-editor" role="dialog" aria-modal="true" aria-labelledby="birth-editor-title">

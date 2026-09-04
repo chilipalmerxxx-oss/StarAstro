@@ -4,26 +4,16 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/icons/icon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>AstroThème</title>
+    <meta name="description" content="Night One" />
+    <title>Night One</title>
 
-    <!-- Bust stale service workers before the app boots. -->
-    <script>
-      (function () {
-        if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
-          navigator.serviceWorker.getRegistrations().then(function (regs) {
-            regs.forEach(function (reg) { reg.unregister(); });
-          });
-        }
-        if (window.caches && caches.keys) {
-          caches.keys().then(function (keys) {
-            keys.forEach(function (key) { caches.delete(key); });
-          });
-        }
-      })();
-    </script>
-
-    <meta name="theme-color" content="#111111" />
-    <link rel="apple-touch-icon" href="/icons/icon.svg" />
+    <meta name="theme-color" content="#080810" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Night One" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

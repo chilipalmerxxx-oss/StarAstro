@@ -266,12 +266,16 @@
 
 .tide-landing__logo {
   margin: 0;
-  color: #fff;
-  font-size: clamp(40px, 10.5vw, 50px);
-  font-weight: 700;
-  letter-spacing: 0.055em;
+  color: rgba(255, 244, 220, 0.96);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(48px, 13vw, 64px);
+  font-weight: 300;
+  letter-spacing: 0.045em;
   line-height: 0.98;
-  text-shadow: 0 8px 32px rgba(0, 0, 0, 0.22);
+  text-transform: uppercase;
+  text-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.26),
+    0 0 22px rgba(255, 210, 128, 0.16);
 }
 
 .tide-landing__tagline {

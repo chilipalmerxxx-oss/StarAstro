@@ -1,4 +1,4 @@
-﻿@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Crimson+Pro:wght@300;400;500&family=Cinzel:wght@300;400&family=Spectral:wght@200;300&family=Playfair+Display:wght@300;400&family=Marcellus&family=Raleway:wght@100;200;300&family=Josefin+Sans:wght@100;200;300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Crimson+Pro:wght@300;400;500&family=Cinzel:wght@300;400&family=Spectral:wght@200;300&family=Playfair+Display:wght@300;400&family=Marcellus&family=Raleway:wght@100;200;300&family=Josefin+Sans:wght@100;200;300&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -46,7 +46,7 @@ body {
 .border-soft { border-color: var(--border-soft); }
 
 /* -----------------------------------------------------------
-   THE VOID â€” Full Design System
+   THE VOID — Full Design System
    Palette: Deep #0B0E13 | Accent #FFB86B | Text #FFF | Sec #A6B0C3 | Danger #FF6B6B
    Typography: Title 28px SemiBold | Body 16px Regular | Micro 13px Medium
    Grid: 8px base
@@ -111,7 +111,7 @@ body {
 .btn-sparkle-l   { animation: btn-sparkle 1.8s ease-in-out infinite; }
 .btn-sparkle-r   { animation: btn-sparkle 1.8s ease-in-out infinite 0.6s; }
 
-/* -- Template D â€“ Minimaliste Luxe ------------------------- */
+/* -- Template D – Minimaliste Luxe ------------------------- */
 @keyframes d-line-glow {
   0%,100% { opacity: 0.4; }
   50% { opacity: 1; box-shadow: 0 0 10px rgba(212,175,55,0.7); }
@@ -906,8 +906,8 @@ body {
 }
 
 /* -----------------------------------------------------------
-   THE VOID â€” Redesign "NÃ©ant"
-   Pure black Â· Centered input Â· Radical simplicity
+   THE VOID — Redesign "Néant"
+   Pure black · Centered input · Radical simplicity
    Font: Cormorant Garamond (serif, elegant, esoteric)
    ----------------------------------------------------------- */
 
@@ -916,26 +916,42 @@ body {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
+
 @keyframes tv-breathe {
   0%, 100% { transform: scale(1); }
   50%      { transform: scale(1.015); }
 }
+
 @keyframes tv-cursor-slow {
   0%, 100% { opacity: 1; }
   50%      { opacity: 0.2; }
 }
+
+@keyframes tv-orbit-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes tv-sat-pulse {
+  0%, 100% { opacity: 0.12; transform: scale(0.85); }
+  50% { opacity: 0.95; transform: scale(1.08); }
+}
+
 @keyframes tv-dot-pulse {
   0%, 100% { opacity: 0.3; transform: scale(0.8); }
   50%      { opacity: 1; transform: scale(1.2); }
 }
+
 @keyframes tv-text-breathe {
-  0%, 100% { opacity: 0.4; }
-  50%      { opacity: 0.8; }
+  0%, 100% { opacity: 0.7; }
+  50%      { opacity: 1; }
 }
+
 @keyframes tv-question-float {
   from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+
 @keyframes tv-glow-pulse {
   0%, 100% { box-shadow: 0 0 0 rgba(255,255,255,0); }
   50%      { box-shadow: 0 0 20px rgba(255,255,255,0.06); }
@@ -964,6 +980,7 @@ body {
   inset: 0;
   z-index: 0;
   pointer-events: none;
+  opacity: 0.34;
 }
 
 .tv-page {
@@ -998,6 +1015,7 @@ body {
   padding: 20px 16px;
   z-index: 5;
 }
+
 .tv-category-btn {
   display: flex;
   flex-direction: column;
@@ -1044,6 +1062,7 @@ body {
 .tv-category-btn.active {
   color: rgba(255, 255, 255, 1);
 }
+
 .tv-category-btn.active .tv-cat-icon-ring {
   border-color: rgba(255, 255, 255, 0.45);
   box-shadow:
@@ -1053,6 +1072,7 @@ body {
   background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
   transform: scale(1.1);
 }
+
 .tv-category-btn.active .tv-cat-label {
   opacity: 1;
   letter-spacing: 4px;
@@ -1062,13 +1082,64 @@ body {
 .tv-category-btn:hover:not(.active) {
   color: rgba(255, 255, 255, 0.6);
 }
+
 .tv-category-btn:hover:not(.active) .tv-cat-icon-ring {
   border-color: rgba(255, 255, 255, 0.25);
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.04);
   transform: scale(1.05);
 }
+
 .tv-category-btn:hover:not(.active) .tv-cat-label {
   opacity: 0.8;
+}
+
+/* --- Surprends-moi ------------------------------------------ */
+.tv-surprise-btn {
+  align-self: center;
+  background: none;
+  border: 1px solid rgba(255, 208, 122, 0.35);
+  border-radius: 20px;
+  color: #ffd07a;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 14px;
+  font-style: italic;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  padding: 8px 20px;
+  margin: 4px 0 8px;
+  transition: all 0.3s ease;
+}
+
+.tv-surprise-btn:hover {
+  border-color: rgba(255, 208, 122, 0.7);
+  background: rgba(255, 208, 122, 0.08);
+}
+
+/* --- Limite quotidienne -------------------------------------- */
+.tv-limit-reached {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 14px;
+  flex: 1;
+  padding: 0 32px;
+}
+
+.tv-limit-title {
+  color: rgba(255, 255, 255, 0.85);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 22px;
+  font-style: italic;
+}
+
+.tv-limit-text {
+  color: rgba(255, 255, 255, 0.5);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 15px;
+  line-height: 1.6;
+  max-width: 320px;
 }
 
 /* --- Questions zone --------------------------------------- */
@@ -1081,6 +1152,7 @@ body {
   width: 100%;
   max-width: 520px;
 }
+
 .tv-question-item {
   background: none;
   border: none;
@@ -1102,6 +1174,7 @@ body {
   text-decoration-color: rgba(255, 255, 255, 0.2);
   text-underline-offset: 4px;
 }
+
 .tv-question-item:hover {
   color: rgba(255, 255, 255, 0.85);
   transform: scale(1.03);
@@ -1120,6 +1193,7 @@ body {
   padding: 24px 24px 36px;
   z-index: 5;
 }
+
 .tv-input-wrap-v2 {
   display: flex;
   align-items: center;
@@ -1133,10 +1207,12 @@ body {
   backdrop-filter: blur(8px);
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
+
 .tv-input-wrap-v2:focus-within {
   border-color: rgba(255, 255, 255, 0.8);
   box-shadow: 0 0 28px rgba(255, 255, 255, 0.10);
 }
+
 .tv-input-field-v2 {
   flex: 1;
   background: transparent;
@@ -1151,15 +1227,18 @@ body {
   caret-color: rgba(255, 255, 255, 0.9);
   text-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
 }
+
 .tv-input-field-v2::placeholder {
   color: rgba(255, 255, 255, 0.55);
   font-weight: 400;
   letter-spacing: 2px;
   text-shadow: none;
 }
+
 .tv-input-field-v2:focus {
   outline: none;
 }
+
 .tv-send-icon-v2 {
   background: none;
   border: none;
@@ -1169,10 +1248,12 @@ body {
   transition: color 0.3s ease, transform 0.2s ease;
   flex-shrink: 0;
 }
+
 .tv-send-icon-v2:hover:not(:disabled) {
   color: rgba(255, 255, 255, 0.95);
   transform: translateX(2px);
 }
+
 .tv-send-icon-v2:disabled {
   opacity: 0.2;
   cursor: default;
@@ -1191,11 +1272,14 @@ body {
   transition: color 0.3s ease, opacity 0.3s ease;
   text-shadow: 0 0 12px rgba(255,255,255,0.4);
 }
+
 .tv-corner-btn:hover {
   color: rgba(255, 255, 255, 0.95);
   text-shadow: 0 0 18px rgba(255,255,255,0.6);
 }
+
 .tv-corner-left { left: 24px; }
+
 .tv-corner-right { right: 24px; }
 
 /* --- Blocked message -------------------------------------- */
@@ -1203,6 +1287,7 @@ body {
   text-align: center;
   max-width: 400px;
 }
+
 .tv-blocked-text {
   color: rgba(255, 255, 255, 0.5);
   font-size: 14px;
@@ -1210,11 +1295,13 @@ body {
   font-style: italic;
   margin-bottom: 16px;
 }
+
 .tv-blocked-alts {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
+
 .tv-blocked-btn {
   background: none;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -1226,6 +1313,7 @@ body {
   font-size: 14px;
   transition: all 0.3s ease;
 }
+
 .tv-blocked-btn:hover {
   color: rgba(255, 255, 255, 0.7);
   border-color: rgba(255, 255, 255, 0.2);
@@ -1239,6 +1327,7 @@ body {
   display: flex;
   justify-content: flex-end;
 }
+
 .tv-menu-panel {
   width: 280px;
   height: 100%;
@@ -1251,6 +1340,7 @@ body {
   overflow-y: auto;
   backdrop-filter: blur(20px);
 }
+
 .tv-menu-chart {
   color: rgba(255, 255, 255, 0.35);
   font-family: 'Cormorant Garamond', Georgia, serif;
@@ -1261,6 +1351,7 @@ body {
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   margin-bottom: 8px;
 }
+
 .tv-menu-item {
   display: flex;
   align-items: center;
@@ -1276,14 +1367,17 @@ body {
   transition: color 0.2s ease;
   text-align: left;
 }
+
 .tv-menu-item:hover {
   color: rgba(255, 255, 255, 0.8);
 }
+
 .tv-menu-history {
   margin-top: 16px;
   padding-top: 16px;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
+
 .tv-menu-history-label {
   color: rgba(255, 255, 255, 0.2);
   font-family: 'Cormorant Garamond', Georgia, serif;
@@ -1292,6 +1386,7 @@ body {
   letter-spacing: 2px;
   margin-bottom: 8px;
 }
+
 .tv-menu-hist-item {
   display: block;
   width: 100%;
@@ -1307,6 +1402,7 @@ body {
   transition: color 0.2s ease;
   line-height: 1.4;
 }
+
 .tv-menu-hist-item:hover {
   color: rgba(255, 255, 255, 0.7);
 }
@@ -1320,6 +1416,7 @@ body {
   width: 100%;
   max-width: 360px;
 }
+
 .tv-birth-hint {
   color: rgba(255, 255, 255, 0.75);
   font-family: 'Cormorant Garamond', Georgia, serif;
@@ -1330,12 +1427,22 @@ body {
   max-width: 320px;
   text-shadow: 0 0 12px rgba(255, 255, 255, 0.35);
 }
+
 .tv-birth-fields {
   display: flex;
   flex-direction: column;
   gap: 20px;
   width: 100%;
 }
+
+.tv-birth-error {
+  color: #ff8a8a;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 12px;
+  font-style: italic;
+  margin-top: 4px;
+}
+
 .tv-birth-label {
   display: flex;
   align-items: center;
@@ -1348,6 +1455,7 @@ body {
   margin-bottom: 6px;
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
 }
+
 .tv-birth-input {
   width: 100%;
   background: transparent;
@@ -1365,18 +1473,22 @@ body {
   border-radius: 0;
   text-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
 }
+
 .tv-birth-input::placeholder {
   color: rgba(255, 255, 255, 0.45);
   text-shadow: none;
 }
+
 .tv-birth-input:focus {
   border-color: rgba(255, 255, 255, 0.8);
   text-shadow: 0 0 16px rgba(255, 255, 255, 0.7);
 }
+
 .tv-birth-input option {
   background: #000;
   color: #fff;
 }
+
 .tv-birth-submit {
   background: none;
   border: 1px solid rgba(255, 255, 255, 0.55);
@@ -1391,12 +1503,14 @@ body {
   text-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
   box-shadow: 0 0 18px rgba(255, 255, 255, 0.06);
 }
+
 .tv-birth-submit:hover:not(:disabled) {
   color: #ffffff;
   border-color: rgba(255, 255, 255, 0.85);
   text-shadow: 0 0 18px rgba(255, 255, 255, 0.8);
   box-shadow: 0 0 28px rgba(255, 255, 255, 0.12);
 }
+
 .tv-birth-submit:disabled {
   opacity: 0.6;
   cursor: default;
@@ -1407,17 +1521,81 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: 28px;
 }
-.tv-loading-dot {
-  width: 6px;
-  height: 6px;
+
+.tv-loading-orbit {
+  position: relative;
+  width: 100px;
+  height: 100px;
+}
+
+.tv-loading-ring {
+  position: absolute;
+  inset: 0;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.5);
+  border: 1px dashed rgba(255, 255, 255, 0.14);
+  animation: tv-orbit-spin 10s linear infinite;
+}
+
+.tv-loading-core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.55), 0 0 24px rgba(255, 255, 255, 0.2);
   animation: tv-dot-pulse 2s ease-in-out infinite;
 }
+
+.tv-loading-sat {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.15;
+  animation: tv-sat-pulse 2.4s ease-in-out infinite;
+}
+
+.tv-loading-sat svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Catégorie détectée pendant le chargement : une icône se distingue, les 3
+   autres s'effacent. La taille de la boîte de positionnement ne change pas
+   (le centrage de tv-sat-top/right/bottom/left reste correct) — seule la
+   taille du SVG, l'opacité et l'animation changent. */
+.tv-loading-sat.tv-sat-main {
+  opacity: 1;
+  animation: tv-dot-pulse 2s ease-in-out infinite;
+}
+
+.tv-loading-sat.tv-sat-main svg {
+  width: 25px;
+  height: 25px;
+}
+
+.tv-loading-sat.tv-sat-dim {
+  opacity: 0.07;
+  animation: none;
+}
+
+.tv-sat-top { top: -4px; left: 50%; margin-left: -11px; animation-delay: 0s; }
+
+.tv-sat-right { top: 50%; right: -4px; margin-top: -11px; animation-delay: 0.6s; }
+
+.tv-sat-bottom { bottom: -4px; left: 50%; margin-left: -11px; animation-delay: 1.2s; }
+
+.tv-sat-left { top: 50%; left: -4px; margin-top: -11px; animation-delay: 1.8s; }
+
 .tv-loading-text {
-  color: rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.45);
   font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: 14px;
   font-style: italic;
@@ -1433,13 +1611,28 @@ body {
   max-width: 560px;
   text-align: center;
 }
+
+.tv-response-badge {
+  display: inline-block;
+  border: 1px solid;
+  border-radius: 12px;
+  padding: 3px 12px;
+  margin-bottom: 12px;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
 .tv-response-question {
-  color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.45);
   font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: 16px;
   font-style: italic;
   letter-spacing: 0.5px;
 }
+
 .tv-response-text {
   color: #ffffff;
   font-family: 'Cormorant Garamond', Georgia, serif;
@@ -1448,17 +1641,20 @@ body {
   line-height: 1.7;
   letter-spacing: 0.2px;
 }
+
 .tv-response-source {
   color: rgba(255, 255, 255, 0.2);
   font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: 15px;
   letter-spacing: 1.5px;
 }
+
 .tv-response-actions {
   display: flex;
   gap: 16px;
   margin-top: 8px;
 }
+
 .tv-action-btn {
   background: none;
   border: none;
@@ -1467,12 +1663,59 @@ body {
   padding: 8px;
   transition: color 0.3s ease, transform 0.2s ease;
 }
+
 .tv-action-btn:hover {
   color: rgba(255, 255, 255, 0.6);
 }
+
 .tv-action-btn.active {
   color: #ffffff;
 }
+
+.tv-related {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+  width: 100%;
+}
+
+.tv-related-label {
+  color: rgba(255, 255, 255, 0.4);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 13px;
+  font-style: italic;
+  letter-spacing: 0.5px;
+}
+
+.tv-related-chips {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.tv-related-chip {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 15px;
+  font-style: italic;
+  text-align: center;
+  cursor: pointer;
+  padding: 10px 18px;
+  transition: all 0.3s ease;
+}
+
+.tv-related-chip:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.04);
+}
+
 .tv-ask-again {
   background: none;
   border: 1px solid rgba(255, 255, 255, 0.15);
@@ -1490,6 +1733,7 @@ body {
   text-shadow: 0 0 8px rgba(255, 255, 255, 0.15);
   box-shadow: 0 0 12px rgba(255, 255, 255, 0.05);
 }
+
 .tv-ask-again:hover {
   color: #ffffff;
   border-color: rgba(255, 255, 255, 0.35);
@@ -1513,73 +1757,6 @@ body {
 .void-emph {
   color: rgba(255, 255, 255, 0.95);
   font-weight: 500;
-}
-
-/* --- TV Responsive ---------------------------------------- */
-@media (max-width: 640px) {
-  .tv-center {
-    width: 85%;
-  }
-  .tv-input-field {
-    font-size: 18px;
-  }
-  .tv-input-field::placeholder {
-    font-size: 16px;
-  }
-  .tv-response-text {
-    font-size: 16px;
-  }
-  .tv-corner-btn {
-    top: 16px;
-  }
-  .tv-corner-left { left: 16px; }
-  .tv-corner-right { right: 16px; }
-  .tv-categories {
-    padding: 14px 8px;
-    gap: 0;
-  }
-  .tv-category-btn {
-    padding: 10px 14px;
-    gap: 8px;
-  }
-  .tv-cat-icon-ring {
-    width: 52px;
-    height: 52px;
-  }
-  .tv-cat-label {
-    font-size: 11px;
-    letter-spacing: 2px;
-  }
-  .tv-questions-zone {
-    gap: 22px;
-    padding: 0 16px;
-    position: absolute;
-    top: 125px;
-    bottom: 115px;
-    left: 0;
-    right: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    max-width: 100%;
-    overflow: hidden;
-  }
-  .tv-page {
-    justify-content: flex-start;
-    overflow: hidden;
-  }
-  .tv-question-item {
-    font-size: 17px;
-    letter-spacing: 1.5px;
-  }
-  .tv-bottom-input {
-    padding: 16px 16px 28px;
-  }
-  .tv-input-field-v2 {
-    font-size: 14px;
-    letter-spacing: 1.5px;
-  }
 }
 
 @media (max-width: 400px) {
@@ -1611,6 +1788,731 @@ body {
   .tv-question-item {
     font-size: 15px;
     letter-spacing: 1px;
+  }
+}
+
+/* VOID — ritual question, editorial response, interactive astral source. */
+@keyframes tv-question-absorb {
+  0%, 12% { opacity: 0; transform: translateY(-18px) scale(1.02); filter: blur(5px); }
+  28%, 54% { opacity: 0.82; transform: translateY(0) scale(1); filter: blur(0); }
+  100% { opacity: 0; transform: translateY(92px) scale(0.2); filter: blur(8px); }
+}
+
+@keyframes tv-absorb-beam {
+  0%, 30% { opacity: 0; transform: scaleY(0); }
+  48% { opacity: 0.7; transform: scaleY(1); }
+  100% { opacity: 0; transform: scaleY(0.2); }
+}
+
+@keyframes tv-response-phase-in {
+  from { opacity: 0; transform: translateY(12px); clip-path: inset(0 0 100% 0); }
+  to { opacity: 1; transform: translateY(0); clip-path: inset(0); }
+}
+
+@keyframes tv-source-seal-in {
+  from { opacity: 0; transform: scale(.92) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.tv-question-absorb {
+  position: relative;
+  z-index: 3;
+  width: min(82vw, 440px);
+  margin: 0 0 -10px;
+  color: rgba(247, 242, 233, .82);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(17px, 4.4vw, 22px);
+  font-style: italic;
+  line-height: 1.35;
+  text-align: center;
+  text-shadow: 0 0 22px color-mix(in srgb, var(--tv-ritual-color, #ffd07a) 34%, transparent);
+  animation: tv-question-absorb 1.55s cubic-bezier(.22,.8,.22,1) both;
+}
+
+.tv-question-absorb::after {
+  content: "";
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  width: 1px;
+  height: 58px;
+  background: linear-gradient(180deg, var(--tv-ritual-color, #ffd07a), transparent);
+  box-shadow: 0 0 10px var(--tv-ritual-color, #ffd07a);
+  transform-origin: top;
+  animation: tv-absorb-beam 1.35s .18s ease both;
+}
+
+.tv-page--result .tv-loading {
+  min-height: 330px;
+  justify-content: center;
+}
+
+.tv-page--result .tv-response {
+  gap: 18px;
+}
+
+.tv-response-reading {
+  display: grid;
+  width: min(100%, 620px);
+  border-top: 1px solid rgba(255, 208, 122, .18);
+  border-bottom: 1px solid rgba(255, 255, 255, .08);
+  text-align: left;
+}
+
+.tv-response-phase {
+  position: relative;
+  padding: 19px 20px;
+  opacity: 0;
+  animation: tv-response-phase-in .62s cubic-bezier(.16,1,.3,1) both;
+}
+
+.tv-response-phase + .tv-response-phase {
+  border-top: 1px solid rgba(255, 255, 255, .07);
+}
+
+.tv-response-essence { animation-delay: 80ms; }
+.tv-response-explanation { animation-delay: 310ms; }
+.tv-response-practice { animation-delay: 540ms; }
+
+.tv-response-phase-label {
+  display: block;
+  margin-bottom: 8px;
+  color: rgba(255, 208, 122, .66);
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: 2.1px;
+  text-transform: uppercase;
+}
+
+.tv-response-phase p {
+  margin: 0;
+  color: rgba(244, 239, 232, .72);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.55;
+}
+
+.tv-response-essence p {
+  color: #fffaf2;
+  font-size: clamp(24px, 5vw, 31px);
+  font-style: italic;
+  line-height: 1.26;
+  text-shadow: 0 12px 32px rgba(0,0,0,.36);
+}
+
+.tv-response-practice {
+  margin: 5px 0;
+  background: linear-gradient(90deg, rgba(255, 208, 122, .055), transparent 78%);
+}
+
+.tv-response-practice p {
+  color: rgba(255, 232, 190, .86);
+}
+
+.tv-source-wrap {
+  width: min(100%, 620px);
+  opacity: 0;
+  animation: tv-source-seal-in .58s 760ms cubic-bezier(.16,1,.3,1) both;
+}
+
+.tv-source-seal {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr) 22px;
+  align-items: center;
+  width: 100%;
+  min-height: 62px;
+  padding: 8px 13px 8px 9px;
+  gap: 12px;
+  color: #f7f2e9;
+  border: 1px solid rgba(255, 208, 122, .17);
+  border-radius: 8px;
+  background: rgba(255,255,255,.018);
+  text-align: left;
+  transition: border-color .25s ease, background .25s ease;
+}
+
+.tv-source-seal:hover,
+.tv-source-wrap.is-open .tv-source-seal {
+  border-color: rgba(255, 208, 122, .38);
+  background: rgba(255, 208, 122, .04);
+}
+
+.tv-source-glyph {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  color: #f3d99e;
+  border: 1px solid rgba(255, 208, 122, .34);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,208,122,.1), transparent 70%);
+  box-shadow: 0 0 18px rgba(255,208,122,.07);
+  font-family: Georgia, serif;
+  font-size: 21px;
+}
+
+.tv-source-copy {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.tv-source-copy small {
+  color: rgba(255,255,255,.38);
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 8px;
+  font-weight: 650;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+}
+
+.tv-source-copy strong {
+  overflow: hidden;
+  color: rgba(247,242,233,.85);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 17px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tv-source-chevron {
+  color: rgba(255,208,122,.42);
+  transition: transform .25s ease;
+}
+
+.tv-source-wrap.is-open .tv-source-chevron {
+  transform: rotate(90deg);
+}
+
+.tv-source-detail {
+  margin: 0;
+  padding: 14px 16px 2px 67px;
+  color: rgba(255,255,255,.56);
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 12px;
+  line-height: 1.55;
+  text-align: left;
+}
+
+@media (max-width: 640px) {
+  .tv-page--result .tv-center { width: min(100%, 520px); }
+  .tv-page--result .tv-response { padding-top: 0; }
+  .tv-response-phase { padding: 16px 10px; }
+  .tv-response-essence p { font-size: 23px; }
+  .tv-response-phase p { font-size: 16px; }
+  .tv-source-detail { padding-left: 13px; padding-right: 13px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tv-question-absorb,
+  .tv-question-absorb::after,
+  .tv-response-phase,
+  .tv-source-wrap {
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
+  }
+}
+
+/* --- The Void: premium composition ----------------------- */
+.tv-page {
+  min-height: 100dvh;
+}
+
+.tv-page--void {
+  justify-content: flex-start;
+  overflow: hidden;
+}
+
+.tv-void-shell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: min(100% - 48px, 920px);
+  height: 100dvh;
+  min-height: 0;
+  padding: 26px 0 24px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  z-index: 2;
+}
+
+.tv-void-shell::-webkit-scrollbar {
+  display: none;
+}
+
+.tv-void-header {
+  display: grid;
+  justify-items: center;
+  flex: 0 0 auto;
+  margin-bottom: 18px;
+  text-align: center;
+}
+
+.tv-void-kicker {
+  color: rgba(255, 208, 122, 0.72);
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2.2px;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.tv-void-title {
+  margin: 8px 0 2px;
+  color: #f7f2e9;
+  font-size: 44px;
+  font-weight: 400;
+  line-height: 0.96;
+  letter-spacing: 0;
+  text-shadow: 0 0 32px rgba(255, 208, 122, 0.14);
+}
+
+.tv-void-sigil {
+  color: rgba(255, 208, 122, 0.58);
+  font-size: 11px;
+  line-height: 1;
+}
+
+.tv-page--void .tv-categories {
+  position: relative;
+  inset: auto;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  flex: 0 0 auto;
+  width: 100%;
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 5px;
+  gap: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 8px;
+  background: rgba(10, 12, 17, 0.72);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(18px);
+}
+
+.tv-page--void .tv-category-btn {
+  min-width: 0;
+  min-height: 72px;
+  padding: 9px 8px 8px;
+  gap: 6px;
+  border-radius: 6px;
+}
+
+.tv-page--void .tv-category-btn.active {
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.tv-page--void .tv-cat-icon-ring {
+  width: 38px;
+  height: 38px;
+  border-color: transparent;
+  background: transparent;
+}
+
+.tv-page--void .tv-cat-icon-ring svg {
+  width: 21px;
+  height: 21px;
+}
+
+.tv-page--void .tv-category-btn.active .tv-cat-icon-ring {
+  transform: none;
+}
+
+.tv-page--void .tv-category-btn:hover:not(.active) .tv-cat-icon-ring {
+  transform: none;
+}
+
+.tv-page--void .tv-cat-label {
+  overflow: hidden;
+  max-width: 100%;
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.4px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tv-question-section {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  min-height: 0;
+  width: min(100%, 760px);
+  margin: 22px auto 0;
+}
+
+.tv-question-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 0 0 auto;
+  min-height: 34px;
+  margin-bottom: 10px;
+}
+
+.tv-question-heading {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.45);
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+}
+
+.tv-page--void .tv-surprise-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  margin: 0;
+  padding: 6px 10px;
+  gap: 7px;
+  border-color: rgba(255, 208, 122, 0.2);
+  border-radius: 6px;
+  background: rgba(255, 208, 122, 0.035);
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 11px;
+  font-style: normal;
+  letter-spacing: 0;
+}
+
+.tv-page--void .tv-questions-zone {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: start;
+  align-items: stretch;
+  width: 100%;
+  max-width: none;
+  min-height: 0;
+  padding: 0;
+  gap: 9px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+}
+
+.tv-page--void .tv-question-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 20px;
+  align-items: center;
+  width: 100%;
+  min-height: 58px;
+  padding: 12px 14px;
+  gap: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.075);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.025);
+  color: rgba(247, 242, 233, 0.76);
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.25;
+  letter-spacing: 0;
+  text-align: left;
+  text-decoration: none;
+  text-transform: none;
+  text-shadow: none;
+}
+
+.tv-page--void .tv-question-item:nth-child(5):last-child {
+  grid-column: 1 / -1;
+}
+
+.tv-page--void .tv-question-item svg {
+  color: rgba(255, 208, 122, 0.34);
+  transition: color 180ms ease, transform 180ms ease;
+}
+
+.tv-page--void .tv-question-item:hover {
+  border-color: rgba(255, 208, 122, 0.24);
+  background: rgba(255, 208, 122, 0.045);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.tv-page--void .tv-question-item:hover svg {
+  color: rgba(255, 208, 122, 0.85);
+  transform: translateX(2px);
+}
+
+.tv-page--void .tv-bottom-input {
+  position: relative;
+  inset: auto;
+  flex: 0 0 auto;
+  margin-top: 14px;
+  padding: 0;
+}
+
+.tv-page--void .tv-input-wrap-v2 {
+  max-width: 760px;
+  min-height: 58px;
+  padding: 8px 9px 8px 18px;
+  border-color: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  background: rgba(9, 11, 16, 0.9);
+  box-shadow: 0 18px 55px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.035);
+  backdrop-filter: blur(22px);
+}
+
+.tv-page--void .tv-input-wrap-v2:focus-within {
+  border-color: rgba(255, 208, 122, 0.48);
+  box-shadow: 0 18px 55px rgba(0, 0, 0, 0.42), 0 0 0 3px rgba(255, 208, 122, 0.06);
+}
+
+.tv-page--void .tv-input-field-v2 {
+  min-width: 0;
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  text-shadow: none;
+}
+
+.tv-page--void .tv-input-field-v2::placeholder {
+  color: rgba(255, 255, 255, 0.36);
+  letter-spacing: 0;
+}
+
+.tv-page--void .tv-send-icon-v2 {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 6px;
+  background: #f0dfbd;
+  color: #15120e;
+}
+
+.tv-page--void .tv-send-icon-v2:hover:not(:disabled) {
+  background: #ffffff;
+  color: #0c0b09;
+  transform: none;
+}
+
+.tv-page--void .tv-send-icon-v2:disabled {
+  background: rgba(255, 255, 255, 0.07);
+  color: rgba(255, 255, 255, 0.32);
+  opacity: 1;
+}
+
+.tv-corner-btn {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  background: rgba(9, 11, 16, 0.62);
+  text-shadow: none;
+  backdrop-filter: blur(14px);
+}
+
+.tv-corner-btn:hover {
+  border-color: rgba(255, 208, 122, 0.35);
+  background: rgba(255, 208, 122, 0.06);
+  color: #f5dfb5;
+  text-shadow: none;
+}
+
+.tv-page--void .tv-corner-right {
+  right: 90px;
+}
+
+.tv-menu-overlay {
+  background: rgba(0, 0, 0, 0.48);
+  backdrop-filter: blur(4px);
+}
+
+.tv-menu-panel {
+  width: min(360px, 88vw);
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(12, 14, 20, 0.97);
+  box-shadow: -28px 0 80px rgba(0, 0, 0, 0.42);
+}
+
+.tv-page--birth,
+.tv-page--result {
+  overflow-y: auto;
+  padding: 88px 24px 54px;
+}
+
+.tv-page--birth .tv-center,
+.tv-page--result .tv-center {
+  width: min(100%, 680px);
+}
+
+.tv-page--birth .tv-birth-form {
+  max-width: 440px;
+  padding: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  background: rgba(10, 12, 17, 0.68);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(18px);
+}
+
+.tv-page--result .tv-response {
+  width: 100%;
+  max-width: 680px;
+  padding: 18px 0 36px;
+}
+
+.tv-page--result .tv-response-text {
+  max-width: 620px;
+  font-size: 21px;
+  line-height: 1.65;
+}
+
+.tv-page--result .tv-response-actions {
+  padding: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.tv-page--result .tv-related-chip,
+.tv-page--result .tv-ask-again {
+  border-radius: 8px;
+}
+
+.tv-page--result .tv-action-btn {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border-radius: 6px;
+}
+
+@media (max-width: 700px) {
+  .tv-void-shell {
+    width: calc(100% - 28px);
+    padding-top: max(18px, env(safe-area-inset-top));
+    padding-bottom: calc(18px + env(safe-area-inset-bottom));
+  }
+
+  .tv-void-header {
+    margin-bottom: 13px;
+  }
+
+  .tv-void-title {
+    margin-top: 6px;
+    font-size: 34px;
+  }
+
+  .tv-page--void .tv-categories {
+    max-width: none;
+  }
+
+  .tv-page--void .tv-category-btn {
+    min-height: 61px;
+    padding: 6px 3px;
+  }
+
+  .tv-page--void .tv-cat-icon-ring {
+    width: 31px;
+    height: 31px;
+  }
+
+  .tv-page--void .tv-cat-icon-ring svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .tv-page--void .tv-cat-label {
+    font-size: 8px;
+    letter-spacing: 0.9px;
+  }
+
+  .tv-question-section {
+    margin-top: 14px;
+  }
+
+  .tv-question-toolbar {
+    margin-bottom: 8px;
+  }
+
+  .tv-page--void .tv-questions-zone {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 7px;
+  }
+
+  .tv-page--void .tv-question-item,
+  .tv-page--void .tv-question-item:nth-child(5):last-child {
+    grid-column: auto;
+    min-height: 48px;
+    padding: 9px 12px;
+    font-size: 13px;
+  }
+
+  .tv-page--void .tv-bottom-input {
+    bottom: auto;
+    margin-top: 10px;
+  }
+
+  .tv-page--void .tv-input-wrap-v2 {
+    min-height: 54px;
+    padding-left: 14px;
+  }
+
+  .tv-corner-btn {
+    top: max(14px, env(safe-area-inset-top));
+    width: 36px;
+    height: 36px;
+  }
+
+  .tv-corner-left { left: 12px; }
+  .tv-corner-right { right: 12px; }
+  .tv-page--void .tv-corner-right { right: 84px; }
+
+  .tv-page--birth,
+  .tv-page--result {
+    padding: 76px 18px 40px;
+  }
+
+  .tv-page--birth .tv-birth-form {
+    padding: 24px 20px;
+  }
+
+  .tv-page--result .tv-response {
+    gap: 18px;
+  }
+
+  .tv-page--result .tv-response-text {
+    font-size: 18px;
+  }
+}
+
+@media (max-height: 700px) {
+  .tv-void-header {
+    margin-bottom: 9px;
+  }
+
+  .tv-void-kicker,
+  .tv-void-sigil {
+    display: none;
+  }
+
+  .tv-void-title {
+    margin: 0;
+    font-size: 30px;
+  }
+
+  .tv-page--void .tv-category-btn {
+    min-height: 54px;
+  }
+
+  .tv-question-section {
+    margin-top: 10px;
   }
 }
 
@@ -2032,12 +2934,12 @@ body {
   z-index: -1;
   border-radius: 50%;
   background-image:
-    radial-gradient(circle at 18% 24%, rgba(255, 214, 153, 0.36) 0 1px, transparent 1.6px),
-    radial-gradient(circle at 78% 30%, rgba(245, 247, 250, 0.28) 0 1px, transparent 1.7px),
-    radial-gradient(circle at 64% 78%, rgba(255, 214, 153, 0.24) 0 1px, transparent 1.8px),
-    radial-gradient(circle at 30% 70%, rgba(245, 247, 250, 0.20) 0 1px, transparent 1.9px),
-    radial-gradient(circle at 50% 50%, rgba(255, 214, 153, 0.055), transparent 62%);
-  opacity: 0.55;
+        radial-gradient(circle at 18% 24%, rgba(210, 226, 255, 0.14) 0 0.75px, transparent 1.5px),
+    radial-gradient(circle at 78% 30%, rgba(245, 247, 250, 0.12) 0 0.75px, transparent 1.6px),
+    radial-gradient(circle at 64% 78%, rgba(145, 170, 220, 0.1) 0 0.7px, transparent 1.6px),
+    radial-gradient(circle at 30% 70%, rgba(245, 247, 250, 0.1) 0 0.7px, transparent 1.7px),
+    radial-gradient(circle at 50% 50%, rgba(80, 100, 150, 0.018), transparent 62%);
+  opacity: 0.28;
   pointer-events: none;
 }
 
@@ -2049,9 +2951,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  filter:
-    drop-shadow(0 34px 52px rgba(0, 0, 0, 0.54))
-    drop-shadow(0 0 34px rgba(255, 214, 153, 0.08));
+  filter: drop-shadow(0 34px 52px rgba(0, 0, 0, 0.54));
 }
 
 @media (max-width: 768px) {
@@ -3361,7 +4261,7 @@ body {
 }
 
 /* -----------------------------------------------------------
-   NATAL CHART FULLSCREEN â€” Mobile & Desktop Perfect Square
+   NATAL CHART FULLSCREEN — Mobile & Desktop Perfect Square
    100vw/100vh, min(90vw,90vh), object-fit, overflow hidden
    ----------------------------------------------------------- */
 .natal-chart-fullscreen {
@@ -3401,7 +4301,7 @@ body {
 }
 
 /* -----------------------------------------------------------
-   COSTAR LOGO â€” Eclipse solaire
+   COSTAR LOGO — Eclipse solaire
    ----------------------------------------------------------- */
 .costar-header {
   position: relative;
@@ -3605,7 +4505,7 @@ body {
   background:
     linear-gradient(180deg, rgba(5, 6, 11, 0.82), rgba(4, 5, 10, 0.94)),
     radial-gradient(ellipse at 50% -22%, rgba(255, 184, 91, 0.14), transparent 48%),
-    url('/costar-solar-premium-background.png') center 20% / cover no-repeat,
+    url('/costar-29-suggest-glow.jpg') center 20% / cover no-repeat,
     #05060a;
   background-blend-mode: normal, screen, soft-light, normal;
   box-shadow:
@@ -3664,7 +4564,7 @@ body {
     linear-gradient(180deg, rgba(3, 4, 7, 0.38), rgba(3, 4, 7, 0.72)),
     radial-gradient(circle at 50% -12%, rgba(190, 132, 132, 0.09), transparent 34%),
     radial-gradient(circle at 92% 38%, rgba(111, 78, 129, 0.07), transparent 36%),
-    url('/costar-solar-premium-background.png') center top / cover no-repeat,
+    url('/costar-29-suggest-glow.jpg') center top / cover no-repeat,
     linear-gradient(165deg, #050406 0%, #0b060b 48%, #030304 100%) !important;
 }
 
@@ -3721,7 +4621,7 @@ body {
   background:
     radial-gradient(circle at 50% 20%, rgba(190, 132, 132, 0.06), transparent 30%),
     radial-gradient(circle at 50% 74%, rgba(111, 78, 129, 0.075), transparent 36%);
-  opacity: 0.62;
+  opacity: 0.42;
   mask-image: linear-gradient(180deg, transparent 4%, #000 18%, #000 82%, transparent 100%);
   -webkit-mask-image: linear-gradient(180deg, transparent 4%, #000 18%, #000 82%, transparent 100%);
 }
@@ -3857,8 +4757,8 @@ body {
 }
 
 /* -----------------------------------------------------------
-   BOTTOM NAV BAR â€” Charte graphique premium
-   Noir pur, minimalisme, clartÃ© optimale
+   BOTTOM NAV BAR — Charte graphique premium
+   Noir pur, minimalisme, clarté optimale
    ----------------------------------------------------------- */
 .bottom-nav {
   position: fixed;
@@ -4044,7 +4944,7 @@ body {
 }
 
 /* -----------------------------------------------------------
-   APP SHELL â€” isolation du scroll pour nav iOS
+   APP SHELL — isolation du scroll pour nav iOS
    ----------------------------------------------------------- */
 .app-shell {
   position: fixed;
@@ -4265,7 +5165,7 @@ body {
 
 
 
-/* Global luminosity pass â€” keeps the night palette while lifting surfaces. */
+/* Global luminosity pass — keeps the night palette while lifting surfaces. */
 .void-card,
 .void-hist-card,
 .void-result-card,
@@ -4930,7 +5830,7 @@ body {
   background:
     linear-gradient(180deg, rgba(5, 6, 12, 0.68), rgba(4, 5, 10, 0.9)),
     radial-gradient(ellipse at 50% -18%, rgba(255, 214, 153, 0.11), transparent 48%),
-    url('/costar-solar-premium-background.png') center 18% / cover no-repeat,
+    url('/costar-29-suggest-glow.jpg') center 18% / cover no-repeat,
     #080910;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.045),
@@ -5049,7 +5949,7 @@ body {
   background:
     linear-gradient(180deg, rgba(2, 3, 7, 0.4), rgba(2, 3, 7, 0.82)),
     radial-gradient(circle at 50% 18%, rgba(231, 184, 98, 0.08), transparent 34%),
-    url('/costar-solar-premium-background.png') center top / cover no-repeat,
+    url('/costar-29-suggest-glow.jpg') center top / cover no-repeat,
     #030407 !important;
 }
 
@@ -5803,7 +6703,7 @@ body {
   }
 }
 
-/* Premium concept â€” Celestial Manuscript */
+/* Premium concept — Celestial Manuscript */
 .app-content--you .astral-profile__action-suite--manuscript {
   color: #2d1e12;
   border-color: rgba(112, 72, 35, 0.58);
@@ -5972,7 +6872,7 @@ body {
   z-index: 1;
 }
 
-/* Premium concept â€” Eclipse */
+/* Premium concept — Eclipse */
 .app-content--you .astral-profile__action-suite--eclipse {
   border-color: rgba(231, 216, 191, 0.19);
   border-radius: 38px 38px 17px 17px;
@@ -6249,7 +7149,7 @@ body {
 }
 
 .astral-profile__wheel-bottom-compare svg {
-  opacity: 0.62;
+  opacity: 0.42;
   transition: transform 0.22s ease;
 }
 
@@ -7057,7 +7957,7 @@ body {
   }
 }
 
-/* Sable Lunaire â€” pale mineral dust and abstract crater reliefs */
+/* Sable Lunaire — pale mineral dust and abstract crater reliefs */
 .app-content--you {
   background-image:
     url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E"),
@@ -7428,7 +8328,7 @@ body {
   }
 }
 
-/* You page â€” cosmic black palette */
+/* You page — cosmic black palette */
 .app-content--you,
 .app-content--you .astral-profile-wheel-page {
   background: #06070a;
@@ -7627,7 +8527,7 @@ body {
 }
 
 @keyframes astral-section-symbol-aura {
-  0%, 100% { opacity: 0.62; transform: translate(-50%, -50%) scale(0.92); }
+  0%, 100% { opacity: 0.42; transform: translate(-50%, -50%) scale(0.92); }
   50% { opacity: 1; transform: translate(-50%, -50%) scale(1.12); }
 }
 
@@ -7733,7 +8633,7 @@ body {
 }
 
 .astral-profile__identity-compare svg {
-  opacity: 0.62;
+  opacity: 0.42;
   transition: transform 0.22s ease;
 }
 
@@ -7755,7 +8655,7 @@ body {
   letter-spacing: 0.25px;
 }
 
-/* Signature reading â€” black lacquer, double champagne line, editorial details */
+/* Signature reading — black lacquer, double champagne line, editorial details */
 .app-content--you .astral-profile__action-suite {
   border-color: rgba(235, 207, 162, 0.24);
   border-radius: 20px;
@@ -8068,7 +8968,7 @@ body {
   margin-top: 8px;
 }
 
-/* Lower planet/aspect rows â€” celestial cartouche */
+/* Lower planet/aspect rows — celestial cartouche */
 .app-content--you .astral-profile__accordion-card {
   position: relative;
   isolation: isolate;
@@ -8165,7 +9065,7 @@ body {
     linear-gradient(180deg, #0c0c10 0%, #08090d 48%, #050609 100%);
 }
 
-/* Small rows â€” spatial halo, brighter corner jewellery and stronger hierarchy */
+/* Small rows — spatial halo, brighter corner jewellery and stronger hierarchy */
 .app-content--you .astral-profile__accordion-card {
   background: transparent;
   box-shadow: none;
@@ -8441,7 +9341,7 @@ body {
   padding: 28px 16px 18px;
 }
 
-/* Pack C — Spectral calibré: Crimson title (solid), Spectral body 400 */
+/* Pack C � Spectral calibr�: Crimson title (solid), Spectral body 400 */
 .app-content--you .astral-profile__content--accordion .astral-profile__title {
   max-width: 92%;
   margin: 0 auto 14px;
@@ -9285,7 +10185,7 @@ html[data-theme="light"] .void-page textarea:focus-visible {
   transform: translateY(-0.1px);
 }
 
-/* You â€” smoked glass reserved for the two large PlanÃ¨tes / Aspects cards. */
+/* You — smoked glass reserved for the two large Planètes / Aspects cards. */
 html:not([data-theme="light"]) .app-content--you .astral-profile__section-card {
   position: relative;
   isolation: isolate;
@@ -9357,7 +10257,7 @@ html:not([data-theme="light"]) .app-content--you .astral-profile__section-card--
   transform: translateY(-2px) scale(1.008);
 }
 
-/* You â€” natal house number beside the sign in compact planet rows. */
+/* You — natal house number beside the sign in compact planet rows. */
 .app-content--you .astral-profile__sign-pill .astral-profile__pill-house {
   flex-shrink: 0;
   margin-left: 2px;
@@ -9591,7 +10491,7 @@ html[data-theme="light"] .app-content--you .astral-profile__section-card--active
   background:
     linear-gradient(180deg, rgba(2, 3, 7, 0.58), rgba(2, 3, 7, 0.86)),
     radial-gradient(circle at 50% 3%, rgba(255, 166, 63, 0.055), transparent 28%),
-    url('/costar-solar-premium-background.png') center -6svh / cover no-repeat,
+    url('/costar-29-suggest-glow.jpg') center -6svh / cover no-repeat,
     #030407 !important;
 }
 
@@ -9699,7 +10599,7 @@ html[data-theme="light"] .app-content--you .astral-profile__section-card--active
     radial-gradient(ellipse at 50% -2%, rgba(244, 207, 131, 0.105), transparent 34%),
     radial-gradient(ellipse at 0% 26%, rgba(165, 39, 25, 0.1), transparent 36%),
     radial-gradient(ellipse at 100% 58%, rgba(201, 65, 28, 0.08), transparent 38%),
-    url('/costar-solar-premium-background.png') center -8svh / cover no-repeat,
+    url('/costar-29-suggest-glow.jpg') center -8svh / cover no-repeat,
     #030407 !important;
 }
 
@@ -10322,7 +11222,7 @@ html[data-theme="light"] .app-content--you .astral-profile__section-card--active
     radial-gradient(ellipse at 50% -2%, rgba(244, 207, 131, 0.105), transparent 34%),
     radial-gradient(ellipse at 0% 26%, rgba(165, 39, 25, 0.1), transparent 36%),
     radial-gradient(ellipse at 100% 58%, rgba(201, 65, 28, 0.08), transparent 38%),
-    url('/costar-solar-premium-background.png') center -8svh / cover no-repeat,
+    url('/costar-29-suggest-glow.jpg') center -8svh / cover no-repeat,
     #030407 !important;
 }
 
@@ -10737,7 +11637,7 @@ html[data-theme="light"] .app-content--you .astral-profile__section-card--active
   background:
     radial-gradient(ellipse at 50% 58%, rgba(255, 201, 111, 0.24), rgba(255, 86, 31, 0.11) 36%, transparent 72%);
   filter: blur(12px);
-  opacity: 0.62;
+  opacity: 0.42;
 }
 
 .costar-header-sun__flare {
@@ -10755,7 +11655,7 @@ html[data-theme="light"] .app-content--you .astral-profile__section-card--active
     radial-gradient(ellipse at 0% 26%, rgba(165, 39, 25, 0.12), transparent 36%),
     radial-gradient(ellipse at 100% 58%, rgba(201, 65, 28, 0.095), transparent 38%),
     radial-gradient(circle at 50% 3%, rgba(255, 166, 63, 0.052), transparent 28%),
-    url('/costar-solar-premium-background.png') center -6svh / cover no-repeat,
+    url('/costar-29-suggest-glow.jpg') center -6svh / cover no-repeat,
     #030407 !important;
 }
 
@@ -11194,7 +12094,7 @@ html[data-theme="light"] .app-content--you .astral-profile__section-card--active
   padding: 10px 14px;
   border-color: rgba(255, 225, 174, 0.09);
   border-radius: 16px;
-  opacity: 0.62;
+  opacity: 0.42;
   transform: none;
   scroll-snap-stop: normal;
   transition:
@@ -11220,7 +12120,7 @@ html[data-theme="light"] .app-content--you .astral-profile__section-card--active
 }
 
 .costar-glance .costar-glance-item:not(.is-active) {
-  opacity: 0.62;
+  opacity: 0.42;
 }
 
 .costar-glance .costar-glance-item.is-active {
@@ -11430,7 +12330,7 @@ html[data-theme="light"] .app-content--you .astral-profile__section-card--active
     radial-gradient(ellipse at 50% -2%, rgba(244, 207, 131, 0.105), transparent 34%),
     radial-gradient(ellipse at 0% 26%, rgba(165, 39, 25, 0.1), transparent 36%),
     radial-gradient(ellipse at 100% 58%, rgba(201, 65, 28, 0.08), transparent 38%),
-    url('/costar-solar-premium-background.png') center -8svh / cover no-repeat,
+    url('/costar-29-suggest-glow.jpg') center -8svh / cover no-repeat,
     #030407 !important;
 }
 
@@ -11577,7 +12477,7 @@ html[data-theme="light"] .app-content--you .astral-profile__section-card--active
 html[data-theme="light"] .costar-page {
   background:
     linear-gradient(180deg, rgba(132, 172, 235, 0.18), rgba(90, 128, 198, 0.12) 42%, rgba(255, 255, 255, 0.06)),
-    url('/costar-solar-premium-background.png') center top / cover no-repeat,
+    url('/costar-29-suggest-glow.jpg') center top / cover no-repeat,
     #030509 !important;
   background-blend-mode: screen, normal, normal !important;
 }
@@ -11784,7 +12684,7 @@ html[data-theme="light"] .costar-page {
   display: none !important;
 }
 
-/* CoStar section title lock: every section label matches "Ton dÃ©fi du jour". */
+/* CoStar section title lock: every section label matches "Ton défi du jour". */
 .costar-page .costar-section-title,
 .costar-page .costar-glance-header .costar-section-title {
   display: block !important;
@@ -11901,7 +12801,7 @@ html[data-theme="light"] .costar-page {
 html[data-theme="light"] .costar-page {
   background:
     linear-gradient(180deg, rgba(255, 226, 178, 0.08), rgba(112, 28, 20, 0.08) 44%, rgba(255, 210, 137, 0.035)),
-    url('/costar-solar-premium-background.png') center top / cover no-repeat,
+    url('/costar-29-suggest-glow.jpg') center top / cover no-repeat,
     #050302 !important;
   background-blend-mode: screen, normal, normal !important;
 }
@@ -12070,7 +12970,7 @@ html[data-theme="light"] .costar-page {
 html[data-theme="light"] .costar-page {
   background:
     linear-gradient(180deg, rgba(255, 226, 178, 0.08), rgba(112, 28, 20, 0.08) 44%, rgba(255, 210, 137, 0.035)),
-    url('/costar-solar-premium-background.png') center -2svh / 146% auto no-repeat,
+    url('/costar-29-suggest-glow.jpg') center -2svh / 146% auto no-repeat,
     #050302 !important;
   background-blend-mode: screen, normal, normal !important;
 }
@@ -12080,7 +12980,7 @@ html[data-theme="light"] .costar-page {
   html[data-theme="light"] .costar-page {
     background:
       linear-gradient(180deg, rgba(255, 226, 178, 0.08), rgba(112, 28, 20, 0.08) 44%, rgba(255, 210, 137, 0.035)),
-      url('/costar-solar-premium-background.png') center -4svh / 178% auto no-repeat,
+      url('/costar-29-suggest-glow.jpg') center -4svh / 178% auto no-repeat,
       #050302 !important;
     background-blend-mode: screen, normal, normal !important;
   }
@@ -12091,7 +12991,7 @@ html[data-theme="light"] .costar-page {
   html[data-theme="light"] .costar-page {
     background:
       linear-gradient(180deg, rgba(255, 226, 178, 0.08), rgba(112, 28, 20, 0.08) 44%, rgba(255, 210, 137, 0.035)),
-      url('/costar-solar-premium-background.png') center -6svh / 218% auto no-repeat,
+      url('/costar-29-suggest-glow.jpg') center -6svh / 218% auto no-repeat,
       #050302 !important;
     background-blend-mode: screen, normal, normal !important;
   }
@@ -12102,7 +13002,7 @@ html[data-theme="light"] .costar-page {
 html[data-theme="light"] .costar-page {
   background:
     linear-gradient(180deg, rgba(255, 226, 178, 0.08), rgba(112, 28, 20, 0.08) 44%, rgba(255, 210, 137, 0.035)),
-    url('/costar-solar-premium-background.png') center top / cover no-repeat,
+    url('/costar-29-suggest-glow.jpg') center top / cover no-repeat,
     #050302 !important;
   background-blend-mode: screen, normal, normal !important;
 }
@@ -12115,7 +13015,7 @@ html[data-theme="light"] .costar-page {
   height: clamp(260px, 38svh, 420px) !important;
   pointer-events: none !important;
   background:
-    url('/costar-solar-premium-background.png') center -3svh / 146% auto no-repeat !important;
+    url('/costar-29-suggest-glow.jpg') center -3svh / 146% auto no-repeat !important;
   opacity: 1 !important;
   mix-blend-mode: normal !important;
   -webkit-mask-image: radial-gradient(ellipse 82% 72% at 50% 0%, #000 0 58%, rgba(0, 0, 0, 0.86) 66%, transparent 82%);
@@ -12132,7 +13032,7 @@ html[data-theme="light"] .costar-page {
   html[data-theme="light"] .costar-page {
     background:
       linear-gradient(180deg, rgba(255, 226, 178, 0.08), rgba(112, 28, 20, 0.08) 44%, rgba(255, 210, 137, 0.035)),
-      url('/costar-solar-premium-background.png') center top / cover no-repeat,
+      url('/costar-29-suggest-glow.jpg') center top / cover no-repeat,
       #050302 !important;
     background-blend-mode: screen, normal, normal !important;
   }
@@ -12140,7 +13040,7 @@ html[data-theme="light"] .costar-page {
   .costar-page .costar-moon-zoom {
     height: clamp(230px, 34svh, 360px) !important;
     background:
-      url('/costar-solar-premium-background.png') center -5svh / 178% auto no-repeat !important;
+      url('/costar-29-suggest-glow.jpg') center -5svh / 178% auto no-repeat !important;
   }
 }
 
@@ -12149,7 +13049,7 @@ html[data-theme="light"] .costar-page {
   html[data-theme="light"] .costar-page {
     background:
       linear-gradient(180deg, rgba(255, 226, 178, 0.08), rgba(112, 28, 20, 0.08) 44%, rgba(255, 210, 137, 0.035)),
-      url('/costar-solar-premium-background.png') center top / cover no-repeat,
+      url('/costar-29-suggest-glow.jpg') center top / cover no-repeat,
       #050302 !important;
     background-blend-mode: screen, normal, normal !important;
   }
@@ -12157,7 +13057,7 @@ html[data-theme="light"] .costar-page {
   .costar-page .costar-moon-zoom {
     height: clamp(210px, 31svh, 310px) !important;
     background:
-      url('/costar-solar-premium-background.png') center -7svh / 222% auto no-repeat !important;
+      url('/costar-29-suggest-glow.jpg') center -7svh / 222% auto no-repeat !important;
   }
 }
 
@@ -12167,7 +13067,7 @@ html[data-theme="light"] .costar-page,
 .app-content--costar .costar-page {
   background:
     linear-gradient(180deg, rgba(255, 226, 178, 0.07), rgba(112, 28, 20, 0.055) 44%, rgba(255, 210, 137, 0.025)),
-    url('/costar-solar-premium-background.png') center top / 100% auto no-repeat,
+    url('/costar-29-suggest-glow.jpg') center top / 100% auto no-repeat,
     #050302 !important;
   background-blend-mode: screen, normal, normal !important;
 }
@@ -12199,7 +13099,7 @@ html[data-theme="light"] .costar-page,
 .app-content--costar .costar-page {
   background:
     linear-gradient(180deg, rgba(255, 226, 178, 0.07), rgba(112, 28, 20, 0.055) 44%, rgba(255, 210, 137, 0.025)),
-    url('/costar-solar-premium-background.png') center top / 100% auto no-repeat,
+    url('/costar-29-suggest-glow.jpg') center top / 100% auto no-repeat,
     #050302 !important;
   background-blend-mode: screen, normal, normal !important;
 }
@@ -12221,7 +13121,7 @@ html[data-theme="light"] .costar-page,
 html[data-theme="light"] .costar-page {
   background:
     linear-gradient(180deg, rgba(255, 226, 178, 0.08), rgba(112, 28, 20, 0.08) 44%, rgba(255, 210, 137, 0.035)),
-    url('/costar-solar-premium-background.png') center top / cover no-repeat,
+    url('/costar-29-suggest-glow.jpg') center top / cover no-repeat,
     #050302 !important;
   background-blend-mode: screen, normal, normal !important;
 }
@@ -12276,7 +13176,7 @@ html[data-theme="light"] .costar-page {
 html[data-theme="light"] .costar-page {
   background:
     linear-gradient(180deg, rgba(255, 226, 178, 0.08), rgba(112, 28, 20, 0.08) 44%, rgba(255, 210, 137, 0.035)),
-    url('/costar-solar-premium-background.png') center top / cover no-repeat,
+    url('/costar-29-suggest-glow.jpg') center top / cover no-repeat,
     #050302 !important;
   background-blend-mode: screen, normal, normal !important;
 }
@@ -12290,7 +13190,7 @@ html[data-theme="light"] .costar-page {
 html[data-theme="light"] .costar-page {
   background:
     linear-gradient(180deg, rgba(255, 226, 178, 0.08), rgba(112, 28, 20, 0.08) 44%, rgba(255, 210, 137, 0.035)),
-    url('/costar-solar-premium-background.png') center top / cover no-repeat,
+    url('/costar-29-suggest-glow.jpg') center top / cover no-repeat,
     #050302 !important;
   background-blend-mode: screen, normal, normal !important;
 }
@@ -12303,7 +13203,7 @@ html[data-theme="light"] .costar-page {
   height: clamp(260px, 38svh, 420px) !important;
   pointer-events: none !important;
   background:
-    url('/costar-solar-premium-background.png') center -3svh / 146% auto no-repeat !important;
+    url('/costar-29-suggest-glow.jpg') center -3svh / 146% auto no-repeat !important;
   opacity: 1 !important;
   mix-blend-mode: normal !important;
   -webkit-mask-image:
@@ -12325,7 +13225,7 @@ html[data-theme="light"] .costar-page {
   .costar-page .costar-moon-zoom {
     height: clamp(230px, 34svh, 360px) !important;
     background:
-      url('/costar-solar-premium-background.png') center -5svh / 178% auto no-repeat !important;
+      url('/costar-29-suggest-glow.jpg') center -5svh / 178% auto no-repeat !important;
   }
 }
 
@@ -12334,7 +13234,7 @@ html[data-theme="light"] .costar-page {
   html[data-theme="light"] .costar-page {
     background:
       linear-gradient(180deg, rgba(255, 226, 178, 0.08), rgba(112, 28, 20, 0.08) 44%, rgba(255, 210, 137, 0.035)),
-      url('/costar-solar-premium-background.png') center top / cover no-repeat,
+      url('/costar-29-suggest-glow.jpg') center top / cover no-repeat,
       #050302 !important;
     background-blend-mode: screen, normal, normal !important;
   }
@@ -12342,7 +13242,7 @@ html[data-theme="light"] .costar-page {
   .costar-page .costar-moon-zoom {
     height: clamp(210px, 31svh, 310px) !important;
     background:
-      url('/costar-solar-premium-background.png') center -7svh / 222% auto no-repeat !important;
+      url('/costar-29-suggest-glow.jpg') center -7svh / 222% auto no-repeat !important;
   }
 }
 
@@ -12351,7 +13251,7 @@ html[data-theme="light"] .costar-page {
 html[data-theme="light"] .costar-page {
   background:
     linear-gradient(180deg, rgba(255, 226, 178, 0.08), rgba(112, 28, 20, 0.08) 44%, rgba(255, 210, 137, 0.035)),
-    url('/costar-solar-premium-background.png') center -2.5svh / 132% auto no-repeat,
+    url('/costar-29-suggest-glow.jpg') center -2.5svh / 132% auto no-repeat,
     #050302 !important;
   background-blend-mode: screen, normal, normal !important;
 }
@@ -12361,7 +13261,7 @@ html[data-theme="light"] .costar-page {
   html[data-theme="light"] .costar-page {
     background:
       linear-gradient(180deg, rgba(255, 226, 178, 0.08), rgba(112, 28, 20, 0.08) 44%, rgba(255, 210, 137, 0.035)),
-      url('/costar-solar-premium-background.png') center -7svh / 158% auto no-repeat,
+      url('/costar-29-suggest-glow.jpg') center -7svh / 158% auto no-repeat,
       #050302 !important;
     background-blend-mode: screen, normal, normal !important;
   }
@@ -12373,7 +13273,7 @@ html[data-theme="light"] .costar-page {
   html[data-theme="light"] .costar-page {
     background:
       linear-gradient(180deg, rgba(255, 226, 178, 0.08), rgba(112, 28, 20, 0.08) 44%, rgba(255, 210, 137, 0.035)),
-      url('/costar-solar-premium-background.png') center -4.2svh / 118% auto no-repeat,
+      url('/costar-29-suggest-glow.jpg') center -4.2svh / 118% auto no-repeat,
       #050302 !important;
     background-blend-mode: screen, normal, normal !important;
   }
@@ -12459,7 +13359,7 @@ html[data-theme="light"] .costar-page {
 html[data-theme="light"] .costar-page {
   background:
     linear-gradient(180deg, rgba(255, 226, 178, 0.08), rgba(112, 28, 20, 0.08) 44%, rgba(255, 210, 137, 0.035)),
-    url('/costar-solar-premium-background.png') center top / cover no-repeat,
+    url('/costar-29-suggest-glow.jpg') center top / cover no-repeat,
     #050302 !important;
   background-blend-mode: screen, normal, normal !important;
 }
@@ -12508,7 +13408,7 @@ html[data-theme="light"] .costar-page {
   html[data-theme="light"] .costar-page {
     background:
       linear-gradient(180deg, rgba(255, 226, 178, 0.08), rgba(112, 28, 20, 0.08) 44%, rgba(255, 210, 137, 0.035)),
-      url('/costar-solar-premium-background.png') center -3svh / 108% auto no-repeat,
+      url('/costar-29-suggest-glow.jpg') center -3svh / 108% auto no-repeat,
       #050302 !important;
     background-blend-mode: screen, normal, normal !important;
   }
@@ -12716,7 +13616,7 @@ html[data-theme="light"] .costar-page {
 html[data-theme="light"] .costar-page {
   background:
     linear-gradient(180deg, rgba(255, 226, 178, 0.08), rgba(112, 28, 20, 0.08) 44%, rgba(255, 210, 137, 0.035)),
-    url('/costar-solar-premium-background.png') center -2svh / 146% auto no-repeat,
+    url('/costar-29-suggest-glow.jpg') center -2svh / 146% auto no-repeat,
     #050302 !important;
   background-blend-mode: screen, normal, normal !important;
 }
@@ -12726,7 +13626,7 @@ html[data-theme="light"] .costar-page {
   html[data-theme="light"] .costar-page {
     background:
       linear-gradient(180deg, rgba(255, 226, 178, 0.08), rgba(112, 28, 20, 0.08) 44%, rgba(255, 210, 137, 0.035)),
-      url('/costar-solar-premium-background.png') center -4svh / 178% auto no-repeat,
+      url('/costar-29-suggest-glow.jpg') center -4svh / 178% auto no-repeat,
       #050302 !important;
     background-blend-mode: screen, normal, normal !important;
   }
@@ -12737,7 +13637,7 @@ html[data-theme="light"] .costar-page {
 html[data-theme="light"] .costar-page {
   background:
     linear-gradient(180deg, rgba(255, 226, 178, 0.08), rgba(112, 28, 20, 0.08) 44%, rgba(255, 210, 137, 0.035)),
-    url('/costar-solar-premium-background.png') center top / cover no-repeat,
+    url('/costar-29-suggest-glow.jpg') center top / cover no-repeat,
     #050302 !important;
   background-blend-mode: screen, normal, normal !important;
 }
@@ -12750,7 +13650,7 @@ html[data-theme="light"] .costar-page {
   height: clamp(260px, 38svh, 420px) !important;
   pointer-events: none !important;
   background:
-    url('/costar-solar-premium-background.png') center -3svh / 146% auto no-repeat !important;
+    url('/costar-29-suggest-glow.jpg') center -3svh / 146% auto no-repeat !important;
   opacity: 1 !important;
   mix-blend-mode: normal !important;
   -webkit-mask-image: radial-gradient(ellipse 82% 72% at 50% 0%, #000 0 58%, rgba(0, 0, 0, 0.86) 66%, transparent 82%);
@@ -12767,7 +13667,7 @@ html[data-theme="light"] .costar-page {
   html[data-theme="light"] .costar-page {
     background:
       linear-gradient(180deg, rgba(255, 226, 178, 0.08), rgba(112, 28, 20, 0.08) 44%, rgba(255, 210, 137, 0.035)),
-      url('/costar-solar-premium-background.png') center top / cover no-repeat,
+      url('/costar-29-suggest-glow.jpg') center top / cover no-repeat,
       #050302 !important;
     background-blend-mode: screen, normal, normal !important;
   }
@@ -12775,7 +13675,7 @@ html[data-theme="light"] .costar-page {
   .costar-page .costar-moon-zoom {
     height: clamp(230px, 34svh, 360px) !important;
     background:
-      url('/costar-solar-premium-background.png') center -5svh / 178% auto no-repeat !important;
+      url('/costar-29-suggest-glow.jpg') center -5svh / 178% auto no-repeat !important;
   }
 }
 
@@ -12784,7 +13684,7 @@ html[data-theme="light"] .costar-page {
   html[data-theme="light"] .costar-page {
     background:
       linear-gradient(180deg, rgba(255, 226, 178, 0.08), rgba(112, 28, 20, 0.08) 44%, rgba(255, 210, 137, 0.035)),
-      url('/costar-solar-premium-background.png') center top / cover no-repeat,
+      url('/costar-29-suggest-glow.jpg') center top / cover no-repeat,
       #050302 !important;
     background-blend-mode: screen, normal, normal !important;
   }
@@ -12792,7 +13692,7 @@ html[data-theme="light"] .costar-page {
   .costar-page .costar-moon-zoom {
     height: clamp(210px, 31svh, 310px) !important;
     background:
-      url('/costar-solar-premium-background.png') center -7svh / 222% auto no-repeat !important;
+      url('/costar-29-suggest-glow.jpg') center -7svh / 222% auto no-repeat !important;
   }
 }
 
@@ -12802,7 +13702,7 @@ html[data-theme="light"] .costar-page,
 .app-content--costar .costar-page {
   background:
     linear-gradient(180deg, rgba(255, 226, 178, 0.07), rgba(112, 28, 20, 0.055) 44%, rgba(255, 210, 137, 0.025)),
-    url('/costar-solar-premium-background.png') center top / 100% auto no-repeat,
+    url('/costar-29-suggest-glow.jpg') center top / 100% auto no-repeat,
     #050302 !important;
   background-blend-mode: screen, normal, normal !important;
 }
@@ -12925,6 +13825,7 @@ html[data-theme="light"] .costar-page,
   position: relative;
   isolation: isolate;
   background:
+    url('/costar-29-suggest-glow.jpg') center top / cover no-repeat fixed,
     #050302 !important;
 }
 
@@ -12956,7 +13857,7 @@ html[data-theme="light"] .costar-page,
 .costar-scroll-planet::before {
   inset: 0;
   background:
-    url('/fond_individuel_3.png') center center / 100% 100% no-repeat;
+    url('/costar-29-suggest-glow.jpg') center top / cover no-repeat;
   filter: brightness(0.82) contrast(1.08) saturate(1.04);
   opacity: var(--costar-background-opacity, 1);
   transform: none;
@@ -13329,31 +14230,104 @@ html[data-theme="light"] .costar-page,
   width: 100% !important;
   height: 100svh !important;
   min-height: 100svh !important;
+  position: relative !important;
+  isolation: isolate !important;
   display: flex !important;
   flex-direction: column !important;
   justify-content: flex-start !important;
   padding: max(8px, env(safe-area-inset-top)) 0 0 !important;
   overflow: hidden !important;
   background:
-    radial-gradient(ellipse at 50% 18%, rgba(28, 30, 40, 0.55), transparent 48%),
-    radial-gradient(ellipse at 50% 72%, rgba(12, 13, 18, 0.9), transparent 58%),
-    linear-gradient(180deg, #050608 0%, #07080c 42%, #030406 100%) !important;
+    radial-gradient(ellipse 92% 70% at 50% 20%, rgba(48, 58, 120, 0.46), transparent 58%),
+    radial-gradient(ellipse 72% 52% at 70% 72%, rgba(28, 20, 70, 0.5), transparent 56%),
+    radial-gradient(ellipse 62% 46% at 20% 82%, rgba(20, 40, 90, 0.4), transparent 52%),
+    linear-gradient(180deg, #0a0d22 0%, #060814 42%, #03040c 100%) !important;
 }
 
 .app-content--you .astral-profile-wheel-page::before {
-  background:
-    radial-gradient(ellipse at 50% 28%, rgba(18, 20, 28, 0.55), transparent 46%),
-    linear-gradient(180deg, rgba(4, 5, 8, 0.96), rgba(2, 3, 5, 0.98)) !important;
-  opacity: 1 !important;
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+  pointer-events: none !important;
+  background-image:
+                radial-gradient(ellipse 54% 40% at 50% 24%, rgba(70, 60, 160, 0.26), transparent 68%),
+    radial-gradient(ellipse 44% 34% at 84% 70%, rgba(30, 70, 150, 0.22), transparent 70%),
+    radial-gradient(ellipse 38% 32% at 12% 78%, rgba(120, 60, 130, 0.14), transparent 72%),
+    radial-gradient(circle at 18% 22%, rgba(255, 255, 255, 0.34) 0 0.9px, transparent 1.6px),
+    radial-gradient(circle at 72% 20%, rgba(255, 245, 218, 0.25) 0 0.86px, transparent 1.55px),
+    radial-gradient(circle at 30% 28%, rgba(230, 238, 255, 0.28) 0 0.78px, transparent 1.45px),
+    radial-gradient(circle at 58% 30%, rgba(255, 232, 218, 0.2) 0 0.7px, transparent 1.35px),
+    radial-gradient(circle at 36% 64%, rgba(210, 226, 255, 0.16) 0 0.65px, transparent 1.4px),
+    radial-gradient(circle at 84% 70%, rgba(255, 255, 255, 0.14) 0 0.7px, transparent 1.5px),
+    radial-gradient(circle at 50% 48%, rgba(110, 135, 190, 0.06), transparent 62%) !important;
+  background-size: 100% 100%, 100% 100%, 100% 100%, 220px 190px, 310px 260px, 170px 120px, 240px 150px, 260px 300px, 380px 330px, 100% 100% !important;
+  background-position: center, center, center, 0 0, 44px 18px, 14px 18px, 72px 28px, 18px 58px, 72px 34px, center !important;
+  opacity: 0.62 !important;
 }
 
 .app-content--you .astral-profile-wheel-page::after {
-  background:
-    radial-gradient(circle, rgba(120, 110, 90, 0.06), transparent 64%) !important;
-  opacity: 0.35 !important;
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+  pointer-events: none !important;
+  background-image:
+        linear-gradient(180deg, rgba(2, 4, 14, 0.36) 0%, rgba(2, 4, 14, 0.06) 28%, rgba(2, 4, 14, 0.12) 58%, rgba(1, 2, 10, 0.6) 100%),
+    radial-gradient(ellipse 88% 62% at 50% 36%, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.28)),
+    radial-gradient(circle, rgba(255, 255, 255, 0.28) 0 0.35px, transparent 0.8px),
+    linear-gradient(115deg, rgba(255, 255, 255, 0.035), transparent 34%, rgba(255, 255, 255, 0.018) 68%, transparent) !important;
+  background-size: 100% 100%, 100% 100%, 5px 5px, 100% 100% !important;
+  opacity: 0.82 !important;
+  mix-blend-mode: normal !important;
 }
 
+
+.app-content--you .stars-layer-2 {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.app-content--you .star-drift {
+  position: absolute;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 5px currentColor;
+  animation: drift 45s ease-in-out infinite;
+}
+
+.app-content--you .star-drift--one {
+  top: 18%;
+  left: 30%;
+  width: 2.6px;
+  height: 2.6px;
+  color: rgba(235, 242, 255, 0.72);
+  animation-duration: 38s;
+}
+
+.app-content--you .star-drift--two {
+  top: 31%;
+  left: 76%;
+  width: 3px;
+  height: 3px;
+  color: rgba(255, 238, 218, 0.68);
+  animation-duration: 56s;
+  animation-delay: -11s;
+}
+
+
+
+
+@keyframes drift {
+  0% { transform: translate(0, 0); }
+  50% { transform: translate(3px, -4px); }
+  100% { transform: translate(0, 0); }
+}
 .app-content--you .astral-profile-wheel-page .zodiac-wheel-container {
+  position: relative !important;
+  z-index: 1 !important;
   width: 100% !important;
   height: 100% !important;
   min-height: 0 !important;
@@ -14132,7 +15106,7 @@ html[data-theme="light"] .costar-page,
 
 
 /* ==========================================================================
-   Expanded description panels — SAME background for every open case
+   Expanded description panels � SAME background for every open case
    Swap only --you-expanded-panel-bg (image), do not touch text styles
    ========================================================================== */
 .app-content--you .astral-profile {
@@ -14155,7 +15129,7 @@ html[data-theme="light"] .costar-page,
     inset 0 0 0 1px rgba(255, 250, 240, 0.03) !important;
 }
 
-/* Keep special aspect décor off so every open case looks the same */
+/* Keep special aspect d�cor off so every open case looks the same */
 .app-content--you .astro-aspect-background__stars,
 .app-content--you .astro-aspect-background__grain,
 .app-content--you .astro-aspect-background__halo,
@@ -14233,7 +15207,7 @@ html[data-theme="light"] .costar-page,
   display: none !important;
 }
 
-/* Pack C overrides — beat later gradient/title box fixes */
+/* Pack C overrides � beat later gradient/title box fixes */
 .app-content--you .astral-profile__content--accordion .astral-profile__title {
   color: #f7f0e8 !important;
   background: none !important;
@@ -14356,4 +15330,727 @@ html[data-theme="light"] .astral-profile__premium-teaser-btn:hover {
   border-color: rgba(160, 120, 70, 0.4);
   background: rgba(255, 248, 232, 0.85);
   box-shadow: none;
+}
+
+/* You 2 comparison: previous wheel background before the Home-style test. */
+.app-content--you2 {
+  background: radial-gradient(circle at 50% 45%, #10101c 0%, #08080d 55%, #020204 100%) !important;
+}
+
+.app-content--you2 .you2-page::before {
+  background-image:
+    radial-gradient(circle at 18% 22%, rgba(255, 255, 255, 0.34) 0 0.9px, transparent 1.6px),
+    radial-gradient(circle at 72% 20%, rgba(255, 245, 218, 0.25) 0 0.86px, transparent 1.55px),
+    radial-gradient(circle at 30% 28%, rgba(230, 238, 255, 0.28) 0 0.78px, transparent 1.45px),
+    radial-gradient(circle at 58% 30%, rgba(255, 232, 218, 0.2) 0 0.7px, transparent 1.35px),
+    radial-gradient(circle at 36% 64%, rgba(210, 226, 255, 0.16) 0 0.65px, transparent 1.4px),
+    radial-gradient(circle at 84% 70%, rgba(255, 255, 255, 0.14) 0 0.7px, transparent 1.5px),
+    radial-gradient(circle at 50% 48%, rgba(110, 135, 190, 0.06), transparent 62%) !important;
+  background-size: 220px 190px, 310px 260px, 170px 120px, 240px 150px, 260px 300px, 380px 330px, 100% 100% !important;
+  background-position: 0 0, 44px 18px, 14px 18px, 72px 28px, 18px 58px, 72px 34px, center !important;
+  opacity: 0.62 !important;
+}
+
+.app-content--you2 .you2-page::after {
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.28) 0 0.35px, transparent 0.8px),
+    linear-gradient(115deg, rgba(255, 255, 255, 0.035), transparent 34%, rgba(255, 255, 255, 0.018) 68%, transparent) !important;
+  background-size: 5px 5px, 100% 100% !important;
+  opacity: 0.035 !important;
+  mix-blend-mode: screen !important;
+}
+
+.app-content--you2 .astral-profile-wheel-page--you2 {
+  background: radial-gradient(circle at 50% 45%, #10101c 0%, #08080d 55%, #020204 100%) !important;
+}
+
+.app-content--you2 .astral-profile-wheel-page--you2::before {
+  background-image:
+    radial-gradient(circle at 18% 22%, rgba(255, 255, 255, 0.34) 0 0.9px, transparent 1.6px),
+    radial-gradient(circle at 72% 20%, rgba(255, 245, 218, 0.25) 0 0.86px, transparent 1.55px),
+    radial-gradient(circle at 30% 28%, rgba(230, 238, 255, 0.28) 0 0.78px, transparent 1.45px),
+    radial-gradient(circle at 58% 30%, rgba(255, 232, 218, 0.2) 0 0.7px, transparent 1.35px),
+    radial-gradient(circle at 36% 64%, rgba(210, 226, 255, 0.16) 0 0.65px, transparent 1.4px),
+    radial-gradient(circle at 84% 70%, rgba(255, 255, 255, 0.14) 0 0.7px, transparent 1.5px),
+    radial-gradient(circle at 50% 48%, rgba(110, 135, 190, 0.06), transparent 62%) !important;
+  background-size: 220px 190px, 310px 260px, 170px 120px, 240px 150px, 260px 300px, 380px 330px, 100% 100% !important;
+  background-position: 0 0, 44px 18px, 14px 18px, 72px 28px, 18px 58px, 72px 34px, center !important;
+  opacity: 0.62 !important;
+  filter: none !important;
+}
+
+.app-content--you2 .astral-profile-wheel-page--you2::after {
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.28) 0 0.35px, transparent 0.8px),
+    linear-gradient(115deg, rgba(255, 255, 255, 0.035), transparent 34%, rgba(255, 255, 255, 0.018) 68%, transparent) !important;
+  background-size: 5px 5px, 100% 100% !important;
+  opacity: 0.035 !important;
+  mix-blend-mode: screen !important;
+  filter: none !important;
+}
+
+.app-content--you2 .you2-depth-layer--halo {
+  opacity: 0 !important;
+}
+/* You background rollback: match the You 2 comparison background. */
+.app-content--you,
+.app-content--you .astral-profile-wheel-page {
+  background: radial-gradient(circle at 50% 45%, #10101c 0%, #08080d 55%, #020204 100%) !important;
+}
+
+.app-content--you .astral-profile-wheel-page::before {
+  background-image:
+    radial-gradient(circle at 18% 22%, rgba(255, 255, 255, 0.34) 0 0.9px, transparent 1.6px),
+    radial-gradient(circle at 72% 20%, rgba(255, 245, 218, 0.25) 0 0.86px, transparent 1.55px),
+    radial-gradient(circle at 30% 28%, rgba(230, 238, 255, 0.28) 0 0.78px, transparent 1.45px),
+    radial-gradient(circle at 58% 30%, rgba(255, 232, 218, 0.2) 0 0.7px, transparent 1.35px),
+    radial-gradient(circle at 36% 64%, rgba(210, 226, 255, 0.16) 0 0.65px, transparent 1.4px),
+    radial-gradient(circle at 84% 70%, rgba(255, 255, 255, 0.14) 0 0.7px, transparent 1.5px),
+    radial-gradient(circle at 50% 48%, rgba(110, 135, 190, 0.06), transparent 62%) !important;
+  background-size: 220px 190px, 310px 260px, 170px 120px, 240px 150px, 260px 300px, 380px 330px, 100% 100% !important;
+  background-position: 0 0, 44px 18px, 14px 18px, 72px 28px, 18px 58px, 72px 34px, center !important;
+  opacity: 0.62 !important;
+}
+
+.app-content--you .astral-profile-wheel-page::after {
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.28) 0 0.35px, transparent 0.8px),
+    linear-gradient(115deg, rgba(255, 255, 255, 0.035), transparent 34%, rgba(255, 255, 255, 0.018) 68%, transparent) !important;
+  background-size: 5px 5px, 100% 100% !important;
+  opacity: 0.035 !important;
+  mix-blend-mode: screen !important;
+}
+
+.app-content--you .stars-layer-2 {
+  display: none !important;
+}
+/* You mobile background unification: lighter solid field, no grey safe-area strip. */
+.app-shell--you,
+.app-shell--you .app-content--you,
+.app-shell--you .app-content--you > .min-h-screen,
+.app-shell--you .astral-profile-wheel-page {
+  background: #111322 !important;
+  background-color: #111322 !important;
+}
+
+.app-shell--you .app-content--you {
+  min-height: 100dvh;
+  padding-bottom: calc(42px + env(safe-area-inset-bottom)) !important;
+}
+
+.app-shell--you .bottom-nav {
+  background: #111322 !important;
+  background-color: #111322 !important;
+  border-top-color: rgba(235, 238, 255, 0.1) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.app-shell--you .bottom-nav::before,
+.app-shell--you .bottom-nav::after {
+  display: none !important;
+}
+
+@media (max-width: 640px) {
+  .app-shell--you,
+  .app-shell--you .app-content--you,
+  .app-shell--you .app-content--you > .min-h-screen,
+  .app-shell--you .astral-profile-wheel-page,
+  .app-shell--you .bottom-nav {
+    background: #111322 !important;
+    background-color: #111322 !important;
+  }
+
+  .app-shell--you .app-content--you {
+    min-height: 100dvh;
+    padding-bottom: calc(42px + env(safe-area-inset-bottom)) !important;
+  }
+}
+/* You mobile depth pass: restore contrast without flattening the screen. */
+@media (max-width: 640px) {
+  .app-shell--you {
+    background: #070913 !important;
+    background-color: #070913 !important;
+  }
+
+  .app-shell--you .app-content--you,
+  .app-shell--you .app-content--you > .min-h-screen,
+  .app-shell--you .astral-profile-wheel-page {
+    background:
+      radial-gradient(ellipse 90% 55% at 50% 18%, rgba(65, 76, 145, 0.28), transparent 62%),
+      radial-gradient(ellipse 74% 52% at 50% 54%, rgba(0, 0, 0, 0.34), transparent 56%),
+      radial-gradient(ellipse 90% 60% at 50% 94%, rgba(3, 4, 13, 0.82), transparent 70%),
+      linear-gradient(180deg, #111322 0%, #0a0d1a 42%, #060711 100%) !important;
+    background-color: #070913 !important;
+  }
+
+  .app-shell--you .astral-profile-wheel-page::before {
+    background-image:
+      radial-gradient(circle at 14% 18%, rgba(246, 250, 255, 0.54) 0 0.9px, transparent 1.7px),
+      radial-gradient(circle at 72% 15%, rgba(223, 232, 255, 0.44) 0 0.8px, transparent 1.55px),
+      radial-gradient(circle at 88% 30%, rgba(255, 242, 218, 0.38) 0 0.95px, transparent 1.65px),
+      radial-gradient(circle at 24% 42%, rgba(205, 218, 255, 0.34) 0 0.72px, transparent 1.45px),
+      radial-gradient(circle at 78% 57%, rgba(255, 255, 255, 0.3) 0 0.74px, transparent 1.45px),
+      radial-gradient(circle at 18% 76%, rgba(255, 230, 220, 0.28) 0 0.78px, transparent 1.5px),
+      radial-gradient(circle at 58% 84%, rgba(224, 236, 255, 0.32) 0 0.86px, transparent 1.55px) !important;
+    background-size: 100% 100% !important;
+    background-position: center !important;
+    opacity: 0.86 !important;
+  }
+
+  .app-shell--you .astral-profile-wheel-page::after {
+    background:
+      radial-gradient(ellipse 68% 48% at 50% 48%, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.42) 72%, rgba(0, 0, 0, 0.18) 100%),
+      linear-gradient(180deg, rgba(2, 3, 9, 0.08), rgba(2, 3, 9, 0.34)) !important;
+    opacity: 0.68 !important;
+    mix-blend-mode: normal !important;
+  }
+
+  .app-shell--you .bottom-nav {
+    background:
+      radial-gradient(ellipse at 50% -38%, rgba(216, 178, 103, 0.12), transparent 52%),
+      linear-gradient(180deg, rgba(20, 19, 22, 0.58), rgba(7, 7, 9, 0.66)) !important;
+    backdrop-filter: blur(10px) saturate(1.04) !important;
+    -webkit-backdrop-filter: blur(10px) saturate(1.04) !important;
+    border-top-color: rgba(235, 208, 154, 0.16) !important;
+    box-shadow:
+      0 -8px 24px rgba(0, 0, 0, 0.18),
+      0 -2px 18px rgba(220, 179, 98, 0.055),
+      inset 0 1px 0 rgba(255, 246, 225, 0.08),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.2) !important;
+  }
+
+  .app-shell--you .bottom-nav::before,
+  .app-shell--you .bottom-nav::after {
+    display: block !important;
+  }
+}
+/* You selected background: C. Teal cosmique. */
+@media (max-width: 640px) {
+  .app-shell--you {
+    background: #03070d !important;
+    background-color: #03070d !important;
+  }
+
+  .app-shell--you .app-content--you,
+  .app-shell--you .app-content--you > .min-h-screen,
+  .app-shell--you .astral-profile-wheel-page {
+    background:
+      radial-gradient(ellipse 86% 54% at 50% 18%, rgba(41, 119, 138, 0.3), transparent 62%),
+      radial-gradient(ellipse 82% 56% at 78% 76%, rgba(32, 56, 120, 0.24), transparent 66%),
+      radial-gradient(ellipse 76% 52% at 50% 50%, rgba(0, 0, 0, 0.36), transparent 58%),
+      linear-gradient(180deg, #0f1a22 0%, #07121b 48%, #03070d 100%) !important;
+    background-color: #03070d !important;
+  }
+
+  .app-shell--you .astral-profile-wheel-page::before {
+    background-image:
+      radial-gradient(circle at 13% 16%, rgba(255, 255, 255, 0.58) 0 0.95px, transparent 1.7px),
+      radial-gradient(circle at 74% 14%, rgba(226, 236, 255, 0.5) 0 0.82px, transparent 1.55px),
+      radial-gradient(circle at 88% 28%, rgba(255, 236, 208, 0.42) 0 0.96px, transparent 1.65px),
+      radial-gradient(circle at 24% 43%, rgba(212, 224, 255, 0.38) 0 0.75px, transparent 1.45px),
+      radial-gradient(circle at 78% 57%, rgba(255, 255, 255, 0.32) 0 0.75px, transparent 1.45px),
+      radial-gradient(circle at 18% 76%, rgba(255, 230, 220, 0.3) 0 0.78px, transparent 1.5px),
+      radial-gradient(circle at 58% 84%, rgba(224, 236, 255, 0.34) 0 0.86px, transparent 1.55px) !important;
+    background-size: 100% 100% !important;
+    background-position: center !important;
+    opacity: 0.86 !important;
+  }
+
+  .app-shell--you .astral-profile-wheel-page::after {
+    background:
+      radial-gradient(ellipse 70% 52% at 50% 50%, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4) 72%, rgba(0, 0, 0, 0.18) 100%),
+      radial-gradient(circle, rgba(255, 255, 255, 0.28) 0 0.32px, transparent 0.82px) !important;
+    background-size: 100% 100%, 5px 5px !important;
+    opacity: 0.62 !important;
+    mix-blend-mode: normal !important;
+  }
+}
+/* You identity info: no card, just editorial text over the sky. */
+.app-content--you .natal-identity-panel {
+  width: min(100%, 520px) !important;
+  max-width: 520px !important;
+  padding: 8px 44px 7px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  overflow: visible !important;
+}
+
+.app-content--you .natal-identity-panel::after {
+  width: min(118px, 34%) !important;
+  opacity: 0.42 !important;
+  background: linear-gradient(90deg, transparent, rgba(226, 236, 255, 0.54), transparent) !important;
+}
+
+.app-content--you .natal-chart-name {
+  color: rgba(255, 250, 239, 0.96) !important;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.58) !important;
+}
+
+.app-content--you .natal-identity-panel__meta {
+  gap: 3px 8px !important;
+}
+
+.app-content--you .natal-identity-panel__meta span {
+  color: rgba(226, 232, 244, 0.7) !important;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.58) !important;
+}
+
+.app-content--you .natal-identity-panel__meta span + span::before {
+  background: rgba(226, 236, 255, 0.42) !important;
+}
+
+@media (max-width: 640px) {
+  .app-content--you .natal-identity-panel {
+    padding: 6px 18px 6px !important;
+    transform: none !important;
+  }
+
+  .app-content--you .natal-chart-name {
+    font-size: clamp(1.05rem, 5vw, 1.36rem) !important;
+    line-height: 1.02 !important;
+  }
+
+  .app-content--you .natal-identity-panel__meta span {
+    max-width: min(42vw, 170px) !important;
+    font-size: 0.66rem !important;
+    letter-spacing: 0.035em !important;
+  }
+}
+/* You identity typography: modern app. */
+.app-content--you .natal-identity-panel {
+  gap: 6px !important;
+  padding-top: 7px !important;
+}
+
+.app-content--you .natal-chart-name {
+  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif !important;
+  font-size: clamp(1.12rem, 2.5vw, 1.58rem) !important;
+  font-weight: 720 !important;
+  line-height: 1.02 !important;
+  letter-spacing: 0.005em !important;
+  color: rgba(255, 250, 239, 0.96) !important;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.56) !important;
+}
+
+.app-content--you .natal-identity-panel__meta {
+  gap: 0 !important;
+  flex-wrap: nowrap !important;
+}
+
+.app-content--you .natal-identity-panel__meta span {
+  max-width: none !important;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif !important;
+  font-size: clamp(0.68rem, 1.65vw, 0.78rem) !important;
+  font-weight: 520 !important;
+  letter-spacing: 0.015em !important;
+  line-height: 1.2 !important;
+  text-transform: none !important;
+  color: rgba(226, 232, 244, 0.72) !important;
+}
+
+.app-content--you .natal-identity-panel__meta span + span::before {
+  width: 3px !important;
+  height: 3px !important;
+  margin: 0 10px 2px !important;
+  background: rgba(226, 236, 255, 0.45) !important;
+  box-shadow: none !important;
+}
+
+@media (max-width: 640px) {
+  .app-content--you .natal-identity-panel {
+    padding: 7px 18px 6px !important;
+    gap: 5px !important;
+  }
+
+  .app-content--you .natal-chart-name {
+    font-size: clamp(1.08rem, 5.2vw, 1.38rem) !important;
+    letter-spacing: 0 !important;
+  }
+
+  .app-content--you .natal-identity-panel__meta {
+    width: min(100%, 350px) !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+  }
+
+  .app-content--you .natal-identity-panel__meta span {
+    min-width: 0 !important;
+    max-width: 47% !important;
+    font-size: 0.68rem !important;
+    letter-spacing: 0.005em !important;
+    text-overflow: ellipsis !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+  }
+
+  .app-content--you .natal-identity-panel__meta span + span::before {
+    margin-inline: 8px !important;
+  }
+}
+/* You wheel: remove identity info above the chart for a cleaner mobile-first view. */
+.app-content--you .natal-identity-panel {
+  display: none !important;
+}
+/* You mobile final adjustment: darker top, lighter bottom, wheel optically centered. */
+@media (max-width: 640px) {
+  .app-shell--you {
+    background: #03070d !important;
+    background-color: #03070d !important;
+  }
+
+  .app-shell--you .app-content--you,
+  .app-shell--you .app-content--you > .min-h-screen,
+  .app-shell--you .astral-profile-wheel-page {
+    background:
+      radial-gradient(ellipse 94% 54% at 50% 88%, rgba(41, 119, 138, 0.34), transparent 66%),
+      radial-gradient(ellipse 82% 56% at 78% 74%, rgba(32, 56, 120, 0.24), transparent 68%),
+      radial-gradient(ellipse 74% 48% at 50% 47%, rgba(0, 0, 0, 0.42), transparent 58%),
+      linear-gradient(180deg, #03070d 0%, #07121b 50%, #0f1a22 100%) !important;
+    background-color: #03070d !important;
+  }
+
+  .app-content--you .astral-profile-wheel-page {
+    height: calc(100svh - 42px - env(safe-area-inset-bottom)) !important;
+    min-height: 0 !important;
+    padding: 0 0 0 !important;
+    justify-content: center !important;
+  }
+
+  .app-content--you .astral-profile-wheel-page .zodiac-wheel-container {
+    height: 100% !important;
+    justify-content: center !important;
+    transform: none !important;
+  }
+
+  .app-content--you .astral-profile-wheel-page .natal-chart-card,
+  .app-content--you .astral-profile-wheel-page .natal-chart-wheel-stage,
+  .app-content--you .astral-profile-wheel-page .natal-chart-wheel-frame {
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .app-content--you .astral-profile-wheel-page .natal-chart-svg {
+    width: min(100vw, calc((100svh - 42px - env(safe-area-inset-bottom)) * 1.02), 1280px) !important;
+  }
+
+  .app-shell--you .astral-profile-wheel-page::after {
+    background:
+      radial-gradient(ellipse 72% 52% at 50% 48%, rgba(0, 0, 0, 0.24), rgba(0, 0, 0, 0.44) 72%, rgba(0, 0, 0, 0.16) 100%),
+      linear-gradient(180deg, rgba(2, 5, 12, 0.34) 0%, rgba(2, 5, 12, 0.12) 48%, rgba(6, 18, 27, 0.02) 100%),
+      radial-gradient(circle, rgba(255, 255, 255, 0.28) 0 0.32px, transparent 0.82px) !important;
+    background-size: 100% 100%, 100% 100%, 5px 5px !important;
+    opacity: 0.62 !important;
+    mix-blend-mode: normal !important;
+  }
+}
+/* You mobile wheel nudge: slightly above optical center. */
+@media (max-width: 640px) {
+  .app-content--you .astral-profile-wheel-page .zodiac-wheel-container {
+    transform: translateY(clamp(-46px, -6svh, -30px)) !important;
+  }
+}
+/* You mobile cleanup: remove bottom bars without moving the wheel. */
+@media (max-width: 640px) {
+  .app-content--you {
+    scrollbar-width: none !important;
+  }
+
+  .app-content--you::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
+    display: none !important;
+  }
+
+  .app-content--you .astral-profile__gold-divider {
+    display: none !important;
+  }
+}
+/* You mobile wheel viewport: the wheel screen fills the full height behind the nav. */
+@media (max-width: 640px) {
+  .app-shell--you .app-content--you {
+    padding-bottom: 0 !important;
+  }
+
+  .app-content--you .astral-profile-wheel-page {
+    height: 100svh !important;
+    min-height: 100svh !important;
+  }
+
+  .app-content--you .astral-profile-wheel-page .zodiac-wheel-container {
+    height: 100svh !important;
+  }
+}
+/* You mobile planet clipping fix: let outer planet discs render past the chart box. */
+@media (max-width: 640px) {
+  .app-content--you .astral-profile-wheel-page .natal-chart-card,
+  .app-content--you .astral-profile-wheel-page .natal-chart-wheel-stage,
+  .app-content--you .astral-profile-wheel-page .natal-chart-wheel-frame,
+  .app-content--you .astral-profile-wheel-page .natal-chart-svg {
+    overflow: visible !important;
+  }
+}
+
+/* You mobile readability pass: deep sky with a quiet contrast field behind the wheel. */
+@media (max-width: 640px) {
+  .app-shell--you {
+    background: #02060c !important;
+    background-color: #02060c !important;
+  }
+
+  .app-shell--you .app-content--you,
+  .app-shell--you .app-content--you > .min-h-screen,
+  .app-shell--you .astral-profile-wheel-page {
+    background:
+      radial-gradient(ellipse 58% 30% at 8% 96%, rgba(25, 91, 106, 0.24), transparent 72%),
+      radial-gradient(ellipse 62% 34% at 94% 92%, rgba(22, 68, 91, 0.22), transparent 72%),
+      radial-gradient(ellipse 88% 58% at 50% 48%, rgba(0, 2, 7, 0.72) 0%, rgba(1, 5, 11, 0.54) 56%, transparent 78%),
+      linear-gradient(180deg, #02060c 0%, #07101a 58%, #0a1a24 100%) !important;
+    background-color: #02060c !important;
+  }
+
+  .app-shell--you .astral-profile-wheel-page::before {
+    background-image:
+      radial-gradient(circle at 13% 18%, rgba(238, 246, 255, 0.64) 0 0.9px, transparent 1.75px),
+      radial-gradient(circle at 82% 17%, rgba(255, 239, 215, 0.48) 0 0.75px, transparent 1.5px),
+      radial-gradient(circle at 92% 37%, rgba(213, 229, 255, 0.5) 0 1px, transparent 1.75px),
+      radial-gradient(circle at 8% 61%, rgba(255, 224, 214, 0.4) 0 0.7px, transparent 1.45px),
+      radial-gradient(circle at 88% 78%, rgba(229, 240, 255, 0.5) 0 0.85px, transparent 1.6px),
+      radial-gradient(circle at 16% 88%, rgba(255, 247, 225, 0.42) 0 0.75px, transparent 1.5px) !important;
+    background-size: 100% 100% !important;
+    background-position: center !important;
+    opacity: 0.82 !important;
+  }
+
+  .app-shell--you .astral-profile-wheel-page::after {
+    background:
+      radial-gradient(ellipse 82% 55% at 50% 48%, rgba(0, 1, 5, 0.18) 0%, rgba(0, 1, 5, 0.36) 66%, transparent 84%),
+      radial-gradient(circle, rgba(213, 226, 244, 0.2) 0 0.28px, transparent 0.78px) !important;
+    background-size: 100% 100%, 6px 6px !important;
+    opacity: 0.64 !important;
+    mix-blend-mode: normal !important;
+  }
+}
+/* You mobile sky refinement: quiet center, restrained teal and shaped edge stars. */
+@media (max-width: 640px) {
+  .app-shell--you .app-content--you,
+  .app-shell--you .app-content--you > .min-h-screen,
+  .app-shell--you .astral-profile-wheel-page {
+    background:
+      radial-gradient(ellipse 58% 30% at 8% 96%, rgba(32, 74, 84, 0.18), transparent 72%),
+      radial-gradient(ellipse 62% 34% at 94% 92%, rgba(30, 56, 76, 0.18), transparent 72%),
+      radial-gradient(ellipse 90% 60% at 50% 48%, rgba(0, 2, 7, 0.76) 0%, rgba(1, 5, 11, 0.58) 58%, transparent 80%),
+      linear-gradient(180deg, #02060c 0%, #07101a 58%, #0a1720 100%) !important;
+  }
+
+  .app-shell--you .astral-profile-wheel-page::before {
+    background-image:
+      radial-gradient(circle at 14% 19%, rgba(235, 244, 255, 0.62) 0 0.75px, transparent 1.55px),
+      radial-gradient(circle at 86% 22%, rgba(255, 239, 215, 0.48) 0 0.65px, transparent 1.4px),
+      radial-gradient(circle at 8% 69%, rgba(213, 229, 255, 0.48) 0 0.8px, transparent 1.55px),
+      radial-gradient(circle at 87% 88%, rgba(255, 226, 217, 0.42) 0 0.7px, transparent 1.45px) !important;
+    background-size: 100% 100% !important;
+    background-position: center !important;
+    opacity: 0.78 !important;
+  }
+
+  .app-shell--you .astral-profile-wheel-page::after {
+    background:
+      radial-gradient(ellipse 92% 66% at 50% 48%, transparent 48%, rgba(3, 8, 15, 0.2) 80%, rgba(0, 2, 7, 0.42) 100%),
+      radial-gradient(circle, rgba(213, 226, 244, 0.18) 0 0.26px, transparent 0.76px) !important;
+    background-size: 100% 100%, 6px 6px !important;
+    opacity: 0.58 !important;
+    -webkit-mask-image: radial-gradient(ellipse 76% 54% at 50% 48%, transparent 0 48%, rgba(0, 0, 0, 0.34) 66%, #000 84%);
+    mask-image: radial-gradient(ellipse 76% 54% at 50% 48%, transparent 0 48%, rgba(0, 0, 0, 0.34) 66%, #000 84%);
+  }
+
+  .app-content--you .stars-layer-2 {
+    display: block !important;
+    overflow: hidden;
+  }
+
+  .app-content--you .star-drift {
+    display: block;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 5px currentColor;
+    animation: you-star-sparkle 5.2s ease-in-out infinite !important;
+    transform-origin: center;
+  }
+
+  .app-content--you .star-drift::before,
+  .app-content--you .star-drift::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border-radius: 999px;
+    background: currentColor;
+    transform: translate(-50%, -50%);
+    opacity: 0.78;
+  }
+
+  .app-content--you .star-drift::before {
+    width: 1px;
+    height: 9px;
+  }
+
+  .app-content--you .star-drift::after {
+    width: 9px;
+    height: 1px;
+  }
+
+  .app-content--you .star-drift--one {
+    top: 26%;
+    left: 7%;
+    width: 2px;
+    height: 2px;
+    color: rgba(222, 236, 255, 0.72);
+    animation-delay: -1.4s !important;
+  }
+
+  .app-content--you .star-drift--two {
+    top: 73%;
+    left: 92%;
+    width: 2.4px;
+    height: 2.4px;
+    color: rgba(255, 231, 205, 0.66);
+    animation-duration: 6.4s !important;
+    animation-delay: -3.1s !important;
+  }
+}
+
+@keyframes you-star-sparkle {
+  0%, 100% {
+    opacity: 0.38;
+    transform: scale(0.78);
+  }
+  48% {
+    opacity: 0.92;
+    transform: scale(1.06);
+  }
+  62% {
+    opacity: 0.62;
+    transform: scale(0.9);
+  }
+}
+/* You mobile CoStar sky trial: shared warm-black palette with a protected wheel center. */
+@media (max-width: 640px) {
+  .app-shell--you {
+    background:
+      linear-gradient(180deg, rgba(7, 5, 4, 0.2), rgba(2, 4, 8, 0.1) 38%, rgba(2, 3, 6, 0.3) 100%),
+      url('/costar-29-suggest-glow.jpg') center top / cover no-repeat,
+      #050302 !important;
+    background-color: #050302 !important;
+  }
+
+  .app-shell--you .app-content--you,
+  .app-shell--you .app-content--you > .min-h-screen,
+  .app-shell--you .astral-profile-wheel-page {
+    background: transparent !important;
+    background-color: transparent !important;
+  }
+
+  .app-shell--you .astral-profile-wheel-page::before {
+    background: none !important;
+    opacity: 0 !important;
+  }
+
+  .app-shell--you .astral-profile-wheel-page::after {
+    background:
+      radial-gradient(ellipse 90% 60% at 50% 48%, rgba(1, 3, 7, 0.66) 0%, rgba(1, 3, 7, 0.42) 58%, transparent 82%),
+      linear-gradient(180deg, rgba(4, 3, 3, 0.34) 0%, rgba(2, 3, 6, 0.06) 30%, rgba(2, 3, 6, 0.2) 100%) !important;
+    background-size: 100% 100% !important;
+    opacity: 0.72 !important;
+    -webkit-mask-image: none !important;
+    mask-image: none !important;
+    mix-blend-mode: normal !important;
+  }
+
+  .app-content--you .star-drift {
+    border-radius: 50% !important;
+    background: currentColor !important;
+    box-shadow: 0 0 4px currentColor !important;
+    animation: you-star-classic-twinkle 5.8s ease-in-out infinite !important;
+  }
+
+  .app-content--you .star-drift::before,
+  .app-content--you .star-drift::after {
+    content: none !important;
+    display: none !important;
+  }
+
+  .app-content--you .star-drift--one {
+    top: 25%;
+    left: 8%;
+    width: 2.2px;
+    height: 2.2px;
+    color: rgba(231, 239, 250, 0.64);
+    animation-delay: -1.6s !important;
+  }
+
+  .app-content--you .star-drift--two {
+    top: 76%;
+    left: 91%;
+    width: 2.8px;
+    height: 2.8px;
+    color: rgba(255, 229, 198, 0.58);
+    animation-duration: 7s !important;
+    animation-delay: -3.4s !important;
+  }
+}
+
+@keyframes you-star-classic-twinkle {
+  0%, 100% { opacity: 0.34; }
+  48% { opacity: 0.82; }
+  64% { opacity: 0.54; }
+}
+/* You mobile CoStar readability finish: quieter moon and a few classic edge stars. */
+@media (max-width: 640px) {
+  .app-shell--you {
+    background:
+      linear-gradient(180deg, rgba(7, 5, 4, 0.34), rgba(2, 4, 8, 0.12) 38%, rgba(2, 3, 6, 0.3) 100%),
+      url('/costar-29-suggest-glow.jpg') center top / cover no-repeat,
+      #050302 !important;
+    background-color: #050302 !important;
+  }
+
+  .app-shell--you .astral-profile-wheel-page::before {
+    background-image:
+      radial-gradient(circle at 12% 18%, rgba(238, 244, 252, 0.58) 0 0.75px, transparent 1.5px),
+      radial-gradient(circle at 87% 24%, rgba(255, 232, 203, 0.48) 0 0.7px, transparent 1.45px),
+      radial-gradient(circle at 7% 82%, rgba(218, 230, 246, 0.48) 0 0.8px, transparent 1.55px),
+      radial-gradient(circle at 89% 89%, rgba(255, 241, 218, 0.46) 0 0.65px, transparent 1.4px) !important;
+    background-size: 100% 100% !important;
+    background-position: center !important;
+    opacity: 0.72 !important;
+  }
+
+  .app-shell--you .astral-profile-wheel-page::after {
+    background:
+      radial-gradient(ellipse 90% 60% at 50% 48%, rgba(1, 3, 7, 0.66) 0%, rgba(1, 3, 7, 0.42) 58%, transparent 82%),
+      linear-gradient(180deg, rgba(4, 3, 3, 0.44) 0%, rgba(2, 3, 6, 0.08) 30%, rgba(2, 3, 6, 0.2) 100%) !important;
+    opacity: 0.74 !important;
+  }
+}
+/* You mobile moon attenuation: preserve the original lower-screen design. */
+@media (max-width: 640px) {
+  .app-shell--you {
+    background:
+      linear-gradient(180deg, rgba(7, 5, 4, 0.46), rgba(2, 4, 8, 0.15) 38%, rgba(2, 3, 6, 0.3) 100%),
+      url('/costar-29-suggest-glow.jpg') center top / cover no-repeat,
+      #050302 !important;
+  }
+
+  .app-shell--you .astral-profile-wheel-page::after {
+    background:
+      radial-gradient(ellipse 90% 60% at 50% 48%, rgba(1, 3, 7, 0.66) 0%, rgba(1, 3, 7, 0.42) 58%, transparent 82%),
+      linear-gradient(180deg, rgba(4, 3, 3, 0.56) 0%, rgba(2, 3, 6, 0.09) 30%, rgba(2, 3, 6, 0.2) 100%) !important;
+    opacity: 0.75 !important;
+  }
 }

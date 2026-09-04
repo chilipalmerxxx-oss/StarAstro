@@ -267,7 +267,7 @@ export default function Onboarding({ onComplete, onSkipAccount }: OnboardingProp
           <>
             <section className="onboarding-hero">
               <span className="onboarding-orbit"><Moon size={22} strokeWidth={1.4} /></span>
-              <p className="onboarding-brand">nightstar</p>
+              <p className="onboarding-brand">Night One</p>
               <h1>Apprenez à vous connaître et à mieux comprendre vos relations.</h1>
               <p>Une expérience astrologique personnelle, pensée autour de votre ciel de naissance.</p>
             </section>
@@ -285,7 +285,7 @@ export default function Onboarding({ onComplete, onSkipAccount }: OnboardingProp
               <h2>Personnalisons votre expérience</h2>
               <p>
                 Votre thème astral est la carte du ciel au moment et à l’endroit de votre naissance.
-                Ces données permettent à nightstar de lire vos placements, vos cycles et vos dynamiques relationnelles avec précision.
+                Ces données permettent à Night One de lire vos placements, vos cycles et vos dynamiques relationnelles avec précision.
               </p>
             </section>
             <div className="onboarding-actions">

@@ -2,18 +2,18 @@ import { useState, useEffect, useRef, type CSSProperties } from 'react';
 import { Heart, ChevronDown, ArrowRight, RotateCcw, Sparkles, Plus } from 'lucide-react';
 
 const SIGNS = [
-  { id: 0,  name: 'Bélier',     glyph: '🐏', element: 'fire'  },
-  { id: 1,  name: 'Taureau',    glyph: '🐂', element: 'earth' },
-  { id: 2,  name: 'Gémeaux',    glyph: '👯', element: 'air'   },
-  { id: 3,  name: 'Cancer',     glyph: '🦀', element: 'water' },
-  { id: 4,  name: 'Lion',       glyph: '🦁', element: 'fire'  },
-  { id: 5,  name: 'Vierge',     glyph: '🌸', element: 'earth' },
-  { id: 6,  name: 'Balance',    glyph: '⚖️', element: 'air'   },
-  { id: 7,  name: 'Scorpion',   glyph: '🦂', element: 'water' },
-  { id: 8,  name: 'Sagittaire', glyph: '🏹', element: 'fire'  },
-  { id: 9,  name: 'Capricorne', glyph: '🐐', element: 'earth' },
-  { id: 10, name: 'Verseau',    glyph: '🏺', element: 'air'   },
-  { id: 11, name: 'Poissons',   glyph: '🐟', element: 'water' },
+  { id: 0,  name: 'Bélier',     glyph: '🐏', element: 'fire',  iconPath: '/assets/zodiac-enamel-v1/aries.png' },
+  { id: 1,  name: 'Taureau',    glyph: '🐂', element: 'earth', iconPath: '/assets/zodiac-enamel-refined/taurus-head-v2.png' },
+  { id: 2,  name: 'Gémeaux',    glyph: '👯', element: 'air',   iconPath: '/assets/zodiac-enamel-refined/gemini-masks-v2.png' },
+  { id: 3,  name: 'Cancer',     glyph: '🦀', element: 'water', iconPath: '/assets/zodiac-enamel-v1/cancer.png' },
+  { id: 4,  name: 'Lion',       glyph: '🦁', element: 'fire',  iconPath: '/assets/zodiac-enamel-v1/leo.png' },
+  { id: 5,  name: 'Vierge',     glyph: '🌸', element: 'earth', iconPath: '/assets/zodiac-enamel-v1/virgo-pink-v2.png' },
+  { id: 6,  name: 'Balance',    glyph: '⚖️', element: 'air',   iconPath: '/assets/zodiac-enamel-v1/libra.png' },
+  { id: 7,  name: 'Scorpion',   glyph: '🦂', element: 'water', iconPath: '/assets/zodiac-enamel-refined/scorpio.png' },
+  { id: 8,  name: 'Sagittaire', glyph: '🏹', element: 'fire',  iconPath: '/assets/zodiac-enamel-v1/sagittarius.png' },
+  { id: 9,  name: 'Capricorne', glyph: '🐐', element: 'earth', iconPath: '/assets/zodiac-enamel-refined/capricorn.png' },
+  { id: 10, name: 'Verseau',    glyph: '🏺', element: 'air',   iconPath: '/assets/zodiac-enamel-v1/aquarius.png' },
+  { id: 11, name: 'Poissons',   glyph: '🐟', element: 'water', iconPath: '/assets/zodiac-enamel-refined/pisces.png' },
 ];
 
 const ELEMENT_COLORS: Record<string, string> = {
@@ -558,11 +558,6 @@ const POETIC_PAIR_DESCS: Record<string, string> = {
   '11-11': "Deux sensibilités se devinent facilement. L’amour peut être très tendre, presque silencieux, s’il reste ancré.",
 };
 
-function getCompatibilityDescription(score: number, s1: number, s2: number): string {
-  const key = `${Math.min(s1, s2)}-${Math.max(s1, s2)}`;
-  return POETIC_PAIR_DESCS[key] || getPairDesc(s1, s2);
-}
-
 function withoutFinalPeriod(text: string): string {
   return text.replace(/\.\s*$/, '');
 }
@@ -591,6 +586,58 @@ function playSoftSelectChime() {
 
     setTimeout(() => ctx.close(), 260);
   } catch (_) { /* silently ignore if AudioContext unavailable */ }
+}
+
+const LOVE_ELEMENT_NOTES: Record<string, number> = {
+  earth: 392,
+  air: 523.25,
+  fire: 587.33,
+  water: 440,
+};
+
+function playLoveRevealNotes(firstElement: string, secondElement: string) {
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const storedSoundPreference = localStorage.getItem('nightstarSound');
+  const soundIsMuted = storedSoundPreference === 'off'
+    || storedSoundPreference === 'muted'
+    || storedSoundPreference === 'false'
+    || document.documentElement.dataset.sound === 'muted'
+    || document.body.classList.contains('sound-muted');
+  if (reduceMotion || soundIsMuted || document.hidden) return;
+
+  try {
+    const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (!AudioContextClass) return;
+    const ctx = new AudioContextClass();
+    const start = ctx.currentTime + 0.02;
+    const firstNote = LOVE_ELEMENT_NOTES[firstElement] || 440;
+    const secondNote = LOVE_ELEMENT_NOTES[secondElement] || 523.25;
+    const fusionNote = Math.sqrt(firstNote * secondNote) * 1.5;
+    const master = ctx.createGain();
+    master.gain.value = 0.2;
+    master.connect(ctx.destination);
+
+    const scheduleNote = (frequency: number, delay: number, duration: number, peak: number, type: OscillatorType) => {
+      const oscillator = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const noteStart = start + delay;
+      oscillator.type = type;
+      oscillator.frequency.setValueAtTime(frequency, noteStart);
+      gain.gain.setValueAtTime(0.0001, noteStart);
+      gain.gain.exponentialRampToValueAtTime(peak, noteStart + 0.025);
+      gain.gain.exponentialRampToValueAtTime(0.0001, noteStart + duration);
+      oscillator.connect(gain);
+      gain.connect(master);
+      oscillator.start(noteStart);
+      oscillator.stop(noteStart + duration + 0.03);
+    };
+
+    scheduleNote(firstNote, 0, 0.34, 0.08, 'sine');
+    scheduleNote(secondNote, 0.22, 0.36, 0.075, 'sine');
+    scheduleNote(fusionNote, 0.54, 0.58, 0.095, 'triangle');
+    scheduleNote(fusionNote * 2, 0.56, 0.48, 0.025, 'sine');
+    window.setTimeout(() => void ctx.close(), 1350);
+  } catch (_) { /* Audio is optional and must never block the reveal. */ }
 }
 
 // ─── Astral whoosh via Web Audio API ─────────────────────
@@ -778,6 +825,122 @@ const GLOW_STYLE = `
     100% { opacity: 1; filter: drop-shadow(0 0 10px rgba(255,226,194,.14)); }
   }
 
+  @keyframes love-score-star-unfold {
+    0% {
+      opacity: 0;
+      transform: scale(0) rotate(-5deg);
+      filter: drop-shadow(0 0 0 rgba(232,199,125,0));
+    }
+    64% {
+      opacity: 1;
+      transform: scale(1.045) rotate(1.5deg);
+      filter: drop-shadow(0 0 16px rgba(232,199,125,.22));
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1) rotate(0deg);
+      filter: drop-shadow(0 0 12px rgba(232,199,125,.18));
+    }
+  }
+
+  @keyframes love-score-star-shimmer {
+    0% { opacity: 0; stroke-dashoffset: 1; }
+    28% { opacity: .82; }
+    100% { opacity: .52; stroke-dashoffset: 0; }
+  }
+
+  @keyframes love-score-star-dot-pop {
+    0% { opacity: 0; transform: scale(.34); }
+    62% { opacity: 1; transform: scale(1.32); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+
+  @keyframes love-score-star-core-pulse {
+    0%, 100% { opacity: .74; filter: drop-shadow(0 0 6px rgba(255,248,239,.28)); }
+    50% { opacity: 1; filter: drop-shadow(0 0 14px rgba(232,199,125,.48)); }
+  }
+
+  @keyframes love-score-fusion-spoke {
+    0% { opacity: 0; stroke-dashoffset: 1; }
+    22% { opacity: .92; }
+    100% { opacity: .5; stroke-dashoffset: 0; }
+  }
+
+  @keyframes love-editorial-line-reveal {
+    from { opacity: 0; transform: translateY(8px); clip-path: inset(0 0 100% 0); }
+    to { opacity: 1; transform: translateY(0); clip-path: inset(0); }
+  }
+
+  @keyframes love-score-orbit-turn {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes love-score-aura-breathe {
+    0%, 100% { opacity: .42; transform: scale(.96); }
+    50% { opacity: .72; transform: scale(1.04); }
+  }
+
+  @keyframes love-score-seal-awake {
+    0% { opacity: 0; transform: scale(.3) rotate(-18deg); }
+    70% { opacity: 1; transform: scale(1.08) rotate(2deg); }
+    100% { opacity: 1; transform: scale(1) rotate(0); }
+  }
+
+  @keyframes love-reveal-glint {
+    0%, 100% { opacity: .45; transform: scale(.92); }
+    50% { opacity: 1; transform: scale(1.08); }
+  }
+
+  @keyframes love-ceremony-veil {
+    0%, 12% { opacity: .96; }
+    48% { opacity: .38; }
+    100% { opacity: 0; }
+  }
+
+  @keyframes love-ceremony-flash {
+    0%, 22% { opacity: 0; transform: scale(.18); }
+    48% { opacity: .88; transform: scale(1); }
+    100% { opacity: 0; transform: scale(2.2); }
+  }
+
+  @keyframes love-ceremony-curtain-left {
+    0% { opacity: .42; transform: translateX(-18%) scale(.72); }
+    46% { opacity: .72; transform: translateX(18%) scale(1.08); }
+    100% { opacity: 0; transform: translateX(32%) scale(1.62); }
+  }
+
+  @keyframes love-ceremony-curtain-right {
+    0% { opacity: .42; transform: translateX(18%) scale(.72); }
+    46% { opacity: .72; transform: translateX(-18%) scale(1.08); }
+    100% { opacity: 0; transform: translateX(-32%) scale(1.62); }
+  }
+
+  @keyframes love-ceremony-title {
+    0%, 12% { opacity: 0; transform: translateY(10px); filter: blur(7px); }
+    36%, 68% { opacity: 1; transform: translateY(0); filter: blur(0); }
+    100% { opacity: 0; transform: translateY(-18px); filter: blur(0); }
+  }
+
+  @keyframes love-ceremony-line {
+    0%, 16% { opacity: 0; transform: scaleX(0); }
+    42%, 70% { opacity: 1; transform: scaleX(1); }
+    100% { opacity: 0; transform: scaleX(.3); }
+  }
+
+  @keyframes love-ceremony-sign-left {
+    0% { opacity: 0; transform: translateX(-68px) scale(.68) rotate(-9deg); filter: blur(5px); }
+    38%, 68% { opacity: 1; transform: translateX(0) scale(1) rotate(0); filter: blur(0); }
+    100% { opacity: 0; transform: translateX(-8px) scale(.76); filter: blur(3px); }
+  }
+
+  @keyframes love-ceremony-sign-right {
+    0% { opacity: 0; transform: translateX(68px) scale(.68) rotate(9deg); filter: blur(5px); }
+    38%, 68% { opacity: 1; transform: translateX(0) scale(1) rotate(0); filter: blur(0); }
+    100% { opacity: 0; transform: translateX(8px) scale(.76); filter: blur(3px); }
+  }
+
+
   .love-bridge-line {
     stroke-dasharray: 1;
     stroke-dashoffset: 1;
@@ -870,6 +1033,152 @@ const GLOW_STYLE = `
     animation: love-score-arc-awake .9s .48s ease both;
   }
 
+  .love-score-star {
+    filter: drop-shadow(0 20px 34px rgba(0,0,0,.34));
+  }
+
+  .love-score-star-aura {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: love-score-aura-breathe 4.8s ease-in-out infinite;
+  }
+
+  .love-score-star-orbit {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: love-score-orbit-turn 34s linear infinite;
+  }
+
+  .love-score-star-fill {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: love-score-star-unfold 1.05s .38s cubic-bezier(.16, 1, .3, 1) both;
+  }
+
+  .love-score-fusion-spoke {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: love-score-fusion-spoke .68s var(--love-spoke-delay, 0ms) cubic-bezier(.16,1,.3,1) both;
+  }
+
+  .love-score-star-sheen {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    path-length: 1;
+    animation: love-score-star-shimmer 1.45s .54s cubic-bezier(.18, .78, .18, 1) both;
+  }
+
+  .love-score-star-dot {
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+    filter: drop-shadow(0 0 8px rgba(255,248,239,.46));
+    animation: love-score-star-dot-pop .7s cubic-bezier(.16, 1, .3, 1) both;
+  }
+
+  .love-score-star-core {
+    animation: love-score-star-core-pulse 2.6s ease-in-out infinite;
+  }
+
+  .love-score-star-seal {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: love-score-seal-awake 1s .72s cubic-bezier(.16, 1, .3, 1) both;
+  }
+
+  .love-reveal-glint {
+    animation: love-reveal-glint 2.8s ease-in-out infinite;
+  }
+
+  .love-ceremony-veil {
+    animation: love-ceremony-veil 1.9s cubic-bezier(.2,.7,.2,1) both;
+  }
+
+  .love-ceremony-flash {
+    animation: love-ceremony-flash 1.72s cubic-bezier(.16,1,.3,1) both;
+  }
+
+  .love-ceremony-curtain-left {
+    animation: love-ceremony-curtain-left 1.9s cubic-bezier(.16,1,.3,1) both;
+  }
+
+  .love-ceremony-curtain-right {
+    animation: love-ceremony-curtain-right 1.9s cubic-bezier(.16,1,.3,1) both;
+  }
+
+  .love-ceremony-title {
+    animation: love-ceremony-title 1.82s cubic-bezier(.2,.7,.2,1) both;
+  }
+
+  .love-ceremony-line {
+    transform-origin: center;
+    animation: love-ceremony-line 1.78s cubic-bezier(.16,1,.3,1) both;
+  }
+
+  .love-ceremony-sign-left {
+    animation: love-ceremony-sign-left 1.82s cubic-bezier(.16,1,.3,1) both;
+  }
+
+  .love-ceremony-sign-right {
+    animation: love-ceremony-sign-right 1.82s cubic-bezier(.16,1,.3,1) both;
+  }
+
+  .love-editorial-line {
+    display: block;
+    opacity: 0;
+    animation: love-editorial-line-reveal .42s var(--love-line-delay, 0ms) cubic-bezier(.16,1,.3,1) both;
+  }
+
+
+  .love-score-star-label {
+    fill: rgba(248,239,226,.82);
+    font-family: Cinzel, Cormorant Garamond, Georgia, serif;
+    font-size: 7.2px;
+    font-weight: 650;
+    letter-spacing: 2.4px;
+    text-transform: uppercase;
+  }
+
+  .love-score-star-value {
+    fill: rgba(232,199,125,.9);
+    font-family: Avenir Next, SF Pro Text, system-ui, sans-serif;
+    font-size: 6.5px;
+    font-weight: 760;
+    letter-spacing: 1.2px;
+  }
+
+  .love-zodiac-medallion {
+    position: relative;
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .love-zodiac-medallion img {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    opacity: .94;
+    filter:
+      drop-shadow(0 2px 3px rgba(0, 0, 0, .82))
+      drop-shadow(0 0 4px rgba(255, 239, 210, .12));
+  }
+
+  .love-zodiac-medallion.is-selected {
+    transform: scale(1.02);
+  }
+
+  .love-zodiac-medallion.is-selected img {
+    opacity: 1;
+    filter:
+      brightness(1.06) saturate(1.08)
+      drop-shadow(0 2px 3px rgba(0, 0, 0, .8))
+      drop-shadow(0 0 6px rgba(244, 203, 135, .2));
+  }
+
   .love-page button {
     -webkit-tap-highlight-color: transparent;
   }
@@ -916,6 +1225,25 @@ function InjectGlowStyles() {
 }
 
 // ─── Animated counter ─────────────────────────────────────
+function ZodiacMedallion({ sign, size, selected = false }: {
+  sign: typeof SIGNS[0];
+  size: number;
+  selected?: boolean;
+}) {
+  return (
+    <span
+      className={`love-zodiac-medallion${selected ? ' is-selected' : ''}`}
+      style={{
+        width: size,
+        height: size,
+      } as CSSProperties}
+      aria-hidden="true"
+    >
+      <img src={sign.iconPath} alt="" draggable={false} />
+    </span>
+  );
+}
+
 function useCountUp(target: number | null, duration = 3400): number | null {
   const [value, setValue] = useState<number | null>(null);
   const rafRef = useRef<number>(0);
@@ -955,9 +1283,9 @@ function SignPicker({ onSelect, onClose, sign1, sign2, clearSelectionHighlights 
       <div
         className="love-scrollbar w-full max-w-md pt-3 px-4"
         style={{
-          background: 'radial-gradient(circle at 50% 0%, rgba(190,132,132,0.15), transparent 34%), linear-gradient(180deg, #1D151C, #100C11)',
-          borderTop: '1px solid rgba(231,198,165,0.38)',
-          borderRadius: '18px 18px 0 0',
+          background: 'radial-gradient(ellipse at 50% 0%, rgba(211,139,158,0.16), transparent 34%), linear-gradient(180deg, #1A1118, #0E0A0F)',
+          borderTop: '1px solid rgba(224,177,104,0.48)',
+          borderRadius: '8px 8px 0 0',
           maxHeight: '76vh',
           overflowY: 'auto',
           paddingBottom: 26,
@@ -989,7 +1317,7 @@ function SignPicker({ onSelect, onClose, sign1, sign2, clearSelectionHighlights 
                     : 'rgba(255,255,255,0.025)',
                   border: isSelected ? '1px solid rgba(229, 196, 164, 0.68)' : '1px solid rgba(229, 196, 164, 0.13)',
                   borderRadius: 6,
-                  minHeight: 64,
+                  minHeight: 76,
                   boxShadow: isSelected
                     ? '0 10px 24px rgba(0,0,0,0.3), 0 0 18px rgba(229,196,164,0.09), inset 0 1px 0 rgba(255,255,255,0.09)'
                     : '0 6px 16px rgba(0,0,0,0.2)',
@@ -998,18 +1326,7 @@ function SignPicker({ onSelect, onClose, sign1, sign2, clearSelectionHighlights 
                   animation: isSelected ? 'love-sign-confirm .62s ease both' : undefined,
                 }}
               >
-                <span
-                  style={{
-                    fontFamily: 'system-ui',
-                    fontSize: 23,
-                    lineHeight: 0.9,
-                    color: isSelected ? '#EAC89F' : ELEMENT_COLORS[s.element],
-                    fontWeight: isSelected ? 700 : 500,
-                    textShadow: isSelected
-                      ? '0 0 10px rgba(255, 207, 142, 0.28), 0 1px 4px rgba(0,0,0,0.7)'
-                      : undefined,
-                  }}
-                >{s.glyph}</span>
+                <ZodiacMedallion sign={s} size={40} selected={isSelected} />
                 <span
                   style={{
                     fontSize: isVeryLongName ? 8.2 : isLongName ? 8.8 : 9.5,
@@ -1038,6 +1355,89 @@ function SignPicker({ onSelect, onClose, sign1, sign2, clearSelectionHighlights 
 }
 
 // ─── Main Page ─────────────────────────────────────────────
+function LoveRevealCeremony({ sign1, sign2 }: { sign1: number; sign2: number }) {
+  const firstColor = ELEMENT_COLORS[SIGNS[sign1].element];
+  const secondColor = ELEMENT_COLORS[SIGNS[sign2].element];
+
+  return (
+    <div className="love-reveal-ceremony pointer-events-none fixed inset-0" style={{ zIndex: 80, overflow: 'hidden' }} aria-hidden="true">
+      <div
+        className="love-ceremony-veil absolute inset-0"
+        style={{
+          background: 'rgba(7,5,8,.96)',
+        }}
+      />
+
+      <div
+        className="love-ceremony-curtain-left absolute"
+        style={{
+          width: '76vw',
+          height: '76vw',
+          maxWidth: 520,
+          maxHeight: 520,
+          left: '-28vw',
+          top: 'calc(43% - min(38vw, 260px))',
+          borderRadius: '50%',
+          background: `radial-gradient(circle at 76% 50%, ${firstColor}72 0%, ${firstColor}26 28%, transparent 70%)`,
+          filter: 'blur(24px)',
+          mixBlendMode: 'screen',
+        }}
+      />
+      <div
+        className="love-ceremony-curtain-right absolute"
+        style={{
+          width: '76vw',
+          height: '76vw',
+          maxWidth: 520,
+          maxHeight: 520,
+          right: '-28vw',
+          top: 'calc(43% - min(38vw, 260px))',
+          borderRadius: '50%',
+          background: `radial-gradient(circle at 24% 50%, ${secondColor}72 0%, ${secondColor}26 28%, transparent 70%)`,
+          filter: 'blur(24px)',
+          mixBlendMode: 'screen',
+        }}
+      />
+
+      <div className="absolute left-1/2 top-[43%]" style={{ width: 1, height: 1 }}>
+        <span
+          className="love-ceremony-flash absolute"
+          style={{
+            width: 112,
+            height: 112,
+            left: -56,
+            top: -56,
+            borderRadius: '50%',
+            background: `radial-gradient(circle, #FFF7DF 0%, ${firstColor}54 28%, ${secondColor}38 48%, transparent 72%)`,
+            filter: 'blur(12px)',
+          }}
+        />
+        <span
+          className="love-ceremony-line absolute"
+          style={{
+            width: 'min(72vw, 420px)',
+            height: 1,
+            left: 'max(-36vw, -210px)',
+            top: 0,
+            background: `linear-gradient(90deg, transparent, ${firstColor}B8 22%, #FFF3CC 50%, ${secondColor}B8 78%, transparent)`,
+            boxShadow: '0 0 12px rgba(255,240,191,.38)',
+          }}
+        />
+        <span className="love-ceremony-sign-left absolute" style={{ left: -52, top: -24 }}><ZodiacMedallion sign={SIGNS[sign1]} size={48} selected /></span>
+        <span className="love-ceremony-sign-right absolute" style={{ left: 4, top: -24 }}><ZodiacMedallion sign={SIGNS[sign2]} size={48} selected /></span>
+        <div className="love-ceremony-title absolute text-center" style={{ width: 'min(86vw, 460px)', left: 'max(-43vw, -230px)', top: -96 }}>
+          <p style={{ margin: 0, color: 'rgba(232,199,125,.78)', fontSize: 8, fontWeight: 750, letterSpacing: 3.6, textTransform: 'uppercase' }}>
+            Compatibilité astrale
+          </p>
+          <p style={{ margin: '12px 0 0', color: '#FFF8EF', fontFamily: 'Cormorant Garamond, Georgia, serif', fontSize: 'clamp(28px, 8vw, 40px)', fontWeight: 420, lineHeight: 1, letterSpacing: 0, textShadow: '0 14px 36px rgba(0,0,0,.55)' }}>
+            {SIGNS[sign1].name} <span style={{ color: '#E8C77D', fontSize: '.62em', margin: '0 .18em' }}>×</span> {SIGNS[sign2].name}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function LovePage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [sign1, setSign1] = useState<number | null>(null);
@@ -1045,6 +1445,7 @@ export default function LovePage() {
   const [picker, setPicker] = useState<'sign1' | 'sign2' | null>(null);
   const [clearSelectionHighlights, setClearSelectionHighlights] = useState(false);
   const [showPremiumSales, setShowPremiumSales] = useState(false);
+  const [revealStage, setRevealStage] = useState(0);
 
   const baseScore = sign1 !== null && sign2 !== null ? computeScore(sign1, sign2) : null;
   const instantAxes = baseScore !== null && sign1 !== null && sign2 !== null ? getInstantReading(baseScore, sign1, sign2) : [];
@@ -1056,9 +1457,30 @@ export default function LovePage() {
   const hasResult = score !== null && label !== null && animatedScore !== null;
   const relationshipVerdict = hasResult ? getRelationshipVerdict(score!, sign1!, sign2!) : '';
   const pairResultLine = hasResult ? getPairResultLine(sign1!, sign2!) : '';
-  const compatibilityDescription = hasResult ? getCompatibilityDescription(score!, sign1!, sign2!) : '';
   const isMobileViewport = typeof window !== 'undefined' && window.matchMedia('(max-width: 480px)').matches;
   const compactResult = hasResult && isMobileViewport;
+
+  useEffect(() => {
+    if (score === null || sign1 === null || sign2 === null) {
+      setRevealStage(0);
+      return;
+    }
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setRevealStage(5);
+      return;
+    }
+
+    setRevealStage(0);
+    const timers = [
+      window.setTimeout(() => setRevealStage(1), 160),
+      window.setTimeout(() => setRevealStage(2), 560),
+      window.setTimeout(() => setRevealStage(3), 1080),
+      window.setTimeout(() => setRevealStage(4), 1900),
+      window.setTimeout(() => setRevealStage(5), 2700),
+    ];
+    return () => timers.forEach(timer => window.clearTimeout(timer));
+  }, [score, sign1, sign2]);
 
   const handleSignSelect = (id: number) => {
     const completesPair = picker === 'sign1' ? sign2 !== null : sign1 !== null;
@@ -1067,7 +1489,9 @@ export default function LovePage() {
     if (picker === 'sign2') setSign2(id);
 
     if (completesPair) {
-      playAstralWhoosh();
+      const firstSign = picker === 'sign1' ? SIGNS[id] : sign1 !== null ? SIGNS[sign1] : null;
+      const secondSign = picker === 'sign2' ? SIGNS[id] : sign2 !== null ? SIGNS[sign2] : null;
+      if (firstSign && secondSign) playLoveRevealNotes(firstSign.element, secondSign.element);
       navigator.vibrate?.([28, 35, 70]);
     } else {
       playSoftSelectChime();
@@ -1125,7 +1549,7 @@ export default function LovePage() {
   return (
     <div className="love-page relative flex flex-col items-center overflow-hidden px-4"
       style={{
-        background: 'radial-gradient(circle at 50% -12%, rgba(190, 132, 132, 0.22), transparent 32%), radial-gradient(circle at 92% 38%, rgba(111, 78, 129, 0.16), transparent 34%), linear-gradient(165deg, #120D14 0%, #1B111A 48%, #0E0B11 100%)',
+        background: 'radial-gradient(ellipse at 50% -8%, rgba(218, 145, 164, 0.24), transparent 36%), radial-gradient(ellipse at 90% 42%, rgba(133, 78, 119, 0.16), transparent 38%), radial-gradient(ellipse at 18% 92%, rgba(179, 94, 128, 0.12), transparent 42%), linear-gradient(165deg, #171018 0%, #1B1119 48%, #100C12 100%)',
         height: 'calc(100dvh - 36px)',
         color: '#FDF6ED',
       }}>
@@ -1133,8 +1557,12 @@ export default function LovePage() {
 
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" />
 
+      {hasResult && sign1 !== null && sign2 !== null && revealStage < 4 && (
+        <LoveRevealCeremony key={`ceremony-${sign1}-${sign2}`} sign1={sign1} sign2={sign2} />
+      )}
+
       <div className="absolute inset-0 pointer-events-none"
-        style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.035), transparent 18%), radial-gradient(ellipse at 50% 24%, rgba(255, 210, 188, 0.075) 0%, transparent 54%), radial-gradient(ellipse at 50% 100%, rgba(63, 38, 67, 0.3), transparent 58%)' }} />
+        style={{ background: 'linear-gradient(180deg, rgba(255,225,230,0.035), transparent 20%), radial-gradient(ellipse at 50% 28%, rgba(238, 175, 190, 0.055) 0%, transparent 50%), linear-gradient(90deg, rgba(0,0,0,0.14), transparent 16%, transparent 84%, rgba(0,0,0,0.14))' }} />
       <div className="absolute inset-x-0 top-0 h-px pointer-events-none" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,226,194,0.42), transparent)' }} />
 
       <div
@@ -1148,22 +1576,17 @@ export default function LovePage() {
         }}
       >
         {/* Header */}
-        <div className="flex flex-col items-center" style={{ flexShrink: 0, marginTop: hasResult ? 0 : 14, marginBottom: hasResult ? (compactResult ? 10 : 12) : 30 }}>
-          {hasResult && (
-            <div className="flex items-center gap-3" style={{ marginBottom: 9 }}>
-              <div className="h-px w-9" style={{ background: 'linear-gradient(90deg, transparent, rgba(238,201,163,0.55))' }} />
-              <p style={{ margin: 0, fontSize: 8.5, color: '#D8B995', letterSpacing: 3.5, textTransform: 'uppercase', fontWeight: 750 }}>
-                Nightstar · Synastrie
-              </p>
-              <div className="h-px w-9" style={{ background: 'linear-gradient(90deg, rgba(238,201,163,0.55), transparent)' }} />
-            </div>
-          )}
-          <h1 style={{ margin: 0, fontFamily: 'Cormorant Garamond, Georgia, serif', fontSize: hasResult ? (compactResult ? 24 : 27) : 36, fontWeight: 400, color: '#FFF9F1', letterSpacing: hasResult ? 0 : -0.5, lineHeight: 0.94, textShadow: '0 14px 34px rgba(0,0,0,0.42)' }}>
+        <div className="flex flex-col items-center" style={{ flexShrink: 0, marginTop: hasResult ? 0 : 16, marginBottom: hasResult ? (compactResult ? 10 : 12) : 34 }}>
+          <div className="flex items-center gap-3" style={{ marginBottom: hasResult ? 9 : 14 }}>
+            <div className="h-px w-9" style={{ background: 'linear-gradient(90deg, transparent, rgba(224,177,104,0.62))' }} />
+            <p style={{ margin: 0, fontSize: 8, color: '#D8B57F', letterSpacing: 3.2, textTransform: 'uppercase', fontWeight: 700 }}>
+              Night One · Synastrie
+            </p>
+            <div className="h-px w-9" style={{ background: 'linear-gradient(90deg, rgba(224,177,104,0.62), transparent)' }} />
+          </div>
+          <h1 style={{ margin: 0, fontFamily: 'Cormorant Garamond, Georgia, serif', fontSize: hasResult ? (compactResult ? 25 : 28) : 32, fontWeight: 420, color: '#F8F0E5', letterSpacing: 0, lineHeight: 0.96, textAlign: 'center', whiteSpace: 'nowrap', textShadow: '0 14px 34px rgba(0,0,0,0.48)' }}>
             Compatibilité astrale
           </h1>
-          <p style={{ margin: hasResult ? '8px 0 0' : '11px 0 0', fontSize: hasResult ? (compactResult ? 8.5 : 9) : 10.5, color: hasResult ? '#A997A2' : '#B5A7AF', letterSpacing: hasResult ? 1.9 : 1.25, textTransform: hasResult ? 'uppercase' : 'none', fontFamily: '"Avenir Next", "SF Pro Text", system-ui, sans-serif', fontWeight: hasResult ? 650 : 450 }}>
-            {hasResult ? 'Explorez la signature de votre lien' : 'Compatibilité astrologique entre deux signes'}
-          </p>
         </div>
 
         {/* Sign selectors */}
@@ -1175,15 +1598,13 @@ export default function LovePage() {
               maxWidth: '100%',
               overflow: 'hidden',
               flexShrink: 0,
-              padding: compactResult ? '18px 12px' : '22px 14px',
-              border: '1px solid rgba(220, 185, 151, 0.2)',
-              borderRadius: 8,
-              background: 'radial-gradient(circle at 50% 45%, rgba(194, 132, 143, 0.11), transparent 28%), linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.012)), rgba(13,9,14,0.56)',
-              boxShadow: '0 24px 64px rgba(0,0,0,0.32), inset 0 1px 0 rgba(255,255,255,0.055)',
+              padding: 0,
+              border: 'none',
+              borderRadius: 0,
+              background: 'transparent',
+              boxShadow: 'none',
             }}
           >
-            <div className="absolute left-1/2 top-0 h-px -translate-x-1/2" style={{ width: '42%', background: 'linear-gradient(90deg, transparent, rgba(241,206,170,0.68), transparent)' }} />
-
             <SignCard
               sign={sign1 !== null ? SIGNS[sign1] : null}
               label="Ton signe"
@@ -1224,28 +1645,36 @@ export default function LovePage() {
         {hasResult && label && (
           <section
             className="w-full"
+            aria-label={`Révélation de compatibilité : ${relationshipVerdict}`}
             style={{
               position: 'relative',
-              overflow: 'hidden',
+              overflow: 'visible',
               flexShrink: 0,
-              marginTop: compactResult ? 12 : 16,
-              padding: compactResult ? '18px 16px 16px' : '20px 18px 18px',
-              borderRadius: 16,
-              border: `1px solid ${label.color}42`,
-              background: `radial-gradient(circle at 50% 32%, ${label.color}36, transparent 34%), radial-gradient(circle at 16% 12%, rgba(255,231,203,0.16), transparent 30%), radial-gradient(circle at 88% 90%, rgba(196,161,220,0.14), transparent 34%), linear-gradient(145deg, rgba(255,255,255,0.076), rgba(255,255,255,0.014)), rgba(11,7,12,0.92)`,
-              boxShadow: `0 24px 62px rgba(0,0,0,0.36), 0 0 46px ${label.color}20, inset 0 1px 0 rgba(255,255,255,0.09)`,
+              marginTop: compactResult ? 8 : 12,
+              padding: compactResult ? '12px 4px 18px' : '14px 8px 22px',
+              border: 'none',
+              background: 'transparent',
+              boxShadow: 'none',
               animation: 'love-rise 0.55s ease forwards',
             }}
           >
-            <div className="absolute left-0 top-0 h-px w-full" style={{ background: `linear-gradient(90deg, transparent, ${label.color}9A, transparent)` }} />
-            <div className="pointer-events-none absolute left-1/2 top-8 -translate-x-1/2 rounded-full" style={{ width: 210, height: 156, background: `radial-gradient(circle, ${label.color}26 0%, ${label.color}10 42%, transparent 72%)`, filter: 'blur(4px)' }} />
             <div className="relative flex flex-col items-center text-center">
               <div className="flex items-center gap-2" style={{ color: '#D7BE9F', fontSize: 8.5, letterSpacing: 2.6, textTransform: 'uppercase', fontWeight: 800 }}>
                 <Sparkles size={10} strokeWidth={1.4} />
                 Lecture instantanée
               </div>
 
-              <div className="relative flex w-full items-center justify-center" style={{ marginTop: compactResult ? 11 : 14, marginBottom: compactResult ? 34 : 38, gap: compactResult ? 14 : 20 }}>
+              <div
+                className="relative flex w-full items-center justify-center"
+                style={{
+                  marginTop: compactResult ? 18 : 22,
+                  marginBottom: compactResult ? 22 : 26,
+                  gap: compactResult ? 22 : 30,
+                  opacity: revealStage >= 1 ? 1 : 0,
+                  transform: revealStage >= 1 ? 'translateY(0) scale(1)' : 'translateY(8px) scale(.94)',
+                  transition: 'opacity .7s ease, transform .9s cubic-bezier(.16, 1, .3, 1)',
+                }}
+              >
                 <svg
                   aria-hidden="true"
                   className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
@@ -1297,22 +1726,26 @@ export default function LovePage() {
                     style={{
                       position: 'relative',
                       zIndex: 1,
-                      width: compactResult ? 38 : 42,
-                      height: compactResult ? 38 : 42,
+                      width: compactResult ? 44 : 48,
+                      height: compactResult ? 44 : 48,
                       borderRadius: 999,
-                      border: `1px solid ${ELEMENT_COLORS[sign.element]}66`,
-                      background: `radial-gradient(circle, ${ELEMENT_COLORS[sign.element]}20, rgba(255,255,255,0.025))`,
+                      border: 'none',
+                      background: 'transparent',
                       color: ELEMENT_COLORS[sign.element],
                       fontSize: compactResult ? 20 : 22,
-                      boxShadow: `0 0 22px ${ELEMENT_COLORS[sign.element]}18, inset 0 1px 0 rgba(255,255,255,0.08)`,
+                      boxShadow: 'none',
                     }}
                     aria-hidden="true"
                   >
-                    {sign.glyph}
+                    <ZodiacMedallion sign={sign} size={compactResult ? 44 : 48} selected />
                   </span>
                 ))}
-                <div style={{ position: 'relative', zIndex: 1, transform: 'translateY(44px)' }}>
-                  <ScoreArc value={animatedScore} color={label.color} compact={compactResult} />
+                <div
+                  className="love-reveal-glint flex items-center justify-center"
+                  style={{ position: 'relative', zIndex: 1, width: 34, height: 34, color: '#E8C77D', filter: 'drop-shadow(0 0 12px rgba(232,199,125,.55))' }}
+                  aria-hidden="true"
+                >
+                  <Sparkles size={18} strokeWidth={1.1} />
                 </div>
                 {[SIGNS[sign2!]].map((sign, index) => (
                   <span
@@ -1321,45 +1754,47 @@ export default function LovePage() {
                     style={{
                       position: 'relative',
                       zIndex: 1,
-                      width: compactResult ? 38 : 42,
-                      height: compactResult ? 38 : 42,
+                      width: compactResult ? 44 : 48,
+                      height: compactResult ? 44 : 48,
                       borderRadius: 999,
-                      border: `1px solid ${ELEMENT_COLORS[sign.element]}66`,
-                      background: `radial-gradient(circle, ${ELEMENT_COLORS[sign.element]}20, rgba(255,255,255,0.025))`,
+                      border: 'none',
+                      background: 'transparent',
                       color: ELEMENT_COLORS[sign.element],
                       fontSize: compactResult ? 20 : 22,
-                      boxShadow: `0 0 22px ${ELEMENT_COLORS[sign.element]}18, inset 0 1px 0 rgba(255,255,255,0.08)`,
+                      boxShadow: 'none',
                     }}
                     aria-hidden="true"
                   >
-                    {sign.glyph}
+                    <ZodiacMedallion sign={sign} size={compactResult ? 44 : 48} selected />
                   </span>
                 ))}
               </div>
 
-              <span style={{ marginTop: compactResult ? 18 : 21, color: label.color, fontSize: 8.8, letterSpacing: 2, textTransform: 'uppercase', fontWeight: 850 }}>
-                {label.title}
+              <span style={{ color: '#D8B36A', fontSize: 8.8, letterSpacing: 2.4, textTransform: 'uppercase', fontWeight: 850, opacity: revealStage >= 2 ? 1 : 0, transition: 'opacity .6s ease' }}>
+                {SIGNS[sign1!].name} · {SIGNS[sign2!].name}
               </span>
-              <p style={{ margin: '16px 0 0', color: '#FFF6EF', fontFamily: 'Cormorant Garamond, Georgia, serif', fontSize: compactResult ? 22 : 24, lineHeight: 1.02, fontWeight: 560, letterSpacing: 0.1, textShadow: '0 10px 28px rgba(0,0,0,0.36)' }}>
-                {relationshipVerdict}
-              </p>
-              <p style={{ margin: '16px auto 0', maxWidth: 358, color: '#EDE2E4', fontSize: compactResult ? 13.7 : 14.5, lineHeight: 1.5, fontWeight: 460 }}>
-                {withoutFinalPeriod(compatibilityDescription)}
-              </p>
             </div>
-            <InstantReadingReport
-              key={`${sign1}-${sign2}`}
-              axes={instantAxes}
-              compact={compactResult}
-              embedded
-            />
-            <p style={{ margin: compactResult ? '14px 0 0' : '17px 0 0', paddingTop: 13, borderTop: '1px solid rgba(229,196,164,0.14)', color: '#D9CACE', fontSize: compactResult ? 13.2 : 14.2, lineHeight: 1.52, fontWeight: 470 }}>
-              {withoutFinalPeriod(pairResultLine)}
-            </p>
+            <div style={{ opacity: revealStage >= 3 ? 1 : 0, transform: revealStage >= 3 ? 'scale(1)' : 'scale(.72)', filter: revealStage >= 3 ? 'blur(0)' : 'blur(6px)', transition: 'opacity .8s ease, transform 1s cubic-bezier(.16, 1, .3, 1), filter .8s ease' }}>
+              <CompatibilityScoreStar
+                key={`star-${sign1}-${sign2}`}
+                axes={instantAxes}
+                score={animatedScore}
+                compact={compactResult}
+              />
+            </div>
+            <div style={{ opacity: revealStage >= 4 ? 1 : 0, transform: revealStage >= 4 ? 'translateY(0)' : 'translateY(10px)', transition: 'opacity .7s .12s ease, transform .8s .12s ease' }}>
+              {revealStage >= 4 && (
+                <PremiumLinkEditorial
+                  key={`editorial-${sign1}-${sign2}`}
+                  text={pairResultLine}
+                  compact={compactResult}
+                />
+              )}
+            </div>
           </section>
         )}
 
-        {hasResult && (
+        {hasResult && revealStage >= 5 && (
           <div
             className="w-full"
             style={{
@@ -1368,22 +1803,21 @@ export default function LovePage() {
               flexShrink: 0,
               marginTop: compactResult ? 14 : 16,
               padding: compactResult ? '15px 15px 14px' : '17px 17px 15px',
-              borderRadius: 14,
-              border: '1px solid rgba(232, 203, 172, 0.24)',
-              background: 'linear-gradient(145deg, rgba(255,255,255,0.052), rgba(255,255,255,0.01)), rgba(13,9,13,0.82)',
-              boxShadow: '0 18px 46px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.065)',
+              borderRadius: 8,
+              border: '1px solid rgba(224, 177, 104, 0.28)',
+              background: 'linear-gradient(180deg, rgba(202,128,148,0.065), rgba(255,255,255,0.008)), rgba(16,10,15,0.92)',
+              boxShadow: '0 18px 46px rgba(0,0,0,0.34), inset 0 1px 0 rgba(255,245,224,0.045)',
+              animation: 'love-rise .58s cubic-bezier(.16,1,.3,1) both',
             }}
           >
             <div className="absolute left-0 top-0 h-px w-full" style={{ background: 'linear-gradient(90deg, transparent, rgba(239,203,167,0.58), transparent)' }} />
             <div className="flex items-center gap-3">
               <span
-                className="flex flex-shrink-0 items-center justify-center rounded-full"
+                className="flex flex-shrink-0 items-center justify-center"
                 style={{
                   width: 34,
                   height: 34,
                   color: '#E4BE91',
-                  border: '1px solid rgba(229, 196, 164, 0.28)',
-                  background: 'radial-gradient(circle, rgba(229,196,164,0.11), rgba(229,196,164,0.025))',
                 }}
               >
                 <Sparkles size={15} strokeWidth={1.35} />
@@ -1433,7 +1867,7 @@ export default function LovePage() {
               marginTop: compactResult ? 12 : 14,
               padding: '9px 16px',
               overflow: 'hidden',
-              borderRadius: 999,
+              borderRadius: 4,
               border: '1px solid rgba(229, 205, 184, 0.18)',
               background: 'rgba(255,255,255,0.018)',
               color: 'rgba(231, 216, 207, 0.72)',
@@ -1989,7 +2423,17 @@ function LoveResultPanel({
                     boxShadow: `0 0 32px ${color}22, inset 0 1px 0 rgba(255,255,255,0.08)`,
                   }}
                 >
-                  {sign.glyph}
+                  <img
+                    src={sign.iconPath}
+                    alt=""
+                    draggable={false}
+                    style={{
+                      width: '82%',
+                      height: '82%',
+                      objectFit: 'contain',
+                      filter: 'brightness(1.06) saturate(1.08) drop-shadow(0 2px 3px rgba(0,0,0,.8))',
+                    }}
+                  />
                 </span>
                 <span
                   style={{
@@ -2134,27 +2578,21 @@ function SignCard({ sign, label, onClick, quiet = false }: {
         flexShrink: 0,
         minWidth: 0,
         background: quiet
-          ? (sign ? `linear-gradient(180deg, ${ELEMENT_COLORS[sign.element]}0D, rgba(255,255,255,0.01))` : 'rgba(255,255,255,0.012)')
-          : (sign
-              ? `radial-gradient(circle at 50% 12%, ${ELEMENT_COLORS[sign.element]}18, transparent 48%), linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.014))`
-              : 'linear-gradient(180deg, rgba(255,255,255,0.038), rgba(255,255,255,0.01))'),
-        border: sign
-          ? `1px solid ${ELEMENT_COLORS[sign.element]}${quiet ? '40' : '62'}`
-          : `1px solid rgba(229, 196, 164, ${quiet ? 0.13 : 0.18})`,
+          ? 'rgba(255,255,255,0.01)'
+          : 'linear-gradient(180deg, rgba(207,135,152,0.1), rgba(255,235,239,0.018) 40%, rgba(0,0,0,0.1)), rgba(18,11,16,0.8)',
+        border: `1px solid rgba(224, 177, 104, ${sign ? (quiet ? 0.3 : 0.48) : (quiet ? 0.16 : 0.26)})`,
         borderRadius: 6,
         boxShadow: quiet
           ? 'none'
-          : (sign
-              ? `0 14px 30px rgba(0,0,0,0.28), 0 0 20px ${ELEMENT_COLORS[sign.element]}0C, inset 0 1px 0 rgba(255,255,255,0.07)`
-              : '0 12px 28px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.045)'),
-        minHeight: quiet ? 102 : 108,
-        paddingTop: 12,
-        paddingBottom: 11,
+          : '0 20px 48px rgba(0,0,0,0.38), inset 0 1px 0 rgba(255,245,224,0.06)',
+        minHeight: quiet ? 118 : 154,
+        paddingTop: 16,
+        paddingBottom: 14,
         animation: sign && !quiet ? 'love-sign-confirm .62s ease both' : undefined,
       }}
     >
       {!quiet && (
-        <span className="absolute top-0 h-px" style={{ left: '22%', right: '22%', background: sign ? `linear-gradient(90deg, transparent, ${ELEMENT_COLORS[sign.element]}96, transparent)` : 'linear-gradient(90deg, transparent, rgba(229,196,164,0.42), transparent)' }} />
+        <span className="absolute top-0 h-px" style={{ left: '18%', right: '18%', background: 'linear-gradient(90deg, transparent, rgba(241,206,170,0.72), transparent)' }} />
       )}
       {sign ? (
         <>
@@ -2165,32 +2603,23 @@ function SignCard({ sign, label, onClick, quiet = false }: {
               letterSpacing: 2.3,
               fontWeight: 700,
               textTransform: 'uppercase',
-              color: '#BCA79F',
-              marginBottom: 4,
+              color: '#C9A873',
+              marginBottom: 8,
               lineHeight: 1,
             }}
           >
             {labelStyled}
           </span>
-          <span style={{
-            fontFamily: 'system-ui',
-            fontSize: 34,
-            lineHeight: 0.9,
-            color: ELEMENT_COLORS[sign.element],
-            display: 'inline-block',
-            filter: `drop-shadow(0 0 10px ${ELEMENT_COLORS[sign.element]}42)`,
-          }}>
-            {sign.glyph}
-          </span>
-          <span style={{ marginTop: 4, fontFamily: 'Cormorant Garamond, serif', fontSize: 16.5, color: '#F7EDE6', letterSpacing: 0.4, fontWeight: 600 }}>
+          <ZodiacMedallion sign={sign} size={quiet ? 42 : 54} selected />
+          <span style={{ marginTop: 8, fontFamily: 'Cormorant Garamond, serif', fontSize: 19, color: '#F4EADF', letterSpacing: 0, fontWeight: 560 }}>
             {sign.name}
           </span>
           <ChevronDown size={11} style={{ color: 'rgba(220,190,164,0.58)' }} strokeWidth={1.5} />
         </>
       ) : (
         <>
-          <span className="flex items-center justify-center rounded-full" style={{ width: 32, height: 32, marginBottom: 6, border: `1px solid rgba(229,196,164,${quiet ? 0.16 : 0.22})`, color: '#D7B99B', background: quiet ? 'transparent' : 'rgba(229,196,164,0.035)' }}>
-            <Plus size={15} strokeWidth={1.45} aria-hidden="true" />
+          <span className="flex items-center justify-center" style={{ width: 36, height: 36, marginBottom: 10, color: '#D9B47B' }}>
+            <Plus size={22} strokeWidth={1.1} aria-hidden="true" />
           </span>
           <span
             style={{
@@ -2245,6 +2674,273 @@ function RelationshipKeyCard({ insight, compact }: { insight: RelationshipKey; c
       <p style={{ margin: '10px 0 0', paddingTop: 10, borderTop: '1px solid rgba(229,196,164,0.14)', color: '#EBC69F', fontSize: compact ? 11.8 : 12.4, lineHeight: 1.45, fontWeight: 520, fontStyle: 'italic' }}>
         {insight.practice}
       </p>
+    </section>
+  );
+}
+
+function PremiumLinkEditorial({ text, compact }: { text: string; compact: boolean }) {
+  const maxCharacters = compact ? 38 : 44;
+  const lines = text.split(/\s+/).reduce<string[]>((result, word) => {
+    const currentLine = result[result.length - 1];
+    if (!currentLine || `${currentLine} ${word}`.length > maxCharacters) {
+      result.push(word);
+    } else {
+      result[result.length - 1] = `${currentLine} ${word}`;
+    }
+    return result;
+  }, []);
+
+  return (
+    <article
+      style={{
+        position: 'relative',
+        width: 'min(100%, 360px)',
+        margin: compact ? '0 auto' : '3px auto 0',
+        padding: compact ? '12px 14px 10px' : '15px 18px 12px',
+        textAlign: 'center',
+      }}
+    >
+      <div className="flex items-center justify-center gap-3" aria-hidden="true">
+        <span style={{ width: 42, height: 1, background: 'linear-gradient(90deg, transparent, rgba(232,199,125,.3))' }} />
+        <span style={{ width: 4, height: 4, background: '#E8C77D', transform: 'rotate(45deg)', boxShadow: '0 0 9px rgba(232,199,125,.32)' }} />
+        <span style={{ width: 42, height: 1, background: 'linear-gradient(90deg, rgba(232,199,125,.3), transparent)' }} />
+      </div>
+      <p style={{ margin: compact ? '15px 0 0' : '18px 0 0', color: 'rgba(236,222,222,.72)', fontFamily: 'Cormorant Garamond, Georgia, serif', fontSize: compact ? 17.5 : 19, fontWeight: 410, lineHeight: 1.5, letterSpacing: '.008em', textShadow: '0 8px 24px rgba(0,0,0,.3)' }}>
+        {lines.map((line, index) => (
+          <span
+            key={`${line}-${index}`}
+            className="love-editorial-line"
+            style={{
+              '--love-line-delay': `${70 + index * 105}ms`,
+              color: index === 0 ? '#FFF7EE' : undefined,
+              fontStyle: index === 0 ? 'italic' : undefined,
+            } as CSSProperties}
+          >
+            {line}
+          </span>
+        ))}
+      </p>
+    </article>
+  );
+}
+
+function CompatibilityScoreStar({ axes, score, compact }: { axes: InstantReadingAxis[]; score: number; compact: boolean }) {
+  const cx = 130;
+  const cy = 143;
+  const maxRadius = 76;
+  const guideRadii = [0.34, 0.58, 0.82, 1];
+  const angles = [-90, 30, 150];
+  const points = axes.map((axis, index) => {
+    const angle = (angles[index] * Math.PI) / 180;
+    const outerRadius = maxRadius + 17;
+    const labelAnchor: 'start' | 'middle' | 'end' = index === 0 ? 'middle' : index === 1 ? 'start' : 'end';
+    return {
+      ...axis,
+      x: cx + Math.cos(angle) * maxRadius * (axis.score / 100),
+      y: cy + Math.sin(angle) * maxRadius * (axis.score / 100),
+      guideX: cx + Math.cos(angle) * maxRadius,
+      guideY: cy + Math.sin(angle) * maxRadius,
+      labelX: cx + Math.cos(angle) * outerRadius,
+      labelY: cy + Math.sin(angle) * outerRadius,
+      anchor: labelAnchor,
+    };
+  });
+  const polygonPoints = points.map(point => `${point.x.toFixed(2)},${point.y.toFixed(2)}`).join(' ');
+  const guidePoints = points.map(point => `${point.guideX.toFixed(2)},${point.guideY.toFixed(2)}`).join(' ');
+  const scoreKey = axes.map(axis => axis.score).join('-');
+  const gradientId = `love-score-star-gradient-${scoreKey}`;
+  const auraId = `love-score-star-aura-${scoreKey}`;
+  const coreId = `love-score-star-core-${scoreKey}`;
+  const glowId = `love-score-star-glow-${scoreKey}`;
+
+  return (
+    <section
+      className="love-score-star-wrap"
+      aria-label="Carte des scores de compatibilite"
+      style={{
+        width: '100%',
+        marginTop: compact ? 14 : 18,
+      }}
+    >
+      <svg
+        className="love-score-star"
+        viewBox="0 0 260 286"
+        role="img"
+        aria-label={axes.map(axis => `${axis.label} ${axis.score}%`).join(', ')}
+        style={{
+          display: 'block',
+          width: '100%',
+          maxWidth: compact ? 320 : 346,
+          height: compact ? 250 : 270,
+          margin: '0 auto',
+          overflow: 'visible',
+        }}
+      >
+        <defs>
+          <linearGradient id={gradientId} x1="0" y1="1" x2="1" y2="0">
+            <stop offset="0%" stopColor={axes[2]?.color ?? '#F8EFE1'} stopOpacity="0.34" />
+            <stop offset="48%" stopColor={axes[0]?.color ?? '#F08DA5'} stopOpacity="0.54" />
+            <stop offset="100%" stopColor={axes[1]?.color ?? '#F0B45B'} stopOpacity="0.42" />
+          </linearGradient>
+          <radialGradient id={auraId} cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#E8C77D" stopOpacity="0.2" />
+            <stop offset="48%" stopColor="#D997AA" stopOpacity="0.1" />
+            <stop offset="100%" stopColor="#D997AA" stopOpacity="0" />
+          </radialGradient>
+          <radialGradient id={coreId} cx="38%" cy="30%" r="72%">
+            <stop offset="0%" stopColor="#FFFFFF" />
+            <stop offset="34%" stopColor="#FFF0BF" />
+            <stop offset="100%" stopColor="#C9903E" />
+          </radialGradient>
+          <filter id={glowId} x="-80%" y="-80%" width="260%" height="260%">
+            <feGaussianBlur stdDeviation="5" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+          <linearGradient id={`love-score-ring-${scoreKey}`} x1="0" y1="0" x2="1" y2="1">
+            <stop stopColor="#E8C77D" stopOpacity="0.12" />
+            <stop offset="0.48" stopColor="#FFF5DD" stopOpacity="0.62" />
+            <stop offset="1" stopColor="#D997AA" stopOpacity="0.14" />
+          </linearGradient>
+        </defs>
+
+        <g className="love-score-signature-heading" aria-hidden="true">
+          <path d="M18 17 H78" stroke="rgba(232,199,125,.28)" strokeWidth=".7" />
+          <path d="M182 17 H242" stroke="rgba(232,199,125,.28)" strokeWidth=".7" />
+          <path d="M130 11 l4 6 -4 6 -4 -6 Z" fill="rgba(232,199,125,.72)" />
+          <text x="130" y="35" textAnchor="middle" fill="rgba(232,199,125,.84)" fontFamily="Cinzel, Cormorant Garamond, Georgia, serif" fontSize="7.2" fontWeight="650" letterSpacing="2.8">SIGNATURE DU LIEN</text>
+        </g>
+
+        <circle className="love-score-star-aura" cx={cx} cy={cy} r="105" fill={`url(#${auraId})`} />
+        <g className="love-score-star-orbit" aria-hidden="true">
+          <circle cx={cx} cy={cy} r="96" fill="none" stroke={`url(#love-score-ring-${scoreKey})`} strokeWidth="0.8" strokeDasharray="2 8 18 8" />
+          <circle cx={cx} cy={cy} r="88" fill="none" stroke="rgba(242,232,216,0.09)" strokeWidth="0.65" strokeDasharray="1 5" />
+          {[[-90, 96], [0, 96], [90, 96], [180, 96]].map(([angle, radius]) => {
+            const radians = (angle * Math.PI) / 180;
+            const x = cx + Math.cos(radians) * radius;
+            const y = cy + Math.sin(radians) * radius;
+            return <circle key={angle} cx={x} cy={y} r="1.8" fill="#E8C77D" opacity="0.72" />;
+          })}
+        </g>
+
+        <g className="love-score-star-guides" aria-hidden="true">
+          {guideRadii.map(radius => (
+            <polygon
+              key={radius}
+              points={points.map(point => `${(cx + (point.guideX - cx) * radius).toFixed(2)},${(cy + (point.guideY - cy) * radius).toFixed(2)}`).join(' ')}
+              fill="none"
+              stroke="rgba(242,232,216,0.11)"
+              strokeWidth="0.8"
+            />
+          ))}
+          <polygon points={guidePoints} fill="rgba(255,255,255,0.014)" stroke="rgba(232,199,125,0.25)" strokeWidth="0.95" />
+          {points.map(point => (
+            <line
+              key={`spoke-${point.id}`}
+              x1={cx}
+              y1={cy}
+              x2={point.guideX}
+              y2={point.guideY}
+              stroke={point.color}
+              strokeOpacity="0.28"
+              strokeWidth="0.9"
+            />
+          ))}
+        </g>
+
+        <g aria-hidden="true">
+          {points.map((point, index) => (
+            <line
+              key={`fusion-${point.id}`}
+              className="love-score-fusion-spoke"
+              pathLength={1}
+              x1={cx}
+              y1={cy}
+              x2={point.x}
+              y2={point.y}
+              stroke={point.color}
+              strokeWidth="1.35"
+              strokeLinecap="round"
+              style={{ '--love-spoke-delay': `${index * 110}ms` } as CSSProperties}
+            />
+          ))}
+          <circle className="love-score-star-core" cx={cx} cy={cy} r="2.4" fill="#FFF8EF" filter={`url(#${glowId})`} />
+        </g>
+
+        <polygon
+          points={polygonPoints}
+          fill={axes[0]?.color ?? '#E8C77D'}
+          stroke="none"
+          filter={`url(#${glowId})`}
+          opacity="0.62"
+        />
+
+        <polygon
+          className="love-score-star-fill"
+          points={polygonPoints}
+          fill={`url(#${gradientId})`}
+          stroke="rgba(255,248,239,0.78)"
+          strokeWidth="1.5"
+          strokeLinejoin="round"
+        />
+        <polygon
+          className="love-score-star-sheen"
+          pathLength={1}
+          points={polygonPoints}
+          fill="none"
+          stroke="rgba(255,248,239,0.5)"
+          strokeWidth="0.8"
+          strokeLinejoin="round"
+        />
+
+        {points.map((point, index) => (
+          <g key={point.id}>
+            <circle
+              className="love-score-star-dot"
+              cx={point.x}
+              cy={point.y}
+              r="2.5"
+              fill="#FFF8EF"
+              stroke={point.color}
+              strokeWidth="1"
+              style={{ animationDelay: `${520 + index * 135}ms` }}
+            />
+            <text
+              x={point.labelX}
+              y={point.labelY}
+              textAnchor={point.anchor}
+              dominantBaseline="middle"
+              className="love-score-star-label"
+            >
+              {point.label}
+            </text>
+            <text
+              x={point.labelX}
+              y={point.labelY + 10}
+              textAnchor={point.anchor}
+              dominantBaseline="middle"
+              className="love-score-star-value"
+            >
+              {point.score}%
+            </text>
+          </g>
+        ))}
+
+        <g className="love-score-star-seal">
+          <path d={`M${cx} ${cy - 30} L${cx + 7} ${cy - 7} L${cx + 30} ${cy} L${cx + 7} ${cy + 7} L${cx} ${cy + 30} L${cx - 7} ${cy + 7} L${cx - 30} ${cy} L${cx - 7} ${cy - 7} Z`} fill={`url(#${coreId})`} opacity="0.38" filter={`url(#${glowId})`} aria-hidden="true" />
+          <circle cx={cx} cy={cy} r="22" fill="rgba(9,7,10,0.94)" stroke="rgba(232,199,125,0.68)" strokeWidth="0.9" />
+          <circle cx={cx} cy={cy} r="18" fill="none" stroke="rgba(255,248,239,0.14)" strokeWidth="0.6" strokeDasharray="1 3" aria-hidden="true" />
+          <text x={cx} y={cy - 1} textAnchor="middle" dominantBaseline="middle" fill="#FFF8EF" fontFamily="Cormorant Garamond, Georgia, serif" fontSize="17" fontWeight="520">
+            {score}%
+          </text>
+          <text x={cx} y={cy + 12} textAnchor="middle" dominantBaseline="middle" fill="rgba(232,199,125,.82)" fontFamily="Avenir Next, system-ui, sans-serif" fontSize="5.5" fontWeight="700" letterSpacing="1.4">
+            SCORE
+          </text>
+        </g>
+        <circle className="love-score-star-core" cx={cx} cy={cy - 22} r="1.6" fill="#FFF8EF" aria-hidden="true" />
+      </svg>
     </section>
   );
 }
@@ -2382,6 +3078,9 @@ function InstantReadingReport({ axes, compact, embedded = false }: { axes: Insta
                 <span style={{ color: '#EEE3E1', fontSize: compact ? 11.4 : 12.1, letterSpacing: 1.7, textTransform: 'uppercase', fontWeight: 850, lineHeight: 1.1 }}>
                   {axis.label}
                 </span>
+                <span style={{ color: axis.color, fontSize: compact ? 11.2 : 12, fontWeight: 760, lineHeight: 1, textShadow: `0 0 10px ${axis.color}42` }}>
+                  {axis.score}%
+                </span>
               </div>
               <div
                 className="love-axis-segments"
@@ -2412,42 +3111,3 @@ function InstantReadingReport({ axes, compact, embedded = false }: { axes: Insta
 }
 
 // ─── Score Arc SVG ─────────────────────────────────────────
-function ScoreArc({ value, color, compact = false }: { value: number; color: string; compact?: boolean }) {
-  const r = compact ? 36 : 42;
-  const cx = compact ? 48 : 56;
-  const cy = compact ? 48 : 56;
-  const stroke = compact ? 4.5 : 5;
-  const width = compact ? 96 : 112;
-  const height = compact ? 56 : 64;
-  const circumference = Math.PI * r;
-  const filled = circumference * (value / 100);
-
-  return (
-    <div className="flex flex-col items-center" style={{ position: 'relative', width, height }}>
-      <svg className="love-score-arc" width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
-        <path
-          d={`M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${cx + r} ${cy}`}
-          fill="none"
-          stroke="rgba(255,255,255,0.07)"
-          strokeWidth={stroke}
-          strokeLinecap="round"
-        />
-        <path
-          d={`M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${cx + r} ${cy}`}
-          fill="none"
-          stroke={color}
-          strokeWidth={stroke}
-          strokeLinecap="round"
-          strokeDasharray={`${filled} ${circumference}`}
-          style={{ filter: `drop-shadow(0 0 6px ${color})`, transition: 'stroke-dasharray 0.05s' }}
-        />
-      </svg>
-      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, textAlign: 'center' }}>
-        <span style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: compact ? 28 : 32, fontWeight: 300, color, lineHeight: 1, filter: `drop-shadow(0 0 12px ${color}80)` }}>
-          {value}
-        </span>
-        <span style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: compact ? 13 : 15, color: `${color}AA`, marginLeft: 1 }}>%</span>
-      </div>
-    </div>
-  );
-}

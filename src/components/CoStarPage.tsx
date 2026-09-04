@@ -1,6 +1,7 @@
 import { useMemo, useState, useEffect, useRef } from 'react';
 import { Sparkles, ChevronDown, ChevronUp, User } from 'lucide-react';
 import { generateCoStarAnalysis } from '../services/astrology';
+import './CoStarLunarPreview.css';
 
 interface CoStarPageProps {
   onBack: () => void;

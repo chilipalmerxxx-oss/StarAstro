@@ -14,8 +14,6 @@ import LandingTitlePreview from './components/LandingTitlePreview';
 import HomeDashboard from './components/HomeDashboard';
 import LovePage from './components/LovePage';
 import XPage from './components/XPage';
-import TestCompatibilityPage from './components/TestCompatibilityPage';
-import compatibilityArtwork from './assets/compatibilite-premium-astrologie.png';
 import BottomNavBar, { type TabId } from './components/BottomNavBar';
 import type { OnboardingBirthData } from './components/Onboarding';
 import PremiumOnboardingY from './components/PremiumOnboardingY';
@@ -326,6 +324,7 @@ function App() {
     if (tab === 'void') {
       setShowLanding(false);
       setShowVoid(true);
+      setShowCoStar(false);
       setActiveTab('void');
       return;
     }
@@ -476,18 +475,14 @@ function App() {
 
   if (isCompatibilityTestRoute) {
     return (
-      <div className="app-shell app-shell--test">
-        <div className="app-content app-content--test">
-          <TestCompatibilityPage imageSrc={compatibilityArtwork} />
-        </div>
-        <BottomNavBar
-          activeTab="test"
-          onTabChange={(tab) => {
-            window.location.hash = '';
-            handleTabChange(tab);
-          }}
-        />
-      </div>
+      <PremiumOnboardingY
+        onComplete={handleOnboardingComplete}
+        onSkipAccount={handleOnboardingAccountSkip}
+        onExit={() => {
+          window.location.hash = '';
+          handleTabChange('home');
+        }}
+      />
     );
   }
 
@@ -573,12 +568,11 @@ function App() {
 
   if (activeTab === 'test') {
     return (
-      <div className="app-shell app-shell--test">
-        <div className="app-content app-content--test">
-          <TestCompatibilityPage imageSrc={compatibilityArtwork} />
-        </div>
-        <BottomNavBar activeTab={activeTab} onTabChange={handleTabChange} />
-      </div>
+      <PremiumOnboardingY
+        onComplete={handleOnboardingComplete}
+        onSkipAccount={handleOnboardingAccountSkip}
+        onExit={() => handleTabChange('home')}
+      />
     );
   }
 

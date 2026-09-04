@@ -1,4 +1,5 @@
-import { useRef, useState } from 'react';
+import { Fragment, useRef, useState } from 'react';
+import type { CSSProperties, ReactNode, TouchEvent } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import firstLookImage from '../assets/compatibility/lea-sacha-first-look.jpg';
 import communicationImage from '../assets/compatibility/lea-sacha-communication.jpg';
@@ -108,6 +109,20 @@ const REGISTER_THEME_BALANCES: Record<string, RegisterThemeBalance> = {
       },
     ],
   },
+};
+
+const REGISTER_GUIDES: Record<string, string> = {
+  character: 'Ce registre lit la première dynamique du lien : présence, posture, attraction immédiate et manière de se reconnaître.',
+  emotion: 'Ce registre observe la sécurité affective : besoins intimes, tendresse, attentes silencieuses et façon de se rassurer.',
+  desire: 'Ce registre explore l’activation du lien : désir, tension, rythme physique et manière de rester vivant sans se tester.',
+  synthesis: 'Ce registre rassemble la trajectoire du duo : forces durables, zones de vigilance et conditions d’un lien habitable.',
+};
+
+const REGISTER_SHORT_LABELS: Record<string, string> = {
+  character: 'Caractère',
+  emotion: 'Émotion',
+  desire: 'Désir',
+  synthesis: 'Bilan',
 };
 
 function getAspectTone(title: string): 'harmony' | 'tension' | 'adjustment' | 'intensity' | 'spark' | 'growth' {
@@ -244,6 +259,322 @@ function splitReadingSentences(reading: string): string[] {
   return reading.match(/[^.!?]+[.!?]+/g)?.map((sentence) => sentence.trim()) ?? [reading];
 }
 
+const THREAD_A_COLOR = '#d68fa0';
+const THREAD_B_COLOR = '#7fa3c4';
+
+const ASPECT_TONE_COLORS: Record<ReturnType<typeof getAspectTone>, string> = {
+  harmony: '#a7c785',
+  tension: '#e0836c',
+  adjustment: '#e0c078',
+  intensity: '#c27aa0',
+  spark: '#7fa3c4',
+  growth: '#e0c078',
+};
+
+function getAspectAngle(natureLabel: string): number | null {
+  switch (natureLabel) {
+    case 'Conjonction': return 0;
+    case 'Sextile': return 60;
+    case 'Carré': return 90;
+    case 'Trigone': return 120;
+    case 'Quinconce': return 150;
+    case 'Opposition': return 180;
+    default: return null;
+  }
+}
+
+function getThreadNode(thread: RegisterThread, index: number): string {
+  return index < 2 ? thread.anchor.charAt(0).toUpperCase() : '✦';
+}
+
+function getAspectParts(family: string, natureLabel: string): string[] {
+  if (getAspectAngle(natureLabel) === null) return [family];
+
+  return family
+    .replace(/\s+conjoint\s+à\s+/i, ' — ')
+    .replace(/\s+conjoint\s+au\s+/i, ' — ')
+    .replace(/\s+conjoint\s+/i, ' — ')
+    .replace(/\s+opposé\s+au\s+/i, ' — ')
+    .replace(/\s+opposé\s+à\s+/i, ' — ')
+    .replace(/\s+opposition\s+/i, ' — ')
+    .replace(/\s+carré\s+au\s+/i, ' — ')
+    .replace(/\s+carré\s+à\s+/i, ' — ')
+    .replace(/\s+trigone\s+à\s+/i, ' — ')
+    .replace(/\s+trigone\s+au\s+/i, ' — ')
+    .replace(/\s+sextile\s+à\s+/i, ' — ')
+    .replace(/\s+sextile\s+au\s+/i, ' — ')
+    .replace(/\s+en\s+quinconce\s+avec\s+/i, ' — ')
+    .replace(/\s+quinconce\s+avec\s+/i, ' — ')
+    .split(' — ')
+    .map((part) => part.trim())
+    .filter(Boolean);
+}
+
+function renderHighlightedName(text: string, threads: RegisterThread[]): ReactNode {
+  const first = threads[0]?.anchor;
+  const second = threads[1]?.anchor;
+  const names = [first, second].filter(Boolean) as string[];
+  if (names.length === 0) return text;
+
+  const matcher = new RegExp(`(${names.map((name) => name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`, 'g');
+  return text.split(matcher).map((part, index) => {
+    if (part === first) return <span className="x-report__sky-name-a" key={`${part}-${index}`}>{part}</span>;
+    if (part === second) return <span className="x-report__sky-name-b" key={`${part}-${index}`}>{part}</span>;
+    return <Fragment key={`${part}-${index}`}>{part}</Fragment>;
+  });
+}
+
+function getAspectParticipants(family: string, threads: RegisterThread[]) {
+  const first = threads[0]?.anchor ?? '';
+  const second = threads[1]?.anchor ?? '';
+  const found = [first, second]
+    .filter(Boolean)
+    .map((name) => ({ name, index: family.indexOf(name) }))
+    .filter((item) => item.index >= 0)
+    .sort((a, b) => a.index - b.index);
+
+  const aName = found[0]?.name ?? first;
+  const bName = found[1]?.name ?? (aName === first ? second : first);
+
+  return {
+    labelA: aName.charAt(0).toUpperCase(),
+    colorA: aName === first ? THREAD_A_COLOR : THREAD_B_COLOR,
+    labelB: bName.charAt(0).toUpperCase(),
+    colorB: bName === first ? THREAD_A_COLOR : THREAD_B_COLOR,
+  };
+}
+
+function OrbitDiagram({ angle, labelA, colorA, labelB, colorB }: {
+  angle: number;
+  labelA: string;
+  colorA: string;
+  labelB: string;
+  colorB: string;
+}) {
+  const r = 30;
+  const cx = 44;
+  const cy = 56;
+  const ax = cx - r;
+  const ay = cy;
+  const rad = ((180 - angle) * Math.PI) / 180;
+  const bx = cx + r * Math.cos(rad);
+  const by = cy - r * Math.sin(rad);
+  const largeArc = angle > 180 ? 1 : 0;
+
+  return (
+    <svg width="88" height="100" viewBox="0 0 88 100" className="x-report__sky-orbit-svg">
+      <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(201,168,76,0.18)" />
+      <path d={`M${ax} ${ay} A ${r} ${r} 0 ${largeArc} 1 ${bx} ${by}`} fill="none" stroke="var(--aspect-tone)" strokeWidth={1.6} strokeDasharray="2.4 2.8" />
+      <circle cx={ax} cy={ay} r={4.2} fill={colorA} />
+      <circle cx={bx} cy={by} r={4.2} fill={colorB} />
+      <text x={ax - 7} y={ay + 4} textAnchor="end" fill={colorA} fontFamily="Cormorant Garamond, serif" fontStyle="italic" fontSize={10}>{labelA}</text>
+      <text x={bx + 7} y={by + 4} textAnchor="start" fill={colorB} fontFamily="Cormorant Garamond, serif" fontStyle="italic" fontSize={10}>{labelB}</text>
+      <text x={cx} y={19} textAnchor="middle" fill="var(--aspect-tone)" fontFamily="Cormorant Garamond, serif" fontStyle="italic" fontSize={12}>{angle}°</text>
+    </svg>
+  );
+}
+
+function SkyAspectVisual({ family, angle, threads }: {
+  family: AspectFamily;
+  angle: number | null;
+  threads: RegisterThread[];
+}) {
+  const scopeParts = family.scope.split(',').map((part) => part.trim()).filter(Boolean);
+  const isBundled = scopeParts.length > 1;
+
+  if (isBundled) {
+    return (
+      <div className="x-report__sky-tally">
+        <div className="x-report__sky-tally-dots">
+          {scopeParts.map((part) => <span key={part} />)}
+        </div>
+        <div className="x-report__sky-tally-count">{scopeParts.length} aspects</div>
+      </div>
+    );
+  }
+
+  if (angle !== null) {
+    return (
+      <div className="x-report__sky-orbit">
+        <OrbitDiagram angle={angle} {...getAspectParticipants(family.family, threads)} />
+      </div>
+    );
+  }
+
+  return (
+    <div className="x-report__sky-icon">
+      <div className="x-report__sky-icon-badge" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 20 20">
+          <circle cx="7" cy="7" r="4" fill="none" stroke="var(--aspect-tone)" strokeWidth={1.3} />
+          <line x1="10" y1="10" x2="17" y2="17" stroke="var(--aspect-tone)" strokeWidth={1.3} />
+          <line x1="13.5" y1="13.5" x2="16" y2="11" stroke="var(--aspect-tone)" strokeWidth={1.3} />
+          <line x1="15" y1="15" x2="17" y2="13" stroke="var(--aspect-tone)" strokeWidth={1.3} />
+        </svg>
+      </div>
+    </div>
+  );
+}
+
+function SkyAspectRow({ family, threads }: { family: AspectFamily; threads: RegisterThread[] }) {
+  const natureLabel = getAspectNatureLabel(family.family);
+  const angle = getAspectAngle(natureLabel);
+  const tone = getAspectTone(family.family);
+  const aspectStyle = { '--aspect-tone': ASPECT_TONE_COLORS[tone] } as CSSProperties;
+  const aspectParts = getAspectParts(family.family, natureLabel);
+
+  return (
+    <article className="x-report__sky-aspect" style={aspectStyle}>
+      <SkyAspectVisual family={family} angle={angle} threads={threads} />
+      <div className="x-report__sky-aspect-body">
+        <div className="x-report__sky-aspect-head">
+          <p className="x-report__sky-aspect-figures">
+            {aspectParts.map((part, index) => (
+              <Fragment key={`${part}-${index}`}>
+                {index > 0 && ' — '}
+                {renderHighlightedName(part, threads)}
+              </Fragment>
+            ))}
+          </p>
+          <span className="x-report__sky-aspect-tag">
+            <span className="dot" />
+            {natureLabel}
+          </span>
+        </div>
+        <p className="x-report__sky-aspect-scope">{family.scope}</p>
+        <p className="x-report__sky-aspect-reading">{family.reading}</p>
+      </div>
+    </article>
+  );
+}
+
+function SkyAspects({ page, threads }: { page: RegisterPage; threads: RegisterThread[] }) {
+  if (page.id !== 'synthesis') {
+    return (
+      <>
+        <p className="x-report__sky-eyebrow">Aspects du couple</p>
+        <h2 className="x-report__sky-title">La mécanique subtile du lien</h2>
+        <div className="x-report__sky-aspects">
+          {page.aspectFamilies.map((family) => (
+            <SkyAspectRow family={family} threads={threads} key={family.family} />
+          ))}
+        </div>
+      </>
+    );
+  }
+
+  const supportFamilies = page.aspectFamilies.filter((family) => ['Forces du duo', 'Potentiel d’évolution'].includes(family.family));
+  const attentionFamilies = page.aspectFamilies.filter((family) => family.family === 'Défis du duo');
+  const adviceFamilies = page.aspectFamilies.filter((family) => ['Conseil clé', 'Mantra du duo'].includes(family.family));
+
+  return (
+    <>
+      <p className="x-report__sky-eyebrow">Vers l'avenir</p>
+      <h2 className="x-report__sky-title">Ce qui se joue sur la durée</h2>
+      <p className="x-report__sky-intro">
+        Rien n'est écrit d'avance — un thème donne des inclinations, pas un verdict. Voici ce qui a tendance à soutenir ce lien, ce qui demande de la vigilance, et ce qui peut aider à le nourrir.
+      </p>
+
+      <section className="x-report__sky-subsection">
+        <p className="x-report__sky-sublabel" style={{ '--aspect-tone': ASPECT_TONE_COLORS.harmony } as CSSProperties}>
+          <span className="dot" />
+          Ce qui soutient
+        </p>
+        <div className="x-report__sky-aspects">
+          {supportFamilies.map((family) => <SkyAspectRow family={family} threads={threads} key={family.family} />)}
+        </div>
+      </section>
+
+      <section className="x-report__sky-subsection">
+        <p className="x-report__sky-sublabel" style={{ '--aspect-tone': ASPECT_TONE_COLORS.tension } as CSSProperties}>
+          <span className="dot" />
+          Ce qui demande de l'attention
+        </p>
+        <div className="x-report__sky-aspects">
+          {attentionFamilies.map((family) => <SkyAspectRow family={family} threads={threads} key={family.family} />)}
+        </div>
+      </section>
+
+      <section className="x-report__sky-subsection">
+        <p className="x-report__sky-sublabel" style={{ '--aspect-tone': ASPECT_TONE_COLORS.adjustment } as CSSProperties}>
+          <span className="dot" />
+          Un conseil pour avancer
+        </p>
+        <div className="x-report__sky-aspects">
+          {adviceFamilies.map((family) => <SkyAspectRow family={family} threads={threads} key={family.family} />)}
+        </div>
+      </section>
+    </>
+  );
+}
+
+function SkyModule({ page, threads }: { page: RegisterPage; threads: RegisterThread[] }) {
+  const skyStyle = {
+    '--thread-a': THREAD_A_COLOR,
+    '--thread-b': THREAD_B_COLOR,
+  } as CSSProperties;
+
+  return (
+    <>
+      <div className="x-report__sky-transition">
+        <div className="x-report__sky-horizon" />
+      </div>
+      <details className="x-report__sky" style={skyStyle}>
+        <summary className="x-report__sky-teaser">
+          <svg width="200" height="70" viewBox="0 0 220 76" className="x-report__sky-constellation">
+            <line x1="42" y1="52" x2="178" y2="52" stroke="rgba(224,192,120,0.35)" />
+            <line x1="42" y1="52" x2="110" y2="14" stroke="rgba(224,192,120,0.35)" />
+            <line x1="178" y1="52" x2="110" y2="14" stroke="rgba(224,192,120,0.35)" />
+            <circle cx="42" cy="52" r="5" fill="#0a0d16" stroke="var(--thread-a)" strokeWidth={1.4} />
+            <circle cx="178" cy="52" r="5" fill="#0a0d16" stroke="var(--thread-b)" strokeWidth={1.4} />
+            <circle cx="110" cy="14" r="5.5" fill="#e0c078" />
+          </svg>
+          <span className="x-report__sky-chevron">▾</span>
+        </summary>
+
+        <div className="x-report__sky-content">
+          <div className="x-report__sky-threads">
+            {threads.map((thread, index) => (
+              <article
+                className={`x-report__sky-thread ${
+                  index === 0 ? 'x-report__sky-thread--a' : index === 1 ? 'x-report__sky-thread--b' : 'x-report__sky-thread--fusion'
+                }`}
+                key={thread.anchor}
+              >
+                <div className="x-report__sky-thread-node">{getThreadNode(thread, index)}</div>
+                <div>
+                  <p className="x-report__sky-thread-name">{thread.anchor}</p>
+                  <p className="x-report__sky-thread-placements">
+                    {splitThreadPlacements(thread.astro).map((placement, placementIndex, placements) => (
+                      <Fragment key={placement}>
+                        {placement}
+                        {placementIndex < placements.length - 1 && <span className="sep">·</span>}
+                      </Fragment>
+                    ))}
+                  </p>
+                  <p className="x-report__sky-thread-reading">{splitReadingSentences(thread.reading).join(' ')}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          <SkyAspects page={page} threads={threads} />
+
+          {page.mantra && (
+            <div className="x-report__sky-mantra-row">
+              <div className="x-report__sky-mantra-card">
+                <p className="x-report__sky-mantra-label">Mantra</p>
+                <p className="x-report__sky-mantra-text">{page.mantra}</p>
+              </div>
+            </div>
+          )}
+        </div>
+      </details>
+    </>
+  );
+}
+
+void renderAspectGlyphBadge;
+
 const REPORT_PAGES: RegisterPage[] = [
   {
     id: 'character',
@@ -309,6 +640,7 @@ const REPORT_PAGES: RegisterPage[] = [
       },
     ],
     signals: ['Présence forte', 'Curiosité immédiate', 'Rythmes différents'],
+    mantra: 'Laissez la différence attirer avant de chercher à la corriger.',
   },
   {
     id: 'emotion',
@@ -374,6 +706,7 @@ const REPORT_PAGES: RegisterPage[] = [
       },
     ],
     signals: ['Attachement réel', 'Besoin de réassurance', 'Silences à décoder'],
+    mantra: 'Rendez la tendresse visible avant que le silence ne parle à votre place.',
   },
   {
     id: 'desire',
@@ -439,6 +772,7 @@ const REPORT_PAGES: RegisterPage[] = [
       },
     ],
     signals: ['Attraction vivante', 'Tension utile', 'Mouvement commun'],
+    mantra: 'Gardez l’intensité comme une invitation, jamais comme une preuve à arracher.',
   },
   {
     id: 'synthesis',
@@ -531,7 +865,7 @@ export default function XPage() {
     setPageIndex(isLastPage ? 0 : pageIndex + 1);
   };
 
-  const handleTouchEnd = (event: React.TouchEvent) => {
+  const handleTouchEnd = (event: TouchEvent) => {
     if (!touchStart.current) return;
     const touch = event.changedTouches[0];
     const deltaX = touch.clientX - touchStart.current.x;
@@ -573,15 +907,27 @@ export default function XPage() {
               <strong>Léa × Sacha</strong>
             </div>
           </figure>
+          <div className="x-report__info-bar">
+            <div className="x-report__info-bar-premium">
+              <span>Rapport premium</span>
+              <strong>Léa × Sacha</strong>
+            </div>
+            <div className="x-report__info-bar-score">
+              <b>{page.chemistry}%</b>
+              <em>Alchimie</em>
+            </div>
+          </div>
           <div className="x-report__cinema-band">
             <span>{page.cinemaTitle}</span>
           </div>
 
           <div className="x-report__copy">
-            <div className="x-report__chapter-heading">
+            <div className={`x-report__chapter-heading ${page.id === 'synthesis' ? 'x-report__chapter-heading--final' : ''}`}>
               <div>
-                <p>{page.kicker}</p>
+                <p className="x-report__register-eyebrow">Registre analysé</p>
+                <strong className="x-report__register-name">{page.kicker}</strong>
                 <h1 className="x-report__register-line">{page.tagline}</h1>
+                <p className="x-report__register-guide">{REGISTER_GUIDES[page.id]}</p>
               </div>
             </div>
 
@@ -620,6 +966,12 @@ export default function XPage() {
                 <p className="x-report__body" key={paragraph}>{paragraph}</p>
               ))}
             </div>
+
+            {page.id === 'synthesis' && (
+              <p className="x-report__final-close">
+                Le bilan ne ferme pas l’histoire : il indique simplement les gestes qui rendent le lien plus vrai, plus calme et plus habitable.
+              </p>
+            )}
 
             <section className="x-report__threads" aria-label="Lecture astrologique du registre">
               <p className="x-report__section-title">Planètes, signes & maisons</p>
@@ -660,23 +1012,12 @@ export default function XPage() {
               </div>
             </section>
 
-            {page.synthesis && (
-              <>
-                <section className="x-report__synthesis-grid" aria-label="Lecture qualitative par registre">
-                  {page.synthesis.map((item) => (
-                    <div key={item.label}>
-                      <span>{item.label}</span>
-                      <strong>{item.value}</strong>
-                    </div>
-                  ))}
-                </section>
-              </>
-            )}
-
             {page.mantra && (
               <p className="x-report__mantra">{page.mantra}</p>
             )}
           </div>
+
+          <SkyModule page={page} threads={visibleThreads} />
         </article>
       </section>
 
@@ -695,7 +1036,10 @@ export default function XPage() {
             />
           ))}
         </div>
-        <span>{String(pageIndex + 1).padStart(2, '0')} / {String(pageCount).padStart(2, '0')}</span>
+        <div className="x-report__pager-status" aria-label={`Page ${pageIndex + 1} sur ${pageCount}, registre ${REGISTER_SHORT_LABELS[page.id]}`}>
+          <span>{String(pageIndex + 1).padStart(2, '0')} / {String(pageCount).padStart(2, '0')}</span>
+          <strong>{REGISTER_SHORT_LABELS[page.id]}</strong>
+        </div>
         <button className="x-report__turn-button" onClick={turnPage} aria-label={isLastPage ? 'Relire le rapport' : 'Continuer le rapport'}>
           <small>{isLastPage ? 'Relire' : 'Continuer'}</small>
           <ChevronRight size={17} />

@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="noindex" />
-    <title>Nightstar — ouverture</title>
+    <title>Night One — ouverture</title>
     <style>
       html, body {
         margin: 0;
@@ -43,6 +43,9 @@
             navigator.serviceWorker.getRegistrations().then(function (regs) {
               return Promise.all(
                 regs.map(function (reg) {
+                  if (reg.waiting) {
+                    reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+                  }
                   return reg.unregister();
                 })
               );

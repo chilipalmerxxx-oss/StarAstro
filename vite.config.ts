@@ -14,15 +14,71 @@ process.env.TMPDIR = localTempDir;
 export default defineConfig({
   plugins: [
     react(),
-    // PWA disabled: old service workers were trapping recipients on an outdated shell.
-    // Re-enable later only with network-first HTML and no index.html precache.
     VitePWA({
-      disable: true,
-      injectRegister: false,
       registerType: 'autoUpdate',
-      manifest: false,
+      injectRegister: null,
+      manifestFilename: 'manifest.webmanifest',
+      manifest: {
+        name: 'Night One',
+        short_name: 'Night One',
+        description: 'La nuit ou tout a commence',
+        lang: 'fr',
+        start_url: '/',
+        scope: '/',
+        display: 'standalone',
+        orientation: 'portrait',
+        theme_color: '#080810',
+        background_color: '#080810',
+        icons: [
+          {
+            src: '/icons/icon-192.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'any',
+          },
+          {
+            src: '/icons/icon-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any',
+          },
+          {
+            src: '/icons/icon-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable',
+          },
+        ],
+      },
       workbox: {
+        globPatterns: [
+          'assets/*.{js,css,svg,png,jpg,jpeg,webp,woff,woff2}',
+          'icons/*.{svg,png}',
+        ],
+        globIgnores: ['**/index.html', '**/*.map'],
+        navigateFallback: null,
         cleanupOutdatedCaches: true,
+        clientsClaim: true,
+        skipWaiting: true,
+        runtimeCaching: [
+          {
+            urlPattern: ({ request }) => request.destination === 'image',
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'night-one-images',
+              expiration: {
+                maxEntries: 160,
+                maxAgeSeconds: 60 * 60 * 24 * 30,
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+        ],
+      },
+      devOptions: {
+        enabled: false,
       },
     }),
   ],

@@ -418,7 +418,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 8px;
+          gap: 7px;
         }
         .ns-brand-shell::before {
           content: '';
@@ -444,65 +444,88 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
           margin: 0;
           width: 100%;
           font-family: 'Cormorant Garamond', serif;
-          font-size: clamp(30px, 7.2vw, 54px);
+          font-size: clamp(31px, 7.6vw, 56px);
           font-weight: 300;
-          letter-spacing: clamp(3.2px, 1.8vw, 10px);
-          text-indent: clamp(3.2px, 1.8vw, 10px);
+          letter-spacing: clamp(3px, 1.5vw, 8px);
+          text-indent: clamp(3px, 1.5vw, 8px);
           line-height: 0.95;
           text-align: center;
           text-transform: uppercase;
-          color: rgba(255,255,255,0.10);
-          background: linear-gradient(180deg, rgba(255,255,255,0.38) 0%, rgba(255,244,220,0.10) 45%, rgba(157,178,214,0.05) 100%);
+          color: rgba(255,244,220,0.18);
+          background: linear-gradient(180deg, rgba(255,255,255,0.64) 0%, rgba(255,238,190,0.28) 46%, rgba(157,178,214,0.09) 100%);
           -webkit-background-clip: text;
           background-clip: text;
-          -webkit-text-fill-color: rgba(255,255,255,0.08);
-          -webkit-text-stroke: 0.7px rgba(255,244,220,0.56);
-          text-shadow: 0 0 24px rgba(255,244,220,0.18), 0 0 5px rgba(255,255,255,0.20), 0 1px 3px rgba(0,0,0,0.74);
-          filter: drop-shadow(0 0 10px rgba(190,210,255,0.08));
+          -webkit-text-fill-color: rgba(255,255,255,0.10);
+          -webkit-text-stroke: 0.62px rgba(255,244,220,0.64);
+          text-shadow: 0 0 26px rgba(255,226,163,0.18), 0 0 5px rgba(255,255,255,0.18), 0 1px 3px rgba(0,0,0,0.74);
+          filter: drop-shadow(0 0 10px rgba(242,210,140,0.10));
         }
-        .ns-brand-title__big {
+        .ns-brand-title__initial {
           display: inline-block;
-          font-size: 1.18em;
+          font-size: 1.16em;
           line-height: 0.78;
           transform: translateY(0.03em);
         }
-        .ns-brand-sigil {
+        .ns-brand-one-o {
           position: relative;
-          width: min(44vw, 188px);
-          height: 34px;
-          margin-top: 1px;
-          opacity: 0.78;
+          display: inline-block;
+          min-width: 0.82em;
+          margin-inline: 0.015em;
+          color: rgba(255,234,180,0.22);
+          -webkit-text-fill-color: rgba(255,234,180,0.12);
+          -webkit-text-stroke-color: rgba(255,231,174,0.82);
+          filter: drop-shadow(0 0 10px rgba(255,210,128,0.22));
         }
-        .ns-trigram-line {
-          position: absolute;
-          left: 50%;
-          width: 86px;
-          height: 1px;
-          transform: translateX(-50%);
-          background: linear-gradient(90deg, transparent, rgba(255,232,176,0.72), transparent);
-          box-shadow: 0 0 10px rgba(255,210,128,0.16);
-        }
-        .ns-trigram-line--top {
-          top: 9px;
-        }
-        .ns-trigram-line--middle {
-          top: 17px;
-          width: 112px;
-        }
-        .ns-trigram-line--bottom {
-          top: 25px;
-        }
-        .ns-trigram-core {
+        .ns-brand-one-o::before,
+        .ns-brand-one-o::after {
+          content: '';
           position: absolute;
           left: 50%;
           top: 50%;
-          width: 7px;
-          height: 7px;
+          pointer-events: none;
+        }
+        .ns-brand-one-o::before {
+          width: 0.08em;
+          height: 0.74em;
           border-radius: 999px;
-          background: #050506;
-          border: 1px solid rgba(255,232,176,0.78);
+          background: linear-gradient(180deg, rgba(255,250,228,0.92), rgba(233,196,118,0.62));
+          box-shadow: 0 0 12px rgba(255,224,154,0.30);
+          transform: translate(-50%, -49%);
+        }
+        .ns-brand-one-o::after {
+          width: 0.48em;
+          height: 0.48em;
+          border: 1px solid rgba(255,232,176,0.52);
+          border-radius: 999px;
           transform: translate(-50%, -50%);
-          box-shadow: 0 0 14px rgba(255,210,128,0.24), inset 0 0 5px rgba(255,232,176,0.08);
+          opacity: 0.68;
+        }
+        .ns-brand-tagline {
+          margin: 1px 0 0;
+          color: rgba(236,216,166,0.72);
+          font-family: Raleway, sans-serif;
+          font-size: clamp(9px, 2vw, 11px);
+          font-weight: 500;
+          letter-spacing: clamp(2px, 0.82vw, 4px);
+          text-indent: clamp(2px, 0.82vw, 4px);
+          line-height: 1.35;
+          text-transform: uppercase;
+          text-shadow: 0 0 10px rgba(242,210,140,0.18);
+        }
+        .ns-brand-sigil {
+          position: relative;
+          width: min(26vw, 104px);
+          height: min(26vw, 104px);
+          max-height: 46px;
+          margin-top: 2px;
+          opacity: 0.9;
+          color: rgba(255,232,176,0.82);
+          filter: drop-shadow(0 0 12px rgba(255,210,128,0.18));
+        }
+        .ns-brand-sigil svg {
+          width: 100%;
+          height: 100%;
+          display: block;
         }
         .ns-btn {
           min-height: 50px;
@@ -611,7 +634,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
             width: min(72vw, 320px);
           }
           .ns-brand-sigil {
-            width: min(48vw, 168px);
+            width: min(30vw, 92px);
           }
         }
         @media (max-width: 390px) {
@@ -654,17 +677,27 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
       <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 1, backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`, opacity: 0.035 }} />
 
       <div className="fixed left-0 right-0 z-10 flex flex-col items-center" style={{ top: 0, padding: 'max(14px, env(safe-area-inset-top)) 18px 28px', background: 'linear-gradient(180deg,rgba(13,17,27,0.32) 0%,rgba(13,17,27,0.1) 44%,rgba(13,17,27,0) 100%)', backdropFilter: 'blur(1px)', position: 'fixed', overflow: 'visible' }}>
-        <div className="ns-brand-shell" aria-label="Nightstar">
+        <div className="ns-brand-shell" aria-label="Night One">
           <div className="ns-brand-rule" aria-hidden />
           <h1 className="ns-brand-title">
-            <span className="ns-brand-title__big">N</span>IGHT<span className="ns-brand-title__big">S</span>TAR
+            <span className="ns-brand-title__initial">N</span>IGHT <span className="ns-brand-one-o">O</span>NE
           </h1>
+          <p className="ns-brand-tagline">La nuit où tout a commencé</p>
           <div className="ns-brand-rule" aria-hidden />
           <div className="ns-brand-sigil" aria-hidden>
-            <span className="ns-trigram-line ns-trigram-line--top" />
-            <span className="ns-trigram-line ns-trigram-line--middle" />
-            <span className="ns-trigram-line ns-trigram-line--bottom" />
-            <span className="ns-trigram-core" />
+            <svg viewBox="0 0 120 54" fill="none" role="img">
+              <path d="M16 27H42" stroke="currentColor" strokeOpacity="0.34" strokeWidth="1" strokeLinecap="round" />
+              <path d="M78 27H104" stroke="currentColor" strokeOpacity="0.34" strokeWidth="1" strokeLinecap="round" />
+              <circle cx="60" cy="27" r="19" stroke="currentColor" strokeOpacity="0.42" strokeWidth="1" />
+              <circle cx="60" cy="27" r="12.5" fill="#07070b" stroke="currentColor" strokeOpacity="0.82" strokeWidth="1.2" />
+              <path d="M52 27A8 8 0 0 1 60 19" stroke="currentColor" strokeOpacity="0.92" strokeWidth="1.4" strokeLinecap="round" />
+              <path d="M68 27A8 8 0 0 1 60 35" stroke="currentColor" strokeOpacity="0.42" strokeWidth="1" strokeLinecap="round" />
+              <path d="M60 11V19" stroke="currentColor" strokeOpacity="0.72" strokeWidth="1.1" strokeLinecap="round" />
+              <path d="M60 35V43" stroke="currentColor" strokeOpacity="0.72" strokeWidth="1.1" strokeLinecap="round" />
+              <circle cx="60" cy="27" r="2" fill="currentColor" fillOpacity="0.92" />
+              <circle cx="43" cy="18" r="1.2" fill="currentColor" fillOpacity="0.65" />
+              <circle cx="77" cy="36" r="1" fill="currentColor" fillOpacity="0.46" />
+            </svg>
           </div>
         </div>
       </div>
@@ -676,7 +709,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
           className="ns-btn"
           disabled={isRevealing}
           aria-busy={isRevealing}
-          aria-label={isRevealing ? 'Révélation du thème en cours' : 'Révéler mon thème Nightstar'}
+          aria-label={isRevealing ? 'Révélation du thème en cours' : 'Révéler mon thème Night One'}
           data-od-id="nightstar-reveal-button"
           style={{
             display: 'flex',
