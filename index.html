@@ -6,22 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>AstroThème</title>
 
-    <!-- Bust stale service workers before the app boots. -->
-    <script>
-      (function () {
-        if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
-          navigator.serviceWorker.getRegistrations().then(function (regs) {
-            regs.forEach(function (reg) { reg.unregister(); });
-          });
-        }
-        if (window.caches && caches.keys) {
-          caches.keys().then(function (keys) {
-            keys.forEach(function (key) { caches.delete(key); });
-          });
-        }
-      })();
-    </script>
-
     <meta name="theme-color" content="#111111" />
     <link rel="apple-touch-icon" href="/icons/icon.svg" />
 

@@ -29,6 +29,21 @@ export interface Aspect {
   orb: number;
 }
 
+export interface AstrologyChartData {
+  planetPositions: Record<string, PlanetPosition>;
+  houses?: House[];
+  aspects?: Aspect[];
+  birthDate?: Date | string;
+  birthPlace?: string;
+}
+
+type NormalizedTransitAspect = {
+  planet1: string;
+  planet2: string;
+  type: string;
+  transitSign: string;
+};
+
 const ZODIAC_SIGNS = [
   'Bélier', 'Taureau', 'Gémeaux', 'Cancer',
   'Lion', 'Vierge', 'Balance', 'Scorpion',
@@ -66,7 +81,7 @@ function getZodiacSign(longitude: number): { sign: string; degree: number } {
   };
 }
 
-function eclipticToZodiac(ecliptic: Astronomy.Ecliptic): number {
+function eclipticToZodiac(ecliptic: Astronomy.EclipticCoordinates): number {
   return ecliptic.elon;
 }
 
@@ -327,7 +342,7 @@ const formatSeedDate = (value: unknown): string => {
   return '';
 };
 
-const getCoStarPersonalizationSeed = (chartData: any, name: string): string => {
+const getCoStarPersonalizationSeed = (chartData: AstrologyChartData, name: string): string => {
   const planets = chartData?.planetPositions ?? {};
   const planetSeed = ['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto']
     .map(planetKey => {
@@ -341,7 +356,7 @@ const getCoStarPersonalizationSeed = (chartData: any, name: string): string => {
     })
     .join('|');
   const houseSeed = Array.isArray(chartData?.houses)
-    ? chartData.houses.map((house: any) => formatSeedNumber(house?.cusp)).join('|')
+    ? chartData.houses.map((house) => formatSeedNumber(house.cusp)).join('|')
     : '';
 
   return [
@@ -637,7 +652,7 @@ const rankScores = <T extends string>(scores: Record<T, number>): T[] =>
   (Object.keys(scores) as T[]).sort((a, b) => scores[b] - scores[a]);
 
 const getCoStarProfile = (
-  chartData: any,
+  chartData: AstrologyChartData,
   transitAspects: TransitAspect[],
   dateKey: string,
   personalizationSeed: string
@@ -677,8 +692,8 @@ const getCoStarProfile = (
   const focusPlanet = pickDailyValue(focusPlanets.length ? focusPlanets : ['sun'], personalizationSeed, dateKey, 'focus-planet');
 
   const aspects = Array.isArray(chartData?.aspects) ? chartData.aspects : [];
-  const tenseCount = aspects.filter((aspect: any) => aspect?.type === 'Carré' || aspect?.type === 'Opposition').length;
-  const harmonyCount = aspects.filter((aspect: any) => aspect?.type === 'Trigone' || aspect?.type === 'Sextile').length;
+  const tenseCount = aspects.filter((aspect) => aspect.type === 'Carré' || aspect.type === 'Opposition').length;
+  const harmonyCount = aspects.filter((aspect) => aspect.type === 'Trigone' || aspect.type === 'Sextile').length;
   const aspectTone: AspectTone = tenseCount > harmonyCount + 1 ? 'tendu' : harmonyCount > tenseCount + 1 ? 'harmonique' : 'mixte';
 
   const personalTransits = transitAspects.filter(transit => ['sun', 'moon', 'mercury', 'venus', 'mars'].includes(transit.natalPlanet));
@@ -850,248 +865,26 @@ const buildPersonalizedGuidance = (profile: CoStarProfile, dateKey: string, seed
   };
 };
 
-// Helpers pour ajouter l'article défini devant les noms de planètes en français
-const withArticle = (name: string): string => {
-  if (name === 'Soleil') return 'le Soleil';
-  if (name === 'Lune') return 'la Lune';
-  return name;
-};
-
-const withArticleCap = (name: string): string => {
-  const a = withArticle(name);
-  return a.charAt(0).toUpperCase() + a.slice(1);
-};
-
 export function generateCoStarAnalysis(
-  chartData: any,
+  chartData: AstrologyChartData,
   name: string,
-  dateKeyOverride?: string
+  dateKeyOverride?: string,
 ): CoStarAnalysis {
   const planets = chartData.planetPositions;
   const personalizationSeed = getCoStarPersonalizationSeed(chartData, name);
-
-  // Fixer les calculs à midi local pour garantir le même résultat pendant toute la journée.
   const today = dateKeyOverride ? getDateFromLocalDateKey(dateKeyOverride) : new Date();
   const dateKey = dateKeyOverride ?? getLocalDateKey(today);
   const transitDate = getDateFromLocalDateKey(dateKey);
   transitDate.setHours(12, 0, 0, 0);
-
-  // Calculer les transits du jour en aspect avec le thème natal.
   const transitAspects = calculateTransitAspects(planets, transitDate);
-  
-  // Déterminer les signes clés
   const sunSign = planets.sun?.sign || 'Bélier';
-  const moonSign = planets.moon?.sign || 'Taureau';
   const venusSign = planets.venus?.sign || 'Gémeaux';
   const marsSign = planets.mars?.sign || 'Cancer';
-  
   const coStarProfile = getCoStarProfile(chartData, transitAspects, dateKey, personalizationSeed);
   const dailyGuidance = buildPersonalizedGuidance(coStarProfile, dateKey, personalizationSeed);
   const mood = dailyGuidance.mood;
   const dailyMove = dailyGuidance.dailyMove;
   const dailyChallenge = dailyGuidance.dailyChallenge;
-
-  // Générer la journée en un coup d'œil basé sur les aspects planétaires réels de l'utilisateur
-  const generateDayAtGlance = (): string => {
-    const translatePlanetLocal = (key: string): string => {
-      const t: Record<string, string> = {
-        sun: 'Soleil', moon: 'Lune', mercury: 'Mercure', venus: 'Vénus',
-        mars: 'Mars', jupiter: 'Jupiter', saturn: 'Saturne', uranus: 'Uranus',
-        neptune: 'Neptune', pluto: 'Pluton',
-      };
-      return t[key] || key;
-    };
-
-    const planetDomain: Record<string, string> = {
-      sun: 'ton identité et ta direction de vie',
-      moon: 'tes émotions et ton monde intérieur',
-      mercury: 'ta pensée et ta façon de communiquer',
-      venus: 'tes désirs, tes valeurs et tes relations',
-      mars: 'ton élan, ton courage et ta force d\'action',
-      jupiter: 'ton optimisme et ta capacité à t\'épanouir',
-      saturn: 'ta structure intérieure et ta discipline',
-      uranus: 'ton besoin de liberté et d\'originalité',
-      neptune: 'ton intuition et ta sensibilité profonde',
-      pluto: 'tes transformations intérieures et ta puissance',
-    };
-
-    const signFlavor: Record<string, string> = {
-      'Bélier': 'une énergie vive, directe et sans détour',
-      'Taureau': 'une profondeur ancrée, sensuelle et persistante',
-      'Gémeaux': 'une curiosité agile et une pensée en mouvement constant',
-      'Cancer': 'une sensibilité protectrice et une mémoire émotionnelle forte',
-      'Lion': 'une générosité rayonnante et une expression créatrice affirmée',
-      'Vierge': 'une précision analytique et un souci sincère du détail',
-      'Balance': 'une recherche d\'harmonie et de justesse relationnelle',
-      'Scorpion': 'une intensité profonde et une quête irréductible de vérité',
-      'Sagittaire': 'un élan vers le sens, la liberté et l\'exploration',
-      'Capricorne': 'une volonté tenace et une vision ancrée dans le long terme',
-      'Verseau': 'une indépendance d\'esprit et une vision avant-gardiste',
-      'Poissons': 'une perméabilité émotionnelle et une ouverture au mystère',
-    };
-
-    const signDescription: Record<string, string> = {
-      'Bélier': 'une impulsion vers l\'avant et un désir d\'initier',
-      'Taureau': 'un besoin d\'enracinement, de beauté et de durée',
-      'Gémeaux': 'une agilité mentale et un désir sincère d\'échanger',
-      'Cancer': 'une tendresse protectrice et une résonance intérieure fine',
-      'Lion': 'un rayonnement créatif et une soif de s\'exprimer pleinement',
-      'Vierge': 'un sens du service et une attention précieuse aux détails',
-      'Balance': 'une quête de juste milieu et d\'harmonie relationnelle',
-      'Scorpion': 'une plongée vers la profondeur et la vérité essentielle',
-      'Sagittaire': 'un appel vers l\'horizon, le sens et la liberté',
-      'Capricorne': 'une ambition patiente et un ancrage dans le réel',
-      'Verseau': 'une rupture avec les conventions et une vision renouvelée',
-      'Poissons': 'une dissolution des frontières et une ouverture au mystère',
-    };
-
-    const aspectDynamics: Record<string, string[]> = {
-      'Trigone': [
-        'coule en harmonie naturelle avec',
-        's\'allie fluidement à',
-        'amplifie l\'énergie de',
-        'rejoint en douceur celle de',
-        'se fond dans un accord parfait avec',
-      ],
-      'Sextile': [
-        'crée une ouverture fertile avec',
-        'dialogue avantageusement avec',
-        'entrouvre une porte prometteuse vers',
-        'tisse une connivence positive avec',
-        'invite à une action concertée avec',
-      ],
-      'Conjonction': [
-        'fusionne toute son intensité avec',
-        'concentre son énergie au cœur de',
-        'se fond dans la puissance de',
-        'densifie son pouvoir en rejoignant',
-        'décuple sa force en s\'unissant à',
-      ],
-      'Carré': [
-        'entre en friction dynamique avec',
-        'provoque une tension productive avec',
-        'défie l\'influence de',
-        'lance un appel à l\'action face à',
-        'crée une résistance fertile avec',
-      ],
-      'Opposition': [
-        'cherche un équilibre délicat avec',
-        'polarise son énergie face à',
-        'appelle à l\'intégration consciente de',
-        'invite à la réconciliation avec',
-        'dialogue en miroir avec',
-      ],
-    };
-
-    const aspectConsequences: Record<string, string[]> = {
-      'Trigone': [
-        `Laisse-toi porter — cette fluidité est un cadeau à accueillir sans forcer.`,
-        `C'est une énergie naturellement fluide. Exprime-toi avec confiance.`,
-        `Profite de cette aisance cosmique : les choses avancent presque d'elles-mêmes.`,
-        `Un talent naturel émerge à la surface aujourd'hui. Fais-lui pleinement confiance.`,
-        `Agir sans forcer produit ici les meilleurs résultats — la voie est dégagée.`,
-        `C'est un de ces rares moments où tout s'aligne. Saisis-le.`,
-      ],
-      'Sextile': [
-        `Une opportunité subtile s'ouvre — elle ne crie pas, mais elle est bien là.`,
-        `Saisis cet élan avec intention : les graines plantées aujourd'hui germeront.`,
-        `Une petite action bien ciblée suffit pour activer tout ce potentiel.`,
-        `L'énergie est favorable. Un pas concret peut ouvrir un long chemin.`,
-        `Reste à l'écoute des petits signes — ils révèlent une voie féconde.`,
-        `C'est une invitation douce, pas un coup de tonnerre. Réponds-y avec soin.`,
-      ],
-      'Conjonction': [
-        `Cette concentration d'énergie demande à être canalisée avec intention.`,
-        `Une double puissance est disponible — utilise-la avec discernement.`,
-        `Ce n'est pas le moment de disperser ton énergie : concentre-toi sur l'essentiel.`,
-        `L'intensité est au rendez-vous. Dompte-la plutôt que de la subir.`,
-        `Ce que tu ressens profondément en ce moment mérite toute ton attention.`,
-        `Deux énergies fusionnent en toi — écoute ce mouvement intérieur fort.`,
-      ],
-      'Carré': [
-        `La tension ici n'est pas une malédiction — c'est l'énergie brute de la transformation.`,
-        `Ce défi est précisément là où tu grandiras le plus vite.`,
-        `Résiste à l'envie de fuir l'inconfort — c'est à cet endroit que tout commence.`,
-        `L'obstacle est le chemin. Avance malgré la friction — c'est elle qui te forge.`,
-        `C'est inconfortable, mais cette résistance t'oblige à trouver ta force vraie.`,
-        `Une tension ne se résout pas en la fuyant, mais en la traversant avec lucidité.`,
-      ],
-      'Opposition': [
-        `L'équilibre ne se trouve pas en choisissant un camp — il se tisse entre les deux.`,
-        `Ce n'est pas une contradiction à résoudre, mais une danse à apprendre.`,
-        `Deux forces se font face. Écoute chacune avant d'agir.`,
-        `La sagesse du jour est dans l'intégration, pas dans le choix exclusif.`,
-        `Ce qui semble opposé en toi cherche en réalité à trouver un dialogue.`,
-        `Tenir les deux bouts de la corde sans lâcher — c'est ta force aujourd'hui.`,
-      ],
-    };
-
-    const personalPlanets = ['sun', 'moon', 'mars', 'mercury', 'venus'];
-
-    // Utiliser les transits du jour : planètes actuelles en aspect avec thème natal
-    const normalizedTransits = transitAspects.map(ta => ({
-      planet1: ta.transitPlanet,
-      planet2: ta.natalPlanet,
-      type: ta.type,
-      transitSign: ta.transitSign,
-    }));
-
-    // Priorité : transits touchant une planète personnelle natale
-    const p2pAspects = normalizedTransits.filter(a => personalPlanets.includes(a.planet2));
-    const priorityPool = p2pAspects.length > 0 ? p2pAspects : normalizedTransits;
-
-    const buildParagraph = (aspect: any): string => {
-      const p1 = aspect.planet1 as string;
-      const p2 = aspect.planet2 as string;
-      const type = aspect.type as string;
-      // p1Sign = signe du transit (position actuelle), p2Sign = signe natal
-      const p1Sign = aspect.transitSign || planets[p1]?.sign || sunSign;
-      const p2Sign = planets[p2]?.sign || moonSign;
-      const p1Fr = translatePlanetLocal(p1);
-      const p2Fr = translatePlanetLocal(p2);
-
-      const dynamics = aspectDynamics[type] || ['interagit avec'];
-      const dynamic = dynamics[Math.floor(seededRandom(dateKey + p1 + p2 + 'dyn') * dynamics.length)];
-
-      const consequences = aspectConsequences[type] || ['Observe comment cette énergie se manifeste dans ta journée.'];
-      const consequence = consequences[Math.floor(seededRandom(dateKey + p1 + p2 + 'con') * consequences.length)];
-
-      const flavor = signFlavor[p1Sign] ? `, portant ${signFlavor[p1Sign]},` : '';
-      const domainP1 = planetDomain[p1] || 'ton énergie';
-      const domainP2 = planetDomain[p2] || 'une autre force planétaire';
-      const domainP1Cap = domainP1.charAt(0).toUpperCase() + domainP1.slice(1);
-
-      return `${withArticleCap(p1Fr)}${flavor} ${dynamic} ${withArticle(p2Fr)}. Une résonance s'établit entre ${domainP1} et ${domainP2}. ${consequence}`;
-    };
-
-    // Fallback : aucun aspect disponible → lecture pure des signes
-    if (priorityPool.length === 0) {
-      const sunDesc = signDescription[sunSign] || 'une énergie singulière';
-      const moonDesc = signDescription[moonSign] || 'une sensibilité particulière';
-      return `Le Soleil porte en toi ${sunDesc}. Cette énergie solaire guide tes choix depuis ton centre le plus profond — écoute-la.\n\nLa Lune teinte tes émotions de ${moonDesc}. Ces murmures intérieurs ne mentent jamais sur ce dont tu as vraiment besoin.`;
-    }
-
-    // Sélectionner 2 aspects distincts pour la journée
-    const idx1 = Math.floor(seededRandom(dateKey + 'dag_a1') * priorityPool.length);
-    const aspect1 = priorityPool[idx1];
-    const remaining = priorityPool.filter((_: any, i: number) => i !== idx1);
-
-    let para2: string;
-    if (remaining.length > 0) {
-      const idx2 = Math.floor(seededRandom(dateKey + 'dag_a2') * remaining.length);
-      para2 = buildParagraph(remaining[idx2]);
-    } else {
-      // Un seul aspect : compléter avec la lecture d'un signe personnel
-      const complementPlanet = personalPlanets.find(p => p !== aspect1.planet1 && p !== aspect1.planet2) || 'sun';
-      const compSign = planets[complementPlanet]?.sign || sunSign;
-      const compFr = translatePlanetLocal(complementPlanet);
-      const compDomain = planetDomain[complementPlanet] || 'ton énergie';
-      const compFlavor = signFlavor[compSign] || 'une couleur particulière';
-      para2 = `${withArticleCap(compFr)} teinte ${compDomain} de ${compFlavor}. Laisse cette énergie enrichir ton regard sur la journée qui s'ouvre.`;
-    }
-
-    return `${buildParagraph(aspect1)}\n\n${para2}`;
-  };
 
   const generateHumorousAdvice = (): string[] => {
     const tP = (key: string): string => ({
@@ -1099,60 +892,6 @@ export function generateCoStarAnalysis(
       mars: 'Mars', jupiter: 'Jupiter', saturn: 'Saturne', uranus: 'Uranus',
       neptune: 'Neptune', pluto: 'Pluton',
     }[key] || key);
-
-    // Humour par planète de transit
-    const transitHumor: Record<string, string[]> = {
-      sun: [
-        `le Soleil se pointe en fanfare dans ton thème`,
-        `le Soleil décide aujourd'hui de mettre son nez dans tes affaires`,
-        `le Soleil braque son projecteur sur toi`,
-      ],
-      moon: [
-        `la Lune est d'humeur capricieuse`,
-        `la Lune fait des siennes dans ton ciel`,
-        `la Lune remue ce que tu préférais laisser tranquille`,
-      ],
-      mercury: [
-        `Mercure, toujours bavard, s'invite dans la conversation`,
-        `Mercure fait des heures sup' dans ta tête`,
-        `Mercure relit ton dernier message et lève un sourcil`,
-      ],
-      venus: [
-        `Vénus passe par là avec ses grands airs charmeurs`,
-        `Vénus glisse un mot doux dans ton oreille cosmique`,
-        `Vénus débarque avec une bonne bouteille et des intentions floues`,
-      ],
-      mars: [
-        `Mars arrive en mode "on y va ou on y va ?"`,
-        `Mars frappe à ta porte sans prévenir`,
-        `Mars tape du poing sur la table du cosmos`,
-      ],
-      jupiter: [
-        `Jupiter s'étire dans ton thème comme s'il était chez lui`,
-        `Jupiter apporte son optimisme (et ses excès) dans la pièce`,
-        `Jupiter grossit ce qui mérite d'être vu`,
-      ],
-      saturn: [
-        `Saturne, le sérieux de service, sort son carnet de notes`,
-        `Saturne te regarde avec ses lunettes de bilan`,
-        `Saturne arrive avec sa liste de choses à faire depuis 3 ans`,
-      ],
-      uranus: [
-        `Uranus, l'électron libre, court-circuite ton programme`,
-        `Uranus décide de réorganiser ta vie sans te demander ton avis`,
-        `Uranus appuie sur le bouton "chaos créatif"`,
-      ],
-      neptune: [
-        `Neptune flotte dans ton thème comme un brouillard parfumé`,
-        `Neptune brouille les cartes avec une grâce déconcertante`,
-        `Neptune rêvasse dans ton thème et oublie l'heure`,
-      ],
-      pluto: [
-        `Pluton, discret mais implacable, creuse en silence`,
-        `Pluton remue ce que tu croyais enterré`,
-        `Pluton débarque avec une pelle et un sourire énigmatique`,
-      ],
-    };
 
     // Templates complets par type d'aspect — p1=planète transit, s=signe, p2=planète natale
     // Helpers accord grammatical français
@@ -1166,8 +905,8 @@ export function generateCoStarAnalysis(
       if (p === 'Soleil') return cap ? 'Le ' : 'le ';
       return '';
     };
-    const p1s = (p1: string, _s: string) => `${artDef(p1, true)}${p1}`;
-    const p1m = (p1: string, _s: string) => `${artDef(p1, false)}${p1}`;
+    const p1s = (p1: string, sign: string) => `${artDef(p1, true)}${p1}${sign ? ` en ${sign}` : ''}`;
+    const p1m = (p1: string, sign: string) => `${artDef(p1, false)}${p1}${sign ? ` en ${sign}` : ''}`;
     const polishDayAtGlanceLine = (text: string): string =>
       text
         .replace(/\s+—\s+/g, ', ')
@@ -1340,9 +1079,9 @@ export function generateCoStarAnalysis(
     };
 
     const fastPlanets = ['sun', 'moon', 'mercury', 'venus', 'mars'];
-    const normalizedTransits = transitAspects
-      .filter((ta: any) => fastPlanets.includes(ta.transitPlanet))
-      .map((ta: any) => ({
+    const normalizedTransits: NormalizedTransitAspect[] = transitAspects
+      .filter((ta) => fastPlanets.includes(ta.transitPlanet))
+      .map((ta) => ({
         planet1: ta.transitPlanet,
         planet2: ta.natalPlanet,
         type: ta.type,
@@ -1350,7 +1089,7 @@ export function generateCoStarAnalysis(
       }));
 
     const personalPlanets = ['sun', 'moon', 'mars', 'mercury', 'venus'];
-    const p2pAspects = normalizedTransits.filter((a: any) => personalPlanets.includes(a.planet2));
+    const p2pAspects = normalizedTransits.filter((a) => personalPlanets.includes(a.planet2));
     const pool = p2pAspects.length > 0 ? p2pAspects : normalizedTransits;
 
     if (pool.length === 0) {
@@ -1361,7 +1100,7 @@ export function generateCoStarAnalysis(
 
     const usedTemplateIndices: Record<string, Set<number>> = {};
 
-    const buildHumorLine = (aspect: any, seed: string): string => {
+    const buildHumorLine = (aspect: NormalizedTransitAspect, seed: string): string => {
       const p1 = tP(aspect.planet1 as string);
       const p2 = tP(aspect.planet2 as string);
       const type = aspect.type as string;
@@ -1435,9 +1174,9 @@ export function generateCoStarAnalysis(
       ],
       Opposition: [
         (transitFocus, natalFocus, move) => `Tu peux hésiter entre ${transitFocus} et ${natalFocus}. Prends du recul, puis cherche à ${move}.`,
-        (transitFocus, natalFocus, move) => `Un tiraillement oppose ${transitFocus} à ${natalFocus}. Écoute les deux avant d’agir.`,
+        (transitFocus, natalFocus, move) => `Un tiraillement oppose ${transitFocus} à ${natalFocus}. Écoute les deux, puis commence par ${move}.`,
         (transitFocus, natalFocus) => `Aujourd’hui, ${transitFocus} demande autant de place que ${natalFocus}. Cherche un équilibre avant d’agir.`,
-        (transitFocus, natalFocus, move) => `Deux élans se répondent sans encore s’accorder : ${transitFocus} et ${natalFocus}. Accueille cette nuance avant de choisir.`,
+        (transitFocus, natalFocus, move) => `Deux élans se répondent sans encore s’accorder : ${transitFocus} et ${natalFocus}. Accueille cette nuance, puis cherche à ${move}.`,
       ],
     };
 
@@ -1478,7 +1217,7 @@ export function generateCoStarAnalysis(
       return index;
     };
 
-    const improveDayAtGlanceLine = (_original: string, aspect: any): string => {
+    const improveDayAtGlanceLine = (original: string, aspect: NormalizedTransitAspect): string => {
       const p1Key = aspect.planet1 as string;
       const p2Key = aspect.planet2 as string;
       const p1 = tP(p1Key);
@@ -1680,9 +1419,7 @@ export function generateCoStarAnalysis(
           `Un ajustement est nécessaire. Avant de répondre, respire ; ton ego survivra à vingt secondes de silence.`,
         ],
       };
-      const compactOptions = compactReadings[type] || [
-        `${transitFocus} active ${natalFocus}. ${move}.`,
-      ];
+      const compactOptions = compactReadings[type] || [original];
 
       return polishDayAtGlanceLine(`${title} ${compactOptions[readingIndex % compactOptions.length]}`);
     };
@@ -1696,11 +1433,11 @@ export function generateCoStarAnalysis(
     });
 
     // Sélectionner jusqu'à 3 aspects en variant d'abord les planètes de transit et natales.
-    const selected: any[] = [];
+    const selected: NormalizedTransitAspect[] = [];
     const usedTransitPlanets = new Set<string>();
     const usedNatalPlanets = new Set<string>();
     const usedPlanetPairs = new Set<string>();
-    const getPlanetPair = (aspect: any) => [aspect.planet1, aspect.planet2].sort().join('|');
+    const getPlanetPair = (aspect: NormalizedTransitAspect) => [aspect.planet1, aspect.planet2].sort().join('|');
 
     for (const aspect of sortedPool) {
       const pair = getPlanetPair(aspect);

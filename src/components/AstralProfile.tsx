@@ -2,6 +2,9 @@ import { useState, useRef, useEffect, useMemo, type FormEvent, type MouseEvent }
 import { ArrowRight, Calendar, ChevronDown, Clock, MapPin, Sparkles, X } from 'lucide-react';
 import { getDetailedInterpretation } from '../data/signDetailedInterpretations';
 import { PLANET_INFO, getAspectInterpretation } from '../data/interpretations';
+import { getLocalDateTimeParts, getTimeZoneFromCoordinates, getTimezoneOffsetHours, parseBirthDateTime } from '../lib/birthDate';
+import type { BirthInput } from '../types/chart';
+import type { Aspect, House, PlanetPosition } from '../services/astrology';
 import NatalChart from './NatalChart';
 
 type PlanetKey = 'sun' | 'moon' | 'ascendant' | 'venus' | 'mars' | 'mercury' | 'jupiter' | 'saturn' | 'uranus' | 'neptune' | 'pluto';
@@ -10,16 +13,6 @@ type AstralProfileSection = 'planets' | 'signs' | 'houses' | 'aspects';
 
 const ASTRAL_PROFILE_PLANET_KEYS: PlanetKey[] = ['ascendant', 'sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto'];
 
-type EditableBirthData = {
-  name: string;
-  date: string;
-  time: string;
-  place: string;
-  latitude: number;
-  longitude: number;
-  timezoneOffset: number;
-};
-
 type BirthCity = {
   name: string;
   region?: string;
@@ -27,7 +20,6 @@ type BirthCity = {
   aliases?: string[];
   lat: number;
   lon: number;
-  tz: number;
 };
 
 type WheelOption = {
@@ -52,108 +44,102 @@ const MONTH_OPTIONS = [
 ];
 
 const BIRTH_CITY_OPTIONS: BirthCity[] = [
-  { name: 'Paris', region: 'Île-de-France', country: 'France', lat: 48.8566, lon: 2.3522, tz: 1 },
-  { name: 'Lyon', region: 'Auvergne-Rhône-Alpes', country: 'France', lat: 45.764, lon: 4.8357, tz: 1 },
-  { name: 'Marseille', region: 'Provence-Alpes-Côte d’Azur', country: 'France', lat: 43.2965, lon: 5.3698, tz: 1 },
-  { name: 'Toulouse', region: 'Occitanie', country: 'France', lat: 43.6047, lon: 1.4442, tz: 1 },
-  { name: 'Bordeaux', region: 'Nouvelle-Aquitaine', country: 'France', lat: 44.8378, lon: -0.5792, tz: 1 },
-  { name: 'Lille', region: 'Hauts-de-France', country: 'France', lat: 50.6292, lon: 3.0573, tz: 1 },
-  { name: 'Nice', region: 'Provence-Alpes-Côte d’Azur', country: 'France', lat: 43.7102, lon: 7.262, tz: 1 },
-  { name: 'Nantes', region: 'Pays de la Loire', country: 'France', lat: 47.2184, lon: -1.5536, tz: 1 },
-  { name: 'Strasbourg', region: 'Grand Est', country: 'France', lat: 48.5734, lon: 7.7521, tz: 1 },
-  { name: 'Montpellier', region: 'Occitanie', country: 'France', lat: 43.6108, lon: 3.8767, tz: 1 },
-  { name: 'Rennes', region: 'Bretagne', country: 'France', lat: 48.1173, lon: -1.6778, tz: 1 },
-  { name: 'Reims', region: 'Grand Est', country: 'France', lat: 49.2583, lon: 4.0317, tz: 1 },
-  { name: 'Saint-Étienne', region: 'Auvergne-Rhône-Alpes', country: 'France', lat: 45.4397, lon: 4.3872, tz: 1 },
-  { name: 'Toulon', region: 'Provence-Alpes-Côte d’Azur', country: 'France', lat: 43.1242, lon: 5.928, tz: 1 },
-  { name: 'Le Havre', region: 'Normandie', country: 'France', lat: 49.4944, lon: 0.1079, tz: 1 },
-  { name: 'Grenoble', region: 'Auvergne-Rhône-Alpes', country: 'France', lat: 45.1885, lon: 5.7245, tz: 1 },
-  { name: 'Dijon', region: 'Bourgogne-Franche-Comté', country: 'France', lat: 47.322, lon: 5.0415, tz: 1 },
-  { name: 'Angers', region: 'Pays de la Loire', country: 'France', lat: 47.4784, lon: -0.5632, tz: 1 },
-  { name: 'Nîmes', region: 'Occitanie', country: 'France', lat: 43.8367, lon: 4.3601, tz: 1 },
-  { name: 'Villeurbanne', region: 'Auvergne-Rhône-Alpes', country: 'France', lat: 45.7719, lon: 4.8902, tz: 1 },
-  { name: 'Clermont-Ferrand', region: 'Auvergne-Rhône-Alpes', country: 'France', lat: 45.7772, lon: 3.087, tz: 1 },
-  { name: 'Aix-en-Provence', region: 'Provence-Alpes-Côte d’Azur', country: 'France', lat: 43.5297, lon: 5.4474, tz: 1 },
-  { name: 'Brest', region: 'Bretagne', country: 'France', lat: 48.3904, lon: -4.4861, tz: 1 },
-  { name: 'Limoges', region: 'Nouvelle-Aquitaine', country: 'France', lat: 45.8336, lon: 1.2611, tz: 1 },
-  { name: 'Tours', region: 'Centre-Val de Loire', country: 'France', lat: 47.3941, lon: 0.6848, tz: 1 },
-  { name: 'Amiens', region: 'Hauts-de-France', country: 'France', lat: 49.8941, lon: 2.2958, tz: 1 },
-  { name: 'Metz', region: 'Grand Est', country: 'France', lat: 49.1193, lon: 6.1757, tz: 1 },
-  { name: 'Besançon', region: 'Bourgogne-Franche-Comté', country: 'France', lat: 47.2378, lon: 6.0241, tz: 1 },
-  { name: 'Perpignan', region: 'Occitanie', country: 'France', lat: 42.6887, lon: 2.8948, tz: 1 },
-  { name: 'Orléans', region: 'Centre-Val de Loire', country: 'France', lat: 47.9029, lon: 1.9093, tz: 1 },
-  { name: 'Mulhouse', region: 'Grand Est', country: 'France', lat: 47.7508, lon: 7.3359, tz: 1 },
-  { name: 'Rouen', region: 'Normandie', country: 'France', lat: 49.4431, lon: 1.0993, tz: 1 },
-  { name: 'Caen', region: 'Normandie', country: 'France', lat: 49.1829, lon: -0.3707, tz: 1 },
-  { name: 'Nancy', region: 'Grand Est', country: 'France', lat: 48.6921, lon: 6.1844, tz: 1 },
-  { name: 'Argenteuil', region: 'Île-de-France', country: 'France', lat: 48.9472, lon: 2.2467, tz: 1 },
-  { name: 'Montreuil', region: 'Île-de-France', country: 'France', lat: 48.8638, lon: 2.4485, tz: 1 },
-  { name: 'Saint-Denis', region: 'Île-de-France', country: 'France', lat: 48.9362, lon: 2.3574, tz: 1 },
-  { name: 'Roubaix', region: 'Hauts-de-France', country: 'France', lat: 50.6927, lon: 3.1778, tz: 1 },
-  { name: 'Tourcoing', region: 'Hauts-de-France', country: 'France', lat: 50.724, lon: 3.1612, tz: 1 },
-  { name: 'Avignon', region: 'Provence-Alpes-Côte d’Azur', country: 'France', lat: 43.9493, lon: 4.8055, tz: 1 },
-  { name: 'Poitiers', region: 'Nouvelle-Aquitaine', country: 'France', lat: 46.5802, lon: 0.3404, tz: 1 },
-  { name: 'Pau', region: 'Nouvelle-Aquitaine', country: 'France', lat: 43.2951, lon: -0.3708, tz: 1 },
-  { name: 'La Rochelle', region: 'Nouvelle-Aquitaine', country: 'France', lat: 46.1603, lon: -1.1511, tz: 1 },
-  { name: 'Annecy', region: 'Auvergne-Rhône-Alpes', country: 'France', lat: 45.8992, lon: 6.1294, tz: 1 },
-  { name: 'Bayonne', region: 'Nouvelle-Aquitaine', country: 'France', lat: 43.4929, lon: -1.4748, tz: 1 },
-  { name: 'Biarritz', region: 'Nouvelle-Aquitaine', country: 'France', lat: 43.4832, lon: -1.5586, tz: 1 },
-  { name: 'Ajaccio', region: 'Corse', country: 'France', lat: 41.9192, lon: 8.7386, tz: 1 },
-  { name: 'Bastia', region: 'Corse', country: 'France', lat: 42.6973, lon: 9.4509, tz: 1 },
-  { name: 'Bruxelles', region: 'Bruxelles-Capitale', country: 'Belgique', lat: 50.8503, lon: 4.3517, tz: 1 },
-  { name: 'Liège', region: 'Wallonie', country: 'Belgique', lat: 50.6326, lon: 5.5797, tz: 1 },
-  { name: 'Charleroi', region: 'Wallonie', country: 'Belgique', lat: 50.4108, lon: 4.4446, tz: 1 },
-  { name: 'Genève', region: 'Genève', country: 'Suisse', aliases: ['Geneve'], lat: 46.2044, lon: 6.1432, tz: 1 },
-  { name: 'Lausanne', region: 'Vaud', country: 'Suisse', lat: 46.5197, lon: 6.6323, tz: 1 },
-  { name: 'Zurich', region: 'Zurich', country: 'Suisse', lat: 47.3769, lon: 8.5417, tz: 1 },
-  { name: 'Monaco', region: 'Monaco', country: 'Monaco', lat: 43.7384, lon: 7.4246, tz: 1 },
-  { name: 'Luxembourg', region: 'Luxembourg', country: 'Luxembourg', lat: 49.6116, lon: 6.1319, tz: 1 },
-  { name: 'Londres', region: 'Angleterre', country: 'Royaume-Uni', aliases: ['London'], lat: 51.5074, lon: -0.1278, tz: 0 },
-  { name: 'Dublin', region: 'Leinster', country: 'Irlande', lat: 53.3498, lon: -6.2603, tz: 0 },
-  { name: 'Madrid', region: 'Communauté de Madrid', country: 'Espagne', lat: 40.4168, lon: -3.7038, tz: 1 },
-  { name: 'Barcelone', region: 'Catalogne', country: 'Espagne', aliases: ['Barcelona'], lat: 41.3874, lon: 2.1686, tz: 1 },
-  { name: 'Lisbonne', region: 'Lisbonne', country: 'Portugal', aliases: ['Lisboa'], lat: 38.7223, lon: -9.1393, tz: 0 },
-  { name: 'Rome', region: 'Latium', country: 'Italie', lat: 41.9028, lon: 12.4964, tz: 1 },
-  { name: 'Milan', region: 'Lombardie', country: 'Italie', aliases: ['Milano'], lat: 45.4642, lon: 9.19, tz: 1 },
-  { name: 'Berlin', region: 'Berlin', country: 'Allemagne', lat: 52.52, lon: 13.405, tz: 1 },
-  { name: 'Munich', region: 'Bavière', country: 'Allemagne', aliases: ['München'], lat: 48.1351, lon: 11.582, tz: 1 },
-  { name: 'Amsterdam', region: 'Hollande-Septentrionale', country: 'Pays-Bas', lat: 52.3676, lon: 4.9041, tz: 1 },
-  { name: 'Vienne', region: 'Vienne', country: 'Autriche', aliases: ['Wien'], lat: 48.2082, lon: 16.3738, tz: 1 },
-  { name: 'Copenhague', region: 'Hovedstaden', country: 'Danemark', aliases: ['Copenhagen'], lat: 55.6761, lon: 12.5683, tz: 1 },
-  { name: 'Stockholm', region: 'Stockholm', country: 'Suède', lat: 59.3293, lon: 18.0686, tz: 1 },
-  { name: 'Oslo', region: 'Oslo', country: 'Norvège', lat: 59.9139, lon: 10.7522, tz: 1 },
-  { name: 'New York', region: 'État de New York', country: 'États-Unis', lat: 40.7128, lon: -74.006, tz: -5 },
-  { name: 'Los Angeles', region: 'Californie', country: 'États-Unis', lat: 34.0522, lon: -118.2437, tz: -8 },
-  { name: 'San Francisco', region: 'Californie', country: 'États-Unis', lat: 37.7749, lon: -122.4194, tz: -8 },
-  { name: 'Chicago', region: 'Illinois', country: 'États-Unis', lat: 41.8781, lon: -87.6298, tz: -6 },
-  { name: 'Miami', region: 'Floride', country: 'États-Unis', lat: 25.7617, lon: -80.1918, tz: -5 },
-  { name: 'Montréal', region: 'Québec', country: 'Canada', aliases: ['Montreal'], lat: 45.5017, lon: -73.5673, tz: -5 },
-  { name: 'Québec', region: 'Québec', country: 'Canada', aliases: ['Quebec'], lat: 46.8139, lon: -71.2082, tz: -5 },
-  { name: 'Toronto', region: 'Ontario', country: 'Canada', lat: 43.6532, lon: -79.3832, tz: -5 },
-  { name: 'Vancouver', region: 'Colombie-Britannique', country: 'Canada', lat: 49.2827, lon: -123.1207, tz: -8 },
-  { name: 'Casablanca', region: 'Casablanca-Settat', country: 'Maroc', lat: 33.5731, lon: -7.5898, tz: 1 },
-  { name: 'Rabat', region: 'Rabat-Salé-Kénitra', country: 'Maroc', lat: 34.0209, lon: -6.8416, tz: 1 },
-  { name: 'Marrakech', region: 'Marrakech-Safi', country: 'Maroc', lat: 31.6295, lon: -7.9811, tz: 1 },
-  { name: 'Alger', region: 'Alger', country: 'Algérie', lat: 36.7538, lon: 3.0588, tz: 1 },
-  { name: 'Tunis', region: 'Tunis', country: 'Tunisie', lat: 36.8065, lon: 10.1815, tz: 1 },
-  { name: 'Dakar', region: 'Dakar', country: 'Sénégal', lat: 14.7167, lon: -17.4677, tz: 0 },
-  { name: 'Abidjan', region: 'Abidjan', country: 'Côte d’Ivoire', lat: 5.36, lon: -4.0083, tz: 0 },
-  { name: 'Tokyo', region: 'Kantō', country: 'Japon', lat: 35.6762, lon: 139.6503, tz: 9 },
-  { name: 'Séoul', region: 'Séoul', country: 'Corée du Sud', aliases: ['Seoul'], lat: 37.5665, lon: 126.978, tz: 9 },
-  { name: 'Sydney', region: 'Nouvelle-Galles du Sud', country: 'Australie', lat: -33.8688, lon: 151.2093, tz: 10 },
+  { name: 'Paris', region: 'Île-de-France', country: 'France', lat: 48.8566, lon: 2.3522 },
+  { name: 'Lyon', region: 'Auvergne-Rhône-Alpes', country: 'France', lat: 45.764, lon: 4.8357 },
+  { name: 'Marseille', region: 'Provence-Alpes-Côte d’Azur', country: 'France', lat: 43.2965, lon: 5.3698 },
+  { name: 'Toulouse', region: 'Occitanie', country: 'France', lat: 43.6047, lon: 1.4442 },
+  { name: 'Bordeaux', region: 'Nouvelle-Aquitaine', country: 'France', lat: 44.8378, lon: -0.5792 },
+  { name: 'Lille', region: 'Hauts-de-France', country: 'France', lat: 50.6292, lon: 3.0573 },
+  { name: 'Nice', region: 'Provence-Alpes-Côte d’Azur', country: 'France', lat: 43.7102, lon: 7.262 },
+  { name: 'Nantes', region: 'Pays de la Loire', country: 'France', lat: 47.2184, lon: -1.5536 },
+  { name: 'Strasbourg', region: 'Grand Est', country: 'France', lat: 48.5734, lon: 7.7521 },
+  { name: 'Montpellier', region: 'Occitanie', country: 'France', lat: 43.6108, lon: 3.8767 },
+  { name: 'Rennes', region: 'Bretagne', country: 'France', lat: 48.1173, lon: -1.6778 },
+  { name: 'Reims', region: 'Grand Est', country: 'France', lat: 49.2583, lon: 4.0317 },
+  { name: 'Saint-Étienne', region: 'Auvergne-Rhône-Alpes', country: 'France', lat: 45.4397, lon: 4.3872 },
+  { name: 'Toulon', region: 'Provence-Alpes-Côte d’Azur', country: 'France', lat: 43.1242, lon: 5.928 },
+  { name: 'Le Havre', region: 'Normandie', country: 'France', lat: 49.4944, lon: 0.1079 },
+  { name: 'Grenoble', region: 'Auvergne-Rhône-Alpes', country: 'France', lat: 45.1885, lon: 5.7245 },
+  { name: 'Dijon', region: 'Bourgogne-Franche-Comté', country: 'France', lat: 47.322, lon: 5.0415 },
+  { name: 'Angers', region: 'Pays de la Loire', country: 'France', lat: 47.4784, lon: -0.5632 },
+  { name: 'Nîmes', region: 'Occitanie', country: 'France', lat: 43.8367, lon: 4.3601 },
+  { name: 'Villeurbanne', region: 'Auvergne-Rhône-Alpes', country: 'France', lat: 45.7719, lon: 4.8902 },
+  { name: 'Clermont-Ferrand', region: 'Auvergne-Rhône-Alpes', country: 'France', lat: 45.7772, lon: 3.087 },
+  { name: 'Aix-en-Provence', region: 'Provence-Alpes-Côte d’Azur', country: 'France', lat: 43.5297, lon: 5.4474 },
+  { name: 'Brest', region: 'Bretagne', country: 'France', lat: 48.3904, lon: -4.4861 },
+  { name: 'Limoges', region: 'Nouvelle-Aquitaine', country: 'France', lat: 45.8336, lon: 1.2611 },
+  { name: 'Tours', region: 'Centre-Val de Loire', country: 'France', lat: 47.3941, lon: 0.6848 },
+  { name: 'Amiens', region: 'Hauts-de-France', country: 'France', lat: 49.8941, lon: 2.2958 },
+  { name: 'Metz', region: 'Grand Est', country: 'France', lat: 49.1193, lon: 6.1757 },
+  { name: 'Besançon', region: 'Bourgogne-Franche-Comté', country: 'France', lat: 47.2378, lon: 6.0241 },
+  { name: 'Perpignan', region: 'Occitanie', country: 'France', lat: 42.6887, lon: 2.8948 },
+  { name: 'Orléans', region: 'Centre-Val de Loire', country: 'France', lat: 47.9029, lon: 1.9093 },
+  { name: 'Mulhouse', region: 'Grand Est', country: 'France', lat: 47.7508, lon: 7.3359 },
+  { name: 'Rouen', region: 'Normandie', country: 'France', lat: 49.4431, lon: 1.0993 },
+  { name: 'Caen', region: 'Normandie', country: 'France', lat: 49.1829, lon: -0.3707 },
+  { name: 'Nancy', region: 'Grand Est', country: 'France', lat: 48.6921, lon: 6.1844 },
+  { name: 'Argenteuil', region: 'Île-de-France', country: 'France', lat: 48.9472, lon: 2.2467 },
+  { name: 'Montreuil', region: 'Île-de-France', country: 'France', lat: 48.8638, lon: 2.4485 },
+  { name: 'Saint-Denis', region: 'Île-de-France', country: 'France', lat: 48.9362, lon: 2.3574 },
+  { name: 'Roubaix', region: 'Hauts-de-France', country: 'France', lat: 50.6927, lon: 3.1778 },
+  { name: 'Tourcoing', region: 'Hauts-de-France', country: 'France', lat: 50.724, lon: 3.1612 },
+  { name: 'Avignon', region: 'Provence-Alpes-Côte d’Azur', country: 'France', lat: 43.9493, lon: 4.8055 },
+  { name: 'Poitiers', region: 'Nouvelle-Aquitaine', country: 'France', lat: 46.5802, lon: 0.3404 },
+  { name: 'Pau', region: 'Nouvelle-Aquitaine', country: 'France', lat: 43.2951, lon: -0.3708 },
+  { name: 'La Rochelle', region: 'Nouvelle-Aquitaine', country: 'France', lat: 46.1603, lon: -1.1511 },
+  { name: 'Annecy', region: 'Auvergne-Rhône-Alpes', country: 'France', lat: 45.8992, lon: 6.1294 },
+  { name: 'Bayonne', region: 'Nouvelle-Aquitaine', country: 'France', lat: 43.4929, lon: -1.4748 },
+  { name: 'Biarritz', region: 'Nouvelle-Aquitaine', country: 'France', lat: 43.4832, lon: -1.5586 },
+  { name: 'Ajaccio', region: 'Corse', country: 'France', lat: 41.9192, lon: 8.7386 },
+  { name: 'Bastia', region: 'Corse', country: 'France', lat: 42.6973, lon: 9.4509 },
+  { name: 'Bruxelles', region: 'Bruxelles-Capitale', country: 'Belgique', lat: 50.8503, lon: 4.3517 },
+  { name: 'Liège', region: 'Wallonie', country: 'Belgique', lat: 50.6326, lon: 5.5797 },
+  { name: 'Charleroi', region: 'Wallonie', country: 'Belgique', lat: 50.4108, lon: 4.4446 },
+  { name: 'Genève', region: 'Genève', country: 'Suisse', aliases: ['Geneve'], lat: 46.2044, lon: 6.1432 },
+  { name: 'Lausanne', region: 'Vaud', country: 'Suisse', lat: 46.5197, lon: 6.6323 },
+  { name: 'Zurich', region: 'Zurich', country: 'Suisse', lat: 47.3769, lon: 8.5417 },
+  { name: 'Monaco', region: 'Monaco', country: 'Monaco', lat: 43.7384, lon: 7.4246 },
+  { name: 'Luxembourg', region: 'Luxembourg', country: 'Luxembourg', lat: 49.6116, lon: 6.1319 },
+  { name: 'Londres', region: 'Angleterre', country: 'Royaume-Uni', aliases: ['London'], lat: 51.5074, lon: -0.1278 },
+  { name: 'Dublin', region: 'Leinster', country: 'Irlande', lat: 53.3498, lon: -6.2603 },
+  { name: 'Madrid', region: 'Communauté de Madrid', country: 'Espagne', lat: 40.4168, lon: -3.7038 },
+  { name: 'Barcelone', region: 'Catalogne', country: 'Espagne', aliases: ['Barcelona'], lat: 41.3874, lon: 2.1686 },
+  { name: 'Lisbonne', region: 'Lisbonne', country: 'Portugal', aliases: ['Lisboa'], lat: 38.7223, lon: -9.1393 },
+  { name: 'Rome', region: 'Latium', country: 'Italie', lat: 41.9028, lon: 12.4964 },
+  { name: 'Milan', region: 'Lombardie', country: 'Italie', aliases: ['Milano'], lat: 45.4642, lon: 9.19 },
+  { name: 'Berlin', region: 'Berlin', country: 'Allemagne', lat: 52.52, lon: 13.405 },
+  { name: 'Munich', region: 'Bavière', country: 'Allemagne', aliases: ['München'], lat: 48.1351, lon: 11.582 },
+  { name: 'Amsterdam', region: 'Hollande-Septentrionale', country: 'Pays-Bas', lat: 52.3676, lon: 4.9041 },
+  { name: 'Vienne', region: 'Vienne', country: 'Autriche', aliases: ['Wien'], lat: 48.2082, lon: 16.3738 },
+  { name: 'Copenhague', region: 'Hovedstaden', country: 'Danemark', aliases: ['Copenhagen'], lat: 55.6761, lon: 12.5683 },
+  { name: 'Stockholm', region: 'Stockholm', country: 'Suède', lat: 59.3293, lon: 18.0686 },
+  { name: 'Oslo', region: 'Oslo', country: 'Norvège', lat: 59.9139, lon: 10.7522 },
+  { name: 'New York', region: 'État de New York', country: 'États-Unis', lat: 40.7128, lon: -74.006 },
+  { name: 'Los Angeles', region: 'Californie', country: 'États-Unis', lat: 34.0522, lon: -118.2437 },
+  { name: 'San Francisco', region: 'Californie', country: 'États-Unis', lat: 37.7749, lon: -122.4194 },
+  { name: 'Chicago', region: 'Illinois', country: 'États-Unis', lat: 41.8781, lon: -87.6298 },
+  { name: 'Miami', region: 'Floride', country: 'États-Unis', lat: 25.7617, lon: -80.1918 },
+  { name: 'Montréal', region: 'Québec', country: 'Canada', aliases: ['Montreal'], lat: 45.5017, lon: -73.5673 },
+  { name: 'Québec', region: 'Québec', country: 'Canada', aliases: ['Quebec'], lat: 46.8139, lon: -71.2082 },
+  { name: 'Toronto', region: 'Ontario', country: 'Canada', lat: 43.6532, lon: -79.3832 },
+  { name: 'Vancouver', region: 'Colombie-Britannique', country: 'Canada', lat: 49.2827, lon: -123.1207 },
+  { name: 'Casablanca', region: 'Casablanca-Settat', country: 'Maroc', lat: 33.5731, lon: -7.5898 },
+  { name: 'Rabat', region: 'Rabat-Salé-Kénitra', country: 'Maroc', lat: 34.0209, lon: -6.8416 },
+  { name: 'Marrakech', region: 'Marrakech-Safi', country: 'Maroc', lat: 31.6295, lon: -7.9811 },
+  { name: 'Alger', region: 'Alger', country: 'Algérie', lat: 36.7538, lon: 3.0588 },
+  { name: 'Tunis', region: 'Tunis', country: 'Tunisie', lat: 36.8065, lon: 10.1815 },
+  { name: 'Dakar', region: 'Dakar', country: 'Sénégal', lat: 14.7167, lon: -17.4677 },
+  { name: 'Abidjan', region: 'Abidjan', country: 'Côte d’Ivoire', lat: 5.36, lon: -4.0083 },
+  { name: 'Tokyo', region: 'Kantō', country: 'Japon', lat: 35.6762, lon: 139.6503 },
+  { name: 'Séoul', region: 'Séoul', country: 'Corée du Sud', aliases: ['Seoul'], lat: 37.5665, lon: 126.978 },
+  { name: 'Sydney', region: 'Nouvelle-Galles du Sud', country: 'Australie', lat: -33.8688, lon: 151.2093 },
 ];
 
 const padBirthValue = (value: number) => String(value).padStart(2, '0');
 
-const getBirthDateParts = (date?: Date) => {
-  const safeDate = date && !Number.isNaN(date.getTime()) ? date : new Date(1998, 5, 12, 12, 0);
-  return {
-    day: safeDate.getDate(),
-    month: safeDate.getMonth() + 1,
-    year: safeDate.getFullYear(),
-    hour: safeDate.getHours(),
-    minute: safeDate.getMinutes(),
-  };
+const getBirthDateParts = (date?: Date, timeZone = 'UTC') => {
+  const safeDate = date && !Number.isNaN(date.getTime()) ? date : new Date(Date.UTC(1998, 5, 12, 12, 0));
+  return getLocalDateTimeParts(safeDate, timeZone);
 };
 
 const getDaysInMonth = (year: number, month: number) => new Date(year, month, 0).getDate();
@@ -164,8 +150,6 @@ const normalizeBirthPlace = (value: string) => value
   .toLowerCase()
   .replace(/[^a-z0-9]+/g, ' ')
   .trim();
-
-const getTimezoneFromLongitude = (longitude: number) => Math.round(longitude / 15);
 
 const findBirthCity = (place: string) => {
   const normalizedPlace = normalizeBirthPlace(place);
@@ -252,17 +236,17 @@ const PLANET_LABELS: Record<PlanetKey, string> = {
   pluto: 'Pluton',
 };
 
-const isMarsTrineUranusAspect = (aspect: any) => (
+const isMarsTrineUranusAspect = (aspect: Aspect) => (
   aspect?.type === 'Trigone'
   && [aspect?.planet1, aspect?.planet2].sort().join('-') === 'mars-uranus'
 );
 
-const isVenusSquareUranusAspect = (aspect: any) => (
+const isVenusSquareUranusAspect = (aspect: Aspect) => (
   aspect?.type === 'Carré'
   && [aspect?.planet1, aspect?.planet2].sort().join('-') === 'uranus-venus'
 );
 
-const usesAstroAspectBackground = (aspect: any) => (
+const usesAstroAspectBackground = (aspect: Aspect) => (
   isMarsTrineUranusAspect(aspect) || isVenusSquareUranusAspect(aspect)
 );
 
@@ -303,21 +287,21 @@ interface AstralProfileProps {
   birthPlace?: string;
   birthLatitude?: number;
   birthLongitude?: number;
-  birthTimezoneOffset?: number;
-  planetPositions: Record<string, any>;
-  houses: any[];
-  aspects?: any[];
+  birthTimeZone?: string;
+  planetPositions: Record<string, PlanetPosition>;
+  houses: House[];
+  aspects?: Aspect[];
   initialActivePlanet?: PlanetKey;
   fullscreenMode?: boolean;
   variant?: AstralProfileVariant;
-  onEditBirthData?: (data: EditableBirthData) => Promise<void> | void;
+  onEditBirthData?: (data: BirthInput) => Promise<void> | void;
   editBirthDataLoading?: boolean;
 }
 
 function getSignForPlanet(
   key: PlanetKey,
-  planetPositions: Record<string, any>,
-  houses: any[]
+  planetPositions: Record<string, PlanetPosition>,
+  houses: House[]
 ): string {
   if (key === 'ascendant') {
     const firstHouse = houses?.[0];
@@ -328,7 +312,7 @@ function getSignForPlanet(
 
 const HOUSE_ROMANS = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
 
-function getHouseRomanForPlanet(key: PlanetKey, planetPositions: Record<string, any>): string | null {
+function getHouseRomanForPlanet(key: PlanetKey, planetPositions: Record<string, PlanetPosition>): string | null {
   const house = key === 'ascendant' ? 1 : Number(planetPositions[key]?.house);
   return Number.isInteger(house) && house >= 1 && house <= 12 ? HOUSE_ROMANS[house - 1] : null;
 }
@@ -339,7 +323,7 @@ export default function AstralProfile({
   birthPlace,
   birthLatitude,
   birthLongitude,
-  birthTimezoneOffset,
+  birthTimeZone,
   planetPositions,
   houses,
   aspects = [],
@@ -352,12 +336,12 @@ export default function AstralProfile({
   const isYou2 = variant === 'you2';
   const [activePlanet, setActivePlanet] = useState<PlanetKey>(initialActivePlanet || 'sun');
   const [expandedPlanet, setExpandedPlanet] = useState<PlanetKey | null>(initialActivePlanet || null);
-  const [activeAspect, setActiveAspect] = useState<any | null>(null);
+  const [activeAspect, setActiveAspect] = useState<Aspect | null>(null);
   const [activeSection, setActiveSection] = useState<AstralProfileSection>('planets');
   const [sectionSwitchVisible, setSectionSwitchVisible] = useState(false);
   const [isEditingBirthData, setIsEditingBirthData] = useState(false);
   const [editName, setEditName] = useState(name);
-  const [birthEditorDate, setBirthEditorDate] = useState(() => getBirthDateParts(birthDate));
+  const [birthEditorDate, setBirthEditorDate] = useState(() => getBirthDateParts(birthDate, birthTimeZone));
   const [editPlace, setEditPlace] = useState(birthPlace || '');
   const [selectedEditCity, setSelectedEditCity] = useState<BirthCity | null>(() => findBirthCity(birthPlace || ''));
   const contentRef = useRef<HTMLDivElement>(null);
@@ -369,10 +353,10 @@ export default function AstralProfile({
   useEffect(() => {
     if (isEditingBirthData) return;
     setEditName(name);
-    setBirthEditorDate(getBirthDateParts(birthDate));
+    setBirthEditorDate(getBirthDateParts(birthDate, birthTimeZone));
     setEditPlace(birthPlace || '');
     setSelectedEditCity(findBirthCity(birthPlace || ''));
-  }, [birthDate, birthPlace, isEditingBirthData, name]);
+  }, [birthDate, birthPlace, birthTimeZone, isEditingBirthData, name]);
 
   // Set active planet when initialActivePlanet prop changes
   useEffect(() => {
@@ -498,7 +482,7 @@ export default function AstralProfile({
     }
   };
 
-  const handleAspectClick = (aspect: any) => {
+  const handleAspectClick = (aspect: Aspect | null) => {
     if (!aspect) {
       setActiveAspect(null);
       return;
@@ -573,7 +557,7 @@ export default function AstralProfile({
 
   const resetBirthEditor = () => {
     setEditName(name);
-    setBirthEditorDate(getBirthDateParts(birthDate));
+    setBirthEditorDate(getBirthDateParts(birthDate, birthTimeZone));
     setEditPlace(birthPlace || '');
     setSelectedEditCity(findBirthCity(birthPlace || ''));
   };
@@ -596,16 +580,20 @@ export default function AstralProfile({
     const fallbackLongitude = birthLongitude ?? matchedCity?.lon ?? BIRTH_CITY_OPTIONS[0].lon;
     const latitude = matchedCity?.lat ?? birthLatitude ?? BIRTH_CITY_OPTIONS[0].lat;
     const longitude = matchedCity?.lon ?? fallbackLongitude;
-    const timezoneOffset = matchedCity?.tz ?? birthTimezoneOffset ?? getTimezoneFromLongitude(longitude);
+    const date = `${birthEditorDate.year}-${padBirthValue(birthEditorDate.month)}-${padBirthValue(birthEditorDate.day)}`;
+    const time = `${padBirthValue(birthEditorDate.hour)}:${padBirthValue(birthEditorDate.minute)}`;
+    const timeZone = getTimeZoneFromCoordinates(latitude, longitude);
+    const birthInstant = parseBirthDateTime(date, time, timeZone);
 
     await onEditBirthData({
       name: editName.trim() || name,
-      date: `${birthEditorDate.year}-${padBirthValue(birthEditorDate.month)}-${padBirthValue(birthEditorDate.day)}`,
-      time: `${padBirthValue(birthEditorDate.hour)}:${padBirthValue(birthEditorDate.minute)}`,
+      date,
+      time,
       place: place || birthPlace || BIRTH_CITY_OPTIONS[0].name,
       latitude,
       longitude,
-      timezoneOffset,
+      timeZone,
+      timezoneOffset: getTimezoneOffsetHours(birthInstant, timeZone),
     });
 
     setIsEditingBirthData(false);
@@ -687,7 +675,7 @@ export default function AstralProfile({
     </div>
   );
 
-  const renderAspectDescription = (aspect: any, className = 'astral-profile__content astral-profile__content--inline') => (
+  const renderAspectDescription = (aspect: Aspect, className = 'astral-profile__content astral-profile__content--inline') => (
     <div className={`${className}${usesAstroAspectBackground(aspect) ? ' astro-aspect-background astro-aspect-background--active' : ''}`} key={`${aspect.planet1}-${aspect.type}-${aspect.planet2}`} ref={contentRef}>
       {usesAstroAspectBackground(aspect) && renderAstroAspectBackground()}
       <h2 className="astral-profile__title">

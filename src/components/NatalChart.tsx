@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
 import { Maximize2 } from "lucide-react";
+import type { Aspect, House, PlanetPosition } from "../services/astrology";
 
 interface NatalChartProps {
   name: string;
   birthDate: Date;
   birthPlace: string;
-  planetPositions: Record<string, any>;
-  houses: any[];
-  aspects: any[];
-  onAspectClick?: (aspect: any) => void;
+  planetPositions: Record<string, PlanetPosition>;
+  houses: House[];
+  aspects: Aspect[];
+  onAspectClick?: (aspect: Aspect) => void;
   onPlanetClick?: (planetKey: string) => void;
   fullscreenMode?: boolean;
   enableNavigation?: boolean;
@@ -274,7 +275,7 @@ export default function NatalChart({
 
   const cardinalPoints = getCardinalPoints();
   const focusedPlanet = hoveredPlanet || selectedPlanet;
-  const aspectTouchesFocusedPlanet = (aspect: any) => (
+  const aspectTouchesFocusedPlanet = (aspect: Aspect) => (
     !focusedPlanet ||
     aspect.planet1 === focusedPlanet ||
     aspect.planet2 === focusedPlanet

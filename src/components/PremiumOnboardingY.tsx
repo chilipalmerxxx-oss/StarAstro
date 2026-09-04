@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { ArrowLeft, Check, ChevronRight, MapPin, Sparkles, X } from 'lucide-react';
-import type { OnboardingBirthData } from './Onboarding';
+import { getTimeZoneFromCoordinates, getTimezoneOffsetHours, parseBirthDateTime } from '../lib/birthDate';
+import type { BirthInput } from '../types/chart';
 import OnboardingFinalReveal from './onboarding/OnboardingFinalReveal';
 import './PremiumOnboardingY.css';
 
 type PremiumOnboardingYProps = {
-  onComplete: (data: OnboardingBirthData) => Promise<void> | void;
-  onSkipAccount: () => void;
+  onComplete: (data: BirthInput) => Promise<void> | void;
   onExit: () => void;
 };
 
@@ -16,7 +16,6 @@ type City = {
   country: string;
   lat: number;
   lon: number;
-  tz: number;
   population?: number;
   importance?: number;
 };
@@ -34,21 +33,21 @@ type NominatimResult = {
 };
 
 const CITIES: City[] = [
-  { name: 'Paris', region: 'Île-de-France', country: 'FR', lat: 48.8566, lon: 2.3522, tz: 1 },
-  { name: 'Lyon', region: 'Auvergne-Rhône-Alpes', country: 'FR', lat: 45.764, lon: 4.8357, tz: 1 },
-  { name: 'Marseille', region: 'Provence-Alpes-Côte d’Azur', country: 'FR', lat: 43.2965, lon: 5.3698, tz: 1 },
-  { name: 'Toulouse', region: 'Occitanie', country: 'FR', lat: 43.6047, lon: 1.4442, tz: 1 },
-  { name: 'Bordeaux', region: 'Nouvelle-Aquitaine', country: 'FR', lat: 44.8378, lon: -0.5792, tz: 1 },
-  { name: 'Lille', region: 'Hauts-de-France', country: 'FR', lat: 50.6292, lon: 3.0573, tz: 1 },
-  { name: 'Nice', region: 'Provence-Alpes-Côte d’Azur', country: 'FR', lat: 43.7102, lon: 7.262, tz: 1 },
-  { name: 'Nantes', region: 'Pays de la Loire', country: 'FR', lat: 47.2184, lon: -1.5536, tz: 1 },
-  { name: 'Strasbourg', region: 'Grand Est', country: 'FR', lat: 48.5734, lon: 7.7521, tz: 1 },
-  { name: 'Montpellier', region: 'Occitanie', country: 'FR', lat: 43.6108, lon: 3.8767, tz: 1 },
-  { name: 'Bruxelles', region: 'Bruxelles-Capitale', country: 'BE', lat: 50.8503, lon: 4.3517, tz: 1 },
-  { name: 'Genève', region: 'Genève', country: 'CH', lat: 46.2044, lon: 6.1432, tz: 1 },
-  { name: 'Londres', region: 'Angleterre', country: 'GB', lat: 51.5074, lon: -0.1278, tz: 0 },
-  { name: 'New York', region: 'New York', country: 'US', lat: 40.7128, lon: -74.006, tz: -5 },
-  { name: 'Montréal', region: 'Québec', country: 'CA', lat: 45.5017, lon: -73.5673, tz: -5 },
+  { name: 'Paris', region: 'Île-de-France', country: 'FR', lat: 48.8566, lon: 2.3522 },
+  { name: 'Lyon', region: 'Auvergne-Rhône-Alpes', country: 'FR', lat: 45.764, lon: 4.8357 },
+  { name: 'Marseille', region: 'Provence-Alpes-Côte d’Azur', country: 'FR', lat: 43.2965, lon: 5.3698 },
+  { name: 'Toulouse', region: 'Occitanie', country: 'FR', lat: 43.6047, lon: 1.4442 },
+  { name: 'Bordeaux', region: 'Nouvelle-Aquitaine', country: 'FR', lat: 44.8378, lon: -0.5792 },
+  { name: 'Lille', region: 'Hauts-de-France', country: 'FR', lat: 50.6292, lon: 3.0573 },
+  { name: 'Nice', region: 'Provence-Alpes-Côte d’Azur', country: 'FR', lat: 43.7102, lon: 7.262 },
+  { name: 'Nantes', region: 'Pays de la Loire', country: 'FR', lat: 47.2184, lon: -1.5536 },
+  { name: 'Strasbourg', region: 'Grand Est', country: 'FR', lat: 48.5734, lon: 7.7521 },
+  { name: 'Montpellier', region: 'Occitanie', country: 'FR', lat: 43.6108, lon: 3.8767 },
+  { name: 'Bruxelles', region: 'Bruxelles-Capitale', country: 'BE', lat: 50.8503, lon: 4.3517 },
+  { name: 'Genève', region: 'Genève', country: 'CH', lat: 46.2044, lon: 6.1432 },
+  { name: 'Londres', region: 'Angleterre', country: 'GB', lat: 51.5074, lon: -0.1278 },
+  { name: 'New York', region: 'New York', country: 'US', lat: 40.7128, lon: -74.006 },
+  { name: 'Montréal', region: 'Québec', country: 'CA', lat: 45.5017, lon: -73.5673 },
 ];
 
 const MAJOR_CITY_NAMES = new Set([
@@ -292,7 +291,7 @@ function WheelPicker({
   );
 }
 
-export default function PremiumOnboardingY({ onComplete, onSkipAccount, onExit }: PremiumOnboardingYProps) {
+export default function PremiumOnboardingY({ onComplete, onExit }: PremiumOnboardingYProps) {
   const [step, setStep] = useState(0);
   const [day, setDay] = useState(12);
   const [month, setMonth] = useState(6);
@@ -394,7 +393,6 @@ export default function PremiumOnboardingY({ onComplete, onSkipAccount, onExit }
             country: (address.country_code || address.country || '').toUpperCase(),
             lat: Number(item.lat),
             lon,
-            tz: Math.round(lon / 15),
             population: Number(String(item.extratags?.population || '').replace(/\D/g, '')) || undefined,
             importance: item.importance || 0,
           };
@@ -466,15 +464,20 @@ export default function PremiumOnboardingY({ onComplete, onSkipAccount, onExit }
 
   const handleReveal = async () => {
     const birthCity = getBirthCity();
+    const date = `${year}-${pad(month)}-${pad(day)}`;
+    const time = `${pad(hour)}:${pad(minute)}`;
+    const timeZone = getTimeZoneFromCoordinates(birthCity.lat, birthCity.lon);
+    const birthDate = parseBirthDateTime(date, time, timeZone);
     try {
       await onComplete({
         name: name.trim() || 'Ami(e)',
-        date: `${year}-${pad(month)}-${pad(day)}`,
-        time: `${pad(hour)}:${pad(minute)}`,
+        date,
+        time,
         place: birthCity.region ? `${birthCity.name}, ${birthCity.region}` : birthCity.name,
         latitude: birthCity.lat,
         longitude: birthCity.lon,
-        timezoneOffset: birthCity.tz,
+        timeZone,
+        timezoneOffset: getTimezoneOffsetHours(birthDate, timeZone),
       });
     } catch {
       throw new Error('Onboarding completion failed');
@@ -719,11 +722,6 @@ export default function PremiumOnboardingY({ onComplete, onSkipAccount, onExit }
           >
             {mainActionText}
           </button>
-          {step === 0 && (
-            <button type="button" className="premium-y-secondary" onClick={onSkipAccount}>
-              J’ai déjà un compte
-            </button>
-          )}
         </footer>
       </main>
     </div>
