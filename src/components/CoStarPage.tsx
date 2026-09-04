@@ -1,11 +1,11 @@
 import { useMemo, useState, useEffect, useRef } from 'react';
 import { Sparkles, ChevronDown, ChevronUp, User } from 'lucide-react';
-import { generateCoStarAnalysis, type CoStarAnalysis } from '../services/astrology';
-import type { ChartData } from '../types/chart';
+import { generateCoStarAnalysis } from '../services/astrology';
+import './CoStarLunarPreview.css';
 
 interface CoStarPageProps {
   onBack: () => void;
-  chartData?: ChartData;
+  chartData?: any;
   userName?: string;
 }
 
@@ -692,7 +692,7 @@ export default function CoStarPage({ chartData, userName = 'Ami(e) des étoiles'
     setOpenAspects(next);
   };
 
-  const getAspectDescription = (aspect: CoStarAnalysis['favorableAspects'][number]) => {
+  const getAspectDescription = (aspect: any) => {
     const tp = aspect.planet1;
     const np = aspect.planet2;
     const type = aspect.type;

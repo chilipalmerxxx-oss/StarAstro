@@ -34,3 +34,5 @@ project_temp/
 /*.html
 !/index.html
 /test-neptune-pluto.js
+
+.vercel

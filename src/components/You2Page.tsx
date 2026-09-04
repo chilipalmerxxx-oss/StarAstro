@@ -1,7 +1,15 @@
 import { useCallback, useRef, type PointerEvent } from 'react';
-import type { Aspect, House, PlanetPosition } from '../services/astrology';
-import type { BirthInput } from '../types/chart';
 import AstralProfile from './AstralProfile';
+
+type EditableBirthData = {
+  name: string;
+  date: string;
+  time: string;
+  place: string;
+  latitude: number;
+  longitude: number;
+  timezoneOffset: number;
+};
 
 interface You2PageProps {
   name: string;
@@ -9,11 +17,12 @@ interface You2PageProps {
   birthPlace?: string;
   birthLatitude?: number;
   birthLongitude?: number;
-  birthTimeZone?: string;
-  planetPositions: Record<string, PlanetPosition>;
-  houses: House[];
-  aspects?: Aspect[];
-  onEditBirthData?: (data: BirthInput) => Promise<void> | void;
+  birthTimezoneOffset?: number;
+  planetPositions: Record<string, any>;
+  houses: any[];
+  aspects?: any[];
+  initialActivePlanet?: any;
+  onEditBirthData?: (data: EditableBirthData) => Promise<void> | void;
   editBirthDataLoading?: boolean;
 }
 
@@ -25,10 +34,11 @@ export default function You2Page({
   birthPlace,
   birthLatitude,
   birthLongitude,
-  birthTimeZone,
+  birthTimezoneOffset,
   planetPositions,
   houses,
   aspects = [],
+  initialActivePlanet,
   onEditBirthData,
   editBirthDataLoading = false,
 }: You2PageProps) {
@@ -82,10 +92,11 @@ export default function You2Page({
         birthPlace={birthPlace}
         birthLatitude={birthLatitude}
         birthLongitude={birthLongitude}
-        birthTimeZone={birthTimeZone}
+        birthTimezoneOffset={birthTimezoneOffset}
         planetPositions={planetPositions}
         houses={houses}
         aspects={aspects}
+        initialActivePlanet={initialActivePlanet}
         fullscreenMode={true}
         onEditBirthData={onEditBirthData}
         editBirthDataLoading={editBirthDataLoading}

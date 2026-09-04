@@ -1,0 +1,43 @@
+/* Temporary integrated preview for the lunar eclipse background. */
+.app-content--costar {
+  background: #050507 url('/costar-lunar-eclipse-preview.png') center top / cover no-repeat fixed !important;
+}
+
+.app-content--costar .costar-page,
+html[data-theme="light"] .app-content--costar .costar-page {
+  background:
+    linear-gradient(180deg, rgba(1, 2, 5, 0.05) 0%, rgba(2, 3, 7, 0.2) 36%, rgba(2, 3, 7, 0.48) 100%),
+    transparent !important;
+  background-blend-mode: normal !important;
+}
+
+.app-content--costar .costar-scroll-planet::before {
+  background: url('/costar-lunar-eclipse-preview.png') center top / cover no-repeat !important;
+  filter: brightness(0.92) contrast(1.04) saturate(0.82) !important;
+}
+
+.app-content--costar .costar-scroll-planet::after {
+  background:
+    radial-gradient(ellipse 72% 28% at 50% 8%, transparent 0%, rgba(2, 3, 7, 0.08) 62%, rgba(1, 2, 5, 0.22) 100%),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.28) 0%, transparent 22%, transparent 78%, rgba(0, 0, 0, 0.28) 100%),
+    linear-gradient(180deg, rgba(1, 2, 5, 0.04) 0%, rgba(1, 2, 5, 0.12) 38%, rgba(1, 2, 5, 0.58) 100%) !important;
+}
+
+@media (max-width: 768px) {
+  .app-content--costar {
+    background-attachment: scroll !important;
+    background-position: center top !important;
+  }
+
+  .app-content--costar .costar-scroll-planet::before {
+    background-position: center top !important;
+    background-size: cover !important;
+  }
+
+  .app-content--costar .costar-scroll-planet::after {
+    background:
+      radial-gradient(ellipse 84% 30% at 50% 9%, transparent 0%, rgba(2, 3, 7, 0.05) 58%, rgba(1, 2, 5, 0.18) 100%),
+      linear-gradient(90deg, rgba(0, 0, 0, 0.22) 0%, transparent 18%, transparent 82%, rgba(0, 0, 0, 0.22) 100%),
+      linear-gradient(180deg, rgba(1, 2, 5, 0.02) 0%, rgba(1, 2, 5, 0.1) 38%, rgba(1, 2, 5, 0.52) 100%) !important;
+  }
+}

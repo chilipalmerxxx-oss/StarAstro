@@ -1,12 +1,12 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
+﻿import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { ArrowLeft, Check, ChevronRight, MapPin, Sparkles, X } from 'lucide-react';
-import { getTimeZoneFromCoordinates, getTimezoneOffsetHours, parseBirthDateTime } from '../lib/birthDate';
-import type { BirthInput } from '../types/chart';
+import type { OnboardingBirthData } from './Onboarding';
 import OnboardingFinalReveal from './onboarding/OnboardingFinalReveal';
 import './PremiumOnboardingY.css';
 
 type PremiumOnboardingYProps = {
-  onComplete: (data: BirthInput) => Promise<void> | void;
+  onComplete: (data: OnboardingBirthData) => Promise<void> | void;
+  onSkipAccount: () => void;
   onExit: () => void;
 };
 
@@ -16,6 +16,7 @@ type City = {
   country: string;
   lat: number;
   lon: number;
+  tz: number;
   population?: number;
   importance?: number;
 };
@@ -33,21 +34,21 @@ type NominatimResult = {
 };
 
 const CITIES: City[] = [
-  { name: 'Paris', region: 'Île-de-France', country: 'FR', lat: 48.8566, lon: 2.3522 },
-  { name: 'Lyon', region: 'Auvergne-Rhône-Alpes', country: 'FR', lat: 45.764, lon: 4.8357 },
-  { name: 'Marseille', region: 'Provence-Alpes-Côte d’Azur', country: 'FR', lat: 43.2965, lon: 5.3698 },
-  { name: 'Toulouse', region: 'Occitanie', country: 'FR', lat: 43.6047, lon: 1.4442 },
-  { name: 'Bordeaux', region: 'Nouvelle-Aquitaine', country: 'FR', lat: 44.8378, lon: -0.5792 },
-  { name: 'Lille', region: 'Hauts-de-France', country: 'FR', lat: 50.6292, lon: 3.0573 },
-  { name: 'Nice', region: 'Provence-Alpes-Côte d’Azur', country: 'FR', lat: 43.7102, lon: 7.262 },
-  { name: 'Nantes', region: 'Pays de la Loire', country: 'FR', lat: 47.2184, lon: -1.5536 },
-  { name: 'Strasbourg', region: 'Grand Est', country: 'FR', lat: 48.5734, lon: 7.7521 },
-  { name: 'Montpellier', region: 'Occitanie', country: 'FR', lat: 43.6108, lon: 3.8767 },
-  { name: 'Bruxelles', region: 'Bruxelles-Capitale', country: 'BE', lat: 50.8503, lon: 4.3517 },
-  { name: 'Genève', region: 'Genève', country: 'CH', lat: 46.2044, lon: 6.1432 },
-  { name: 'Londres', region: 'Angleterre', country: 'GB', lat: 51.5074, lon: -0.1278 },
-  { name: 'New York', region: 'New York', country: 'US', lat: 40.7128, lon: -74.006 },
-  { name: 'Montréal', region: 'Québec', country: 'CA', lat: 45.5017, lon: -73.5673 },
+  { name: 'Paris', region: 'Île-de-France', country: 'FR', lat: 48.8566, lon: 2.3522, tz: 1 },
+  { name: 'Lyon', region: 'Auvergne-Rhône-Alpes', country: 'FR', lat: 45.764, lon: 4.8357, tz: 1 },
+  { name: 'Marseille', region: 'Provence-Alpes-Côte d’Azur', country: 'FR', lat: 43.2965, lon: 5.3698, tz: 1 },
+  { name: 'Toulouse', region: 'Occitanie', country: 'FR', lat: 43.6047, lon: 1.4442, tz: 1 },
+  { name: 'Bordeaux', region: 'Nouvelle-Aquitaine', country: 'FR', lat: 44.8378, lon: -0.5792, tz: 1 },
+  { name: 'Lille', region: 'Hauts-de-France', country: 'FR', lat: 50.6292, lon: 3.0573, tz: 1 },
+  { name: 'Nice', region: 'Provence-Alpes-Côte d’Azur', country: 'FR', lat: 43.7102, lon: 7.262, tz: 1 },
+  { name: 'Nantes', region: 'Pays de la Loire', country: 'FR', lat: 47.2184, lon: -1.5536, tz: 1 },
+  { name: 'Strasbourg', region: 'Grand Est', country: 'FR', lat: 48.5734, lon: 7.7521, tz: 1 },
+  { name: 'Montpellier', region: 'Occitanie', country: 'FR', lat: 43.6108, lon: 3.8767, tz: 1 },
+  { name: 'Bruxelles', region: 'Bruxelles-Capitale', country: 'BE', lat: 50.8503, lon: 4.3517, tz: 1 },
+  { name: 'Genève', region: 'Genève', country: 'CH', lat: 46.2044, lon: 6.1432, tz: 1 },
+  { name: 'Londres', region: 'Angleterre', country: 'GB', lat: 51.5074, lon: -0.1278, tz: 0 },
+  { name: 'New York', region: 'New York', country: 'US', lat: 40.7128, lon: -74.006, tz: -5 },
+  { name: 'Montréal', region: 'Québec', country: 'CA', lat: 45.5017, lon: -73.5673, tz: -5 },
 ];
 
 const MAJOR_CITY_NAMES = new Set([
@@ -291,7 +292,7 @@ function WheelPicker({
   );
 }
 
-export default function PremiumOnboardingY({ onComplete, onExit }: PremiumOnboardingYProps) {
+export default function PremiumOnboardingY({ onComplete, onSkipAccount, onExit }: PremiumOnboardingYProps) {
   const [step, setStep] = useState(0);
   const [day, setDay] = useState(12);
   const [month, setMonth] = useState(6);
@@ -393,6 +394,7 @@ export default function PremiumOnboardingY({ onComplete, onExit }: PremiumOnboar
             country: (address.country_code || address.country || '').toUpperCase(),
             lat: Number(item.lat),
             lon,
+            tz: Math.round(lon / 15),
             population: Number(String(item.extratags?.population || '').replace(/\D/g, '')) || undefined,
             importance: item.importance || 0,
           };
@@ -437,15 +439,16 @@ export default function PremiumOnboardingY({ onComplete, onExit }: PremiumOnboar
     }
   }, [day, daysInMonth]);
 
-  const totalSteps = 7;
-  const finalRevealStep = totalSteps + 1;
-  const progress = step === 0 ? 0 : (Math.min(step, totalSteps) / totalSteps) * 100;
+  const recapStep = 7;
+  const finalRevealStep = 8;
+  const totalSteps = recapStep;
+  const progress = step === 0 ? 0 : (Math.min(step, recapStep) / recapStep) * 100;
   const cityReady = Boolean(selectedCity || citySuggestions.length > 0);
   const nameReady = name.trim().length > 0;
 
   const canContinue =
-    step === 4 ? cityReady :
-    step === 5 ? nameReady :
+    step === 2 ? nameReady :
+    step === 5 ? cityReady :
     true;
 
   const goNext = () => setStep((value) => Math.min(finalRevealStep, value + 1));
@@ -464,20 +467,15 @@ export default function PremiumOnboardingY({ onComplete, onExit }: PremiumOnboar
 
   const handleReveal = async () => {
     const birthCity = getBirthCity();
-    const date = `${year}-${pad(month)}-${pad(day)}`;
-    const time = `${pad(hour)}:${pad(minute)}`;
-    const timeZone = getTimeZoneFromCoordinates(birthCity.lat, birthCity.lon);
-    const birthDate = parseBirthDateTime(date, time, timeZone);
     try {
       await onComplete({
         name: name.trim() || 'Ami(e)',
-        date,
-        time,
+        date: `${year}-${pad(month)}-${pad(day)}`,
+        time: `${pad(hour)}:${pad(minute)}`,
         place: birthCity.region ? `${birthCity.name}, ${birthCity.region}` : birthCity.name,
         latitude: birthCity.lat,
         longitude: birthCity.lon,
-        timeZone,
-        timezoneOffset: getTimezoneOffsetHours(birthDate, timeZone),
+        timezoneOffset: birthCity.tz,
       });
     } catch {
       throw new Error('Onboarding completion failed');
@@ -485,15 +483,11 @@ export default function PremiumOnboardingY({ onComplete, onExit }: PremiumOnboar
   };
 
   const mainAction = goNext;
-  const mainActionText = step === totalSteps ? 'Voir mon ciel' : step === 0 ? 'Commencer' : 'Continuer';
+  const mainActionText = step === recapStep ? 'Voir mon ciel' : step === 0 ? 'Commencer' : 'Continuer';
+  const displayName = name.trim() || 'Chloé';
 
   if (step === finalRevealStep) {
-    return (
-      <OnboardingFinalReveal
-        onBack={() => setStep(totalSteps)}
-        onComplete={handleReveal}
-      />
-    );
+    return <OnboardingFinalReveal onBack={() => setStep(recapStep)} onComplete={handleReveal} />;
   }
 
   return (
@@ -534,48 +528,54 @@ export default function PremiumOnboardingY({ onComplete, onExit }: PremiumOnboar
         <div className="premium-y-progress" aria-label={`Étape ${clamp(step, 1, totalSteps)} sur ${totalSteps}`}>
           <span style={{ width: `${progress}%` }} />
         </div>
-        <button type="button" className="premium-y-icon-button premium-y-exit-button" onClick={onExit} aria-label="Quitter l’onboarding">
+        <button type="button" className="premium-y-icon-button premium-y-exit-button" onClick={onExit} aria-label="Quitter l'onboarding">
           <X size={18} strokeWidth={1.5} />
         </button>
       </header>
 
       <main className={`premium-y-stage premium-y-stage--${step}`}>
-        <aside className="premium-y-rail" aria-hidden="true">
-          {Array.from({ length: totalSteps }, (_, index) => (
-            <span key={index} className={index + 1 <= clamp(step, 1, totalSteps) ? 'is-active' : ''} />
-          ))}
-        </aside>
-
         <section className="premium-y-card">
           {step === 0 && (
             <div className="premium-y-copy premium-y-copy--center">
-              <p className="premium-y-kicker">Carte natale personnelle</p>
-              <h1>nightstar</h1>
-              <p>
-                Une lecture claire et personnelle de ton ciel, conçue à partir de tes données de naissance.
-              </p>
+              <div className="premium-y-eclipse-mark" aria-hidden="true"><span /><i /></div>
+              <p className="premium-y-kicker">la nuit où tout a commencé</p>
+              <p className="premium-y-word">Night One</p>
+              <h1>Le temps a gravé une nuit à ton nom.</h1>
+              <p>Quelque part, il y a des années, le ciel s’est figé au-dessus de toi. Night One retrace cet instant précis, minute par minute, degré par degré.</p>
             </div>
           )}
 
           {step === 1 && (
             <div className="premium-y-copy">
               <StepLine step={1} />
-              <h2>Ton ciel commence ici.</h2>
-              <p>
-                La date, l’heure et le lieu permettent de calculer précisément tes maisons, tes aspects et tes cycles.
-              </p>
-              <div className="premium-y-proof">
-                <span>Maisons</span>
-                <span>Aspects</span>
-                <span>Cycles</span>
+              <p className="premium-y-kicker">comment ça marche</p>
+              <h2>Trois infos, une carte entière.</h2>
+              <p>Ta date, ton heure et ton lieu de naissance suffisent à reconstituer la position exacte du ciel ce jour-là. De ça, Night One dérive tout le reste :</p>
+              <div className="premium-y-explain-list">
+                <div><span /><strong>Signes</strong><p>le caractère de chaque planète, selon son signe</p></div>
+                <div><span /><strong>Maisons</strong><p>les domaines de ta vie, amour, travail, famille...</p></div>
+                <div><span /><strong>Aspects</strong><p>les liens entre tes planètes, tes tensions et tes talents</p></div>
               </div>
             </div>
           )}
 
           {step === 2 && (
-            <div className="premium-y-copy premium-y-copy--wheel premium-y-copy--birth-data">
+            <div className="premium-y-copy">
               <StepLine step={2} />
-              <h2>Quand es-tu né(e) ?</h2>
+              <p className="premium-y-kicker">pour commencer</p>
+              <h2>Comment tu t’appelles ?</h2>
+              <label className="premium-y-input">
+                <span><Sparkles size={14} strokeWidth={1.6} /> Prénom</span>
+                <input value={name} onChange={(event) => setName(event.target.value)} placeholder="Écris ton prénom" autoComplete="given-name" />
+              </label>
+            </div>
+          )}
+
+          {step === 3 && (
+            <div className="premium-y-copy premium-y-copy--wheel premium-y-copy--birth-data">
+              <StepLine step={3} />
+              <p className="premium-y-kicker">naissance</p>
+              <h2>Quand es-tu née, {displayName} ?</h2>
               <div className="premium-y-wheel-grid premium-y-wheel-grid--date">
                 <WheelPicker label="Jour" value={day} onChange={setDay} options={dayOptions} />
                 <WheelPicker label="Mois" value={month} onChange={setMonth} options={monthOptions} />
@@ -584,144 +584,73 @@ export default function PremiumOnboardingY({ onComplete, onExit }: PremiumOnboar
             </div>
           )}
 
-          {step === 3 && (
+          {step === 4 && (
             <div className="premium-y-copy premium-y-copy--wheel premium-y-copy--birth-data">
-              <StepLine step={3} />
-              <h2>À quelle heure es-tu né(e) ?</h2>
+              <StepLine step={4} />
+              <p className="premium-y-kicker">heure exacte</p>
+              <h2>À quelle heure es-tu née ?</h2>
               <div className="premium-y-wheel-grid premium-y-wheel-grid--time">
                 <WheelPicker label="Heure" value={hour} onChange={setHour} options={hourOptions} />
                 <span className="premium-y-time-separator" aria-hidden="true">:</span>
                 <WheelPicker label="Minute" value={minute} onChange={setMinute} options={minuteOptions} />
               </div>
-              <button type="button" className="premium-y-text-button" onClick={() => { setHour(12); setMinute(0); goNext(); }}>
-                Je ne connais pas mon heure
-              </button>
-            </div>
-          )}
-
-          {step === 4 && (
-            <div className="premium-y-copy premium-y-copy--form-title premium-y-copy--birth-data premium-y-copy--city">
-              <StepLine step={4} />
-              <h2>Où es-tu né(e) ?</h2>
-              <label className="premium-y-input">
-                <span><MapPin size={14} strokeWidth={1.6} /> Ville</span>
-                <input
-                  value={cityInput}
-                  onChange={(event) => {
-                    setCityInput(event.target.value);
-                    setSelectedCity(null);
-                    setRemoteCitySuggestions([]);
-                    setCitySearchFailed(false);
-                  }}
-                  placeholder="Tape ta ville"
-                  autoComplete="off"
-                />
-              </label>
-              <div className="premium-y-suggestions">
-                {isSearchingCities && <p className="premium-y-search-status">Recherche dans le monde entier…</p>}
-                {citySuggestions.map((city) => (
-                  <button
-                    key={`${city.name}-${city.country}`}
-                    type="button"
-                    className={selectedCity?.name === city.name ? 'is-selected' : ''}
-                    onClick={() => {
-                      setCityInput(city.name);
-                      setSelectedCity(city);
-                    }}
-                  >
-                    <span>{city.name}<small>{city.region}</small></span>
-                    <strong>{city.country}</strong>
-                  </button>
-                ))}
-                {!isSearchingCities && citySearchFailed && localCitySuggestions.length === 0 && (
-                  <p className="premium-y-search-status">Recherche indisponible. Vérifie le nom de la ville.</p>
-                )}
-              </div>
+              <button type="button" className="premium-y-text-button" onClick={() => { setHour(12); setMinute(0); goNext(); }}>Je ne connais pas mon heure de naissance</button>
             </div>
           )}
 
           {step === 5 && (
-            <div className="premium-y-copy">
+            <div className="premium-y-copy premium-y-copy--form-title premium-y-copy--birth-data premium-y-copy--city">
               <StepLine step={5} />
-              <h2>Comment t’appelles-tu ?</h2>
+              <p className="premium-y-kicker">lieu de naissance</p>
+              <h2>Où es-tu née ?</h2>
               <label className="premium-y-input">
-                <span><Sparkles size={14} strokeWidth={1.6} /> Prénom</span>
-                <input
-                  value={name}
-                  onChange={(event) => setName(event.target.value)}
-                  placeholder="Écris ton prénom"
-                  autoComplete="given-name"
-                />
+                <span><MapPin size={14} strokeWidth={1.6} /> Ville</span>
+                <input value={cityInput} onChange={(event) => { setCityInput(event.target.value); setSelectedCity(null); setRemoteCitySuggestions([]); setCitySearchFailed(false); }} placeholder="Tape ta ville" autoComplete="off" />
               </label>
+              <div className="premium-y-suggestions">
+                {isSearchingCities && <p className="premium-y-search-status">Recherche dans le monde entier...</p>}
+                {citySuggestions.map((city) => (
+                  <button key={`${city.name}-${city.country}`} type="button" className={selectedCity?.name === city.name ? 'is-selected' : ''} onClick={() => { setCityInput(city.name); setSelectedCity(city); }}>
+                    <span>{city.name}<small>{city.region}</small></span><strong>{city.country}</strong>
+                  </button>
+                ))}
+                {!isSearchingCities && citySearchFailed && localCitySuggestions.length === 0 && <p className="premium-y-search-status">Recherche indisponible. Vérifie le nom de la ville.</p>}
+              </div>
             </div>
           )}
 
           {step === 6 && (
             <div className="premium-y-copy">
               <StepLine step={6} />
-              <h2>Veux-tu des conseils sur mesure ?</h2>
-              <p>
-                Nightstar peut mettre en avant les conseils les plus pertinents selon ton thème et tes transits.
-              </p>
+              <p className="premium-y-kicker">conseils personnels</p>
+              <h2>Envie de conseils sur mesure ?</h2>
+              <p>Night One peut mettre en avant les conseils les plus pertinents selon ta carte et tes transits du moment.</p>
               <div className="premium-y-choice">
-                <button
-                  type="button"
-                  className={!wantsPersonalAdvice ? 'is-selected' : ''}
-                  onClick={() => setWantsPersonalAdvice(false)}
-                >
-                  Non
-                </button>
-                <button
-                  type="button"
-                  className={wantsPersonalAdvice ? 'is-selected' : ''}
-                  onClick={() => setWantsPersonalAdvice(true)}
-                >
-                  Oui
-                </button>
+                <button type="button" className={!wantsPersonalAdvice ? 'is-selected' : ''} onClick={() => setWantsPersonalAdvice(false)}>Non</button>
+                <button type="button" className={wantsPersonalAdvice ? 'is-selected' : ''} onClick={() => setWantsPersonalAdvice(true)}>Oui</button>
               </div>
             </div>
           )}
 
-          {step === 7 && (
+          {step === recapStep && (
             <div className="premium-y-copy premium-y-copy--center">
-              <StepLine step={7} />
-              <div className="premium-y-reveal-core" aria-hidden="true">
-                <span className="premium-y-reveal-ring premium-y-reveal-ring--outer" />
-                <span className="premium-y-reveal-ring premium-y-reveal-ring--inner" />
-                <Sparkles size={19} strokeWidth={1.25} />
-              </div>
-              <h2>Ton thème est prêt.</h2>
+              <StepLine step={recapStep} />
+              <p className="premium-y-kicker">ton ciel est prêt</p>
+              <h2>Vérifie tes informations</h2>
               <div className="premium-y-summary">
-                <button type="button" onClick={() => setStep(5)} aria-label="Modifier le prénom">
-                  <span><Check size={14} /> {name.trim() || 'Prénom'}</span>
-                  <ChevronRight size={15} aria-hidden="true" />
-                </button>
-                <button type="button" onClick={() => setStep(2)} aria-label="Modifier la date de naissance">
-                  <span><Check size={14} /> {pad(day)} {MONTHS[month - 1]} {year}</span>
-                  <ChevronRight size={15} aria-hidden="true" />
-                </button>
-                <button type="button" onClick={() => setStep(3)} aria-label="Modifier l’heure de naissance">
-                  <span><Check size={14} /> {pad(hour)}:{pad(minute)}</span>
-                  <ChevronRight size={15} aria-hidden="true" />
-                </button>
-                <button type="button" onClick={() => setStep(4)} aria-label="Modifier la ville de naissance">
-                  <span><Check size={14} /> {cityInput.trim() || 'Ville'}</span>
-                  <ChevronRight size={15} aria-hidden="true" />
-                </button>
+                <button type="button" onClick={() => setStep(2)} aria-label="Modifier le prénom"><span><Check size={14} /> {name.trim() || 'Prénom'}</span><ChevronRight size={15} aria-hidden="true" /></button>
+                <button type="button" onClick={() => setStep(3)} aria-label="Modifier la date de naissance"><span><Check size={14} /> {pad(day)} {MONTHS[month - 1]} {year}</span><ChevronRight size={15} aria-hidden="true" /></button>
+                <button type="button" onClick={() => setStep(4)} aria-label="Modifier l'heure de naissance"><span><Check size={14} /> {pad(hour)}:{pad(minute)}</span><ChevronRight size={15} aria-hidden="true" /></button>
+                <button type="button" onClick={() => setStep(5)} aria-label="Modifier la ville de naissance"><span><Check size={14} /> {cityInput.trim() || 'Ville'}</span><ChevronRight size={15} aria-hidden="true" /></button>
               </div>
             </div>
           )}
+
         </section>
 
         <footer className="premium-y-footer">
-          <button
-            type="button"
-            className="premium-y-primary"
-            onClick={mainAction}
-            disabled={!canContinue}
-          >
-            {mainActionText}
-          </button>
+          <button type="button" className="premium-y-primary" onClick={mainAction} disabled={!canContinue}>{mainActionText}</button>
+          {step === 0 && <button type="button" className="premium-y-secondary" onClick={onSkipAccount}>J’ai déjà un compte</button>}
         </footer>
       </main>
     </div>

@@ -16,7 +16,7 @@ export default function TestCompatibilityPage({ imageSrc }: TestCompatibilityPag
 
   return (
     <main className="compat-test-stage">
-      <section className="compat-test-phone" aria-label="Apercu mobile Nightstar">
+      <section className="compat-test-phone" aria-label="Apercu mobile Night One">
         <div className="compat-test-screen">
           <div className="compat-test-stars" aria-hidden="true" />
 
@@ -24,7 +24,7 @@ export default function TestCompatibilityPage({ imageSrc }: TestCompatibilityPag
             <button className="compat-test-icon-btn" type="button" aria-label="Retour">
               <ChevronLeft size={20} strokeWidth={1.8} />
             </button>
-            <div className="compat-test-brand">Nightstar</div>
+            <div className="compat-test-brand">Night One</div>
             <button className="compat-test-icon-btn" type="button" aria-label="Partager">
               <Share2 size={18} strokeWidth={1.8} />
             </button>

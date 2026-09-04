@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { VitePWA } from 'vite-plugin-pwa';
 import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
@@ -11,23 +12,81 @@ process.env.TMPDIR = localTempDir;
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      injectRegister: null,
+      manifestFilename: 'manifest.webmanifest',
+      manifest: {
+        name: 'Night One',
+        short_name: 'Night One',
+        description: 'La nuit ou tout a commence',
+        lang: 'fr',
+        start_url: '/',
+        scope: '/',
+        display: 'standalone',
+        orientation: 'portrait',
+        theme_color: '#080810',
+        background_color: '#080810',
+        icons: [
+          {
+            src: '/icons/icon-192.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'any',
+          },
+          {
+            src: '/icons/icon-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any',
+          },
+          {
+            src: '/icons/icon-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable',
+          },
+        ],
+      },
+      workbox: {
+        globPatterns: [
+          'assets/*.{js,css,svg,png,jpg,jpeg,webp,woff,woff2}',
+          'icons/*.{svg,png}',
+        ],
+        globIgnores: ['**/index.html', '**/*.map'],
+        navigateFallback: null,
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
+        skipWaiting: true,
+        runtimeCaching: [
+          {
+            urlPattern: ({ request }) => request.destination === 'image',
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'night-one-images',
+              expiration: {
+                maxEntries: 160,
+                maxAgeSeconds: 60 * 60 * 24 * 30,
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+        ],
+      },
+      devOptions: {
+        enabled: false,
+      },
+    }),
+  ],
   server: {
-    // Keep the development server private by default. Use an explicit host
-    // locally when LAN testing is intentionally required.
-    host: '127.0.0.1',
+    host: true,
+    allowedHosts: true,
   },
   optimizeDeps: {
     exclude: ['lucide-react'],
-  },
-  build: {
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (id.includes('/src/data/')) return 'interpretation-data';
-          if (id.includes('/src/components/NatalChart.tsx')) return 'natal-chart';
-        },
-      },
-    },
   },
 });

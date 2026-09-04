@@ -1,7 +1,7 @@
-import { StrictMode, Suspense } from 'react';
+import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { registerSW } from 'virtual:pwa-register';
 import App from './App.tsx';
-import AppErrorBoundary from './components/AppErrorBoundary.tsx';
 import ThemeToggle from './components/ThemeToggle.tsx';
 import './index.css';
 
@@ -11,42 +11,48 @@ function showBootError(error: unknown) {
   const message = error instanceof Error ? error.message : String(error);
   console.error('[Nightstar boot error]', error);
   if (!rootEl) return;
-  const shell = document.createElement('div');
-  shell.className = 'boot-error';
-  const panel = document.createElement('div');
-  const brand = document.createElement('p');
-  brand.textContent = 'Nightstar';
-  const title = document.createElement('h1');
-  title.textContent = "Impossible de démarrer l'app";
-  const detail = document.createElement('p');
-  detail.textContent = message;
-  const retry = document.createElement('button');
-  retry.type = 'button';
-  retry.textContent = 'Réessayer';
-  retry.addEventListener('click', () => window.location.reload());
-  panel.append(brand, title, detail, retry);
-  shell.append(panel);
-  rootEl.replaceChildren(shell);
+  rootEl.innerHTML = `
+    <div style="min-height:100svh;display:grid;place-items:center;padding:24px;background:#050608;color:#f4efe6;font-family:system-ui,sans-serif;text-align:center;">
+      <div style="max-width:28rem;">
+        <p style="margin:0 0 8px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;opacity:.55;">Night One</p>
+        <h1 style="margin:0 0 12px;font-size:1.35rem;font-weight:600;">Impossible de démarrer l'app</h1>
+        <p style="margin:0 0 18px;line-height:1.5;opacity:.78;">${message}</p>
+        <button type="button" onclick="location.reload()" style="appearance:none;border:0;border-radius:999px;padding:12px 18px;background:linear-gradient(180deg,#ffe8bc,#d9a84e);color:#1a140f;font-weight:700;">
+          Réessayer
+        </button>
+      </div>
+    </div>
+  `;
 }
 
-// Always remove leftover service workers from previous deploys.
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker
-    .getRegistrations()
-    .then((registrations) => {
-      registrations.forEach((registration) => {
-        registration.unregister().catch(() => undefined);
-      });
-    })
-    .catch(() => undefined);
-}
+const updateNightOne = registerSW({
+  immediate: true,
+  onNeedRefresh() {
+    updateNightOne(true);
+  },
+  onNeedReload() {
+    window.location.reload();
+  },
+  onRegisteredSW(_swUrl, registration) {
+    if (!registration) return;
 
-if ('caches' in window) {
-  caches
-    .keys()
-    .then((keys) => Promise.all(keys.map((key) => caches.delete(key))))
-    .catch(() => undefined);
-}
+    const checkForUpdate = () => {
+      registration.update().catch(() => undefined);
+    };
+
+    checkForUpdate();
+    window.addEventListener('focus', checkForUpdate);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        checkForUpdate();
+      }
+    });
+    window.setInterval(checkForUpdate, 30 * 60 * 1000);
+  },
+  onRegisterError(error) {
+    console.error('[Night One PWA registration error]', error);
+  },
+});
 
 try {
   if (!rootEl) {
@@ -56,11 +62,7 @@ try {
   createRoot(rootEl).render(
     <StrictMode>
       <ThemeToggle />
-      <AppErrorBoundary>
-        <Suspense fallback={<div className="route-loading" role="status">Chargement…</div>}>
-          <App />
-        </Suspense>
-      </AppErrorBoundary>
+      <App />
     </StrictMode>
   );
 } catch (error) {

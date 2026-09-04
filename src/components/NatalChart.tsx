@@ -1,33 +1,32 @@
 import { useEffect, useState } from "react";
 import { Maximize2 } from "lucide-react";
-import type { Aspect, House, PlanetPosition } from "../services/astrology";
 
 interface NatalChartProps {
   name: string;
   birthDate: Date;
   birthPlace: string;
-  planetPositions: Record<string, PlanetPosition>;
-  houses: House[];
-  aspects: Aspect[];
-  onAspectClick?: (aspect: Aspect) => void;
+  planetPositions: Record<string, any>;
+  houses: any[];
+  aspects: any[];
+  onAspectClick?: (aspect: any) => void;
   onPlanetClick?: (planetKey: string) => void;
   fullscreenMode?: boolean;
   enableNavigation?: boolean;
 }
 
 const zodiacSigns = [
-  { symbol: "♈", name: "Bélier", emoji: "🐏" },
-  { symbol: "♉", name: "Taureau", emoji: "🐂" },
-  { symbol: "♊", name: "Gémeaux", emoji: "👯" },
-  { symbol: "♋", name: "Cancer", emoji: "🦀" },
-  { symbol: "♌", name: "Lion", emoji: "🦁" },
-  { symbol: "♍", name: "Vierge", emoji: "🌸" },
-  { symbol: "♎", name: "Balance", emoji: "⚖️" },
-  { symbol: "♏", name: "Scorpion", emoji: "🦂" },
-  { symbol: "♐", name: "Sagittaire", emoji: "🏹" },
-  { symbol: "♑", name: "Capricorne", emoji: "🐐" },
-  { symbol: "♒", name: "Verseau", emoji: "🏺" },
-  { symbol: "♓", name: "Poissons", emoji: "🐟" },
+  { symbol: "\u2648", name: "B\u00e9lier", iconPath: "/assets/zodiac-enamel-v1/aries.png", iconSize: 76 },
+  { symbol: "\u2649", name: "Taureau", iconPath: "/assets/zodiac-enamel-refined/taurus-head-v2.png", iconSize: 80 },
+  { symbol: "\u264a", name: "G\u00e9meaux", iconPath: "/assets/zodiac-enamel-refined/gemini-masks-v2.png", iconSize: 80 },
+  { symbol: "\u264b", name: "Cancer", iconPath: "/assets/zodiac-enamel-v1/cancer.png", iconSize: 76 },
+  { symbol: "\u264c", name: "Lion", iconPath: "/assets/zodiac-enamel-v1/leo.png", iconSize: 74 },
+  { symbol: "\u264d", name: "Vierge", iconPath: "/assets/zodiac-enamel-v1/virgo-pink-v2.png", iconSize: 76 },
+  { symbol: "\u264e", name: "Balance", iconPath: "/assets/zodiac-enamel-v1/libra.png", iconSize: 72 },
+  { symbol: "\u264f", name: "Scorpion", iconPath: "/assets/zodiac-enamel-refined/scorpio.png", iconSize: 80 },
+  { symbol: "\u2650", name: "Sagittaire", iconPath: "/assets/zodiac-enamel-v1/sagittarius.png", iconSize: 72 },
+  { symbol: "\u2651", name: "Capricorne", iconPath: "/assets/zodiac-enamel-refined/capricorn.png", iconSize: 74 },
+  { symbol: "\u2652", name: "Verseau", iconPath: "/assets/zodiac-enamel-v1/aquarius.png", iconSize: 72 },
+  { symbol: "\u2653", name: "Poissons", iconPath: "/assets/zodiac-enamel-refined/pisces.png", iconSize: 74 },
 ];
 
 const planetGlyphs: Record<string, string> = {
@@ -90,8 +89,8 @@ const planetColors: Record<string, string> = {
   venus: "#EC4899",
   mars: "#EF4444",
   jupiter: "#10B981",
-  saturn: "#8B7355",
-  uranus: "#3B82F6",
+  saturn: "#A58F70",
+  uranus: "#4F8EF7",
   neptune: "#8B5CF6",
   pluto: "#A855F7",
   ascendant: "#1e293b",
@@ -132,12 +131,33 @@ export default function NatalChart({
     query.addEventListener("change", update);
     return () => query.removeEventListener("change", update);
   }, []);
+
+  useEffect(() => {
+    const restoreAllAspects = (event: PointerEvent) => {
+      const target = event.target;
+      if (
+        target instanceof Element &&
+        target.closest('[data-natal-interactive="true"]')
+      ) {
+        return;
+      }
+
+      setSelectedPlanet(null);
+      setSelectedAspect(null);
+      setHoveredPlanet(null);
+      setHoveredAspect(null);
+    };
+
+    document.addEventListener("pointerdown", restoreAllAspects);
+    return () => document.removeEventListener("pointerdown", restoreAllAspects);
+  }, []);
+
   const size = 1440; // -10%
   const center = size / 2;
   const radiusOuter = 396; // -10%
   const radiusHouses = 279; // -10%
   const radiusInner = 216; // -10%
-  const radiusPlanets = 504; // -10%
+  const radiusPlanets = 532;
 
   const getXY = (angleDeg: number, radius: number) => {
     const rad = ((180 - angleDeg) * Math.PI) / 180;
@@ -240,22 +260,22 @@ export default function NatalChart({
 
   const getAspectOpacity = (type: string): number => {
     const typeMap: Record<string, number> = {
-      Conjonction: 0.6,
-      Sextile: 0.5,
-      Carré: 0.7,
-      Trigone: 0.6,
-      Opposition: 0.7,
+      Conjonction: 0.48,
+      Sextile: 0.38,
+      Carré: 0.56,
+      Trigone: 0.46,
+      Opposition: 0.58,
     };
-    return typeMap[type] || 0.4;
+    return typeMap[type] || 0.34;
   };
 
   const getAspectStrokeWidth = (type: string): number => {
     const typeMap: Record<string, number> = {
-      Conjonction: 3.2,
-      Carré: 3.2,
-      Opposition: 3.2,
-      Trigone: 2.4,
-      Sextile: 2.4,
+      Conjonction: 3.4,
+      Carré: 3.4,
+      Opposition: 3.4,
+      Trigone: 2.6,
+      Sextile: 2.6,
     };
     return typeMap[type] || 2;
   };
@@ -275,7 +295,7 @@ export default function NatalChart({
 
   const cardinalPoints = getCardinalPoints();
   const focusedPlanet = hoveredPlanet || selectedPlanet;
-  const aspectTouchesFocusedPlanet = (aspect: Aspect) => (
+  const aspectTouchesFocusedPlanet = (aspect: any) => (
     !focusedPlanet ||
     aspect.planet1 === focusedPlanet ||
     aspect.planet2 === focusedPlanet
@@ -418,9 +438,9 @@ export default function NatalChart({
                 x2="100%"
                 y2="100%"
               >
-                <stop offset="0%" stopColor="#2A2621" />
-                <stop offset="48%" stopColor="#3A342D" />
-                <stop offset="100%" stopColor="#181512" />
+                <stop offset="0%" stopColor="#201D1A" />
+                <stop offset="48%" stopColor="#29251F" />
+                <stop offset="100%" stopColor="#100F0E" />
               </linearGradient>
 
               <filter id="shadow">
@@ -468,13 +488,7 @@ export default function NatalChart({
               </filter>
 
               <filter id="premiumPlanetGlow">
-                <feGaussianBlur stdDeviation="4" result="coloredBlur" />
-                <feFlood floodColor="#FFB86B" floodOpacity="0.6" result="goldenColor" />
-                <feComposite in="goldenColor" in2="coloredBlur" operator="in" result="goldenBlur" />
-                <feMerge>
-                  <feMergeNode in="goldenBlur" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
+                <feDropShadow dx="0" dy="3" stdDeviation="3" floodColor="#000000" floodOpacity="0.74" />
               </filter>
 
               <radialGradient id="premiumPlanetGradient" cx="40%" cy="35%">
@@ -490,9 +504,9 @@ export default function NatalChart({
               </linearGradient>
 
               <radialGradient id="zodiacEmojiPlate" cx="50%" cy="42%" r="58%">
-                <stop offset="0%" stopColor="rgba(238, 244, 255, 0.18)" />
-                <stop offset="58%" stopColor="rgba(150, 180, 255, 0.08)" />
-                <stop offset="100%" stopColor="rgba(3, 7, 14, 0.34)" />
+                <stop offset="0%" stopColor="rgba(255, 250, 231, 0.14)" />
+                <stop offset="56%" stopColor="rgba(150, 180, 255, 0.05)" />
+                <stop offset="100%" stopColor="rgba(3, 7, 14, 0)" />
               </radialGradient>
 
               <radialGradient id="natalPortalGlow" cx="50%" cy="50%" r="52%">
@@ -514,10 +528,8 @@ export default function NatalChart({
               </filter>
 
               <filter id="planetDiscShine" x="-70%" y="-70%" width="240%" height="240%">
-                <feDropShadow dx="0" dy="10" stdDeviation="8" floodColor="#000000" floodOpacity="0.62" />
-                <feDropShadow dx="0" dy="0" stdDeviation="5" floodColor="#000000" floodOpacity="0.36" />
-                <feDropShadow dx="0" dy="0" stdDeviation="7" floodColor="#FFE6AD" floodOpacity="0.26" />
-                <feDropShadow dx="0" dy="0" stdDeviation="14" floodColor="#FFB86B" floodOpacity="0.12" />
+                <feDropShadow dx="0" dy="8" stdDeviation="6" floodColor="#000000" floodOpacity="0.72" />
+                <feDropShadow dx="0" dy="1" stdDeviation="3" floodColor="#000000" floodOpacity="0.5" />
               </filter>
 
               <filter id="wheelGrain" x="-20%" y="-20%" width="140%" height="140%">
@@ -537,10 +549,10 @@ export default function NatalChart({
               cy={center}
               r={radiusPlanets + 25}
               fill="none"
-              stroke="rgba(210, 222, 245, 0.14)"
-              strokeWidth="1.5"
-              strokeDasharray="2 18"
-              opacity="0.86"
+              stroke="rgba(210, 222, 245, 0.11)"
+              strokeWidth="1.2"
+              strokeDasharray="1.5 22"
+              opacity="0.48"
             />
 
             <circle
@@ -548,10 +560,10 @@ export default function NatalChart({
               cy={center}
               r={radiusOuter + 14}
               fill="none"
-              stroke="rgba(255, 241, 191, 0.18)"
-              strokeWidth="1.2"
-              strokeDasharray="1 14"
-              opacity="0.72"
+              stroke="rgba(255, 241, 191, 0.13)"
+              strokeWidth="1"
+              strokeDasharray="1 17"
+              opacity="0.46"
             />
 
             <circle
@@ -638,13 +650,7 @@ export default function NatalChart({
               const angle = i * 30;
               const mid = angle + 15;
               const signPoint = getXY(mid, (radiusHouses + radiusOuter) / 2);
-              const compactSignEmojis = new Set(["Cancer", "Lion", "Vierge", "Sagittaire"]);
-              const largeSignEmojis = new Set(["Taureau", "Scorpion", "Poissons"]);
-              const signEmojiSize = compactSignEmojis.has(sign.name)
-                ? "51"
-                : largeSignEmojis.has(sign.name)
-                  ? "59"
-                  : "55";
+              const zodiacIconFilter = "drop-shadow(0 3px 5px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 5px rgba(255, 241, 194, 0.12))";
 
               return (
                 <g key={`zodiac-${i}`}>
@@ -666,16 +672,24 @@ export default function NatalChart({
                     strokeLinecap="round"
                   />
 
-                  <text
-                    x={signPoint.x}
-                    y={signPoint.y + 2}
-                    fontSize={signEmojiSize}
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    style={{ filter: "drop-shadow(0 2px 5px rgba(0, 0, 0, 0.92)) drop-shadow(0 0 7px rgba(120, 128, 150, 0.18))" }}
-                  >
-                    {sign.emoji}
-                  </text>
+                  <circle
+                    cx={signPoint.x}
+                    cy={signPoint.y}
+                    r="35"
+                    fill="url(#zodiacEmojiPlate)"
+                    opacity="0.68"
+                    style={{ pointerEvents: "none" }}
+                  />
+
+                  <image
+                    href={sign.iconPath}
+                    x={signPoint.x - sign.iconSize / 2}
+                    y={signPoint.y - sign.iconSize / 2}
+                    width={sign.iconSize}
+                    height={sign.iconSize}
+                    preserveAspectRatio="xMidYMid meet"
+                    style={{ filter: zodiacIconFilter }}
+                  />
                 </g>
               );
             })}
@@ -687,7 +701,7 @@ export default function NatalChart({
               fill="url(#houseGradient)"
               stroke="url(#champagneRingGradient)"
               strokeWidth="2.6"
-              opacity="0.82"
+              opacity="0.94"
             />
 
             <circle
@@ -769,15 +783,15 @@ export default function NatalChart({
                   key={`house-num-${i}`}
                   x={x}
                   y={y}
-                  fontSize="35"
+                  fontSize="36"
                   fontWeight="800"
                   textAnchor="middle"
                   dominantBaseline="middle"
-                  fill="#E8D7A8"
+                  fill="#F6E8BF"
                   style={{
                     fontFamily: "Times New Roman, Times, serif",
                     letterSpacing: "0.5px",
-                    filter: "drop-shadow(0 0 4px rgba(150, 180, 255, 0.22))",
+                    filter: "drop-shadow(0 1px 2px rgba(0, 0, 0, 0.88))",
                   }}
                 >
                   {i + 1}
@@ -865,6 +879,7 @@ export default function NatalChart({
               return (
                 <line
                   key={`aspect-${i}`}
+                  data-natal-interactive="true"
                   x1={a.x}
                   y1={a.y}
                   x2={b.x}
@@ -916,6 +931,7 @@ export default function NatalChart({
               return (
                 <g
                   key={`planet-${key}`}
+                  data-natal-interactive="true"
                   opacity={isDimmed ? 0.38 : 1}
                   style={{
                     transition: "opacity 0.32s ease, filter 0.32s ease",
@@ -929,33 +945,10 @@ export default function NatalChart({
                     y1={lineY}
                     x2={x}
                     y2={y}
-                    stroke={isHighlighted ? "#FFB86B" : "#E8D7A8"}
-                    strokeWidth={isHighlighted ? "2.4" : "1.4"}
-                    opacity={isDimmed ? "0.18" : isHighlighted ? "0.78" : "0.42"}
+                    stroke={isHighlighted ? "#F3D9A2" : "rgba(205, 213, 224, 0.82)"}
+                    strokeWidth={isHighlighted ? "2.3" : "1.5"}
+                    opacity={isDimmed ? "0.16" : isHighlighted ? "0.76" : "0.52"}
                     strokeLinecap="round"
-                  />
-
-                  {/* Outer glow halo */}
-                  <circle
-                    cx={x}
-                    cy={y}
-                    r={isHighlighted ? "56" : "50"}
-                    fill={planetColors[key] || "#64748b"}
-                    opacity={isDimmed ? "0.04" : isHighlighted ? "0.16" : "0.08"}
-                    filter="url(#premiumPlanetGlow)"
-                    style={{ pointerEvents: "none" }}
-                  />
-
-                  <circle
-                    cx={x}
-                    cy={y}
-                    r={isHighlighted ? "52" : "46"}
-                    fill="none"
-                    stroke="url(#planetBevelGradient)"
-                    strokeWidth={isHighlighted ? "2.7" : "1.8"}
-                    opacity={isDimmed ? "0.1" : isHighlighted ? "0.82" : "0.58"}
-                    filter="url(#premiumPlanetGlow)"
-                    style={{ pointerEvents: "none" }}
                   />
 
                   {/* Main circle */}
@@ -983,17 +976,6 @@ export default function NatalChart({
                     r={isHighlighted ? "38" : "33"}
                     fill={planetColors[key] || "#64748b"}
                     opacity={isHighlighted ? "0.54" : "0.36"}
-                    style={{ pointerEvents: "none" }}
-                  />
-
-                  <circle
-                    cx={x}
-                    cy={y}
-                    r={isHighlighted ? "44" : "38"}
-                    fill="none"
-                    stroke="rgba(255, 255, 255, 0.12)"
-                    strokeWidth="0.8"
-                    opacity={isDimmed ? "0.08" : "0.62"}
                     style={{ pointerEvents: "none" }}
                   />
 
@@ -1109,6 +1091,7 @@ export default function NatalChart({
               return (
                 <g
                   key={`cardinal-${i}`}
+                  data-natal-interactive="true"
                   opacity={isDimmed ? 0.38 : 1}
                   style={{
                     transition: "opacity 0.32s ease, filter 0.32s ease",
@@ -1118,31 +1101,15 @@ export default function NatalChart({
                   }}
                 >
                   <line x1={lineX} y1={lineY} x2={x} y2={y}
-                    stroke={isHighlighted ? "#FFB86B" : "#E8D7A8"}
-                    strokeWidth={isHighlighted ? "2.4" : "1.4"}
-                    opacity={isDimmed ? "0.18" : isHighlighted ? "0.78" : "0.42"}
+                    stroke={isHighlighted ? "#F3D9A2" : "rgba(205, 213, 224, 0.82)"}
+                    strokeWidth={isHighlighted ? "2.3" : "1.5"}
+                    opacity={isDimmed ? "0.16" : isHighlighted ? "0.76" : "0.52"}
                     strokeLinecap="round" />
-                  <circle cx={x} cy={y}
-                    r={isHighlighted ? "54" : "48"}
-                    fill="#1e293b"
-                    opacity={isDimmed ? "0.04" : isHighlighted ? "0.14" : "0.08"}
-                    filter="url(#premiumPlanetGlow)"
-                    style={{ pointerEvents: "none" }}
-                  />
-                  <circle cx={x} cy={y}
-                    r={isHighlighted ? "50" : "44"}
-                    fill="none"
-                    stroke="url(#planetBevelGradient)"
-                    strokeWidth={isHighlighted ? "2.4" : "1.7"}
-                    opacity={isDimmed ? "0.1" : isHighlighted ? "0.78" : "0.54"}
-                    filter="url(#premiumPlanetGlow)"
-                    style={{ pointerEvents: "none" }}
-                  />
                   <circle cx={x} cy={y}
                     r={isHighlighted ? "48" : "42"}
                     fill="url(#planetDiscGradient)"
                     stroke="url(#planetBevelGradient)"
-                    strokeWidth={isHighlighted ? "3.8" : "2.7"}
+                    strokeWidth={isHighlighted ? "4" : "2.9"}
                     filter="url(#planetDiscShine)"
                     style={{ transition: "all 0.32s ease", cursor: "pointer" }}
                     onClick={() => handlePlanetSelection("ascendant")}

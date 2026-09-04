@@ -110,10 +110,10 @@ export default function HomeDashboard({ chartData, onNavigate }: HomeDashboardPr
 
         <div className="tide-landing__hero">
           <h1 className="tide-landing__logo tide-landing__reveal tide-landing__reveal--2">
-            NIGHTSTAR
+            Night One
           </h1>
           <p className="tide-landing__tagline tide-landing__reveal tide-landing__reveal--3">
-            Un espace pour ton ciel, ton souffle, ta présence et ton calme.
+            La nuit où tout a commencé.
           </p>
           <p className="tide-landing__mood tide-landing__reveal tide-landing__reveal--4">
             {moodLine}

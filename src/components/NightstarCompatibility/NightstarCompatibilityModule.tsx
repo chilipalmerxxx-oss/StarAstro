@@ -68,7 +68,7 @@ const SIGN_PRESETS: Record<SignKey, SignPreset> = {
   Pisces: { label: 'Poissons', glyph: '♓', element: 'Eau mutable', color: 'var(--ns-blue)', animation: 'water_stream' },
 };
 
-const nightstarCompatibilityPreset = {
+export const nightstarCompatibilityPreset = {
   sign_left: 'Aries',
   sign_right: 'Aquarius',
   theme: 'cosmic_dark_gold',
@@ -79,7 +79,7 @@ const nightstarCompatibilityPreset = {
   resolution: '1920x1080',
 };
 
-function buildCompatibilityConfig({
+export function buildCompatibilityConfig({
   signLeft = 'Aries',
   signRight = 'Aquarius',
   score = 89,
