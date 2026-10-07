@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, type CSSProperties } from 'react';
-import { Heart, ChevronDown, ArrowRight, RotateCcw, Sparkles, Plus } from 'lucide-react';
+import { useState, useEffect, useLayoutEffect, useRef, type CSSProperties } from 'react';
+import { Heart, ChevronDown, ArrowRight, RotateCcw, Sparkles, Plus, Share2 } from 'lucide-react';
 
 const SIGNS = [
   { id: 0,  name: 'Bélier',     glyph: '🐏', element: 'fire',  iconPath: '/assets/zodiac-enamel-v1/aries.png' },
@@ -23,336 +23,173 @@ const ELEMENT_COLORS: Record<string, string> = {
   water: '#5B9BD5',
 };
 
-// Base score by aspect distance (0 = same sign, 6 = opposition)
-const BASE_SCORES: Record<number, number> = {
-  0: 82, 1: 54, 2: 76, 3: 43, 4: 91, 5: 37, 6: 67,
-};
+// ─── Compatibilité des Soleils ─────────────────────────────
+// Lecture classique de deux signes solaires : l'aspect qu'ils forment (distance sur le
+// zodiaque), leurs éléments, leurs modes et, le cas échéant, leur maître planétaire commun.
+// Trois axes notés séparément, puis pondérés en un score de compatibilité.
 
-// Compatible element pairs get a bonus
-const COMPAT_PAIRS = new Set(['fire-air', 'air-fire', 'earth-water', 'water-earth']);
-const SAME_PAIRS   = new Set(['fire-fire', 'earth-earth', 'air-air', 'water-water']);
+type SignModality = 'cardinal' | 'fixed' | 'mutable';
+type AxisScores = { emotion: number; desire: number; potential: number };
 
-const SIGN_MODALITIES = [
+const SIGN_MODALITIES: SignModality[] = [
   'cardinal', 'fixed', 'mutable', 'cardinal', 'fixed', 'mutable',
   'cardinal', 'fixed', 'mutable', 'cardinal', 'fixed', 'mutable',
 ];
 
-const ELEMENT_LABELS: Record<string, string> = {
-  fire: 'feu',
-  earth: 'terre',
-  air: 'air',
-  water: 'eau',
+// Maîtres traditionnels : deux signes gouvernés par la même planète se comprennent
+// au-delà de leur aspect (Bélier–Scorpion par Mars, Taureau–Balance par Vénus…).
+const TRADITIONAL_RULERS = [
+  'Mars', 'Vénus', 'Mercure', 'La Lune', 'Le Soleil', 'Mercure',
+  'Vénus', 'Mars', 'Jupiter', 'Saturne', 'Saturne', 'Jupiter',
+];
+
+// Indexé par la distance entre les signes (0 = même signe, 6 = signes opposés).
+const SOLAR_ASPECTS: ({ name: string; angle: number } & AxisScores)[] = [
+  { name: 'Conjonction', angle: 0, emotion: 80, desire: 78, potential: 76 },
+  { name: 'Semi-sextile', angle: 30, emotion: 60, desire: 56, potential: 62 },
+  { name: 'Sextile', angle: 60, emotion: 80, desire: 74, potential: 84 },
+  { name: 'Carré', angle: 90, emotion: 52, desire: 86, potential: 52 },
+  { name: 'Trigone', angle: 120, emotion: 90, desire: 80, potential: 90 },
+  { name: 'Quinconce', angle: 150, emotion: 52, desire: 60, potential: 52 },
+  { name: 'Opposition', angle: 180, emotion: 64, desire: 92, potential: 66 },
+];
+
+// Clés triées par ordre alphabétique.
+const ELEMENT_PAIR_ADJUSTMENTS: Record<string, AxisScores> = {
+  'fire-fire': { emotion: -2, desire: 6, potential: -2 },
+  'earth-earth': { emotion: 0, desire: -4, potential: 6 },
+  'air-air': { emotion: -4, desire: 0, potential: 2 },
+  'water-water': { emotion: 6, desire: 0, potential: 2 },
+  'air-fire': { emotion: -2, desire: 4, potential: 0 },
+  'earth-water': { emotion: 4, desire: 0, potential: 4 },
+  'earth-fire': { emotion: -2, desire: 2, potential: -2 },
+  'fire-water': { emotion: -4, desire: 4, potential: -4 },
+  'air-earth': { emotion: -4, desire: -2, potential: 0 },
+  'air-water': { emotion: -2, desire: -2, potential: -2 },
 };
 
-function getElementInsight(el1: string, el2: string): string {
-  if (el1 === el2) {
-    const sameElementInsights: Record<string, string> = {
-      fire: 'Vous partez vite, parfois très vite. Gardez l’élan, mais laissez aussi la tendresse reprendre son souffle.',
-      earth: 'Vous cherchez du fiable, du concret, du présent. Très rassurant, sauf si la routine commence à gérer la relation à votre place.',
-      air: 'Vos mots créent le lien. Le risque : tout analyser avant d’avoir vraiment ressenti. Oui, même le flirt a droit au silence.',
-      water: 'Vous vous captez facilement. C’est précieux, tant que l’intuition ne remplace pas une phrase claire.',
-    };
-    return sameElementInsights[el1] || `Votre élément ${ELEMENT_LABELS[el1]} crée une base commune. Reste à la vivre clairement, pas seulement à la ressentir.`;
-  }
-  const key = `${el1}-${el2}`;
-  if (key === 'fire-air' || key === 'air-fire') {
-    return 'L’un allume, l’autre fait circuler. L’émotion passe mieux quand l’enthousiasme devient aussi une vraie écoute.';
-  }
-  if (key === 'earth-water' || key === 'water-earth') {
-    return 'Sécurité et sensibilité peuvent très bien s’accorder. La proximité grandit dans les gestes réguliers, pas dans les grandes promesses lancées à minuit.';
-  }
-  if (key === 'fire-water' || key === 'water-fire') {
-    return 'L’un réagit vite, l’autre absorbe d’abord. Le lien tient mieux quand personne ne confond vitesse et vérité.';
-  }
-  if (key === 'fire-earth' || key === 'earth-fire') {
-    return 'L’un veut avancer, l’autre veut vérifier le sol. Décidez ensemble du prochain pas, sinon chacun croit tirer la relation dans le bon sens.';
-  }
-  if (key === 'air-water' || key === 'water-air') {
-    return 'L’un met des mots, l’autre sent les nuances. La magie arrive quand l’explication ne vient pas écraser le ressenti.';
-  }
-  return 'Vos priorités ne tombent pas toujours au même endroit. Dites ce que vous attendez vraiment ; le télépathique, c’est joli, mais peu fiable.';
+const MODALITY_PAIR_ADJUSTMENTS: Record<string, AxisScores> = {
+  'cardinal-cardinal': { emotion: 0, desire: 3, potential: -4 },
+  'fixed-fixed': { emotion: -2, desire: 2, potential: 2 },
+  'mutable-mutable': { emotion: 2, desire: 0, potential: -4 },
+  'cardinal-fixed': { emotion: 0, desire: 0, potential: 3 },
+  'fixed-mutable': { emotion: 2, desire: 0, potential: 0 },
+  'cardinal-mutable': { emotion: 0, desire: 2, potential: 0 },
+};
+
+const SHARED_RULER_BONUS: AxisScores = { emotion: 6, desire: 2, potential: 8 };
+
+function pairKey(a: string, b: string) {
+  return [a, b].sort().join('-');
 }
 
-function getModalityInsight(m1: string, m2: string): string {
-  if (m1 === m2) {
-    if (m1 === 'cardinal') return 'Vous savez lancer les choses. Pour éviter le petit concours de direction artistique, partagez les décisions.';
-    if (m1 === 'fixed') return 'Vous pouvez tenir fort. Le défi : ne pas appeler “loyauté” ce qui est juste une belle obstination.';
-    return 'Vous vous adaptez vite. Donnez quand même une forme au lien, sinon tout reste ouvert, même les questions importantes.';
-  }
-  const pair = new Set([m1, m2]);
-  if (pair.has('cardinal') && pair.has('fixed')) return 'L’un lance, l’autre stabilise. C’est puissant si la décision ne devient pas un match retour.';
-  if (pair.has('cardinal') && pair.has('mutable')) return 'L’un donne l’impulsion, l’autre ajuste. Très utile, à condition de ne pas changer le plan toutes les dix minutes.';
-  return 'L’un apporte de la constance, l’autre de la souplesse. Bon équilibre, si chacun respecte le tempo de l’autre.';
+function clampScore(value: number): number {
+  return Math.min(97, Math.max(30, Math.round(value)));
+}
+
+function getSignDistance(s1: number, s2: number) {
+  const diff = Math.abs(s1 - s2);
+  return Math.min(diff, 12 - diff);
+}
+
+function getSharedRuler(s1: number, s2: number): string | null {
+  return s1 !== s2 && TRADITIONAL_RULERS[s1] === TRADITIONAL_RULERS[s2] ? TRADITIONAL_RULERS[s1] : null;
+}
+
+function computeSolarCompatibility(s1: number, s2: number) {
+  const aspect = SOLAR_ASPECTS[getSignDistance(s1, s2)];
+  const elements = ELEMENT_PAIR_ADJUSTMENTS[pairKey(SIGNS[s1].element, SIGNS[s2].element)];
+  const modalities = MODALITY_PAIR_ADJUSTMENTS[pairKey(SIGN_MODALITIES[s1], SIGN_MODALITIES[s2])];
+  const sharedRuler = getSharedRuler(s1, s2);
+  const axis = (key: keyof AxisScores) => clampScore(
+    aspect[key] + elements[key] + modalities[key] + (sharedRuler ? SHARED_RULER_BONUS[key] : 0),
+  );
+  const emotion = axis('emotion');
+  const desire = axis('desire');
+  const potential = axis('potential');
+
+  return {
+    aspect,
+    emotion,
+    desire,
+    potential,
+    score: clampScore(emotion * 0.35 + desire * 0.3 + potential * 0.35),
+  };
 }
 
 type InstantReadingAxis = {
   id: 'emotion' | 'desire' | 'potential';
   label: string;
   score: number;
-  verdict: string;
-  detail: string;
   color: string;
 };
 
-const DESIRE_SCORES: Record<number, number> = {
-  0: 88, 1: 62, 2: 78, 3: 91, 4: 85, 5: 74, 6: 94,
+// Textes de synastrie : une accroche propre à la paire (le trait de chaque signe),
+// puis la lecture de leur relation, en langage courant.
+const SIGN_TRAITS = [
+  'l’élan', 'la constance', 'la curiosité', 'la tendresse', 'la chaleur', 'l’attention',
+  'le sens de l’accord', 'l’intensité', 'le goût du large', 'la solidité', 'la liberté d’esprit', 'la sensibilité',
+];
+const SIGN_SHARED_TRAITS = [
+  'le même élan', 'la même constance', 'la même curiosité', 'la même tendresse', 'la même chaleur', 'la même attention',
+  'le même sens de l’accord', 'la même intensité', 'le même goût du large', 'la même solidité', 'la même liberté d’esprit', 'la même sensibilité',
+];
+const SIGN_OF = [
+  'du Bélier', 'du Taureau', 'des Gémeaux', 'du Cancer', 'du Lion', 'de la Vierge',
+  'de la Balance', 'du Scorpion', 'du Sagittaire', 'du Capricorne', 'du Verseau', 'des Poissons',
+];
+const SIGN_PLURALS = [
+  'Béliers', 'Taureaux', 'Gémeaux', 'Cancers', 'Lions', 'Vierges',
+  'Balances', 'Scorpions', 'Sagittaires', 'Capricornes', 'Verseaux', 'Poissons',
+];
+
+// Lecture de la relation entre les deux signes, en langage courant (sans nom d'aspect).
+// Par distance sur le zodiaque ; quand la lecture dépend des éléments, clé = couple d'éléments trié.
+const PAIR_READINGS: Record<number, string | Record<string, string>> = {
+  0: 'Ils se reconnaissent au premier regard, comme on reconnaîtrait sa voix chez quelqu’un d’autre. Le lien gagne pourtant à garder une part de mystère, pour que chacun ne voie pas dans l’autre que son propre reflet.',
+  1: 'Voisins dans le ciel, ils avancent pourtant à des rythmes opposés. Le lien se construit quand chacun apprend le tempo de l’autre plutôt que de chercher à le corriger.',
+  2: {
+    'air-fire': 'Entre eux, l’échange est vif et léger : l’un donne l’impulsion, l’autre ouvre l’espace, et l’énergie circule presque sans effort.',
+    'earth-water': 'Leur lien tend à installer une confiance concrète : l’un construit, l’autre nourrit, et l’attachement s’approfondit avec le temps.',
+  },
+  3: {
+    'fire-water': 'Leur rencontre met la passion sous pression : l’un s’embrase quand l’autre se protège. Cette tension attire, à condition d’être dite avant de déborder.',
+    'earth-fire': 'Tout les oppose dans le tempo : l’un fonce, l’autre vérifie le terrain. Le désir est réel, mais chaque décision peut tourner au bras de fer si personne n’accorde son pas.',
+    'air-earth': 'L’un vit d’idées, l’autre de choses concrètes : l’attirance naît de cet écart, et le lien tient quand chacun respecte ce que l’autre juge essentiel.',
+    'air-water': 'L’un raisonne quand l’autre ressent : le lien s’éclaire quand l’explication cesse de recouvrir l’émotion.',
+  },
+  4: {
+    'fire-fire': 'Deux tempéraments de feu qui se comprennent d’emblée : ils s’enflamment ensemble et se relancent sans cesse, au risque de consumer trop vite ce qu’ils allument.',
+    'earth-earth': 'Ils parlent la même langue, celle du concret et de la durée : tout semble tenir entre eux, au risque de confondre la sécurité avec la routine.',
+    'air-air': 'Les idées circulent entre eux sans le moindre effort : la conversation ne s’éteint jamais, même si l’émotion demande parfois à être dite plus franchement.',
+    'water-water': 'Ils se comprennent presque sans mots : chacun devine l’autre, au point d’oublier parfois de le lui dire.',
+  },
+  5: 'Rien ne les oppose franchement, rien ne les rapproche d’évidence : leur lien demande un ajustement constant, et s’éclaire quand chacun traduit ses attentes au lieu de les laisser deviner.',
+  6: {
+    'air-fire': 'Ils se font face comme deux moitiés qui s’attisent : l’attirance est vive, et dure si chacun renonce à faire de sa façon d’aimer la seule possible.',
+    'earth-water': 'Ils se font face comme deux moitiés : l’un rassure, l’autre ressent, et l’attirance dure si chacun apprend la langue de l’autre.',
+  },
 };
 
-const DESIRE_INSIGHTS: Record<number, string> = {
-  0: 'L’attirance part d’un terrain familier. C’est naturel, mais il faut garder un peu de surprise au programme.',
-  1: 'Le désir se construit par couches. Plus la confiance monte, plus le lien devient intéressant.',
-  2: 'Le désir passe par les mots, les jeux, les regards qui comprennent avant la phrase complète.',
-  3: 'La tension attire fort. À surveiller : ne pas confondre intensité et mini-drame bien emballé.',
-  4: 'L’attirance circule facilement. Le risque n’est pas le manque, mais l’habitude de croire que tout va de soi.',
-  5: 'Le désir demande un temps d’adaptation. Quand chacun comprend le langage de l’autre, ça devient plus subtil.',
-  6: 'L’attirance est magnétique et contrastée. Les différences allument le désir, mais elles demandent aussi du tact.',
-};
-
-const EMOTION_ELEMENT_SCORES: Record<string, number> = {
-  'fire-fire': 82,
-  'fire-earth': 54,
-  'fire-air': 78,
-  'fire-water': 46,
-  'earth-fire': 54,
-  'earth-earth': 86,
-  'earth-air': 49,
-  'earth-water': 88,
-  'air-fire': 78,
-  'air-earth': 49,
-  'air-air': 84,
-  'air-water': 57,
-  'water-fire': 46,
-  'water-earth': 88,
-  'water-air': 57,
-  'water-water': 90,
-};
-
-const ASPECT_EMOTION_MODIFIERS: Record<number, number> = {
-  0: 7, 1: -3, 2: 5, 3: -9, 4: 8, 5: -6, 6: -1,
-};
-
-const ASPECT_POTENTIAL_MODIFIERS: Record<number, number> = {
-  0: 2, 1: -7, 2: 7, 3: -4, 4: 9, 5: -6, 6: 4,
-};
-
-const MODALITY_POTENTIAL_MODIFIERS: Record<string, number> = {
-  'cardinal-cardinal': -3,
-  'cardinal-fixed': 3,
-  'cardinal-mutable': 6,
-  'fixed-cardinal': 3,
-  'fixed-fixed': -6,
-  'fixed-mutable': 5,
-  'mutable-cardinal': 6,
-  'mutable-fixed': 5,
-  'mutable-mutable': 1,
-};
-
-function clampScore(value: number): number {
-  return Math.min(98, Math.max(18, Math.round(value)));
+function getPairResultLine(s1: number, s2: number): { lead: string; body: string } {
+  const distance = getSignDistance(s1, s2);
+  const lead = s1 === s2
+    ? `Deux ${SIGN_PLURALS[s1]}, ${SIGN_SHARED_TRAITS[s1]}.`
+    : `${SIGN_TRAITS[s1].charAt(0).toUpperCase()}${SIGN_TRAITS[s1].slice(1)} ${SIGN_OF[s1]} rencontre ${SIGN_TRAITS[s2]} ${SIGN_OF[s2]}.`;
+  const reading = PAIR_READINGS[distance];
+  const pairText = typeof reading === 'string'
+    ? reading
+    : reading[pairKey(SIGNS[s1].element, SIGNS[s2].element)];
+  const sharedRuler = getSharedRuler(s1, s2);
+  const body = sharedRuler
+    ? `${pairText} Ils partagent pourtant la même planète protectrice, ${sharedRuler}, qui leur offre un langage commun.`
+    : pairText;
+  return { lead, body: withFrenchSpacing(body) };
 }
 
-function getAxisVerdict(_axis: InstantReadingAxis['id'], score: number): string {
-  if (score >= 86) return 'Intense';
-  if (score >= 72) return 'Fluide';
-  if (score >= 58) return 'En devenir';
-  return 'Délicat';
-}
-
-function getInstantReading(score: number, s1: number, s2: number): InstantReadingAxis[] {
-  const el1 = SIGNS[s1].element;
-  const el2 = SIGNS[s2].element;
-  const elementKey = `${el1}-${el2}`;
-  const diff = Math.abs(s1 - s2);
-  const distance = Math.min(diff, 12 - diff);
-  const modality1 = SIGN_MODALITIES[s1];
-  const modality2 = SIGN_MODALITIES[s2];
-  const modalityKey = `${modality1}-${modality2}`;
-
-  const emotionScore = clampScore(
-    (EMOTION_ELEMENT_SCORES[elementKey] ?? 62) +
-    (ASPECT_EMOTION_MODIFIERS[distance] ?? 0) +
-    (modality1 === modality2 ? -2 : 2)
-  );
-  const desireScore = clampScore(
-    DESIRE_SCORES[distance] +
-    (COMPAT_PAIRS.has(elementKey) ? 4 : 0) +
-    (SAME_PAIRS.has(elementKey) ? -2 : 0) +
-    (distance === 3 || distance === 6 ? 3 : 0)
-  );
-  const potentialScore = clampScore(
-    score +
-    (ASPECT_POTENTIAL_MODIFIERS[distance] ?? 0) +
-    (MODALITY_POTENTIAL_MODIFIERS[modalityKey] ?? 0) +
-    (COMPAT_PAIRS.has(elementKey) ? 3 : 0) -
-    (elementKey === 'fire-water' || elementKey === 'water-fire' ? 4 : 0)
-  );
-
-  const potentialLead = potentialScore >= 80
-    ? 'Le lien a une vraie marge de construction dans le temps.'
-    : potentialScore >= 60
-      ? 'Le lien peut évoluer dans le bon sens si vos différences sont nommées assez tôt.'
-      : 'La relation demande des règles claires, sinon chacun risque de jouer à un jeu différent.';
-
-  const axes: InstantReadingAxis[] = [
-    {
-      id: 'emotion',
-      label: 'Émotion',
-      score: emotionScore,
-      verdict: '',
-      detail: getElementInsight(el1, el2),
-      color: '#F08DA5',
-    },
-    {
-      id: 'desire',
-      label: 'Désir',
-      score: desireScore,
-      verdict: '',
-      detail: DESIRE_INSIGHTS[distance],
-      color: '#F0B45B',
-    },
-    {
-      id: 'potential',
-      label: 'Potentiel',
-      score: potentialScore,
-      verdict: '',
-      detail: `${potentialLead} ${getModalityInsight(modality1, modality2)}`,
-      color: '#F8EFE1',
-    },
-  ];
-
-  return axes.map(axis => ({ ...axis, verdict: getAxisVerdict(axis.id, axis.score) }));
-}
-
-const PAIR_VERDICTS: Record<string, string> = {
-  '0-0': 'Impulsion jumelle',
-  '0-1': 'Élan terrestre',
-  '0-2': 'Étincelle vive',
-  '0-3': 'Flamme tendre',
-  '0-4': 'Soleil ardent',
-  '0-5': 'Geste précis',
-  '0-6': 'Choc harmonique',
-  '0-7': 'Passion profonde',
-  '0-8': 'Aventure brûlante',
-  '0-9': 'Ambition directe',
-  '0-10': 'Liberté pionnière',
-  '0-11': 'Rêve incandescent',
-  '1-1': 'Ancrage fidèle',
-  '1-2': 'Calme curieux',
-  '1-3': 'Douce sécurité',
-  '1-4': 'Velours solaire',
-  '1-5': 'Confiance patiente',
-  '1-6': 'Charme sensuel',
-  '1-7': 'Aimant secret',
-  '1-8': 'Horizon stable',
-  '1-9': 'Royaume durable',
-  '1-10': 'Tradition libre',
-  '1-11': 'Refuge tendre',
-  '2-2': 'Esprit miroir',
-  '2-3': 'Parole sensible',
-  '2-4': 'Jeu solaire',
-  '2-5': 'Intelligence fine',
-  '2-6': 'Grâce mentale',
-  '2-7': 'Mystère léger',
-  '2-8': 'Mouvement complice',
-  '2-9': 'Humour sérieux',
-  '2-10': 'Fréquence rare',
-  '2-11': 'Brume claire',
-  '3-3': 'Lunes jumelles',
-  '3-4': 'Tendresse rayonnante',
-  '3-5': 'Soin discret',
-  '3-6': 'Douce harmonie',
-  '3-7': 'Fusion abyssale',
-  '3-8': 'Nid voyageur',
-  '3-9': 'Sécurité ambitieuse',
-  '3-10': 'Intimité libre',
-  '3-11': 'Rêve ancré',
-  '4-4': 'Éclat double',
-  '4-5': 'Chaleur précise',
-  '4-6': 'Charme royal',
-  '4-7': 'Loyauté intense',
-  '4-8': 'Joie ardente',
-  '4-9': 'Fierté maîtrisée',
-  '4-10': 'Soleil libre',
-  '4-11': 'Romance lumineuse',
-  '5-5': 'Précision fidèle',
-  '5-6': 'Élégance attentive',
-  '5-7': 'Secret analysé',
-  '5-8': 'Ordre sauvage',
-  '5-9': 'Loyauté concrète',
-  '5-10': 'Idéal précis',
-  '5-11': 'Rêve utile',
-  '6-6': 'Miroir élégant',
-  '6-7': 'Charme profond',
-  '6-8': 'Joie légère',
-  '6-9': 'Tendresse noble',
-  '6-10': 'Accord original',
-  '6-11': 'Beauté sensible',
-  '7-7': 'Profondeur loyale',
-  '7-8': 'Intensité libre',
-  '7-9': 'Confiance dense',
-  '7-10': 'Distance magnétique',
-  '7-11': 'Intuition profonde',
-  '8-8': 'Liberté jumelle',
-  '8-9': 'Rêve construit',
-  '8-10': 'Futur aventureux',
-  '8-11': 'Foi rêveuse',
-  '9-9': 'Patience souveraine',
-  '9-10': 'Structure nouvelle',
-  '9-11': 'Réalisme doux',
-  '10-10': 'Indépendance complice',
-  '10-11': 'Vision intuitive',
-  '11-11': 'Sensibilité jumelle',
-};
-
-function getRelationshipVerdict(score: number, s1: number, s2: number): string {
-  const key = `${Math.min(s1, s2)}-${Math.max(s1, s2)}`;
-  const pairVerdict = PAIR_VERDICTS[key];
-  if (pairVerdict) return pairVerdict;
-  if (score >= 88) return 'Fusion naturelle';
-  if (score >= 75) return 'Complicité claire';
-  if (score >= 60) return 'Équilibre vivant';
-  if (score >= 45) return 'Lien exigeant';
-  return 'Accord à construire';
-}
-
-function getPairResultLine(s1: number, s2: number): string {
-  const first = SIGNS[s1];
-  const second = SIGNS[s2];
-  const diff = Math.abs(s1 - s2);
-  const distance = Math.min(diff, 12 - diff);
-  const elementKey = `${first.element}-${second.element}`;
-
-  if (s1 === s2) {
-    return `${first.name} et ${second.name} se reconnaissent vite. Le lien est naturel, mais il gagne à garder un peu de mystère, juste assez pour ne pas finir en miroir de salle de bain.`;
-  }
-  if (distance === 6) {
-    return `${first.name} et ${second.name} se répondent par contraste. L’attirance est forte quand chacun arrête de croire que sa façon d’aimer est le mode par défaut.`;
-  }
-  if (distance === 3) {
-    return `${first.name} et ${second.name} créent une vraie tension. Elle peut réveiller le désir, à condition de parler avant que le désaccord ne prenne le micro.`;
-  }
-  if (distance === 5) {
-    return `${first.name} et ${second.name} ne lisent pas toujours la même notice. Le lien devient intéressant quand chacun traduit ses attentes au lieu de les faire deviner.`;
-  }
-  if (COMPAT_PAIRS.has(elementKey)) {
-    return `${first.name} et ${second.name} ont une complémentarité facile à sentir. Pour qu’elle dure, il faut la nourrir par des gestes réguliers, pas seulement par une belle impression.`;
-  }
-  if (SAME_PAIRS.has(elementKey)) {
-    return `${first.name} et ${second.name} partagent un même élément. La complicité vient vite, mais l’équilibre demande de ne pas aimer exactement de la même place.`;
-  }
-
-  return `${first.name} et ${second.name} avancent avec des réflexes différents. Le lien peut tenir si chacun explique son rythme avant de juger celui de l’autre.`;
-}
-
-function computeScore(s1: number, s2: number): number {
-  const diff = Math.abs(s1 - s2);
-  const dist = Math.min(diff, 12 - diff);
-  const base = BASE_SCORES[dist];
-  const el1  = SIGNS[s1].element;
-  const el2  = SIGNS[s2].element;
-  const key  = `${el1}-${el2}`;
-  const bonus = SAME_PAIRS.has(key) ? 8 : COMPAT_PAIRS.has(key) ? 5 : 0;
-  return Math.min(98, Math.max(14, base + bonus));
+// Espace insécable avant « : ; ! ? » : la ponctuation ne part jamais seule en début de ligne.
+function withFrenchSpacing(text: string) {
+  return text.replace(/ ([:;!?])/g, ' $1');
 }
 
 function getLabel(score: number): { title: string; desc: string; color: string } {
@@ -689,11 +526,6 @@ const GLOW_STYLE = `
     100% { opacity: .5; stroke-dashoffset: 0; }
   }
 
-  @keyframes love-editorial-line-reveal {
-    from { opacity: 0; transform: translateY(8px); clip-path: inset(0 0 100% 0); }
-    to { opacity: 1; transform: translateY(0); clip-path: inset(0); }
-  }
-
   @keyframes love-score-orbit-turn {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
@@ -715,52 +547,61 @@ const GLOW_STYLE = `
     50% { opacity: 1; transform: scale(1.08); }
   }
 
+  /* Cérémonie (2.5s) : les signes se rejoignent, puis le score apparaît et compte.
+     Tout son contenu a disparu à 78 %, avant que le voile ne se lève ; le résultat
+     n'apparaît qu'ensuite (voir CEREMONY_REVEAL_DELAYS) : jamais les deux à l'écran. */
   @keyframes love-ceremony-veil {
-    0%, 12% { opacity: .96; }
-    48% { opacity: .38; }
+    0%, 76% { opacity: .96; }
     100% { opacity: 0; }
   }
 
   @keyframes love-ceremony-flash {
     0%, 22% { opacity: 0; transform: scale(.18); }
-    48% { opacity: .88; transform: scale(1); }
-    100% { opacity: 0; transform: scale(2.2); }
+    36% { opacity: .88; transform: scale(1); }
+    58%, 100% { opacity: 0; transform: scale(2.2); }
   }
 
   @keyframes love-ceremony-curtain-left {
     0% { opacity: .42; transform: translateX(-18%) scale(.72); }
-    46% { opacity: .72; transform: translateX(18%) scale(1.08); }
-    100% { opacity: 0; transform: translateX(32%) scale(1.62); }
+    40% { opacity: .72; transform: translateX(18%) scale(1.08); }
+    72%, 100% { opacity: 0; transform: translateX(32%) scale(1.62); }
   }
 
   @keyframes love-ceremony-curtain-right {
     0% { opacity: .42; transform: translateX(18%) scale(.72); }
-    46% { opacity: .72; transform: translateX(-18%) scale(1.08); }
-    100% { opacity: 0; transform: translateX(-32%) scale(1.62); }
+    40% { opacity: .72; transform: translateX(-18%) scale(1.08); }
+    72%, 100% { opacity: 0; transform: translateX(-32%) scale(1.62); }
   }
 
   @keyframes love-ceremony-title {
-    0%, 12% { opacity: 0; transform: translateY(10px); filter: blur(7px); }
-    36%, 68% { opacity: 1; transform: translateY(0); filter: blur(0); }
-    100% { opacity: 0; transform: translateY(-18px); filter: blur(0); }
+    0%, 8% { opacity: 0; transform: translateY(10px); filter: blur(7px); }
+    22%, 62% { opacity: 1; transform: translateY(0); filter: blur(0); }
+    72%, 100% { opacity: 0; transform: translateY(-18px); filter: blur(0); }
   }
 
   @keyframes love-ceremony-line {
-    0%, 16% { opacity: 0; transform: scaleX(0); }
-    42%, 70% { opacity: 1; transform: scaleX(1); }
-    100% { opacity: 0; transform: scaleX(.3); }
+    0%, 12% { opacity: 0; transform: scaleX(0); }
+    28%, 62% { opacity: 1; transform: scaleX(1); }
+    72%, 100% { opacity: 0; transform: scaleX(.3); }
   }
 
   @keyframes love-ceremony-sign-left {
     0% { opacity: 0; transform: translateX(-68px) scale(.68) rotate(-9deg); filter: blur(5px); }
-    38%, 68% { opacity: 1; transform: translateX(0) scale(1) rotate(0); filter: blur(0); }
-    100% { opacity: 0; transform: translateX(-8px) scale(.76); filter: blur(3px); }
+    26%, 62% { opacity: 1; transform: translateX(0) scale(1) rotate(0); filter: blur(0); }
+    72%, 100% { opacity: 0; transform: translateX(-8px) scale(.76); filter: blur(3px); }
   }
 
   @keyframes love-ceremony-sign-right {
     0% { opacity: 0; transform: translateX(68px) scale(.68) rotate(9deg); filter: blur(5px); }
-    38%, 68% { opacity: 1; transform: translateX(0) scale(1) rotate(0); filter: blur(0); }
-    100% { opacity: 0; transform: translateX(8px) scale(.76); filter: blur(3px); }
+    26%, 62% { opacity: 1; transform: translateX(0) scale(1) rotate(0); filter: blur(0); }
+    72%, 100% { opacity: 0; transform: translateX(8px) scale(.76); filter: blur(3px); }
+  }
+
+  /* Le score compte de 30 % à 58 % (voir CEREMONY_SCORE_COUNT), puis reste affiché seul. */
+  @keyframes love-ceremony-score {
+    0%, 28% { opacity: 0; transform: scale(.82); filter: blur(10px); }
+    40%, 70% { opacity: 1; transform: scale(1); filter: blur(0); }
+    78%, 100% { opacity: 0; transform: translateY(-8px) scale(1.04); filter: blur(0); }
   }
 
 
@@ -778,7 +619,9 @@ const GLOW_STYLE = `
     opacity: 0;
     transform-box: fill-box;
     transform-origin: center;
-    animation: love-bridge-rung-in .64s ease forwards;
+    animation:
+      love-bridge-rung-in .64s var(--love-rung-in, 0ms) ease forwards,
+      love-bridge-rung-shimmer 2.8s var(--love-rung-shimmer, 0ms) ease-in-out infinite;
   }
 
   .love-bridge-node {
@@ -914,60 +757,158 @@ const GLOW_STYLE = `
   }
 
   .love-ceremony-veil {
-    animation: love-ceremony-veil 1.9s cubic-bezier(.2,.7,.2,1) both;
+    animation: love-ceremony-veil 2.5s cubic-bezier(.2,.7,.2,1) both;
   }
 
   .love-ceremony-flash {
-    animation: love-ceremony-flash 1.72s cubic-bezier(.16,1,.3,1) both;
+    animation: love-ceremony-flash 2.5s cubic-bezier(.16,1,.3,1) both;
   }
 
   .love-ceremony-curtain-left {
-    animation: love-ceremony-curtain-left 1.9s cubic-bezier(.16,1,.3,1) both;
+    will-change: transform, opacity;
+    animation: love-ceremony-curtain-left 2.5s cubic-bezier(.16,1,.3,1) both;
   }
 
   .love-ceremony-curtain-right {
-    animation: love-ceremony-curtain-right 1.9s cubic-bezier(.16,1,.3,1) both;
+    will-change: transform, opacity;
+    animation: love-ceremony-curtain-right 2.5s cubic-bezier(.16,1,.3,1) both;
   }
 
   .love-ceremony-title {
-    animation: love-ceremony-title 1.82s cubic-bezier(.2,.7,.2,1) both;
+    animation: love-ceremony-title 2.5s cubic-bezier(.2,.7,.2,1) both;
   }
 
   .love-ceremony-line {
     transform-origin: center;
-    animation: love-ceremony-line 1.78s cubic-bezier(.16,1,.3,1) both;
+    animation: love-ceremony-line 2.5s cubic-bezier(.16,1,.3,1) both;
   }
 
   .love-ceremony-sign-left {
-    animation: love-ceremony-sign-left 1.82s cubic-bezier(.16,1,.3,1) both;
+    animation: love-ceremony-sign-left 2.5s cubic-bezier(.16,1,.3,1) both;
   }
 
   .love-ceremony-sign-right {
-    animation: love-ceremony-sign-right 1.82s cubic-bezier(.16,1,.3,1) both;
+    animation: love-ceremony-sign-right 2.5s cubic-bezier(.16,1,.3,1) both;
+  }
+
+  .love-ceremony-score {
+    animation: love-ceremony-score 2.5s cubic-bezier(.2,.7,.2,1) both;
+  }
+
+  /* Score en vedette : chiffre doré en Playfair Display, « % » en exposant.
+     L'ombre est portée par le conteneur : sur Safari, un filtre posé sur le texte
+     découpé (background-clip: text) casse le dégradé. */
+  .love-score-hero {
+    --love-score-size: 88px;
+    display: inline-flex;
+    align-items: flex-start;
+    justify-content: center;
+    font-family: "Playfair Display", "Cormorant Garamond", Georgia, serif;
+    font-weight: 600;
+    line-height: .9;
+    letter-spacing: -.02em;
+    filter: drop-shadow(0 0 22px rgba(232,199,125,.26)) drop-shadow(0 12px 28px rgba(0,0,0,.5));
+  }
+
+  .love-score-hero__value,
+  .love-score-hero__unit {
+    background: linear-gradient(180deg, #FFF9EA 0%, #F6DEA4 42%, #D9AA55 74%, #B9833A 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .love-score-hero__value {
+    font-size: var(--love-score-size);
+    font-variant-numeric: lining-nums tabular-nums;
+  }
+
+  .love-score-hero__unit {
+    margin: .14em 0 0 .06em;
+    font-size: calc(var(--love-score-size) * .36);
+  }
+
+  .love-score-caption {
+    margin: 10px 0 0;
+    color: rgba(232,199,125,.86);
+    font-family: Cinzel, "Playfair Display", Georgia, serif;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: .26em;
+    text-transform: uppercase;
+  }
+
+  /* Texte sous le triangle : chaque ligne a le style de l'accroche et se dévoile à son tour. */
+  @keyframes love-editorial-line-reveal {
+    from { opacity: 0; transform: translateY(8px); filter: blur(4px); clip-path: inset(0 0 100% 0); }
+    to { opacity: 1; transform: translateY(0); filter: blur(0); clip-path: inset(0); }
   }
 
   .love-editorial-line {
     display: block;
     opacity: 0;
-    animation: love-editorial-line-reveal .42s var(--love-line-delay, 0ms) cubic-bezier(.16,1,.3,1) both;
+    animation: love-editorial-line-reveal .5s var(--love-line-delay, 0ms) cubic-bezier(.16,1,.3,1) both;
   }
 
+  /* Lien ADN : brins doublés d'une lueur, barreaux qui scintillent, halos aux deux signes
+     et points de lumière qui voyagent d'un signe à l'autre (voir LoveDnaBridge). */
+  @keyframes love-bridge-rung-shimmer {
+    0%, 100% { opacity: .5; }
+    50% { opacity: 1; }
+  }
+
+  @keyframes love-bridge-halo {
+    0%, 100% { opacity: .2; transform: scale(.85); }
+    50% { opacity: .5; transform: scale(1.2); }
+  }
+
+  .love-bridge-halo {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: love-bridge-halo 3.2s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .love-bridge-pulses { display: none; }
+    .love-bridge-halo { animation: none; }
+    .love-bridge-rung { animation: love-bridge-rung-in .64s var(--love-rung-in, 0ms) ease forwards; }
+  }
+
+  /* Unités du viewBox (rendu à ~0,87) : 11 → ~9,6 px, 12,5 → ~11 px à l'écran.
+     Le contour sombre, peint sous le texte, le détache des anneaux qu'il croise. */
+  .love-score-star-label,
+  .love-score-star-value {
+    paint-order: stroke;
+    stroke: rgba(20,12,18,.92);
+    stroke-width: 3px;
+    stroke-linejoin: round;
+  }
 
   .love-score-star-label {
-    fill: rgba(248,239,226,.82);
+    fill: rgba(250,243,232,.9);
     font-family: Cinzel, Cormorant Garamond, Georgia, serif;
-    font-size: 7.2px;
+    font-size: 11px;
     font-weight: 650;
-    letter-spacing: 2.4px;
+    letter-spacing: 1px;
     text-transform: uppercase;
   }
 
   .love-score-star-value {
-    fill: rgba(232,199,125,.9);
+    fill: #F0CF85;
     font-family: Avenir Next, SF Pro Text, system-ui, sans-serif;
-    font-size: 6.5px;
+    font-size: 12.5px;
     font-weight: 760;
-    letter-spacing: 1.2px;
+    letter-spacing: .4px;
+  }
+
+  .love-score-star-label--strongest {
+    fill: #FFFFFF;
+  }
+
+  .love-score-star-value--strongest {
+    fill: #FFE3A3;
+    font-size: 14px;
   }
 
   .love-zodiac-medallion {
@@ -1067,26 +1008,253 @@ function ZodiacMedallion({ sign, size, selected = false }: {
   );
 }
 
-function useCountUp(target: number | null, duration = 3400): number | null {
-  const [value, setValue] = useState<number | null>(null);
-  const rafRef = useRef<number>(0);
+// Lecture instantanée d'une paire, à partir des seuls signes solaires.
+function buildLoveReading(s1: number, s2: number) {
+  const compatibility = computeSolarCompatibility(s1, s2);
+  const axes: InstantReadingAxis[] = [
+    { id: 'emotion', label: 'Émotion', score: compatibility.emotion, color: '#F08DA5' },
+    { id: 'desire', label: 'Désir', score: compatibility.desire, color: '#F0B45B' },
+    { id: 'potential', label: 'Potentiel', score: compatibility.potential, color: '#F8EFE1' },
+  ];
+  return {
+    axes,
+    score: compatibility.score,
+    label: getLabel(compatibility.score),
+    line: getPairResultLine(s1, s2),
+  };
+}
 
-  useEffect(() => {
-    if (target === null) { setValue(null); return; }
-    const start = Date.now();
-    const startVal = 0;
-    const animate = () => {
-      const elapsed = Date.now() - start;
-      const progress = Math.min(elapsed / duration, 1);
-      const ease = 1 - Math.pow(1 - progress, 3);
-      setValue(Math.round(startVal + (target - startVal) * ease));
-      if (progress < 1) rafRef.current = requestAnimationFrame(animate);
-    };
-    rafRef.current = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(rafRef.current);
-  }, [target, duration]);
+// ─── Carte partageable (Story 1080×1920) ───────────────────
+// Contenu utile entre 270 et 1700 px : au-delà, l'interface des Stories le recouvre.
+const SHARE_CARD_WIDTH = 1080;
+const SHARE_CARD_HEIGHT = 1920;
+const LOVE_DISPLAY_FONT = '"Playfair Display", "Cormorant Garamond", Georgia, serif';
+const SHARE_CAPS = 'Cinzel, "Playfair Display", Georgia, serif';
 
-  return value;
+function getLoveShareUrl() {
+  return `${window.location.origin}/?utm_source=partage&utm_medium=carte_compatibilite&utm_campaign=love`;
+}
+
+function loadShareImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error(`Image introuvable : ${src}`));
+    image.src = src;
+  });
+}
+
+// L'espacement des lettres du canvas n'est pas fiable sur Safari : on place chaque caractère.
+function drawSpacedText(ctx: CanvasRenderingContext2D, text: string, centerX: number, y: number, spacing: number) {
+  const chars = [...text];
+  const widths = chars.map(char => ctx.measureText(char).width);
+  const total = widths.reduce((sum, width) => sum + width, 0) + spacing * (chars.length - 1);
+  let x = centerX - total / 2;
+  ctx.textAlign = 'left';
+  chars.forEach((char, index) => {
+    ctx.fillText(char, x, y);
+    x += widths[index] + spacing;
+  });
+  ctx.textAlign = 'center';
+}
+
+function wrapShareText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {
+  return text.split(/\s+/).reduce<string[]>((lines, word) => {
+    const current = lines[lines.length - 1];
+    if (current && ctx.measureText(`${current} ${word}`).width <= maxWidth) {
+      lines[lines.length - 1] = `${current} ${word}`;
+    } else {
+      lines.push(word);
+    }
+    return lines;
+  }, []);
+}
+
+function slugifyShareName(name: string) {
+  return name.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+}
+
+function drawShareDivider(ctx: CanvasRenderingContext2D, centerX: number, y: number) {
+  ctx.fillStyle = 'rgba(232,199,125,0.42)';
+  ctx.fillRect(centerX - 150, y - 1, 110, 2);
+  ctx.fillRect(centerX + 40, y - 1, 110, 2);
+  ctx.save();
+  ctx.translate(centerX, y);
+  ctx.rotate(Math.PI / 4);
+  ctx.fillStyle = '#E8C77D';
+  ctx.fillRect(-6, -6, 12, 12);
+  ctx.restore();
+}
+
+async function renderLoveShareCard(s1: number, s2: number): Promise<File> {
+  const reading = buildLoveReading(s1, s2);
+  const first = SIGNS[s1];
+  const second = SIGNS[s2];
+  const width = SHARE_CARD_WIDTH;
+  const height = SHARE_CARD_HEIGHT;
+  const centerX = width / 2;
+
+  await Promise.all([
+    document.fonts?.load(`600 250px ${LOVE_DISPLAY_FONT}`),
+    document.fonts?.load(`500 66px ${LOVE_DISPLAY_FONT}`),
+    document.fonts?.load(`italic 400 60px ${LOVE_DISPLAY_FONT}`),
+    document.fonts?.load(`600 28px ${SHARE_CAPS}`),
+  ]).catch(() => undefined);
+  const [firstIcon, secondIcon] = await Promise.all([loadShareImage(first.iconPath), loadShareImage(second.iconPath)]);
+
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('Canvas indisponible');
+
+  const background = ctx.createLinearGradient(0, 0, 0, height);
+  background.addColorStop(0, '#20131E');
+  background.addColorStop(0.5, '#1B1119');
+  background.addColorStop(1, '#0D0A0F');
+  ctx.fillStyle = background;
+  ctx.fillRect(0, 0, width, height);
+
+  const halo = ctx.createRadialGradient(centerX, 860, 0, centerX, 860, 700);
+  halo.addColorStop(0, 'rgba(218,145,164,0.26)');
+  halo.addColorStop(1, 'rgba(218,145,164,0)');
+  ctx.fillStyle = halo;
+  ctx.fillRect(0, 0, width, height);
+
+  // Étoiles : même tirage pour une même paire, pour qu'une carte partagée deux fois soit identique.
+  let seed = s1 * 12 + s2 + 1;
+  const random = () => {
+    seed = (seed * 16807) % 2147483647;
+    return seed / 2147483647;
+  };
+  for (let index = 0; index < 150; index += 1) {
+    const warm = random() > 0.5;
+    ctx.fillStyle = warm ? `rgba(255,214,160,${0.1 + random() * 0.45})` : `rgba(226,210,255,${0.1 + random() * 0.4})`;
+    ctx.beginPath();
+    ctx.arc(random() * width, random() * height, 0.8 + random() * 2.2, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'alphabetic';
+
+  ctx.fillStyle = 'rgba(232,199,125,0.88)';
+  ctx.font = `600 30px ${SHARE_CAPS}`;
+  drawSpacedText(ctx, 'COMPATIBILITÉ ASTRALE', centerX, 292, 8);
+  ctx.fillStyle = 'rgba(240,228,226,0.62)';
+  ctx.font = `italic 400 36px ${LOVE_DISPLAY_FONT}`;
+  ctx.fillText('Lecture de vos Soleils', centerX, 344);
+
+  const iconY = 515;
+  const iconSize = 210;
+  const iconOffset = 170;
+  const bridge = ctx.createLinearGradient(centerX - 420, 0, centerX + 420, 0);
+  bridge.addColorStop(0, 'rgba(255,243,204,0)');
+  bridge.addColorStop(0.22, ELEMENT_COLORS[first.element]);
+  bridge.addColorStop(0.5, '#FFF3CC');
+  bridge.addColorStop(0.78, ELEMENT_COLORS[second.element]);
+  bridge.addColorStop(1, 'rgba(255,243,204,0)');
+  ctx.strokeStyle = bridge;
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  ctx.moveTo(centerX - 420, iconY);
+  ctx.lineTo(centerX + 420, iconY);
+  ctx.stroke();
+  ctx.drawImage(firstIcon, centerX - iconOffset - iconSize / 2, iconY - iconSize / 2, iconSize, iconSize);
+  ctx.drawImage(secondIcon, centerX + iconOffset - iconSize / 2, iconY - iconSize / 2, iconSize, iconSize);
+
+  ctx.font = `500 62px ${LOVE_DISPLAY_FONT}`;
+  const cross = '  ×  ';
+  let nameX = centerX - ctx.measureText(first.name + cross + second.name).width / 2;
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#F8F0E5';
+  ctx.fillText(first.name, nameX, 728);
+  nameX += ctx.measureText(first.name).width;
+  ctx.fillStyle = '#E8C77D';
+  ctx.fillText(cross, nameX, 728);
+  nameX += ctx.measureText(cross).width;
+  ctx.fillStyle = '#F8F0E5';
+  ctx.fillText(second.name, nameX, 728);
+
+  // Le score est le point d'orgue : grand chiffre doré, « % » en exposant.
+  const scoreText = String(reading.score);
+  ctx.font = `600 250px ${LOVE_DISPLAY_FONT}`;
+  const scoreWidth = ctx.measureText(scoreText).width;
+  ctx.font = `600 96px ${LOVE_DISPLAY_FONT}`;
+  const percentWidth = ctx.measureText('%').width;
+  const scoreX = centerX - (scoreWidth + 10 + percentWidth) / 2;
+  const scoreBaseline = 990;
+  const gold = ctx.createLinearGradient(0, scoreBaseline - 200, 0, scoreBaseline);
+  gold.addColorStop(0, '#FFF8E6');
+  gold.addColorStop(0.45, '#F3D99A');
+  gold.addColorStop(1, '#C9963F');
+  ctx.fillStyle = gold;
+  ctx.shadowColor = 'rgba(232,199,125,0.4)';
+  ctx.shadowBlur = 50;
+  ctx.font = `600 250px ${LOVE_DISPLAY_FONT}`;
+  ctx.fillText(scoreText, scoreX, scoreBaseline);
+  ctx.font = `600 96px ${LOVE_DISPLAY_FONT}`;
+  ctx.fillText('%', scoreX + scoreWidth + 10, scoreBaseline - 110);
+  ctx.shadowBlur = 0;
+  ctx.shadowColor = 'transparent';
+  ctx.textAlign = 'center';
+
+  ctx.fillStyle = 'rgba(232,199,125,0.82)';
+  ctx.font = `600 26px ${SHARE_CAPS}`;
+  drawSpacedText(ctx, 'DE COMPATIBILITÉ', centerX, 1062, 8);
+
+  drawShareDivider(ctx, centerX, 1138);
+
+  ctx.fillStyle = 'rgba(244,234,230,0.9)';
+  ctx.font = `italic 400 46px ${LOVE_DISPLAY_FONT}`;
+  // Deux lignes de longueur proche plutôt qu'un mot isolé en seconde ligne.
+  const leadWidth = ctx.measureText(reading.line.lead).width;
+  let leadMaxWidth = leadWidth > 860 ? leadWidth / 2 + 20 : 860;
+  let leadLines = wrapShareText(ctx, reading.line.lead, leadMaxWidth);
+  while (leadLines.length > 2 && leadMaxWidth < 900) {
+    leadMaxWidth += 20;
+    leadLines = wrapShareText(ctx, reading.line.lead, leadMaxWidth);
+  }
+  leadLines.forEach((line, index) => {
+    ctx.fillText(line, centerX, 1232 + index * 62);
+  });
+
+  const columnGap = 320;
+  reading.axes.forEach((axis, index) => {
+    const x = centerX + (index - 1) * columnGap;
+    ctx.fillStyle = axis.color;
+    ctx.beginPath();
+    ctx.arc(x, 1418, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(232,199,125,0.86)';
+    ctx.font = `600 24px ${SHARE_CAPS}`;
+    drawSpacedText(ctx, axis.label.toUpperCase(), x, 1464, 5);
+    ctx.fillStyle = '#FFF3DD';
+    ctx.font = `600 56px ${LOVE_DISPLAY_FONT}`;
+    ctx.fillText(`${axis.score}%`, x, 1528);
+  });
+
+  ctx.fillStyle = 'rgba(232,199,125,0.7)';
+  ctx.font = `600 26px ${SHARE_CAPS}`;
+  drawSpacedText(ctx, 'NIGHT ONE', centerX, 1652, 10);
+  ctx.fillStyle = 'rgba(240,228,226,0.42)';
+  ctx.font = `500 22px ${LOVE_DISPLAY_FONT}`;
+  ctx.fillText(window.location.host, centerX, 1692);
+
+  const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/png'));
+  if (!blob) throw new Error('Export de la carte impossible');
+  return new File([blob], `night-one-${slugifyShareName(first.name)}-${slugifyShareName(second.name)}.png`, { type: 'image/png' });
+}
+
+function downloadFile(file: File) {
+  const url = URL.createObjectURL(file);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = file.name;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 // ─── Sign Picker Modal ─────────────────────────────────────
@@ -1178,12 +1346,91 @@ function SignPicker({ onSelect, onClose, sign1, sign2, clearSelectionHighlights 
 }
 
 // ─── Main Page ─────────────────────────────────────────────
-function LoveRevealCeremony({ sign1, sign2 }: { sign1: number; sign2: number }) {
+// Étapes 1 → 4 : signes et score, signature du lien, texte, actions (partage, premium, modifier).
+// Première révélation : l'étape 1 attend que le contenu de la cérémonie se soit effacé (78 % de 2.5s),
+// la cérémonie est retirée à l'étape 3, une fois son voile levé.
+// Révélations suivantes (on teste souvent plusieurs paires) : pas de cérémonie, cascade courte.
+const CEREMONY_REVEAL_DELAYS = [1950, 2350, 2950, 3550];
+const QUICK_REVEAL_DELAYS = [60, 320, 680, 1020];
+const FINAL_REVEAL_STAGE = 4;
+// Pendant la cérémonie, le score compte de 30 % à 58 % de l'animation (voir love-ceremony-score).
+const CEREMONY_SCORE_COUNT = { delay: 750, duration: 700 };
+const RESULT_SCORE_COUNT = { delay: 250, duration: 1400 };
+const SCORE_SHOWN_IMMEDIATELY = { delay: 0, duration: 0 };
+
+function prefersReducedMotion() {
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+// Compte jusqu'au score en écrivant directement dans le DOM : aucun rendu React par image.
+function useCountUpText(ref: { current: Element | null }, value: number | null, delay: number, duration: number) {
+  useLayoutEffect(() => {
+    const node = ref.current;
+    if (!node || value === null) return;
+    if (duration <= 0 || prefersReducedMotion()) {
+      node.textContent = String(value);
+      return;
+    }
+
+    node.textContent = '0';
+    let frame = 0;
+    const timeout = window.setTimeout(() => {
+      const start = performance.now();
+      const tick = (now: number) => {
+        const progress = Math.min((now - start) / duration, 1);
+        node.textContent = String(Math.round(value * (1 - Math.pow(1 - progress, 3))));
+        if (progress < 1) frame = requestAnimationFrame(tick);
+      };
+      frame = requestAnimationFrame(tick);
+    }, delay);
+    return () => {
+      window.clearTimeout(timeout);
+      cancelAnimationFrame(frame);
+    };
+  }, [ref, value, delay, duration]);
+}
+
+function CountUpNumber({ value, delay, duration, className }: {
+  value: number;
+  delay: number;
+  duration: number;
+  className?: string;
+}) {
+  const ref = useRef<HTMLSpanElement>(null);
+  useCountUpText(ref, value, delay, duration);
+  return <span ref={ref} className={className} />;
+}
+
+function ScoreHero({ score, size, count }: {
+  score: number;
+  size: string;
+  count: { delay: number; duration: number } | null;
+}) {
+  return (
+    <div className="love-score-hero" style={{ '--love-score-size': size } as CSSProperties}>
+      <CountUpNumber
+        className="love-score-hero__value"
+        value={score}
+        delay={count?.delay ?? 0}
+        duration={count?.duration ?? 0}
+      />
+      <span className="love-score-hero__unit">%</span>
+    </div>
+  );
+}
+
+function LoveRevealCeremony({ sign1, sign2, score, onSkip }: {
+  sign1: number;
+  sign2: number;
+  score: number;
+  onSkip: () => void;
+}) {
   const firstColor = ELEMENT_COLORS[SIGNS[sign1].element];
   const secondColor = ELEMENT_COLORS[SIGNS[sign2].element];
 
   return (
-    <div className="love-reveal-ceremony pointer-events-none fixed inset-0" style={{ zIndex: 80, overflow: 'hidden' }} aria-hidden="true">
+    // Un toucher n'importe où passe directement au résultat.
+    <div className="love-reveal-ceremony fixed inset-0" style={{ zIndex: 80, overflow: 'hidden', cursor: 'pointer' }} aria-hidden="true" onClick={onSkip}>
       <div
         className="love-ceremony-veil absolute inset-0"
         style={{
@@ -1203,7 +1450,6 @@ function LoveRevealCeremony({ sign1, sign2 }: { sign1: number; sign2: number }) 
           borderRadius: '50%',
           background: `radial-gradient(circle at 76% 50%, ${firstColor}72 0%, ${firstColor}26 28%, transparent 70%)`,
           filter: 'blur(24px)',
-          mixBlendMode: 'screen',
         }}
       />
       <div
@@ -1218,7 +1464,6 @@ function LoveRevealCeremony({ sign1, sign2 }: { sign1: number; sign2: number }) 
           borderRadius: '50%',
           background: `radial-gradient(circle at 24% 50%, ${secondColor}72 0%, ${secondColor}26 28%, transparent 70%)`,
           filter: 'blur(24px)',
-          mixBlendMode: 'screen',
         }}
       />
 
@@ -1248,13 +1493,12 @@ function LoveRevealCeremony({ sign1, sign2 }: { sign1: number; sign2: number }) 
         />
         <span className="love-ceremony-sign-left absolute" style={{ left: -52, top: -24 }}><ZodiacMedallion sign={SIGNS[sign1]} size={48} selected /></span>
         <span className="love-ceremony-sign-right absolute" style={{ left: 4, top: -24 }}><ZodiacMedallion sign={SIGNS[sign2]} size={48} selected /></span>
-        <div className="love-ceremony-title absolute text-center" style={{ width: 'min(86vw, 460px)', left: 'max(-43vw, -230px)', top: -96 }}>
-          <p style={{ margin: 0, color: 'rgba(232,199,125,.78)', fontSize: 8, fontWeight: 750, letterSpacing: 3.6, textTransform: 'uppercase' }}>
-            Compatibilité astrale
-          </p>
-          <p style={{ margin: '12px 0 0', color: '#FFF8EF', fontFamily: 'Cormorant Garamond, Georgia, serif', fontSize: 'clamp(28px, 8vw, 40px)', fontWeight: 420, lineHeight: 1, letterSpacing: 0, textShadow: '0 14px 36px rgba(0,0,0,.55)' }}>
-            {SIGNS[sign1].name} <span style={{ color: '#E8C77D', fontSize: '.62em', margin: '0 .18em' }}>×</span> {SIGNS[sign2].name}
-          </p>
+        <p className="love-ceremony-title absolute text-center" style={{ width: 'min(86vw, 460px)', left: 'max(-43vw, -230px)', top: -66, margin: 0, color: 'rgba(232,199,125,.84)', fontSize: 10.5, fontWeight: 750, letterSpacing: 3, textTransform: 'uppercase' }}>
+          {SIGNS[sign1].name} <span style={{ margin: '0 .3em' }}>×</span> {SIGNS[sign2].name}
+        </p>
+        <div className="love-ceremony-score absolute flex flex-col items-center text-center" style={{ width: 'min(86vw, 460px)', left: 'max(-43vw, -230px)', top: 40 }}>
+          <ScoreHero score={score} size="clamp(88px, 28vw, 116px)" count={CEREMONY_SCORE_COUNT} />
+          <p className="love-score-caption">De compatibilité</p>
         </div>
       </div>
     </div>
@@ -1269,41 +1513,82 @@ export default function LovePage() {
   const [clearSelectionHighlights, setClearSelectionHighlights] = useState(false);
   const [showPremiumSales, setShowPremiumSales] = useState(false);
   const [revealStage, setRevealStage] = useState(0);
+  const [ceremonyActive, setCeremonyActive] = useState(false);
+  // Passée d'un toucher avant la fin du comptage : le score n'a pas été vu dans la cérémonie.
+  const [scoreMissedInCeremony, setScoreMissedInCeremony] = useState(false);
+  const [shareCard, setShareCard] = useState<{ key: string; file: File } | null>(null);
+  const [shareNotice, setShareNotice] = useState<string | null>(null);
+  const hasRevealedRef = useRef(false);
+  const ceremonyStartRef = useRef(0);
+  const revealTimersRef = useRef<number[]>([]);
 
-  const baseScore = sign1 !== null && sign2 !== null ? computeScore(sign1, sign2) : null;
-  const instantAxes = baseScore !== null && sign1 !== null && sign2 !== null ? getInstantReading(baseScore, sign1, sign2) : [];
-  const score = instantAxes.length > 0
-    ? clampScore(instantAxes.reduce((sum, axis) => sum + axis.score, 0) / instantAxes.length)
-    : null;
-  const animatedScore = useCountUp(score);
-  const label = score !== null ? getLabel(score) : null;
-  const hasResult = score !== null && label !== null && animatedScore !== null;
-  const relationshipVerdict = hasResult ? getRelationshipVerdict(score!, sign1!, sign2!) : '';
-  const pairResultLine = hasResult ? getPairResultLine(sign1!, sign2!) : '';
+  const reading = sign1 !== null && sign2 !== null ? buildLoveReading(sign1, sign2) : null;
+  const hasResult = reading !== null;
+  const label = reading?.label ?? null;
+  const instantAxes = reading?.axes ?? [];
   const isMobileViewport = typeof window !== 'undefined' && window.matchMedia('(max-width: 480px)').matches;
   const compactResult = hasResult && isMobileViewport;
+  const actionsVisible = hasResult && revealStage >= FINAL_REVEAL_STAGE;
 
   useEffect(() => {
-    if (score === null || sign1 === null || sign2 === null) {
+    if (sign1 === null || sign2 === null) {
       setRevealStage(0);
       return;
     }
 
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      setRevealStage(5);
+    if (prefersReducedMotion()) {
+      setRevealStage(FINAL_REVEAL_STAGE);
       return;
     }
 
     setRevealStage(0);
-    const timers = [
-      window.setTimeout(() => setRevealStage(1), 160),
-      window.setTimeout(() => setRevealStage(2), 560),
-      window.setTimeout(() => setRevealStage(3), 1080),
-      window.setTimeout(() => setRevealStage(4), 1900),
-      window.setTimeout(() => setRevealStage(5), 2700),
-    ];
+    const delays = ceremonyActive ? CEREMONY_REVEAL_DELAYS : QUICK_REVEAL_DELAYS;
+    const timers = delays.map((delay, index) =>
+      window.setTimeout(() => setRevealStage(index + 1), delay),
+    );
+    revealTimersRef.current = timers;
     return () => timers.forEach(timer => window.clearTimeout(timer));
-  }, [score, sign1, sign2]);
+  }, [sign1, sign2, ceremonyActive]);
+
+  // La carte est préparée dès que les actions apparaissent : au toucher, le partage part
+  // immédiatement (Safari refuse navigator.share s'il arrive trop longtemps après le geste).
+  useEffect(() => {
+    if (!actionsVisible || sign1 === null || sign2 === null) return;
+    let cancelled = false;
+    renderLoveShareCard(sign1, sign2)
+      .then(file => { if (!cancelled) setShareCard({ key: `${sign1}-${sign2}`, file }); })
+      .catch(error => console.error('Love share card rendering failed:', error));
+    return () => { cancelled = true; };
+  }, [actionsVisible, sign1, sign2]);
+
+  const skipReveal = () => {
+    revealTimersRef.current.forEach(timer => window.clearTimeout(timer));
+    const scoreCountEnd = CEREMONY_SCORE_COUNT.delay + CEREMONY_SCORE_COUNT.duration;
+    setScoreMissedInCeremony(performance.now() - ceremonyStartRef.current < scoreCountEnd);
+    setRevealStage(FINAL_REVEAL_STAGE);
+  };
+
+  const shareResult = async () => {
+    if (sign1 === null || sign2 === null) return;
+    const key = `${sign1}-${sign2}`;
+    const file = shareCard?.key === key ? shareCard.file : await renderLoveShareCard(sign1, sign2);
+    const pair = `${SIGNS[sign1].name} × ${SIGNS[sign2].name}`;
+    const score = buildLoveReading(sign1, sign2).score;
+    const text = `${pair} : ${score} % de compatibilité. Découvre la vôtre sur Night One : ${getLoveShareUrl()}`;
+
+    if (navigator.canShare?.({ files: [file] })) {
+      try {
+        await navigator.share({ files: [file], title: `Night One · ${pair}`, text });
+        return;
+      } catch (error) {
+        if (error instanceof DOMException && error.name === 'AbortError') return;
+      }
+    }
+
+    downloadFile(file);
+    setShareNotice('Carte enregistrée');
+    window.setTimeout(() => setShareNotice(null), 2600);
+  };
 
   const handleSignSelect = (id: number) => {
     const completesPair = picker === 'sign1' ? sign2 !== null : sign1 !== null;
@@ -1312,6 +1597,11 @@ export default function LovePage() {
     if (picker === 'sign2') setSign2(id);
 
     if (completesPair) {
+      // Cérémonie complète à la première paire seulement ; ensuite, révélation courte.
+      setCeremonyActive(!hasRevealedRef.current && !prefersReducedMotion());
+      setScoreMissedInCeremony(false);
+      ceremonyStartRef.current = performance.now();
+      hasRevealedRef.current = true;
       const firstSign = picker === 'sign1' ? SIGNS[id] : sign1 !== null ? SIGNS[sign1] : null;
       const secondSign = picker === 'sign2' ? SIGNS[id] : sign2 !== null ? SIGNS[sign2] : null;
       if (firstSign && secondSign) playLoveRevealNotes(firstSign.element, secondSign.element);
@@ -1381,8 +1671,14 @@ export default function LovePage() {
 
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" />
 
-      {hasResult && sign1 !== null && sign2 !== null && revealStage < 4 && (
-        <LoveRevealCeremony key={`ceremony-${sign1}-${sign2}`} sign1={sign1} sign2={sign2} />
+      {reading && ceremonyActive && sign1 !== null && sign2 !== null && revealStage < 3 && (
+        <LoveRevealCeremony
+          key={`ceremony-${sign1}-${sign2}`}
+          sign1={sign1}
+          sign2={sign2}
+          score={reading.score}
+          onSkip={skipReveal}
+        />
       )}
 
       <div className="absolute inset-0 pointer-events-none"
@@ -1403,7 +1699,7 @@ export default function LovePage() {
         <div className="flex flex-col items-center" style={{ flexShrink: 0, marginTop: hasResult ? 0 : 16, marginBottom: hasResult ? (compactResult ? 10 : 12) : 34 }}>
           <div className="flex items-center gap-3" style={{ marginBottom: hasResult ? 9 : 14 }}>
             <div className="h-px w-9" style={{ background: 'linear-gradient(90deg, transparent, rgba(224,177,104,0.62))' }} />
-            <p style={{ margin: 0, fontSize: 8, color: '#D8B57F', letterSpacing: 3.2, textTransform: 'uppercase', fontWeight: 700 }}>
+            <p style={{ margin: 0, fontSize: 10, color: '#E8C77D', letterSpacing: 2.4, textTransform: 'uppercase', fontWeight: 700 }}>
               Night One · Synastrie
             </p>
             <div className="h-px w-9" style={{ background: 'linear-gradient(90deg, rgba(224,177,104,0.62), transparent)' }} />
@@ -1465,11 +1761,11 @@ export default function LovePage() {
           </div>
         )}
 
-        {/* Result */}
-        {hasResult && label && (
+        {/* Result — monté après la cérémonie pour que ses animations d'entrée soient visibles */}
+        {reading && label && sign1 !== null && sign2 !== null && revealStage >= 1 && (
           <section
             className="w-full"
-            aria-label={`Révélation de compatibilité : ${relationshipVerdict}`}
+            aria-label={`Compatibilité ${reading.score} %`}
             style={{
               position: 'relative',
               overflow: 'visible',
@@ -1483,8 +1779,8 @@ export default function LovePage() {
             }}
           >
             <div className="relative flex flex-col items-center text-center">
-              <div className="flex items-center gap-2" style={{ color: '#D7BE9F', fontSize: 8.5, letterSpacing: 2.6, textTransform: 'uppercase', fontWeight: 800 }}>
-                <Sparkles size={10} strokeWidth={1.4} />
+              <div className="flex items-center gap-2" style={{ color: '#E8C77D', fontSize: 10, letterSpacing: 2.4, textTransform: 'uppercase', fontWeight: 800 }}>
+                <Sparkles size={11} strokeWidth={1.4} />
                 Lecture instantanée
               </div>
 
@@ -1492,72 +1788,23 @@ export default function LovePage() {
                 className="relative flex w-full items-center justify-center"
                 style={{
                   marginTop: compactResult ? 18 : 22,
-                  marginBottom: compactResult ? 22 : 26,
+                  marginBottom: compactResult ? 16 : 20,
                   gap: compactResult ? 22 : 30,
-                  opacity: revealStage >= 1 ? 1 : 0,
-                  transform: revealStage >= 1 ? 'translateY(0) scale(1)' : 'translateY(8px) scale(.94)',
-                  transition: 'opacity .7s ease, transform .9s cubic-bezier(.16, 1, .3, 1)',
                 }}
               >
-                <svg
-                  aria-hidden="true"
-                  className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-                  width={compactResult ? 198 : 218}
-                  height={compactResult ? 64 : 68}
-                  viewBox="0 0 218 68"
-                  style={{ opacity: 0.78, filter: `drop-shadow(0 0 10px ${label.color}3E)` }}
-                >
-                  <path className="love-bridge-line" pathLength={1} d="M28 34 C54 10, 82 10, 109 34 S164 58, 190 34" fill="none" stroke={`url(#love-bridge-${sign1}-${sign2})`} strokeWidth="1.15" strokeLinecap="round" />
-                  <path className="love-bridge-line love-bridge-line--soft" pathLength={1} d="M28 34 C54 58, 82 58, 109 34 S164 10, 190 34" fill="none" stroke={`url(#love-bridge-soft-${sign1}-${sign2})`} strokeWidth="1.05" strokeLinecap="round" />
-                  {[
-                    [48, 21, 48, 47],
-                    [68, 16, 68, 52],
-                    [88, 23, 88, 45],
-                    [130, 45, 130, 23],
-                    [150, 52, 150, 16],
-                    [170, 47, 170, 21],
-                  ].map(([x1, y1, x2, y2], index) => (
-                    <path
-                      key={`${x1}-${y1}`}
-                      className="love-bridge-rung"
-                      d={`M${x1} ${y1} L${x2} ${y2}`}
-                      stroke="rgba(255,239,224,0.18)"
-                      strokeWidth="0.75"
-                      strokeLinecap="round"
-                      style={{ animationDelay: `${560 + index * 92}ms` }}
-                    />
-                  ))}
-                  <circle className="love-bridge-node" cx="28" cy="34" r="2.2" fill={ELEMENT_COLORS[SIGNS[sign1!].element]} style={{ animationDelay: '180ms' }} />
-                  <circle className="love-bridge-node" cx="109" cy="34" r="1.8" fill="rgba(255,239,224,0.72)" style={{ animationDelay: '820ms' }} />
-                  <circle className="love-bridge-node" cx="190" cy="34" r="2.2" fill={ELEMENT_COLORS[SIGNS[sign2!].element]} style={{ animationDelay: '360ms' }} />
-                  <defs>
-                    <linearGradient id={`love-bridge-${sign1}-${sign2}`} x1="28" x2="190" y1="34" y2="34" gradientUnits="userSpaceOnUse">
-                      <stop stopColor={ELEMENT_COLORS[SIGNS[sign1!].element]} stopOpacity="0.68" />
-                      <stop offset="0.5" stopColor={label.color} stopOpacity="0.72" />
-                      <stop offset="1" stopColor={ELEMENT_COLORS[SIGNS[sign2!].element]} stopOpacity="0.68" />
-                    </linearGradient>
-                    <linearGradient id={`love-bridge-soft-${sign1}-${sign2}`} x1="28" x2="190" y1="34" y2="34" gradientUnits="userSpaceOnUse">
-                      <stop stopColor={ELEMENT_COLORS[SIGNS[sign1!].element]} stopOpacity="0.24" />
-                      <stop offset="0.5" stopColor="rgba(255,239,224,0.44)" />
-                      <stop offset="1" stopColor={ELEMENT_COLORS[SIGNS[sign2!].element]} stopOpacity="0.24" />
-                    </linearGradient>
-                  </defs>
-                </svg>
-                {[SIGNS[sign1!]].map((sign, index) => (
+                <LoveDnaBridge sign1={sign1} sign2={sign2} accent={label.color} compact={compactResult} />
+                {[{ sign: SIGNS[sign1], side: 'left' }, { sign: SIGNS[sign2], side: 'right' }].map(({ sign, side }) => (
                   <span
-                    key={`${sign.id}-${index}`}
-                    className="love-result-sign love-result-sign--left flex items-center justify-center"
+                    key={side}
+                    className={`love-result-sign love-result-sign--${side} flex items-center justify-center`}
                     style={{
                       position: 'relative',
                       zIndex: 1,
+                      order: side === 'left' ? 0 : 2,
                       width: compactResult ? 44 : 48,
                       height: compactResult ? 44 : 48,
                       borderRadius: 999,
-                      border: 'none',
-                      background: 'transparent',
                       color: ELEMENT_COLORS[sign.element],
-                      fontSize: compactResult ? 20 : 22,
-                      boxShadow: 'none',
                     }}
                     aria-hidden="true"
                   >
@@ -1566,51 +1813,33 @@ export default function LovePage() {
                 ))}
                 <div
                   className="love-reveal-glint flex items-center justify-center"
-                  style={{ position: 'relative', zIndex: 1, width: 34, height: 34, color: '#E8C77D', filter: 'drop-shadow(0 0 12px rgba(232,199,125,.55))' }}
+                  style={{ position: 'relative', zIndex: 1, order: 1, width: 34, height: 34, color: '#E8C77D', filter: 'drop-shadow(0 0 12px rgba(232,199,125,.55))' }}
                   aria-hidden="true"
                 >
                   <Sparkles size={18} strokeWidth={1.1} />
                 </div>
-                {[SIGNS[sign2!]].map((sign, index) => (
-                  <span
-                    key={`${sign.id}-${index}`}
-                    className="love-result-sign love-result-sign--right flex items-center justify-center"
-                    style={{
-                      position: 'relative',
-                      zIndex: 1,
-                      width: compactResult ? 44 : 48,
-                      height: compactResult ? 44 : 48,
-                      borderRadius: 999,
-                      border: 'none',
-                      background: 'transparent',
-                      color: ELEMENT_COLORS[sign.element],
-                      fontSize: compactResult ? 20 : 22,
-                      boxShadow: 'none',
-                    }}
-                    aria-hidden="true"
-                  >
-                    <ZodiacMedallion sign={sign} size={compactResult ? 44 : 48} selected />
-                  </span>
-                ))}
               </div>
 
-              <span style={{ color: '#D8B36A', fontSize: 8.8, letterSpacing: 2.4, textTransform: 'uppercase', fontWeight: 850, opacity: revealStage >= 2 ? 1 : 0, transition: 'opacity .6s ease' }}>
-                {SIGNS[sign1!].name} · {SIGNS[sign2!].name}
+              <span style={{ color: '#F0D08C', fontSize: 12, letterSpacing: 2.6, textTransform: 'uppercase', fontWeight: 800, animation: 'love-rise .6s .3s ease both' }}>
+                {SIGNS[sign1].name} · {SIGNS[sign2].name}
               </span>
             </div>
-            <div style={{ opacity: revealStage >= 3 ? 1 : 0, transform: revealStage >= 3 ? 'scale(1)' : 'scale(.72)', filter: revealStage >= 3 ? 'blur(0)' : 'blur(6px)', transition: 'opacity .8s ease, transform 1s cubic-bezier(.16, 1, .3, 1), filter .8s ease' }}>
+            <div style={{ opacity: revealStage >= 2 ? 1 : 0, transform: revealStage >= 2 ? 'scale(1)' : 'scale(.72)', filter: revealStage >= 2 ? 'blur(0)' : 'blur(6px)', transition: 'opacity .8s ease, transform 1s cubic-bezier(.16, 1, .3, 1), filter .8s ease' }}>
+              {/* Score au centre du cercle : déjà compté pendant la cérémonie, il s'affiche
+                  directement ; sinon (paire suivante, cérémonie passée tôt), il compte ici. */}
               <CompatibilityScoreStar
                 key={`star-${sign1}-${sign2}`}
                 axes={instantAxes}
-                score={animatedScore}
+                score={reading.score}
+                scoreCount={ceremonyActive && !scoreMissedInCeremony ? SCORE_SHOWN_IMMEDIATELY : RESULT_SCORE_COUNT}
                 compact={compactResult}
               />
             </div>
-            <div style={{ opacity: revealStage >= 4 ? 1 : 0, transform: revealStage >= 4 ? 'translateY(0)' : 'translateY(10px)', transition: 'opacity .7s .12s ease, transform .8s .12s ease' }}>
-              {revealStage >= 4 && (
+            <div style={{ opacity: revealStage >= 3 ? 1 : 0, transform: revealStage >= 3 ? 'translateY(0)' : 'translateY(10px)', transition: 'opacity .7s .12s ease, transform .8s .12s ease' }}>
+              {revealStage >= 3 && (
                 <PremiumLinkEditorial
                   key={`editorial-${sign1}-${sign2}`}
-                  text={pairResultLine}
+                  text={`${reading.line.lead} ${reading.line.body}`}
                   compact={compactResult}
                 />
               )}
@@ -1618,7 +1847,34 @@ export default function LovePage() {
           </section>
         )}
 
-        {hasResult && revealStage >= 5 && (
+
+        {actionsVisible && (
+          <button
+            type="button"
+            onClick={shareResult}
+            className="love-interactive flex w-full flex-shrink-0 items-center justify-center gap-2"
+            style={{
+              minHeight: 44,
+              marginTop: compactResult ? 4 : 8,
+              padding: '11px 16px',
+              borderRadius: 999,
+              border: '1px solid rgba(232, 199, 125, 0.46)',
+              background: 'radial-gradient(ellipse at 50% 0%, rgba(232,199,125,0.12), transparent 70%), rgba(255,255,255,0.02)',
+              color: '#F3DECA',
+              fontSize: 11,
+              fontWeight: 800,
+              letterSpacing: 1.6,
+              textTransform: 'uppercase',
+              cursor: 'pointer',
+              animation: 'love-rise .58s cubic-bezier(.16,1,.3,1) both',
+            }}
+          >
+            <Share2 size={14} strokeWidth={1.6} />
+            {shareNotice ?? 'Partager la carte'}
+          </button>
+        )}
+
+        {actionsVisible && (
           <div
             className="w-full"
             style={{
@@ -1647,7 +1903,7 @@ export default function LovePage() {
                 <Sparkles size={15} strokeWidth={1.35} />
               </span>
               <div className="min-w-0">
-                <p style={{ margin: 0, fontSize: 8.2, color: '#D8B995', letterSpacing: 2.5, textTransform: 'uppercase', fontWeight: 800 }}>
+                <p style={{ margin: 0, fontSize: 10, color: '#E8C77D', letterSpacing: 2.2, textTransform: 'uppercase', fontWeight: 800 }}>
                   Pour aller plus loin
                 </p>
                 <h2 style={{ margin: '4px 0 0', fontFamily: 'Cormorant Garamond, Georgia, serif', fontSize: compactResult ? 20 : 22, lineHeight: 1.08, fontWeight: 520, color: '#FFF8F0', letterSpacing: 0.1 }}>
@@ -1668,7 +1924,7 @@ export default function LovePage() {
                   border: '1px solid rgba(255, 239, 218, 0.62)',
                   background: 'linear-gradient(100deg, #F4DDC1 0%, #E7B9AE 52%, #C7A7C8 100%)',
                   color: '#25181E',
-                  fontSize: compactResult ? 9 : 9.5,
+                  fontSize: 11,
                   fontWeight: 850,
                   letterSpacing: 1.5,
                   textTransform: 'uppercase',
@@ -1682,11 +1938,12 @@ export default function LovePage() {
           </div>
         )}
 
-        {hasResult && (
+        {actionsVisible && (
           <button
             onClick={resetAnalysis}
             className="love-interactive relative flex w-full flex-shrink-0 items-center justify-center gap-2"
             style={{
+              animation: 'love-rise .58s .08s cubic-bezier(.16,1,.3,1) both',
               minHeight: 40,
               marginTop: compactResult ? 12 : 14,
               padding: '9px 16px',
@@ -2174,9 +2431,12 @@ function SignCard({ sign, label, onClick, quiet = false }: {
   );
 }
 
+// Texte sous le triangle : chaque ligne a le style de l'accroche (italique, ivoire lumineux)
+// et se dévoile à son tour, entre deux ornements dorés.
 function PremiumLinkEditorial({ text, compact }: { text: string; compact: boolean }) {
   const maxCharacters = compact ? 38 : 44;
-  const lines = text.split(/\s+/).reduce<string[]>((result, word) => {
+  // Découpe sur les espaces simples : l'espace insécable devant « : » reste collée au mot.
+  const lines = text.split(/ +/).reduce<string[]>((result, word) => {
     const currentLine = result[result.length - 1];
     if (!currentLine || `${currentLine} ${word}`.length > maxCharacters) {
       result.push(word);
@@ -2185,6 +2445,13 @@ function PremiumLinkEditorial({ text, compact }: { text: string; compact: boolea
     }
     return result;
   }, []);
+  const ornament = (
+    <div className="flex items-center justify-center gap-3" aria-hidden="true">
+      <span style={{ width: 42, height: 1, background: 'linear-gradient(90deg, transparent, rgba(232,199,125,.3))' }} />
+      <span style={{ width: 4, height: 4, background: '#E8C77D', transform: 'rotate(45deg)', boxShadow: '0 0 9px rgba(232,199,125,.32)' }} />
+      <span style={{ width: 42, height: 1, background: 'linear-gradient(90deg, rgba(232,199,125,.3), transparent)' }} />
+    </div>
+  );
 
   return (
     <article
@@ -2196,42 +2463,150 @@ function PremiumLinkEditorial({ text, compact }: { text: string; compact: boolea
         textAlign: 'center',
       }}
     >
-      <div className="flex items-center justify-center gap-3" aria-hidden="true">
-        <span style={{ width: 42, height: 1, background: 'linear-gradient(90deg, transparent, rgba(232,199,125,.3))' }} />
-        <span style={{ width: 4, height: 4, background: '#E8C77D', transform: 'rotate(45deg)', boxShadow: '0 0 9px rgba(232,199,125,.32)' }} />
-        <span style={{ width: 42, height: 1, background: 'linear-gradient(90deg, rgba(232,199,125,.3), transparent)' }} />
-      </div>
-      <p style={{ margin: compact ? '15px 0 0' : '18px 0 0', color: 'rgba(236,222,222,.72)', fontFamily: 'Cormorant Garamond, Georgia, serif', fontSize: compact ? 17.5 : 19, fontWeight: 410, lineHeight: 1.5, letterSpacing: '.008em', textShadow: '0 8px 24px rgba(0,0,0,.3)' }}>
+      {ornament}
+      <p style={{ margin: compact ? '15px 0 0' : '18px 0 0', color: '#FFF7EE', fontFamily: 'Cormorant Garamond, Georgia, serif', fontSize: compact ? 17.5 : 19, fontStyle: 'italic', fontWeight: 410, lineHeight: 1.5, letterSpacing: '.008em', textShadow: '0 0 18px rgba(255,236,210,.14), 0 8px 24px rgba(0,0,0,.3)' }}>
         {lines.map((line, index) => (
           <span
             key={`${line}-${index}`}
             className="love-editorial-line"
-            style={{
-              '--love-line-delay': `${70 + index * 105}ms`,
-              color: index === 0 ? '#FFF7EE' : undefined,
-              fontStyle: index === 0 ? 'italic' : undefined,
-            } as CSSProperties}
+            style={{ '--love-line-delay': `${70 + index * 105}ms` } as CSSProperties}
           >
             {line}
           </span>
         ))}
       </p>
+      <div style={{ marginTop: compact ? 14 : 16, animation: `love-rise .6s ${120 + lines.length * 105}ms ease both` }}>
+        {ornament}
+      </div>
     </article>
   );
 }
 
-function CompatibilityScoreStar({ axes, score, compact }: { axes: InstantReadingAxis[]; score: number; compact: boolean }) {
+// Lien ADN entre les deux signes : deux brins qui se croisent, reliés par des barreaux.
+// Une lueur double chaque brin, les barreaux scintillent, un halo respire autour de chaque
+// signe et deux points de lumière voyagent en continu d'un signe à l'autre.
+const DNA_STRAND_A = 'M28 34 C54 10, 82 10, 109 34 S164 58, 190 34';
+const DNA_STRAND_B = 'M28 34 C54 58, 82 58, 109 34 S164 10, 190 34';
+const DNA_RUNGS = [
+  [48, 21, 48, 47],
+  [68, 16, 68, 52],
+  [88, 23, 88, 45],
+  [130, 45, 130, 23],
+  [150, 52, 150, 16],
+  [170, 47, 170, 21],
+];
+// Les points de lumière partent une fois les brins tracés.
+const DNA_PULSES = [
+  { path: DNA_STRAND_A, begin: '1.6s', keyPoints: '0;1' },
+  { path: DNA_STRAND_B, begin: '3.1s', keyPoints: '1;0' },
+];
+
+function LoveDnaBridge({ sign1, sign2, accent, compact }: {
+  sign1: number;
+  sign2: number;
+  accent: string;
+  compact: boolean;
+}) {
+  const firstColor = ELEMENT_COLORS[SIGNS[sign1].element];
+  const secondColor = ELEMENT_COLORS[SIGNS[sign2].element];
+  const id = `${sign1}-${sign2}`;
+
+  return (
+    <svg
+      aria-hidden="true"
+      className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+      width={compact ? 198 : 218}
+      height={compact ? 64 : 68}
+      viewBox="0 0 218 68"
+      style={{ overflow: 'visible', filter: `drop-shadow(0 0 10px ${accent}4A)` }}
+    >
+      <defs>
+        <linearGradient id={`love-dna-${id}`} x1="28" x2="190" y1="34" y2="34" gradientUnits="userSpaceOnUse">
+          <stop stopColor={firstColor} stopOpacity="0.85" />
+          <stop offset="0.5" stopColor="#FFF0CF" stopOpacity="0.95" />
+          <stop offset="1" stopColor={secondColor} stopOpacity="0.85" />
+        </linearGradient>
+        <linearGradient id={`love-dna-rung-${id}`} x1="28" x2="190" y1="34" y2="34" gradientUnits="userSpaceOnUse">
+          <stop stopColor={firstColor} stopOpacity="0.5" />
+          <stop offset="0.5" stopColor="#FFF3DD" stopOpacity="0.7" />
+          <stop offset="1" stopColor={secondColor} stopOpacity="0.5" />
+        </linearGradient>
+        <filter id={`love-dna-glow-${id}`} x="-10%" y="-60%" width="120%" height="220%">
+          <feGaussianBlur stdDeviation="2.2" />
+        </filter>
+        <radialGradient id={`love-dna-spark-${id}`}>
+          <stop stopColor="#FFFFFF" />
+          <stop offset="0.45" stopColor="#FFF0CF" stopOpacity="0.9" />
+          <stop offset="1" stopColor="#FFF0CF" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+
+      <g filter={`url(#love-dna-glow-${id})`} opacity="0.55">
+        <path className="love-bridge-line" pathLength={1} d={DNA_STRAND_A} fill="none" stroke={`url(#love-dna-${id})`} strokeWidth="3" strokeLinecap="round" />
+        <path className="love-bridge-line love-bridge-line--soft" pathLength={1} d={DNA_STRAND_B} fill="none" stroke={`url(#love-dna-${id})`} strokeWidth="3" strokeLinecap="round" />
+      </g>
+
+      {DNA_RUNGS.map(([x1, y1, x2, y2], index) => (
+        <path
+          key={`${x1}-${y1}`}
+          className="love-bridge-rung"
+          d={`M${x1} ${y1} L${x2} ${y2}`}
+          stroke={`url(#love-dna-rung-${id})`}
+          strokeWidth="0.9"
+          strokeLinecap="round"
+          style={{
+            '--love-rung-in': `${560 + index * 92}ms`,
+            '--love-rung-shimmer': `${1500 + index * 180}ms`,
+          } as CSSProperties}
+        />
+      ))}
+
+      <path className="love-bridge-line" pathLength={1} d={DNA_STRAND_A} fill="none" stroke={`url(#love-dna-${id})`} strokeWidth="1.35" strokeLinecap="round" />
+      <path className="love-bridge-line love-bridge-line--soft" pathLength={1} d={DNA_STRAND_B} fill="none" stroke={`url(#love-dna-${id})`} strokeOpacity="0.8" strokeWidth="1.2" strokeLinecap="round" />
+
+      <circle className="love-bridge-halo" cx="28" cy="34" r="6" fill={firstColor} />
+      <circle className="love-bridge-halo" cx="190" cy="34" r="6" fill={secondColor} style={{ animationDelay: '1.6s' }} />
+      <circle className="love-bridge-node" cx="28" cy="34" r="2.2" fill={firstColor} style={{ animationDelay: '180ms' }} />
+      <circle className="love-bridge-node" cx="109" cy="34" r="1.8" fill="rgba(255,239,224,0.85)" style={{ animationDelay: '820ms' }} />
+      <circle className="love-bridge-node" cx="190" cy="34" r="2.2" fill={secondColor} style={{ animationDelay: '360ms' }} />
+
+      <g className="love-bridge-pulses">
+        {DNA_PULSES.map(pulse => (
+          <circle key={pulse.begin} r="2.8" fill={`url(#love-dna-spark-${id})`} opacity="0">
+            <animateMotion dur="3s" begin={pulse.begin} repeatCount="indefinite" path={pulse.path} keyPoints={pulse.keyPoints} keyTimes="0;1" calcMode="linear" />
+            <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.12;0.88;1" dur="3s" begin={pulse.begin} repeatCount="indefinite" />
+          </circle>
+        ))}
+      </g>
+    </svg>
+  );
+}
+
+// Forme du lien sur trois axes. Le score au centre n'apparaît que s'il n'a pas été vu
+// pendant la cérémonie (score = null : le sceau garde seulement son cœur lumineux).
+function CompatibilityScoreStar({ axes, score, scoreCount, compact }: {
+  axes: InstantReadingAxis[];
+  score: number;
+  scoreCount: { delay: number; duration: number };
+  compact: boolean;
+}) {
+  const scoreRef = useRef<SVGTSpanElement>(null);
+  useCountUpText(scoreRef, score, scoreCount.delay, scoreCount.duration);
   const cx = 130;
-  const cy = 143;
+  const cy = 125;
   const maxRadius = 76;
   const guideRadii = [0.34, 0.58, 0.82, 1];
   const angles = [-90, 30, 150];
+  const strongestScore = Math.max(...axes.map(axis => axis.score));
   const points = axes.map((axis, index) => {
     const angle = (angles[index] * Math.PI) / 180;
-    const outerRadius = maxRadius + 17;
+    // Les libellés restent hors de l'anneau qui tourne (rayon 84) : celui du haut au-dessus,
+    // ceux du bas assez près pour que « POTENTIEL » tienne dans un écran de 320 px.
+    const outerRadius = index === 0 ? maxRadius + 22 : maxRadius + 19;
     const labelAnchor: 'start' | 'middle' | 'end' = index === 0 ? 'middle' : index === 1 ? 'start' : 'end';
     return {
       ...axis,
+      isStrongest: axis.score === strongestScore,
       x: cx + Math.cos(angle) * maxRadius * (axis.score / 100),
       y: cy + Math.sin(angle) * maxRadius * (axis.score / 100),
       guideX: cx + Math.cos(angle) * maxRadius,
@@ -2255,19 +2630,19 @@ function CompatibilityScoreStar({ axes, score, compact }: { axes: InstantReading
       aria-label="Carte des scores de compatibilite"
       style={{
         width: '100%',
-        marginTop: compact ? 14 : 18,
+        marginTop: compact ? 10 : 14,
       }}
     >
       <svg
         className="love-score-star"
-        viewBox="0 0 260 286"
+        viewBox="0 0 260 214"
         role="img"
-        aria-label={axes.map(axis => `${axis.label} ${axis.score}%`).join(', ')}
+        aria-label={`Score ${score} %, ${axes.map(axis => `${axis.label} ${axis.score}%`).join(', ')}`}
         style={{
           display: 'block',
           width: '100%',
           maxWidth: compact ? 320 : 346,
-          height: compact ? 250 : 270,
+          height: compact ? 187 : 202,
           margin: '0 auto',
           overflow: 'visible',
         }}
@@ -2302,18 +2677,12 @@ function CompatibilityScoreStar({ axes, score, compact }: { axes: InstantReading
           </linearGradient>
         </defs>
 
-        <g className="love-score-signature-heading" aria-hidden="true">
-          <path d="M18 17 H78" stroke="rgba(232,199,125,.28)" strokeWidth=".7" />
-          <path d="M182 17 H242" stroke="rgba(232,199,125,.28)" strokeWidth=".7" />
-          <path d="M130 11 l4 6 -4 6 -4 -6 Z" fill="rgba(232,199,125,.72)" />
-          <text x="130" y="35" textAnchor="middle" fill="rgba(232,199,125,.84)" fontFamily="Cinzel, Cormorant Garamond, Georgia, serif" fontSize="7.2" fontWeight="650" letterSpacing="2.8">SIGNATURE DU LIEN</text>
-        </g>
-
-        <circle className="love-score-star-aura" cx={cx} cy={cy} r="105" fill={`url(#${auraId})`} />
+        <circle className="love-score-star-aura" cx={cx} cy={cy} r="100" fill={`url(#${auraId})`} />
         <g className="love-score-star-orbit" aria-hidden="true">
-          <circle cx={cx} cy={cy} r="96" fill="none" stroke={`url(#love-score-ring-${scoreKey})`} strokeWidth="0.8" strokeDasharray="2 8 18 8" />
-          <circle cx={cx} cy={cy} r="88" fill="none" stroke="rgba(242,232,216,0.09)" strokeWidth="0.65" strokeDasharray="1 5" />
-          {[[-90, 96], [0, 96], [90, 96], [180, 96]].map(([angle, radius]) => {
+          <circle cx={cx} cy={cy} r="84" fill="none" stroke={`url(#love-score-ring-${scoreKey})`} strokeWidth="0.8" strokeDasharray="2 8 18 8" />
+          <circle cx={cx} cy={cy} r="79" fill="none" stroke="rgba(242,232,216,0.09)" strokeWidth="0.65" strokeDasharray="1 5" />
+          {/* Pas de point en haut : il tomberait sous le pourcentage de l'émotion. */}
+          {[[0, 84], [90, 84], [180, 84]].map(([angle, radius]) => {
             const radians = (angle * Math.PI) / 180;
             const x = cx + Math.cos(radians) * radius;
             const y = cy + Math.sin(radians) * radius;
@@ -2393,31 +2762,32 @@ function CompatibilityScoreStar({ axes, score, compact }: { axes: InstantReading
 
         {points.map((point, index) => (
           <g key={point.id}>
+            {/* L'axe le plus fort ressort : point plus gros, libellé blanc, valeur plus grande. */}
             <circle
               className="love-score-star-dot"
               cx={point.x}
               cy={point.y}
-              r="2.5"
+              r={point.isStrongest ? 3.4 : 2.5}
               fill="#FFF8EF"
               stroke={point.color}
-              strokeWidth="1"
+              strokeWidth={point.isStrongest ? 1.4 : 1}
               style={{ animationDelay: `${520 + index * 135}ms` }}
             />
             <text
               x={point.labelX}
-              y={point.labelY}
+              y={point.labelY - (index === 0 ? 17 : 0)}
               textAnchor={point.anchor}
               dominantBaseline="middle"
-              className="love-score-star-label"
+              className={`love-score-star-label${point.isStrongest ? ' love-score-star-label--strongest' : ''}`}
             >
               {point.label}
             </text>
             <text
               x={point.labelX}
-              y={point.labelY + 10}
+              y={point.labelY + (index === 0 ? 0 : 17)}
               textAnchor={point.anchor}
               dominantBaseline="middle"
-              className="love-score-star-value"
+              className={`love-score-star-value${point.isStrongest ? ' love-score-star-value--strongest' : ''}`}
             >
               {point.score}%
             </text>
@@ -2428,10 +2798,10 @@ function CompatibilityScoreStar({ axes, score, compact }: { axes: InstantReading
           <path d={`M${cx} ${cy - 30} L${cx + 7} ${cy - 7} L${cx + 30} ${cy} L${cx + 7} ${cy + 7} L${cx} ${cy + 30} L${cx - 7} ${cy + 7} L${cx - 30} ${cy} L${cx - 7} ${cy - 7} Z`} fill={`url(#${coreId})`} opacity="0.38" filter={`url(#${glowId})`} aria-hidden="true" />
           <circle cx={cx} cy={cy} r="22" fill="rgba(9,7,10,0.94)" stroke="rgba(232,199,125,0.68)" strokeWidth="0.9" />
           <circle cx={cx} cy={cy} r="18" fill="none" stroke="rgba(255,248,239,0.14)" strokeWidth="0.6" strokeDasharray="1 3" aria-hidden="true" />
-          <text x={cx} y={cy - 1} textAnchor="middle" dominantBaseline="middle" fill="#FFF8EF" fontFamily="Cormorant Garamond, Georgia, serif" fontSize="17" fontWeight="520">
-            {score}%
+          <text x={cx} y={cy - 3} textAnchor="middle" dominantBaseline="middle" fill="#FFF8EF" fontFamily="Cormorant Garamond, Georgia, serif" fontSize="19" fontWeight="520">
+            <tspan ref={scoreRef} />%
           </text>
-          <text x={cx} y={cy + 12} textAnchor="middle" dominantBaseline="middle" fill="rgba(232,199,125,.82)" fontFamily="Avenir Next, system-ui, sans-serif" fontSize="5.5" fontWeight="700" letterSpacing="1.4">
+          <text x={cx} y={cy + 13.5} textAnchor="middle" dominantBaseline="middle" fill="#E8C77D" fontFamily="Avenir Next, system-ui, sans-serif" fontSize="6.5" fontWeight="700" letterSpacing="1.2">
             SCORE
           </text>
         </g>
@@ -2440,5 +2810,6 @@ function CompatibilityScoreStar({ axes, score, compact }: { axes: InstantReading
     </section>
   );
 }
+
 
 // ─── Score Arc SVG ─────────────────────────────────────────

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Crimson+Pro:wght@300;400;500&family=Cinzel:wght@300;400&family=Spectral:wght@200;300&family=Playfair+Display:wght@300;400&family=Marcellus&family=Raleway:wght@100;200;300&family=Josefin+Sans:wght@100;200;300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Crimson+Pro:wght@300;400;500&family=Cinzel:wght@300;400;500;600&family=Spectral:wght@200;300&family=Playfair+Display:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=Marcellus&family=Raleway:wght@100;200;300&family=Josefin+Sans:wght@100;200;300&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -3316,6 +3316,13 @@ body {
   overflow-x: hidden;
   overscroll-behavior-x: none;
   touch-action: pan-y;
+}
+
+/* Love fait défiler son propre contenu (hauteur = écran − barre du bas) :
+   le conteneur ne doit pas ajouter de défilement en plus. */
+.app-content--love {
+  padding-bottom: 0;
+  overflow: hidden;
 }
 
 /* -----------------------------------------------------------

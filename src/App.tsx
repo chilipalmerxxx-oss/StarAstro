@@ -12,6 +12,7 @@ import YouPageWheelPreview from './components/YouPageWheelPreview';
 import BackgroundLab, { YOU_BACKGROUND_OPTIONS, parseBackgroundOption } from './components/BackgroundLab';
 import LandingOrnamentPreview from './components/LandingOrnamentPreview';
 import LandingTitlePreview from './components/LandingTitlePreview';
+import LoveDesignPreview from './components/LoveDesignPreview';
 import HomeDashboard from './components/HomeDashboard';
 import LovePage from './components/LovePage';
 import XPage from './components/XPage';
@@ -215,6 +216,8 @@ function App() {
     typeof window !== 'undefined' && window.location.hash === '#landing-ornaments';
   const isLandingTitlePreviewRoute =
     typeof window !== 'undefined' && window.location.hash === '#landing-title-designs';
+  const isLoveDesignPreviewRoute =
+    typeof window !== 'undefined' && window.location.hash === '#love-designs';
   const isCompatibilityTestRoute =
     typeof window !== 'undefined' && window.location.hash === '#compatibility-test';
 
@@ -550,6 +553,17 @@ function App() {
     );
   }
 
+  if (isLoveDesignPreviewRoute) {
+    return (
+      <LoveDesignPreview
+        onClosePreview={() => {
+          window.location.hash = '';
+          window.location.reload();
+        }}
+      />
+    );
+  }
+
   if (isCompatibilityTestRoute) {
     return (
       <PremiumOnboardingY
@@ -647,7 +661,7 @@ function App() {
   if (activeTab === 'love') {
     return (
       <div className="app-shell">
-        <div className="app-content">
+        <div className="app-content app-content--love">
           <LovePage />
         </div>
         <BottomNavBar activeTab={activeTab} onTabChange={handleTabChange} />
