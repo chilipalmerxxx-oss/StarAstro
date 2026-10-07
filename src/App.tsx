@@ -661,7 +661,7 @@ function App() {
   if (activeTab === 'love') {
     return (
       <div className="app-shell">
-        <div className="app-content app-content--love">
+        <div className="app-content">
           <LovePage />
         </div>
         <BottomNavBar activeTab={activeTab} onTabChange={handleTabChange} />

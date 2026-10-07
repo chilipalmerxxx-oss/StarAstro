@@ -1651,8 +1651,10 @@ export default function LovePage() {
       raf = requestAnimationFrame(draw);
     };
     draw();
-    window.addEventListener('resize', resize);
-    return () => { cancelAnimationFrame(raf); window.removeEventListener('resize', resize); };
+    // La page s'allonge quand le résultat apparaît : le canvas suit sa taille réelle.
+    const observer = new ResizeObserver(resize);
+    observer.observe(canvas);
+    return () => { cancelAnimationFrame(raf); observer.disconnect(); };
     // Relancé au retour de la page premium : le canvas est recréé, l'ancien ne s'affiche plus.
   }, [showPremiumSales]);
 
@@ -1664,7 +1666,9 @@ export default function LovePage() {
     <div className="love-page relative flex flex-col items-center overflow-hidden px-4"
       style={{
         background: 'radial-gradient(ellipse at 50% -8%, rgba(218, 145, 164, 0.24), transparent 36%), radial-gradient(ellipse at 90% 42%, rgba(133, 78, 119, 0.16), transparent 38%), radial-gradient(ellipse at 18% 92%, rgba(179, 94, 128, 0.12), transparent 42%), linear-gradient(165deg, #171018 0%, #1B1119 48%, #100C12 100%)',
-        height: 'calc(100dvh - 36px)',
+        // La page s'allonge avec son contenu : c'est le conteneur de l'app qui défile, un seul
+        // niveau de défilement (imbriqué, il se bloque sur iPhone).
+        minHeight: '100%',
         color: '#FDF6ED',
       }}>
       <InjectGlowStyles />
@@ -1686,13 +1690,12 @@ export default function LovePage() {
       <div className="absolute inset-x-0 top-0 h-px pointer-events-none" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,226,194,0.42), transparent)' }} />
 
       <div
-        className="love-scrollbar relative z-10 w-full max-w-md h-full min-h-0 min-w-0 flex flex-col items-center"
+        className="love-scrollbar relative z-10 w-full max-w-md min-w-0 flex flex-col items-center"
         style={{
           color: '#FDF6ED',
           justifyContent: 'flex-start',
           paddingTop: compactResult ? 14 : 20,
           paddingBottom: hasResult ? 28 : 20,
-          overflowY: 'auto',
         }}
       >
         {/* Header */}

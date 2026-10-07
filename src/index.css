@@ -3318,13 +3318,6 @@ body {
   touch-action: pan-y;
 }
 
-/* Love fait défiler son propre contenu (hauteur = écran − barre du bas) :
-   le conteneur ne doit pas ajouter de défilement en plus. */
-.app-content--love {
-  padding-bottom: 0;
-  overflow: hidden;
-}
-
 /* -----------------------------------------------------------
    FRIENDS PAGE
    ----------------------------------------------------------- */
