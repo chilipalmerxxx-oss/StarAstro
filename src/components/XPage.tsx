@@ -1,9 +1,10 @@
 import { Fragment, useRef, useState } from 'react';
 import type { CSSProperties, ReactNode, TouchEvent } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import firstLookImage from '../assets/compatibility/lea-sacha-first-look.jpg';
-import communicationImage from '../assets/compatibility/lea-sacha-communication.jpg';
-import repairImage from '../assets/compatibility/lea-sacha-repair.jpg';
+import meetingImage from '../assets/compatibility/lea-sacha-meeting-premium-v2.jpg';
+import connectionImage from '../assets/compatibility/lea-sacha-connection-premium-v2.jpg';
+import desireImage from '../assets/compatibility/lea-sacha-desire-premium-v2.jpg';
+import synthesisImage from '../assets/compatibility/lea-sacha-synthesis-premium-v2.jpg';
 import './XPage.css';
 
 interface RegisterThread {
@@ -123,6 +124,13 @@ const REGISTER_SHORT_LABELS: Record<string, string> = {
   emotion: 'Émotion',
   desire: 'Désir',
   synthesis: 'Bilan',
+};
+
+const BODY_SECTION_TITLES: Record<string, string[]> = {
+  character: ['Vos deux présences', 'La tension du premier regard', 'La signature de votre rencontre'],
+  emotion: ['Vos langages affectifs', 'L’accord et le décalage', 'La clé émotionnelle'],
+  desire: ['Ce qui vous attire', 'L’intensité entre vous', 'Faire respirer le désir'],
+  synthesis: ['La nature du lien', 'Le défi à traverser', 'Votre potentiel ensemble'],
 };
 
 function getAspectTone(title: string): 'harmony' | 'tension' | 'adjustment' | 'intensity' | 'spark' | 'growth' {
@@ -528,7 +536,11 @@ function SkyModule({ page, threads }: { page: RegisterPage; threads: RegisterThr
             <circle cx="178" cy="52" r="5" fill="#0a0d16" stroke="var(--thread-b)" strokeWidth={1.4} />
             <circle cx="110" cy="14" r="5.5" fill="#e0c078" />
           </svg>
-          <span className="x-report__sky-chevron">▾</span>
+          <span className="x-report__sky-action">
+            <span className="x-report__sky-hint x-report__sky-hint--closed">Déplier les explications</span>
+            <span className="x-report__sky-hint x-report__sky-hint--open">Masquer les explications</span>
+            <span className="x-report__sky-chevron" aria-hidden="true">▾</span>
+          </span>
         </summary>
 
         <div className="x-report__sky-content">
@@ -585,8 +597,8 @@ const REPORT_PAGES: RegisterPage[] = [
     tagline: 'Qui êtes-vous l’un pour l’autre au premier regard',
     chemistry: 87,
     intensityLabel: 'Présence magnétique',
-    image: firstLookImage,
-    imageAlt: 'Léa et Sacha se remarquent sur un quai sous un ciel étoilé',
+    image: meetingImage,
+    imageAlt: 'Léa et Sacha se reconnaissent sur un quai nocturne sous un croissant de lune',
     body: [
       'Dans le thème fictif de Léa, le Soleil est en Lion en maison V. Elle entre dans la relation avec une chaleur visible, un besoin d’être choisie franchement, presque théâtralement — mais dans le bon sens : elle aime quand le lien a une scène, une couleur, une présence.',
       'Sacha, lui, porte un Soleil en Verseau en maison XI et un Ascendant Bélier. Il donne d’abord une impression plus indépendante, plus nerveuse, comme quelqu’un qui observe le cadre tout en ayant déjà envie de le déplacer. Il peut sembler détaché, mais son Ascendant dit autre chose : il réagit vite, parfois avant même d’avoir décidé s’il était concerné.',
@@ -651,8 +663,8 @@ const REPORT_PAGES: RegisterPage[] = [
     tagline: 'Ce que vous ressentez l’un pour l’autre',
     chemistry: 91,
     intensityLabel: 'Profondeur sensible',
-    image: communicationImage,
-    imageAlt: 'Léa et Sacha discutent dans un café nocturne',
+    image: connectionImage,
+    imageAlt: 'Léa et Sacha partagent un moment intime devant une fenêtre sur la ville',
     body: [
       'Léa a une Lune en Cancer en maison XII. Son émotion est profonde, intuitive, parfois cachée même à elle-même. Elle peut sentir l’atmosphère avant de savoir quoi en faire. Elle devine les variations de ton, les silences, les gestes minuscules. Pratique, sauf quand elle devine aussi des choses qui n’ont pas encore eu le temps d’exister.',
       'Sacha porte une Lune en Taureau en maison II. Il a besoin de calme, de constance, de preuves simples. Chez lui, l’attachement passe par la présence, la fiabilité, le corps, les habitudes. Il n’ouvre pas tout immédiatement, mais quand il se pose, il devient solide.',
@@ -717,8 +729,8 @@ const REPORT_PAGES: RegisterPage[] = [
     tagline: 'Comment vous vous activez, vous stimulez, vous complétez',
     chemistry: 94,
     intensityLabel: 'Élan vibrant',
-    image: repairImage,
-    imageAlt: 'Léa et Sacha se rapprochent après une tension au lever du jour',
+    image: desireImage,
+    imageAlt: 'Léa et Sacha se rapprochent sur un toit sous une éclipse',
     body: [
       'Dans ce thème fictif, le désir est très marqué. Mars de Léa en Scorpion en maison II rencontre Vénus de Sacha en Scorpion en maison VIII. Ce n’est pas une attraction légère. C’est une attraction qui observe, qui retient, qui veut comprendre ce qui se passe sous la peau.',
       'Sacha possède aussi Mars en Lion en maison V, posé près du Soleil de Léa. Il réveille chez elle le sentiment d’être désirée, regardée, choisie. Elle peut se sentir plus vivante dans son rayonnement. Lui, de son côté, reçoit son feu comme une invitation à sortir du contrôle mental.',
@@ -783,8 +795,8 @@ const REPORT_PAGES: RegisterPage[] = [
     tagline: 'Ce que vous devenez ensemble',
     chemistry: 89,
     intensityLabel: 'Potentiel évolutif',
-    image: firstLookImage,
-    imageAlt: 'Léa et Sacha sous une lumière nocturne, comme une conclusion de film',
+    image: synthesisImage,
+    imageAlt: 'Léa et Sacha avancent ensemble sur une passerelle au lever du jour',
     body: [
       'La synastrie fictive de Léa et Sacha raconte un lien de contraste : feu et air en surface, eau et terre en profondeur, Scorpion en zone intime. Autrement dit : ça parle, ça attire, ça résiste, puis ça revient plus doucement que prévu.',
       'Leur force principale vient du soutien émotionnel entre les Lunes. Même quand les egos se défient, une part plus intime sait qu’il y a quelque chose de rassurant à construire. Ce n’est pas seulement une attraction ; c’est une possibilité de refuge.',
@@ -857,12 +869,25 @@ export default function XPage() {
   const visibleThreads = getVisibleThreads(page);
   const registerBalance = REGISTER_THEME_BALANCES[page.id];
 
+  const scrollReportToTop = () => {
+    const behavior: ScrollBehavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+
+    requestAnimationFrame(() => {
+      document.querySelector<HTMLElement>('.app-content--x-report')?.scrollTo({ top: 0, behavior });
+      window.scrollTo({ top: 0, behavior });
+    });
+  };
+
   const goToPage = (nextIndex: number) => {
-    setPageIndex(Math.max(0, Math.min(nextIndex, pageCount - 1)));
+    const targetIndex = Math.max(0, Math.min(nextIndex, pageCount - 1));
+    if (targetIndex === pageIndex) return;
+    setPageIndex(targetIndex);
+    scrollReportToTop();
   };
 
   const turnPage = () => {
     setPageIndex(isLastPage ? 0 : pageIndex + 1);
+    scrollReportToTop();
   };
 
   const handleTouchEnd = (event: TouchEvent) => {
@@ -892,34 +917,48 @@ export default function XPage() {
         aria-live="polite"
       >
         <article className={`x-report__chapter x-report__chapter--${page.id}`} key={page.id}>
-          <figure className={`x-report__visual x-report__visual--${page.id}`}>
-            {page.id === 'synthesis' ? (
-              <div className="x-report__visual-collage" aria-label={page.imageAlt}>
-                <img src={firstLookImage} alt="La rencontre de Léa et Sacha" />
-                <img src={communicationImage} alt="La connexion de Léa et Sacha" />
-                <img src={repairImage} alt="Le désir et la tension de Léa et Sacha" />
+          <figure className={`x-report__visual x-report__visual--${page.id} ${page.id === 'character' ? 'x-report__visual--cover-preview' : ''}`}>
+            <img src={page.image} alt={page.imageAlt} />
+            {page.id === 'character' && (
+              <div className="x-report__cover-preview">
+                <div className="x-report__cover-signature">
+                  <span>Rapport de compatibilité</span>
+                  <strong>Léa × Sacha</strong>
+                </div>
+                <div className="x-report__cover-intro">
+                  <p>Chapitre 01 · La rencontre</p>
+                  <div className="x-report__cover-title-row">
+                    <strong>La rencontre</strong>
+                    <div className="x-report__cover-score" style={{ '--compatibility-score': `${page.chemistry * 3.6}deg` } as CSSProperties}>
+                      <span><b>{page.chemistry}</b><small>%</small></span>
+                    </div>
+                  </div>
+                  <em>{page.tagline}</em>
+                </div>
               </div>
-            ) : (
-              <img src={page.image} alt={page.imageAlt} />
             )}
             <div className="x-report__image-badge">
               <span>Rapport premium</span>
               <strong>Léa × Sacha</strong>
             </div>
           </figure>
-          <div className="x-report__info-bar">
-            <div className="x-report__info-bar-premium">
-              <span>Rapport premium</span>
-              <strong>Léa × Sacha</strong>
+          {page.id !== 'character' && (
+            <>
+              <div className="x-report__info-bar">
+                <div className="x-report__info-bar-premium">
+                  <span>Rapport premium</span>
+                  <strong>Léa × Sacha</strong>
+                </div>
+                <div className="x-report__info-bar-score">
+                  <b>{page.chemistry}%</b>
+                  <em>Alchimie</em>
+                </div>
             </div>
-            <div className="x-report__info-bar-score">
-              <b>{page.chemistry}%</b>
-              <em>Alchimie</em>
-            </div>
-          </div>
-          <div className="x-report__cinema-band">
-            <span>{page.cinemaTitle}</span>
-          </div>
+              <div className="x-report__cinema-band">
+                <span>{page.cinemaTitle}</span>
+              </div>
+            </>
+          )}
 
           <div className="x-report__copy">
             <div className={`x-report__chapter-heading ${page.id === 'synthesis' ? 'x-report__chapter-heading--final' : ''}`}>
@@ -961,9 +1000,19 @@ export default function XPage() {
               </div>
             </section>
 
-            <div className="x-report__body-stack">
-              {page.body.map((paragraph) => (
-                <p className="x-report__body" key={paragraph}>{paragraph}</p>
+            <div className="x-report__body-stack" aria-label="Analyse du registre">
+              {BODY_SECTION_TITLES[page.id].map((sectionTitle, sectionIndex) => (
+                <section className="x-report__body-section" key={sectionTitle}>
+                  <header>
+                    <span>{String(sectionIndex + 1).padStart(2, '0')}</span>
+                    <h2>{sectionTitle}</h2>
+                  </header>
+                  <div className="x-report__body-section-copy">
+                    {page.body.slice(sectionIndex * 2, sectionIndex * 2 + 2).map((paragraph) => (
+                      <p className="x-report__body" key={paragraph}>{paragraph}</p>
+                    ))}
+                  </div>
+                </section>
               ))}
             </div>
 
@@ -1041,7 +1090,7 @@ export default function XPage() {
           <strong>{REGISTER_SHORT_LABELS[page.id]}</strong>
         </div>
         <button className="x-report__turn-button" onClick={turnPage} aria-label={isLastPage ? 'Relire le rapport' : 'Continuer le rapport'}>
-          <small>{isLastPage ? 'Relire' : 'Continuer'}</small>
+          <small>{isLastPage ? 'Relire' : page.id === 'character' ? 'Connexion' : page.id === 'emotion' ? 'Désir' : 'Synthèse'}</small>
           <ChevronRight size={17} />
         </button>
       </nav>

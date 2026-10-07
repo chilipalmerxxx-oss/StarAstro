@@ -1,43 +1,46 @@
-/* Temporary integrated preview for the lunar eclipse background. */
+/* CoStar background "Lune à l'horizon": the lunar dawn image only crowns the
+   top of the screen, fades into a night sky, and recedes as the page scrolls
+   (--costar-scroll-progress is set by CoStarPage). */
 .app-content--costar {
-  background: #050507 url('/costar-lunar-eclipse-preview.png') center top / cover no-repeat fixed !important;
+  background: #08080c !important;
 }
 
 .app-content--costar .costar-page,
 html[data-theme="light"] .app-content--costar .costar-page {
-  background:
-    linear-gradient(180deg, rgba(1, 2, 5, 0.05) 0%, rgba(2, 3, 7, 0.2) 36%, rgba(2, 3, 7, 0.48) 100%),
-    transparent !important;
+  background: transparent !important;
   background-blend-mode: normal !important;
 }
 
+.app-content--costar .costar-scroll-planet {
+  background:
+    radial-gradient(circle at 14% 22%, rgba(255, 255, 255, 0.5) 0 0.7px, transparent 1.4px),
+    radial-gradient(circle at 68% 12%, rgba(255, 238, 210, 0.42) 0 0.6px, transparent 1.3px),
+    radial-gradient(circle at 40% 58%, rgba(226, 232, 255, 0.36) 0 0.55px, transparent 1.2px),
+    radial-gradient(circle at 88% 74%, rgba(255, 255, 255, 0.36) 0 0.6px, transparent 1.3px),
+    linear-gradient(180deg, #121017 0%, #0b0a11 46%, #07070b 100%) !important;
+  background-size: 210px 250px, 280px 230px, 170px 190px, 320px 300px, 100% 100% !important;
+}
+
 .app-content--costar .costar-scroll-planet::before {
-  background: url('/costar-lunar-eclipse-preview.png') center top / cover no-repeat !important;
-  filter: brightness(0.92) contrast(1.04) saturate(0.82) !important;
+  content: '' !important;
+  display: block !important;
+  inset: 0 !important;
+  background: url('/costar-lunar-dawn-v1.png') center top / cover no-repeat !important;
+  filter: brightness(0.74) contrast(1.02) saturate(0.78) !important;
+  opacity: calc(1 - var(--costar-scroll-progress, 0) * 0.9) !important;
+  transform: translate3d(0, calc(var(--costar-scroll-progress, 0) * -10svh), 0) !important;
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.82) 14%, rgba(0, 0, 0, 0.32) 32%, transparent 50%);
+  mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.82) 14%, rgba(0, 0, 0, 0.32) 32%, transparent 50%);
 }
 
 .app-content--costar .costar-scroll-planet::after {
+  content: '' !important;
+  display: block !important;
+  inset: 0 !important;
+  opacity: 1 !important;
   background:
-    radial-gradient(ellipse 72% 28% at 50% 8%, transparent 0%, rgba(2, 3, 7, 0.08) 62%, rgba(1, 2, 5, 0.22) 100%),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.28) 0%, transparent 22%, transparent 78%, rgba(0, 0, 0, 0.28) 100%),
-    linear-gradient(180deg, rgba(1, 2, 5, 0.04) 0%, rgba(1, 2, 5, 0.12) 38%, rgba(1, 2, 5, 0.58) 100%) !important;
-}
-
-@media (max-width: 768px) {
-  .app-content--costar {
-    background-attachment: scroll !important;
-    background-position: center top !important;
-  }
-
-  .app-content--costar .costar-scroll-planet::before {
-    background-position: center top !important;
-    background-size: cover !important;
-  }
-
-  .app-content--costar .costar-scroll-planet::after {
-    background:
-      radial-gradient(ellipse 84% 30% at 50% 9%, transparent 0%, rgba(2, 3, 7, 0.05) 58%, rgba(1, 2, 5, 0.18) 100%),
-      linear-gradient(90deg, rgba(0, 0, 0, 0.22) 0%, transparent 18%, transparent 82%, rgba(0, 0, 0, 0.22) 100%),
-      linear-gradient(180deg, rgba(1, 2, 5, 0.02) 0%, rgba(1, 2, 5, 0.1) 38%, rgba(1, 2, 5, 0.52) 100%) !important;
-  }
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    radial-gradient(ellipse 80% 20% at 50% 40%, rgba(7, 7, 11, 0.5), transparent 72%),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.3) 0%, transparent 20%, transparent 80%, rgba(0, 0, 0, 0.3) 100%) !important;
+  background-size: 180px 180px, 100% 100%, 100% 100% !important;
 }

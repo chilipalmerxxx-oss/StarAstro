@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;0,6..96,600;1,6..96,500&family=Inter:wght@400;500;600&display=swap');
 
 .premium-y-shell {
   position: fixed;
@@ -11,7 +11,6 @@
     radial-gradient(circle at 50% -4%, rgba(255, 226, 184, 0.24), transparent 44%),
     radial-gradient(ellipse at 50% 65%, rgba(105, 119, 168, 0.2), transparent 66%),
     linear-gradient(180deg, #211e27 0%, #161822 56%, #0e1118 100%);
-  font-family: "Cormorant Garamond", Georgia, "Times New Roman", serif;
 }
 
 .premium-y-shell::before {
@@ -211,7 +210,6 @@
   justify-self: center;
   margin: 0;
   color: rgba(239,215,174,0.88);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.24em;
@@ -230,7 +228,6 @@
   color: var(--premium-text);
   background:
     radial-gradient(150% 115% at 50% -8%, #1c1c1e 0%, var(--premium-bg) 46%, #060608 100%);
-  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 .premium-y-shell::before {
@@ -298,7 +295,6 @@
 .premium-y-copy h2,
 .premium-y-word {
   color: var(--premium-text);
-  font-family: "Bodoni Moda", Georgia, serif;
   font-weight: 500;
   text-shadow: 0 8px 28px rgba(0,0,0,.32);
 }
@@ -310,14 +306,12 @@
 
 .premium-y-copy p:not(.premium-y-kicker) {
   color: rgba(211,211,216,.68);
-  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 14px;
   line-height: 1.58;
 }
 
 .premium-y-kicker {
   color: rgba(211,211,216,.72);
-  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-weight: 500;
   letter-spacing: .24em;
 }
@@ -344,7 +338,7 @@
 
 .premium-y-step-line::before,
 .premium-y-step-line::after,
-.premium-y-explain-list span,
+.premium-y-explain-list > div > span,
 .premium-y-summary button span svg {
   color: var(--premium-silver);
   background-color: var(--premium-silver);
@@ -356,7 +350,6 @@
 .premium-y-summary button,
 .premium-y-suggestions button {
   color: rgba(245,244,241,.82);
-  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 .premium-y-wheel-grid::before {
@@ -371,7 +364,6 @@
 
 .premium-y-wheel-scroll button {
   color: rgba(211,211,216,.38);
-  font-family: "Bodoni Moda", Georgia, serif;
 }
 
 .premium-y-wheel-scroll button.is-selected {
@@ -393,7 +385,6 @@
   border-color: rgba(244,244,246,.18);
   background: rgba(244,244,246,.025);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.025);
-  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 .premium-y-copy--city .premium-y-input input:focus,
@@ -447,7 +438,6 @@
 .premium-y-word {
   margin: -6px 0 0;
   color: #f8f4ed;
-  font-family: "Cormorant Garamond", Georgia, serif;
   font-size: clamp(24px, 8vw, 34px);
   font-style: italic;
   font-weight: 500;
@@ -504,7 +494,7 @@
   border-bottom: 0;
 }
 
-.premium-y-explain-list span,
+.premium-y-explain-list > div > span,
 .premium-y-gen-list span {
   width: 6px;
   height: 6px;
@@ -516,7 +506,6 @@
 
 .premium-y-explain-list strong {
   color: #fff;
-  font-family: "Cormorant Garamond", Georgia, serif;
   font-size: 18px;
   font-weight: 500;
 }
@@ -775,7 +764,6 @@
   color: rgba(255,255,255,0.62);
   border: 0;
   background: transparent;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
   font-size: clamp(17px, 4.8vw, 24px);
   font-weight: 350;
   line-height: 1;
@@ -875,13 +863,11 @@
   border-radius: 12px;
   outline: 0;
   background: rgba(255,255,255,0.025);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
   font-size: 15px;
   appearance: none;
 }
 
 .premium-y-input input {
-  font-family: "Cormorant Garamond", Georgia, serif;
   font-size: 28px;
 }
 
@@ -941,7 +927,6 @@
   color: rgba(255,255,255,0.68);
   background: transparent;
   border: 0;
-  font-family: "Cormorant Garamond", Georgia, serif;
   font-size: 16px;
   text-decoration: underline;
 }
@@ -1543,3 +1528,203 @@
 .premium-y-primary { color: #181818; border-color: rgba(255,255,255,.92); background: linear-gradient(180deg, #fff 0%, #ece9e2 45%, #cfccc3 100%); box-shadow: 0 5px 0 #97938a, 0 14px 26px rgba(0,0,0,.35), inset 0 1px 0 #fff; }
 .premium-y-primary:hover:not(:disabled) { box-shadow: 0 6px 0 #97938a, 0 18px 34px rgba(0,0,0,.38), inset 0 1px 0 #fff; }
 .premium-y-primary:active:not(:disabled) { box-shadow: 0 1px 0 #97938a, 0 6px 14px rgba(0,0,0,.3); }
+
+/* Viewport layout: the footer owns its space, including on small phones. */
+.premium-y-shell {
+  display: flex;
+  flex-direction: column;
+  --wheel-height: clamp(156px, 29dvh, 260px);
+}
+.premium-y-shell *, .premium-y-shell *::before, .premium-y-shell *::after { box-sizing: border-box; }
+.premium-y-header {
+  flex: 0 0 auto;
+  height: calc(66px + env(safe-area-inset-top));
+  grid-template-columns: 40px minmax(0, 1fr) 40px 40px;
+  gap: 8px;
+  width: min(100%, 560px);
+  align-self: center;
+}
+.premium-y-stage {
+  flex: 1;
+  min-height: 0;
+  padding: 0 24px;
+  grid-template-rows: minmax(0, 1fr) auto;
+  overflow: hidden;
+}
+.premium-y-card {
+  min-height: 0;
+  max-height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 16px 0;
+  align-self: center;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+.premium-y-copy { gap: clamp(10px, 2dvh, 20px); animation: premium-y-page-in .35s ease both; }
+.premium-y-copy h1,
+.premium-y-copy h2,
+.premium-y-copy--birth-data h2,
+.premium-y-stage--7 .premium-y-copy h2 {
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  font-size: clamp(27px, min(8vw, 4.8dvh), 42px);
+  line-height: 1.12;
+  overflow-wrap: anywhere;
+}
+.premium-y-copy p:not(.premium-y-kicker) { max-width: 100%; font-size: 14px; line-height: 1.55; }
+.premium-y-copy p.premium-y-word { font: italic 500 25px/1.2 "Bodoni Moda", Georgia, serif; color: #f5f4f1; }
+.premium-y-explain-list { width: 100%; margin: 0; }
+.premium-y-explain-list > div { padding: 10px 0; }
+.premium-y-explain-list strong { font-size: 15px; }
+.premium-y-explain-list p:not(.premium-y-kicker) { font-size: 13px; line-height: 1.45; }
+.premium-y-footer {
+  position: relative;
+  inset: auto;
+  width: 100%;
+  padding: 14px 0 max(22px, env(safe-area-inset-bottom));
+  gap: 10px;
+  background: none;
+}
+.premium-y-primary { min-height: 54px; }
+.premium-y-input input { font-size: 16px; }
+.premium-y-icon-button { width: 40px; height: 40px; }
+.premium-y-shell button:focus-visible,
+.premium-y-wheel-scroll:focus-visible { outline: 2px solid #d3d3d8; outline-offset: 3px; }
+.premium-y-summary { width: 100%; }
+.premium-y-summary button span { overflow-wrap: anywhere; white-space: normal; text-align: left; }
+.premium-y-summary button span svg { flex: 0 0 auto; background: none; box-shadow: none; }
+
+/* Native inertia and snap: no JS recentering or per-row 3D transforms. */
+.premium-y-wheel-grid {
+  height: var(--wheel-height);
+  grid-template-rows: minmax(0, 1fr);
+  margin: 0;
+  gap: 0;
+  border-color: rgba(244,244,246,.1);
+  background: rgba(255,255,255,.025);
+  border-radius: 22px;
+}
+.premium-y-wheel-grid::before {
+  height: 52px;
+  inset-inline: 8px;
+  border: 1px solid rgba(235,228,214,.2);
+  background: linear-gradient(110deg, rgba(255,255,255,.03), rgba(255,255,255,.075), rgba(255,255,255,.03));
+  box-shadow: 0 0 30px rgba(255,255,255,.025);
+}
+.premium-y-wheel-grid::after { display: none; }
+.premium-y-wheel { height: 100%; min-height: 0; perspective: none; transform-style: flat; }
+.premium-y-wheel + .premium-y-wheel::before { display: none; }
+.premium-y-wheel-scroll {
+  padding-block: calc((var(--wheel-height) - 52px) / 2);
+  scroll-snap-type: y mandatory;
+  scroll-behavior: auto;
+  transform-style: flat;
+  cursor: grab;
+  mask-image: linear-gradient(transparent, #000 38%, #000 62%, transparent);
+  -webkit-mask-image: linear-gradient(transparent, #000 38%, #000 62%, transparent);
+}
+.premium-y-wheel-scroll:active { cursor: grabbing; }
+.premium-y-wheel-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 52px;
+  padding: 0 4px;
+  scroll-snap-align: center;
+  scroll-snap-stop: normal;
+  color: rgba(211,211,216,.46);
+  font: 400 clamp(20px, 5vw, 25px)/1 Inter, sans-serif;
+  font-variant-numeric: tabular-nums;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: color .12s ease;
+}
+.premium-y-wheel-option.is-selected { color: #fff9f0; text-shadow: 0 0 22px rgba(255,238,209,.16); }
+.premium-y-wheel-grid--date .premium-y-wheel:nth-child(2) .premium-y-wheel-option { font-size: clamp(15px, 4.4vw, 21px); }
+.premium-y-time-instrument {
+  width: min(100%, 350px);
+  padding: 18px 12px 14px;
+  border: 1px solid rgba(231,221,203,.18);
+  border-radius: 30px;
+  background: radial-gradient(ellipse at 50% 0%, rgba(224,200,168,.075), transparent 65%), linear-gradient(145deg, #222127, #141319 70%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.07), 0 18px 45px rgba(0,0,0,.25);
+}
+.premium-y-time-labels { display: grid; grid-template-columns: 1fr 1fr; color: #b1a89c; font: 500 9px/1.3 Inter, sans-serif; letter-spacing: .24em; text-transform: uppercase; }
+.premium-y-wheel-grid--time { width: 100%; border: 0; border-radius: 0; background: none; box-shadow: none; }
+.premium-y-wheel-grid--time .premium-y-wheel-option { font: 500 42px/1 "Bodoni Moda", Georgia, serif; font-variant-numeric: lining-nums tabular-nums; }
+.premium-y-time-separator { color: #d7c7b1; font-size: 28px; font-weight: 300; }
+.premium-y-time-caption { display: flex; align-items: center; justify-content: center; gap: 7px; font: 400 10px/1.4 Inter, sans-serif; letter-spacing: .04em; color: #aca6a0; }
+.premium-y-time-caption span { color: #d7c7b1; }
+.premium-y-copy p.premium-y-time-intro { font-size: 13px; color: #a7a3aa; }
+.premium-y-text-button { min-height: 36px; font: 400 12px/1.4 Inter, sans-serif; text-underline-offset: 4px; color: #b8b3bc; }
+.premium-y-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.premium-y-written-word { display: inline-block; }
+.premium-y-letter { animation: premium-y-letter-in .16s ease-out both; animation-delay: var(--letter-delay); }
+@keyframes premium-y-letter-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes premium-y-page-in { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+/* Mise en page haute : les textes démarrent près du haut et respirent, au lieu de flotter au centre. */
+.premium-y-card {
+  align-self: start;
+  padding: clamp(8px, 3dvh, 28px) 0 16px;
+}
+.premium-y-copy { gap: clamp(16px, 3dvh, 28px); }
+.premium-y-stage--0 .premium-y-card { padding-top: clamp(16px, 6dvh, 56px); }
+.premium-y-stage--0 .premium-y-copy { gap: clamp(20px, 4.4dvh, 42px); }
+.premium-y-stage--0 .premium-y-eclipse-mark { margin-bottom: clamp(6px, 1.6dvh, 16px); }
+/* « Comment ça marche » : quatre lignes compactes pour que l'écran tienne sans défiler. */
+.premium-y-explain-list > div { padding: clamp(7px, 1.3dvh, 12px) 0; }
+.premium-y-explain-list strong { font-size: 13.5px; line-height: 1.3; }
+.premium-y-explain-list p:not(.premium-y-kicker) { font-size: 12px; line-height: 1.4; }
+.premium-y-explain-list > div > span { margin-top: 6px; }
+
+/* Respiration entre la question et la zone de réponse (champ, roue, choix, récapitulatif). */
+.premium-y-copy h2 + .premium-y-input,
+.premium-y-copy h2 + .premium-y-wheel-grid,
+.premium-y-copy h2 + .premium-y-summary,
+.premium-y-copy .premium-y-time-intro + .premium-y-time-instrument,
+.premium-y-copy p + .premium-y-choice { margin-top: clamp(10px, 2.4dvh, 24px); }
+.premium-y-input { gap: 10px; }
+
+/* Heure de naissance : instrument et chiffres plus compacts (les lignes restent à 52 px, cf. BirthWheel). */
+.premium-y-time-instrument {
+  --wheel-height: clamp(148px, 19dvh, 172px);
+  width: min(100%, 300px);
+  padding: 14px 12px 12px;
+  border-radius: 26px;
+}
+.premium-y-wheel-grid--time .premium-y-wheel-option { font-size: 32px; }
+.premium-y-time-separator { font-size: 22px; }
+
+/* Champs texte : ligne de 24 px centrée par un rembourrage symétrique. Une hauteur fixe sans
+   rembourrage laisse chaque moteur placer le texte (bas de la case sur certains appareils). */
+.premium-y-input input {
+  height: auto;
+  min-height: 0;
+  padding: 14px 16px;
+  line-height: 24px;
+}
+.premium-y-copy--city .premium-y-input input,
+.premium-y-copy--city .premium-y-input input:focus { transform: none; }
+
+@media (max-height: 700px) {
+  .premium-y-header { height: calc(54px + env(safe-area-inset-top)); }
+  .premium-y-card { padding-bottom: 8px; }
+  .premium-y-time-instrument { padding-block: 12px; border-radius: 24px; }
+  .premium-y-footer { padding-top: 10px; padding-bottom: max(16px, env(safe-area-inset-bottom)); }
+}
+@media (max-height: 580px) {
+  .premium-y-shell { --wheel-height: 156px; }
+  .premium-y-stage { padding-inline: 18px; }
+  .premium-y-copy { gap: 8px; }
+  .premium-y-copy h1, .premium-y-copy h2, .premium-y-copy--birth-data h2, .premium-y-stage--7 .premium-y-copy h2 { font-size: 26px; }
+  .premium-y-copy p:not(.premium-y-kicker) { font-size: 13px; line-height: 1.4; }
+  .premium-y-step-line { display: none; }
+  .premium-y-time-instrument { padding-block: 10px; }
+  .premium-y-primary { min-height: 48px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .premium-y-letter, .premium-y-copy, .premium-y-sky span { animation: none; }
+  .premium-y-wheel-option { transition: none; }
+}

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import {
   Send, RotateCcw, Heart, Pin, Share2, X,
-  ArrowLeft, Clock, MapPin, Calendar, Menu, Sparkles, ChevronRight,
+  ArrowLeft, Clock, MapPin, Calendar, Menu,
 } from 'lucide-react';
 import { fetchVoidCloudData, pushVoidCloudData } from '../lib/voidSync';
 
@@ -193,7 +193,7 @@ const VOID_QUESTIONS_POOL: Record<VoidCategory, string[]> = {
   soi: [
     'EST-CE QUE JE RÊVE TROP',
     'QU\'EST-CE QUI ME FERA AVANCER',
-    'COMMENT ÊTRE PLUS PATIENT(E)',
+    'COMMENT ÊTRE PLUS PATIENT',
     'SUIS-JE EN TRAIN DE PERDRE MON TEMPS',
     'QUELLE EST MA MISSION DE VIE',
     'QUELLE EST MA PLUS GRANDE FORCE CACHÉE',
@@ -216,7 +216,7 @@ const VOID_QUESTIONS_POOL: Record<VoidCategory, string[]> = {
     'QU\'EST-CE QUE JE FUIS EN CE MOMENT',
     'COMMENT ARRÊTER DE ME COMPARER AUX AUTRES',
     'QUELLE VERSION DE MOI DOIS-JE LAISSER PARTIR',
-    'SUIS-JE TROP DUR(E) AVEC MOI-MÊME',
+    'SUIS-JE TROP DUR AVEC MOI-MÊME',
     'QU\'EST-CE QUI ME REND VRAIMENT UNIQUE',
     'COMMENT ACCEPTER MES CONTRADICTIONS',
     'POURQUOI J\'AI DU MAL À ME REPOSER',
@@ -224,11 +224,11 @@ const VOID_QUESTIONS_POOL: Record<VoidCategory, string[]> = {
     'COMMENT SAVOIR CE QUE JE VEUX VRAIMENT',
     'QU\'EST-CE QUE MON CORPS ESSAIE DE ME DIRE',
     'SUIS-JE FIDÈLE À MES VALEURS',
-    'POURQUOI JE ME SENS DÉCALÉ(E)',
+    'POURQUOI JE ME SENS DÉCALÉ',
     'QUEL RÔLE JOUE LA PEUR DANS MES CHOIX',
     'COMMENT HONORER MA SENSIBILITÉ',
     'QU\'EST-CE QUE JE DOIS PARDONNER EN MOI',
-    'SUIS-JE PRÊT(E) À CHANGER',
+    'SUIS-JE PRÊT À CHANGER',
     'QUELLE PARTIE DE MOI AI-JE ABANDONNÉE',
     'COMMENT ARRÊTER DE ME JUSTIFIER',
     'POURQUOI JE REPOUSSE TOUJOURS LE MÊME PROJET',
@@ -236,7 +236,7 @@ const VOID_QUESTIONS_POOL: Record<VoidCategory, string[]> = {
     'SUIS-JE À L\'ÉCOUTE DE MON INTUITION',
     'COMMENT SORTIR DE MA ZONE DE CONFORT SANS ME PERDRE',
     'QUEL HÉRITAGE FAMILIAL DOIS-JE QUESTIONNER',
-    'POURQUOI JE ME SENS EXTÉNUÉ(E) SANS RAISON',
+    'POURQUOI JE ME SENS EXTÉNUÉ SANS RAISON',
     'QU\'EST-CE QUI DONNE VRAIMENT DU SENS À MA VIE',
     'SUIS-JE EN PAIX AVEC MON PASSÉ',
     'COMMENT CULTIVER PLUS DE PATIENCE ENVERS MOI-MÊME',
@@ -244,7 +244,7 @@ const VOID_QUESTIONS_POOL: Record<VoidCategory, string[]> = {
   ],
   amour: [
     'EST-CE QUE CETTE PERSONNE M\'AIME',
-    'SUIS-JE PRÊT(E) À AIMER DE NOUVEAU',
+    'SUIS-JE PRÊT À AIMER DE NOUVEAU',
     'QUE ME CACHE MON CŒUR',
     'DOIS-JE PARDONNER',
     'COMMENT SAVOIR SI C\'EST LA BONNE PERSONNE',
@@ -253,7 +253,7 @@ const VOID_QUESTIONS_POOL: Record<VoidCategory, string[]> = {
     'QUE DOIS-JE LÂCHER EN AMOUR',
     'COMMENT ATTIRER LA BONNE PERSONNE',
     'COMMENT AMÉLIORER MA RELATION ACTUELLE',
-    'SUIS-JE AIMÉ(E) SINCÈREMENT',
+    'SUIS-JE AIMÉ SINCÈREMENT',
     'POURQUOI J\'AI PEUR DE M\'ENGAGER',
     'QU\'EST-CE QUE L\'AMOUR ATTEND DE MOI',
     'COMMENT OUVRIR MON CŒUR SANS ME PERDRE',
@@ -266,25 +266,25 @@ const VOID_QUESTIONS_POOL: Record<VoidCategory, string[]> = {
     'QUE DOIS-JE APPRENDRE DE MA DERNIÈRE RUPTURE',
     'COMMENT ARRÊTER D\'IDÉALISER L\'AUTRE',
     'SUIS-JE CAPABLE DE VULNÉRABILITÉ EN AMOUR',
-    'POURQUOI J\'AI PEUR D\'ÊTRE ABANDONNÉ(E)',
+    'POURQUOI J\'AI PEUR D\'ÊTRE ABANDONNÉ',
     'QUEL EST MON LANGAGE AMOUREUX',
-    'COMMENT SAVOIR SI JE SUIS PRÊT(E) POUR UNE RELATION SÉRIEUSE',
+    'COMMENT SAVOIR SI JE SUIS PRÊT POUR UNE RELATION SÉRIEUSE',
     'QU\'EST-CE QUE JE PROJETTE SUR MES PARTENAIRES',
     'DOIS-JE DONNER UNE DEUXIÈME CHANCE',
     'COMMENT DIFFÉRENCIER AMOUR ET HABITUDE',
     'POURQUOI JE M\'ATTACHE SI VITE',
     'QUELLE BLESSURE D\'ENFANCE REJOUE DANS MES RELATIONS',
-    'SUIS-JE AMOUREUX(SE) OU AMOUREUX(SE) DE L\'IDÉE',
+    'SUIS-JE AMOUREUX OU AMOUREUX DE L\'IDÉE',
     'COMMENT GUÉRIR AVANT DE RENCONTRER QUELQU\'UN',
     'QUE CACHE MA PEUR DE LA SOLITUDE',
     'DOIS-JE EXPRIMER CE QUE JE RESSENS MAINTENANT',
     'COMMENT ARRÊTER DE FUIR L\'INTIMITÉ',
     'QUEL RÔLE JOUE LA JALOUSIE DANS MA VIE AMOUREUSE',
-    'SUIS-JE PRÊT(E) À ÊTRE VU(E) TEL(LE) QUE JE SUIS',
+    'SUIS-JE PRÊT À ÊTRE VU TEL QUE JE SUIS',
     'POURQUOI J\'AI DU MAL À RECEVOIR DE L\'AMOUR',
     'COMMENT SAVOIR SI CETTE RELATION A UN AVENIR',
     'QUEL EST MON PLUS GRAND BESOIN NON EXPRIMÉ EN COUPLE',
-    'DOIS-JE ME REFAIRE CONFIANCE APRÈS AVOIR ÉTÉ TRAHI(E)',
+    'DOIS-JE ME REFAIRE CONFIANCE APRÈS AVOIR ÉTÉ TRAHI',
     'COMMENT AIMER SANS ME DILUER',
     'QU\'EST-CE QUI ME REND DIFFICILE À AIMER',
     'SUIS-JE EN TRAIN DE ME SABOTER PAR PEUR DU BONHEUR',
@@ -299,12 +299,12 @@ const VOID_QUESTIONS_POOL: Record<VoidCategory, string[]> = {
     'DOIS-JE PRENDRE CE RISQUE',
     'SUIS-JE SUR LA BONNE VOIE',
     'COMMENT DÉBLOQUER MA CARRIÈRE',
-    'DOIS-JE ME LANCER SEUL(E)',
+    'DOIS-JE ME LANCER SEUL',
     'QUEL TALENT DEVRAIS-JE EXPLOITER',
     'COMMENT ATTIRER L\'ABONDANCE',
     'QUE DOIS-JE LAISSER DERRIÈRE MOI AU TRAVAIL',
     'QUEL TYPE DE MÉTIER ME CORRESPOND VRAIMENT',
-    'POURQUOI JE ME SENS BLOQUÉ(E)',
+    'POURQUOI JE ME SENS BLOQUÉ',
     'COMMENT OSER DEMANDER PLUS',
     'EST-CE QUE JE MÉRITE MIEUX',
     'QUEL EST MON VRAI POTENTIEL PROFESSIONNEL',
@@ -312,36 +312,36 @@ const VOID_QUESTIONS_POOL: Record<VoidCategory, string[]> = {
     'DOIS-JE CHANGER DE DIRECTION',
     'QUELLE PEUR M\'EMPÊCHE DE RÉUSSIR',
     'COMMENT TRANSFORMER MA PASSION EN MÉTIER',
-    'SUIS-JE FAIT(E) POUR DIRIGER',
+    'SUIS-JE FAIT POUR DIRIGER',
     'QUE M\'APPREND CET ÉCHEC',
     'COMMENT CONCILIER ARGENT ET ÉPANOUISSEMENT',
     'COMMENT SAVOIR QUAND IL FAUT PARTIR',
     'QUEL EST LE PROCHAIN PALIER DE MA CARRIÈRE',
-    'SUIS-JE PAYÉ(E) À MA JUSTE VALEUR',
+    'SUIS-JE PAYÉ À MA JUSTE VALEUR',
     'POURQUOI J\'AI PEUR DE NÉGOCIER',
     'COMMENT ARRÊTER DE PROCRASTINER SUR CE PROJET',
     'QU\'EST-CE QUI FREINE VRAIMENT MON AMBITION',
     'DOIS-JE ACCEPTER CETTE OFFRE',
-    'COMMENT GÉRER UN COLLÈGUE OU UN(E) SUPÉRIEUR(E) DIFFICILE',
-    'SUIS-JE ENCORE ALIGNÉ(E) AVEC MES OBJECTIFS DE DÉPART',
+    'COMMENT GÉRER UN COLLÈGUE OU UN SUPÉRIEUR DIFFICILE',
+    'SUIS-JE ENCORE ALIGNÉ AVEC MES OBJECTIFS DE DÉPART',
     'QUEL EST LE COÛT DE RESTER DANS MA ZONE DE CONFORT',
     'COMMENT TROUVER L\'ÉQUILIBRE ENTRE TRAVAIL ET VIE PERSONNELLE',
     'POURQUOI JE RESSENS AUTANT LE SYNDROME DE L\'IMPOSTEUR',
     'QUEL PROJET DEVRAIS-JE ABANDONNER',
     'COMMENT REPRENDRE CONFIANCE APRÈS UN ÉCHEC PROFESSIONNEL',
-    'SUIS-JE ENTOURÉ(E) DES BONNES PERSONNES AU TRAVAIL',
+    'SUIS-JE ENTOURÉ DES BONNES PERSONNES AU TRAVAIL',
     'QU\'EST-CE QUI ME MANQUE POUR PASSER À L\'ÉTAPE SUIVANTE',
     'DOIS-JE INVESTIR DANS CE PROJET MAINTENANT',
     'COMMENT ARRÊTER DE TOUT VOULOIR CONTRÔLER AU TRAVAIL',
     'QUELLE COMPÉTENCE DEVRAIS-JE DÉVELOPPER EN PRIORITÉ',
     'POURQUOI JE ME SENS EN COMPÉTITION PERMANENTE',
-    'SUIS-JE FAIT(E) POUR L\'ENTREPRENARIAT',
+    'SUIS-JE FAIT POUR L\'ENTREPRENARIAT',
     'COMMENT SAVOIR SI C\'EST LE BON MOMENT POUR CHANGER DE VOIE',
     'QUEL EST LE SENS PROFOND DE MON TRAVAIL ACTUEL',
     'DOIS-JE PRENDRE PLUS D\'ESPACE DANS MON ÉQUIPE',
     'COMMENT NE PLUS ME COMPARER À DES COLLÈGUES PLUS RAPIDES',
     'QU\'EST-CE QUE LA RÉUSSITE SIGNIFIE VRAIMENT POUR MOI',
-    'SUIS-JE PRÊT(E) À PRENDRE PLUS DE RESPONSABILITÉS',
+    'SUIS-JE PRÊT À PRENDRE PLUS DE RESPONSABILITÉS',
     'POURQUOI J\'AI DU MAL À DÉLÉGUER',
     'COMMENT TRANSFORMER LA PRESSION EN MOTEUR',
     'QUEL SIGNE DOIS-JE ÉCOUTER POUR CHANGER DE CAP',
@@ -349,7 +349,7 @@ const VOID_QUESTIONS_POOL: Record<VoidCategory, string[]> = {
   social: [
     'EST-CE QUE MON ENTOURAGE ME COMPREND',
     'QUI SONT MES VRAIS ALLIÉS',
-    'POURQUOI JE ME SENS SEUL(E)',
+    'POURQUOI JE ME SENS SEUL',
     'COMMENT ATTIRER LES BONNES PERSONNES',
     'DOIS-JE COUPER CERTAINS LIENS',
     'QUEL RÔLE JE JOUE POUR LES AUTRES',
@@ -358,7 +358,7 @@ const VOID_QUESTIONS_POOL: Record<VoidCategory, string[]> = {
     'EST-CE QUE JE PLAIS AUX AUTRES',
     'QUI ME TIRE VERS LE BAS',
     'COMMENT ÊTRE MOI-MÊME EN SOCIÉTÉ',
-    'POURQUOI JE ME SENS INCOMPRIS(E)',
+    'POURQUOI JE ME SENS INCOMPRIS',
     'COMMENT CRÉER DES LIENS AUTHENTIQUES',
     'QUEL IMPACT J\'AI SUR LES AUTRES',
     'COMMENT GÉRER LES CONFLITS AVEC MON ENTOURAGE',
@@ -368,16 +368,16 @@ const VOID_QUESTIONS_POOL: Record<VoidCategory, string[]> = {
     'QUEL MASQUE JE PORTE EN PUBLIC',
     'EST-CE QUE JE SAIS RECEVOIR AUTANT QUE DONNER',
     'COMMENT SAVOIR QUI EST SINCÈRE AVEC MOI',
-    'POURQUOI JE ME SENS DIFFÉRENT(E) DE MON ENTOURAGE',
+    'POURQUOI JE ME SENS DIFFÉRENT DE MON ENTOURAGE',
     'QUEL EST MON RÔLE DANS LES CONFLITS QUE JE VIS',
-    'SUIS-JE TROP DÉPENDANT(E) DU REGARD DES AUTRES',
+    'SUIS-JE TROP DÉPENDANT DU REGARD DES AUTRES',
     'COMMENT SORTIR DE L\'ISOLEMENT',
     'QU\'EST-CE QUI ATTIRE LES PERSONNES TOXIQUES DANS MA VIE',
-    'DOIS-JE PARDONNER À UN(E) AMI(E) QUI M\'A DÉÇU(E)',
+    'DOIS-JE PARDONNER À UN AMI QUI M\'A DÉÇU',
     'COMMENT ME FAIRE DE NOUVEAUX AMIS À CETTE ÉTAPE DE MA VIE',
     'POURQUOI JE ME SENS DE TROP DANS CERTAINS GROUPES',
     'QUEL LIEN AI-JE BESOIN DE RÉPARER',
-    'SUIS-JE UN(E) BON(NE) AMI(E) POUR LES AUTRES',
+    'SUIS-JE UN BON AMI POUR LES AUTRES',
     'COMMENT AFFIRMER MON OPINION SANS PEUR DU JUGEMENT',
     'QU\'EST-CE QUE MA FAMILLE ATTEND DE MOI QUE JE NE VEUX PLUS PORTER',
     'DOIS-JE PRENDRE MES DISTANCES AVEC UN MEMBRE DE MA FAMILLE',
@@ -391,7 +391,7 @@ const VOID_QUESTIONS_POOL: Record<VoidCategory, string[]> = {
     'COMMENT RECONNAÎTRE UNE AMITIÉ QUI M\'ÉLÈVE',
     'POURQUOI J\'AI PEUR DE DÉCEVOIR MON ENTOURAGE',
     'QUEL MASQUE SOCIAL DOIS-JE ENFIN RETIRER',
-    'SUIS-JE ENTOURÉ(E) DE GENS QUI ME RESSEMBLENT VRAIMENT',
+    'SUIS-JE ENTOURÉ DE GENS QUI ME RESSEMBLENT VRAIMENT',
     'COMMENT ARRÊTER DE M\'EFFACER DEVANT LES AUTRES',
     'QU\'EST-CE QUE MES AMITIÉS RÉVÈLENT DE MOI',
     'DOIS-JE RENOUER AVEC UNE PERSONNE DU PASSÉ',
@@ -403,16 +403,16 @@ const VOID_QUESTIONS_POOL: Record<VoidCategory, string[]> = {
 const ALL_SUGGESTIONS: Record<string, string[]> = {
   amour: [
     "Est-ce le bon moment pour aimer ?", "Que dois-je lâcher en amour ?", "Comment attirer la bonne personne ?",
-    "Suis-je prêt(e) à aimer de nouveau ?", "Pourquoi est-ce que j'attire toujours le même type ?",
+    "Suis-je prêt à aimer de nouveau ?", "Pourquoi est-ce que j'attire toujours le même type ?",
     "Comment savoir si c'est la bonne personne ?", "Que me cache mon cœur ?",
-    "Dois-je pardonner à mon ex ?", "Comment améliorer ma relation actuelle ?", "Suis-je aimé(e) sincèrement ?",
+    "Dois-je pardonner à mon ex ?", "Comment améliorer ma relation actuelle ?", "Suis-je aimé sincèrement ?",
   ],
   travail: [
     "Quel est mon don professionnel ?", "Dois-je prendre ce risque ?",
     "Suis-je dans la bonne voie professionnelle ?", "Comment débloquer ma carrière ?",
     "Dois-je me lancer à mon compte ?", "Quel talent devrais-je exploiter ?",
     "Comment attirer l'abondance ?", "Que dois-je laisser derrière moi au travail ?",
-    "Quel type de métier me correspond vraiment ?", "Pourquoi je me sens bloqué(e) ?",
+    "Quel type de métier me correspond vraiment ?", "Pourquoi je me sens bloqué ?",
   ],
   soi: [
     "Quelle est ma mission de vie ?", "Comment dépasser mes peurs ?", "Que dois-je accepter en moi ?",
@@ -424,7 +424,7 @@ const ALL_SUGGESTIONS: Record<string, string[]> = {
   social: [
     "Est-ce que mon entourage me comprend ?", "Comment attirer les bonnes personnes ?",
     "Dois-je couper certains liens ?", "Quel rôle je joue pour les autres ?",
-    "Comment me sentir moins seul(e) ?", "Qui sont mes vrais alliés ?",
+    "Comment me sentir moins seul ?", "Qui sont mes vrais alliés ?",
   ],
   general: [
     "Que disent les étoiles aujourd'hui ?", "Quel message l'univers m'envoie ?", "Sur quoi dois-je me concentrer ?",
@@ -475,42 +475,6 @@ function isBlocked(q: string): boolean {
 const AS: Record<string, string> = { 'Conjonction':'☌', 'Trigone':'△', 'Carré':'□', 'Opposition':'☍', 'Sextile':'⚹' };
 const PS: Record<string, string> = { sun:'☉', moon:'☽', mercury:'☿', venus:'♀', mars:'♂', jupiter:'♃', saturn:'♄', uranus:'♅', neptune:'♆', pluto:'♇' };
 const PN: Record<string, string> = { sun:'Soleil', moon:'Lune', mercury:'Mercure', venus:'Vénus', mars:'Mars', jupiter:'Jupiter', saturn:'Saturne', uranus:'Uranus', neptune:'Neptune', pluto:'Pluton' };
-const PLANET_THEMES: Record<string, string> = {
-  sun: 'ton identité, ton élan vital et la manière dont tu prends ta place',
-  moon: 'tes besoins émotionnels, tes réflexes intimes et ce qui te sécurise',
-  mercury: 'ta pensée, ta parole et la façon dont tu donnes du sens aux événements',
-  venus: 'tes valeurs, ton désir de lien et ta manière de recevoir l’affection',
-  mars: 'ton désir, ta volonté et la façon dont tu passes à l’action',
-  jupiter: 'ce qui t’aide à grandir, à croire et à élargir ton horizon',
-  saturn: 'tes limites, tes responsabilités et ce que tu apprends à construire',
-  uranus: 'ton besoin de liberté, de rupture et de renouvellement',
-  neptune: 'ton intuition, ton imaginaire et les zones où tes frontières deviennent plus fines',
-  pluto: 'tes transformations profondes, ton pouvoir et ce que tu ne peux plus éviter',
-};
-
-function structureVoidResponse(text: string) {
-  const sentences = text.match(/[^.!?]+[.!?]+|[^.!?]+$/g)?.map(sentence => sentence.trim()).filter(Boolean) || [text];
-  return {
-    essence: sentences[0] || text,
-    explanation: sentences.slice(1).join(' '),
-  };
-}
-
-function getVoidAction(category: string): string {
-  if (category === 'amour') return 'Aujourd’hui, formule clairement un besoin affectif au lieu d’attendre qu’il soit deviné.';
-  if (category === 'travail') return 'Aujourd’hui, choisis une décision concrète et accomplis-en la première étape, même imparfaite.';
-  if (category === 'social') return 'Aujourd’hui, observe le lien dans lequel tu peux être pleinement toi sans ajuster ta lumière.';
-  return 'Aujourd’hui, note la première réaction que ce message provoque en toi avant de chercher à l’expliquer.';
-}
-
-function getSourceExplanation(response: VoidResponse): string {
-  const planetName = PN[response.planet] || response.planet;
-  const theme = PLANET_THEMES[response.planet] || 'une zone sensible de ton thème';
-  const aspect = response.aspect
-    ? ` L’aspect ${PS[response.aspect.planet1]} ${AS[response.aspect.type]} ${PS[response.aspect.planet2]} précise la dynamique qui s’active.`
-    : '';
-  return `${planetName} en ${response.sign} éclaire ${theme}.${aspect}`;
-}
 
 // ─── Éléments & Qualités ────────────────────────────────────
 const SIGN_ELEMENT: Record<string, string> = {
@@ -711,19 +675,19 @@ const AMOR_TEMPLATES: TemplGen = (ch) => {
     { text: `Vénus en ${vSign} — tu aimes comme seul peut aimer une âme inscrite dans ce ciel. Le ${elWord(vSign)} de ta Vénus te pousse à chercher l'intensité, pas le confort. Ton cœur a des standards que peu comprendront.`, planet: 'venus', sign: vSign, aspect: vAsp },
     { text: `Ta Lune en ${mSign} capte chaque imperceptible vibration. Les non-dits, les mensonges qui se cachent sous les mots — tu les sens avant même qu'on ne les prononce. En amour, cette intuition lunaire est ton arme la plus redoutable.`, planet: 'moon', sign: mSign, aspect: mAsp },
     { text: `Soleil en ${sSign}, Vénus en ${vSign} : tu refuses l'amour par accident. Ton cœur filtre avec une précision chirurgicale ce qui est digne d'y entrer — et ce filtre te protège bien plus qu'il ne te limite.`, planet: 'sun', sign: sSign },
-    { text: `Mars en ${marsSign} inscrit ta façon de conquérir dans les étoiles. En amour, tu ne restes jamais passif(ve) — tu ${SIGN_ELEMENT[marsSign] === 'Feu' ? "fonces tête baissée, incandescence vivante" : SIGN_ELEMENT[marsSign] === 'Eau' ? "séduis par la profondeur, infiltrant les âmes" : SIGN_ELEMENT[marsSign] === 'Terre' ? "construis pierre après pierre, solidement" : "charmes par l'esprit, magnétisme cérébral"}.`, planet: 'mars', sign: marsSign },
+    { text: `Mars en ${marsSign} inscrit ta façon de conquérir dans les étoiles. En amour, tu ne restes jamais passif — tu ${SIGN_ELEMENT[marsSign] === 'Feu' ? "fonces tête baissée, incandescence vivante" : SIGN_ELEMENT[marsSign] === 'Eau' ? "séduis par la profondeur, infiltrant les âmes" : SIGN_ELEMENT[marsSign] === 'Terre' ? "construis pierre après pierre, solidement" : "charmes par l'esprit, magnétisme cérébral"}.`, planet: 'mars', sign: marsSign },
     { text: `Neptune en ${nepSign} dessine ton idéal amoureux en rêve. C'est beau, ce rêve — il t'empêche de te contenter du médiocre. Mais apprends à le distinguer du mirage : tout ce qui brille sous Neptune n'est pas de l'or.`, planet: 'neptune', sign: nepSign },
     { text: `Avec ${rc.elementCounts[rc.dominantElement]} planètes en ${rc.dominantElement}, tu as besoin d'une alchimie spécifique pour aimer. Tu ne négocies pas avec ta nature — elle est ta boussole.`, planet: 'venus', sign: vSign },
     { text: `Pluton en ${plSign} transforme chaque relation en rite initiatique. Tu ne tombes pas amoureux — tu mutes. Et ceux qui survivent à cette transformation deviennent des parts sacrées de toi.`, planet: 'pluto', sign: plSign },
     { text: `Saturne en ${satSign} te rappelle une vérité que les autres ignorent : l'amour durable se bâtit. Les feux d'artifice te tentent, mais le ${elWord(satSign)} de Saturne exige des assises que seule la patience construit.`, planet: 'saturn', sign: satSign },
-    { text: `Jupiter en ${jupSign} promet l'expansion de ton cœur. Une rencontre inattendue pourrait tout changer — si tu restes ${vEl === 'Feu' ? "audacieux(se)" : vEl === 'Eau' ? "ouvert(e)" : vEl === 'Terre' ? "réceptif(ve)" : "curieux(se)"}.`, planet: 'jupiter', sign: jupSign },
-    { text: `Ton Mars en ${marsSign} et ta Vénus en ${vSign} ne parlent pas le même langage. L'un veut conquérir, l'autre veut être touché(e). Cette dualité rend tes relations inoubliables.`, planet: 'mars', sign: marsSign },
+    { text: `Jupiter en ${jupSign} promet l'expansion de ton cœur. Une rencontre inattendue pourrait tout changer — si tu restes ${vEl === 'Feu' ? "audacieux" : vEl === 'Eau' ? "ouvert" : vEl === 'Terre' ? "réceptif" : "curieux"}.`, planet: 'jupiter', sign: jupSign },
+    { text: `Ton Mars en ${marsSign} et ta Vénus en ${vSign} ne parlent pas le même langage. L'un veut conquérir, l'autre veut être touché. Cette dualité rend tes relations inoubliables.`, planet: 'mars', sign: marsSign },
     { text: `Avec une modalité ${rc.dominantModality}, tu as tendance à ${MODALITY_WORDS[rc.dominantModality]} dans tes relations. C'est ta nature profonde — pas un défaut à corriger.`, planet: 'venus', sign: vSign },
     { text: `La Lune en ${mSign} veille sur tes blessures invisibles. En amour, ta vulnérabilité n'est pas une faiblesse — c'est la porte d'entrée vers l'intimité réelle.`, planet: 'moon', sign: mSign },
     { text: `Vénus en ${vSign}, Lune en ${mSign} — ton cœur est un ${vEl === mEl ? `pur ${elWord(vSign)}` : `mélange de ${elWord(vSign)} et de ${elWord(mSign)}`}. Personne n'aime exactement comme toi.`, planet: 'venus', sign: vSign },
     { text: `${rc.harmoniousAspects} aspects harmonieux dans ton thème : l'amour peut couler naturellement vers toi, si tu arrêtes de le chercher là où il n'est pas.`, planet: 'venus', sign: vSign },
     { text: `${rc.tenseAspects} aspects tendus dans ton ciel natal — ce sont tes cicatrices d'amour cosmiques. Chacune t'a enseigné ce que tu refuses désormais de tolérer.`, planet: 'pluto', sign: plSign },
-    ...(vAsp ? [{ text: `${PN[vAsp.planet1]} ${verbFor(vAsp.type)} ${PN[vAsp.planet2]} : ta façon d'aimer est complexe. Tu exiges d'être compris(e) jusqu'à l'os — et ce filtre éloigne les mauvais et attire les bons.`, planet: 'venus', sign: vSign, aspect: vAsp }] : []),
+    ...(vAsp ? [{ text: `${PN[vAsp.planet1]} ${verbFor(vAsp.type)} ${PN[vAsp.planet2]} : ta façon d'aimer est complexe. Tu exiges d'être compris jusqu'à l'os — et ce filtre éloigne les mauvais et attire les bons.`, planet: 'venus', sign: vSign, aspect: vAsp }] : []),
     ...(mAsp ? [{ text: `Lune en ${mSign} ${verbFor(mAsp.type)} ${PN[mAsp.planet1 === 'moon' ? mAsp.planet2 : mAsp.planet1]} — tu sens quand c'est fini avant l'autre. Tu sens quand ça commence aussi.`, planet: 'moon', sign: mSign, aspect: mAsp }] : []),
     ...(smAsp ? [{ text: `Soleil en ${sSign} ${smAsp.type.toLowerCase()} Lune en ${mSign} : tes désirs conscients et tes besoins profonds ${smAsp.type === 'Trigone' || smAsp.type === 'Sextile' ? "s'harmonisent — tu sais ce que tu veux" : "se confrontent — et c'est cette friction qui donne de la profondeur à tes relations"}.`, planet: 'sun', sign: sSign, aspect: { planet1: 'sun', planet2: 'moon', type: smAsp.type } }] : []),
     ...(vmAsp ? [{ text: `Vénus ${verbFor(vmAsp.type)} ta Lune : ton cœur et ton instinct ${vmAsp.type === 'Trigone' || vmAsp.type === 'Sextile' ? "parlent la même langue — rare et précieux" : "se disputent en permanence. Écoute celui qui parle le plus bas"}.`, planet: 'venus', sign: vSign, aspect: vmAsp }] : []),
@@ -744,21 +708,21 @@ const AMOR_TEMPLATES: TemplGen = (ch) => {
     { text: `Saturne en ${satSign} a posé une règle dans ton cœur que tu n'as jamais formulée à voix haute : on n'entre pas ici sans avoir prouvé qu'on reste. Les feux de paille se cognent contre ce mur, et c'est très bien ainsi.`, planet: 'saturn', sign: satSign },
     { text: `Neptune en ${nepSign} floute les contours de qui tu aimes, juste assez pour que tu tombes. C'est nécessaire au début — dangereux si tu n'atterris jamais.`, planet: 'neptune', sign: nepSign },
     { text: `Pluton en ${plSign} ne fait pas dans la romance de surface. Il t'oblige à descendre, à regarder ce qu'il y a sous le vernis de l'autre — et ce que tu y trouves te terrifie autant que ça te délivre.`, planet: 'pluto', sign: plSign },
-    { text: `Soleil en ${sSign}, Vénus en ${vSign} : qui tu es et ce que tu désires ${sSign === vSign ? "parlent la même langue depuis toujours — un luxe rare" : "négocient sans cesse, comme deux voix qui s'entêtent à ne pas chanter la même note. C'est cette tension qui te rend intéressant(e) à aimer"}.`, planet: 'sun', sign: sSign },
-    { text: `${rc.dominantModality} avant tout : en amour, tu ${MODALITY_WORDS[rc.dominantModality]}. Ce n'est pas un trait à corriger — demande à n'importe qui t'ayant vraiment connu(e).`, planet: 'venus', sign: vSign },
+    { text: `Soleil en ${sSign}, Vénus en ${vSign} : qui tu es et ce que tu désires ${sSign === vSign ? "parlent la même langue depuis toujours — un luxe rare" : "négocient sans cesse, comme deux voix qui s'entêtent à ne pas chanter la même note. C'est cette tension qui te rend intéressant à aimer"}.`, planet: 'sun', sign: sSign },
+    { text: `${rc.dominantModality} avant tout : en amour, tu ${MODALITY_WORDS[rc.dominantModality]}. Ce n'est pas un trait à corriger — demande à n'importe qui t'ayant vraiment connu.`, planet: 'venus', sign: vSign },
     { text: `Vénus en ${vSign}, Lune en ${mSign} : ton cœur est ${vEl === mEl ? `un ${elWord(vSign)} pur, sans mélange — rare, et un peu intimidant pour qui ne s'y attend pas` : `un alliage de ${elWord(vSign)} et de ${elWord(mSign)}, deux métaux qui ne fondent pas à la même température`}.`, planet: 'venus', sign: vSign },
-    { text: `Mars en ${marsSign} face à Vénus en ${vSign} : l'un veut prendre, l'autre veut qu'on la mérite. Cette friction-là, loin de t'abîmer, est ce qui te rend inoubliable une fois qu'on t'a vraiment connu(e).`, planet: 'mars', sign: marsSign },
+    { text: `Mars en ${marsSign} face à Vénus en ${vSign} : l'un veut prendre, l'autre veut qu'on la mérite. Cette friction-là, loin de t'abîmer, est ce qui te rend inoubliable une fois qu'on t'a vraiment connu.`, planet: 'mars', sign: marsSign },
     { text: `Il y a quelque chose d'presque insolent dans la façon dont Vénus en ${vSign} refuse de se contenter de peu. On appellera ça de l'exigence — c'est en réalité du respect pour toi-même, décliné en amour.`, planet: 'venus', sign: vSign },
     { text: `Ta Lune en ${mSign} n'oublie jamais qui t'a fait sentir en sécurité un jour où tu en avais besoin. Cette dette-là, tu la rends au centuple à qui sait la mériter.`, planet: 'moon', sign: mSign },
     { text: `${rc.harmoniousAspects} aspects harmonieux dans ton thème : une part de toi sait déjà que l'amour n'a pas besoin d'être un combat permanent. Écoute cette part-là plus souvent.`, planet: 'venus', sign: vSign },
     { text: `${rc.tenseAspects} tensions dans ton ciel natal — chacune a laissé une trace précise de ce que tu refuses désormais de vivre deux fois. Ce ne sont pas des blessures, ce sont des frontières.`, planet: 'pluto', sign: plSign },
     { text: `Jupiter en ${jupSign}, Saturne en ${satSign} : tu veux à la fois l'ampleur et la solidité. La plupart des gens choisissent l'un ou l'autre — toi, tu refuses de trancher, et tu as raison de refuser.`, planet: 'jupiter', sign: jupSign },
-    { text: `Il y a une différence entre attendre l'amour et le laisser passer devant toi sans le reconnaître. Saturne en ${satSign} te rend prudent(e) — pas aveugle. Vérifie que tu ne confonds pas les deux, en ce moment précis.`, planet: 'saturn', sign: satSign },
-    { text: `Neptune en ${nepSign}, Vénus en ${vSign} : tu tombes amoureux(se) de qui les gens pourraient devenir, pas seulement de qui ils sont. C'est une forme de foi rare — protège-la, mais ne la confonds jamais avec un contrat.`, planet: 'neptune', sign: nepSign },
+    { text: `Il y a une différence entre attendre l'amour et le laisser passer devant toi sans le reconnaître. Saturne en ${satSign} te rend prudent — pas aveugle. Vérifie que tu ne confonds pas les deux, en ce moment précis.`, planet: 'saturn', sign: satSign },
+    { text: `Neptune en ${nepSign}, Vénus en ${vSign} : tu tombes amoureux de qui les gens pourraient devenir, pas seulement de qui ils sont. C'est une forme de foi rare — protège-la, mais ne la confonds jamais avec un contrat.`, planet: 'neptune', sign: nepSign },
     { text: `Mars en ${marsSign} : ce que les autres lisent comme de l'indifférence, chez toi, c'est en réalité de la sélectivité. Tu ne t'enflammes pas pour tout le monde — c'est précisément pour ça que ça compte quand tu t'enflammes.`, planet: 'mars', sign: marsSign },
     { text: `Pluton en ${plSign}, Lune en ${mSign} : les ruptures ne t'effleurent jamais — elles te traversent entièrement, et ce que tu deviens de l'autre côté ne ressemble plus à qui tu étais avant.`, planet: 'pluto', sign: plSign },
     { text: `Vénus en ${vSign} n'a jamais eu besoin d'un mode d'emploi. Le vrai risque n'est pas que tu aimes mal — c'est que tu finisses par aimer quelqu'un qui ne prend jamais la peine de te lire.`, planet: 'venus', sign: vSign },
-    { text: `Soleil en ${sSign} : la version de toi qui existe en dehors du regard d'un partenaire n'est pas un à-côté — c'est la fondation. Ceux qui t'aiment bien l'ont déjà compris ; ceux qui te veulent diminué(e) ne resteront pas longtemps.`, planet: 'sun', sign: sSign },
+    { text: `Soleil en ${sSign} : la version de toi qui existe en dehors du regard d'un partenaire n'est pas un à-côté — c'est la fondation. Ceux qui t'aiment bien l'ont déjà compris ; ceux qui te veulent diminué ne resteront pas longtemps.`, planet: 'sun', sign: sSign },
     { text: `Jupiter en ${jupSign} : une histoire qui compte vraiment ne suivra jamais le scénario que tu avais en tête. Le jour où tu arrêtes de comparer, elle a enfin la place d'exister telle qu'elle est.`, planet: 'jupiter', sign: jupSign },
     { text: `Il y a une lenteur particulière dans la façon dont Saturne en ${satSign} construit un lien — et une rapidité tout aussi particulière dans la façon dont il sait reconnaître ce qui ne vaut pas la peine d'attendre.`, planet: 'saturn', sign: satSign },
     { text: `Mars en ${marsSign}, Pluton en ${plSign} : quand tu désires quelqu'un, ce n'est jamais à moitié. La question n'est pas de savoir si tu en es capable — c'est de savoir qui mérite d'en être la cible.`, planet: 'mars', sign: marsSign },
@@ -767,10 +731,10 @@ const AMOR_TEMPLATES: TemplGen = (ch) => {
     ...(rc.venusSaturn ? [{ text: `Vénus ${verbFor(rc.venusSaturn.type)} Saturne : tu n'as jamais donné ton cœur à la légère, et certains ont confondu ça avec de la distance. C'est en réalité la preuve que ce que tu offres, une fois offert, ne se reprend pas.`, planet: 'venus', sign: vSign, aspect: rc.venusSaturn }] : []),
     ...(rc.marsSaturn ? [{ text: `Mars ${verbFor(rc.marsSaturn.type)} Saturne : ${rc.marsSaturn.type === 'Carré' || rc.marsSaturn.type === 'Opposition' ? "ton désir se cogne souvent à ta propre retenue avant même de rencontrer un obstacle extérieur. Le frein est en toi, pas en face" : "tu sais désirer avec patience, ce qui est presque une contradiction dans les termes — et pourtant, chez toi, ça fonctionne"}.`, planet: 'mars', sign: marsSign, aspect: rc.marsSaturn }] : []),
     ...(rc.marsPluto ? [{ text: `Mars ${verbFor(rc.marsPluto.type)} Pluton : ton désir n'a rien de tiède ni de raisonnable. Ceux qui cherchent une passade s'en éloignent instinctivement — ceux qui cherchent quelque chose de vrai s'en approchent pour la même raison.`, planet: 'mars', sign: marsSign, aspect: rc.marsPluto }] : []),
-    ...(rc.sunSaturn ? [{ text: `Soleil ${verbFor(rc.sunSaturn.type)} Saturne : tu as appris tôt que se faire aimer se mérite, ce qui t'a rendu(e) exigeant(e) envers toi-même bien avant de l'être envers les autres. Cette exigence n'a plus besoin d'être aussi lourde à porter.`, planet: 'sun', sign: sSign, aspect: rc.sunSaturn }] : []),
+    ...(rc.sunSaturn ? [{ text: `Soleil ${verbFor(rc.sunSaturn.type)} Saturne : tu as appris tôt que se faire aimer se mérite, ce qui t'a rendu exigeant envers toi-même bien avant de l'être envers les autres. Cette exigence n'a plus besoin d'être aussi lourde à porter.`, planet: 'sun', sign: sSign, aspect: rc.sunSaturn }] : []),
     ...(rc.sunUranus ? [{ text: `Soleil ${verbFor(rc.sunUranus.type)} Uranus : les histoires trop prévisibles t'ennuient avant même qu'elles ne commencent vraiment. Ce n'est pas de l'instabilité — c'est un besoin d'oxygène que peu de partenaires savent fournir sur la durée.`, planet: 'sun', sign: sSign, aspect: rc.sunUranus }] : []),
     ...(rc.mercuryVenus ? [{ text: `Mercure ${verbFor(rc.mercuryVenus.type)} Vénus : tu sais nommer précisément ce que tu ressens, ce qui est plus rare qu'il n'y paraît. Trouve quelqu'un capable d'écouter avec la même précision — le reste suit.`, planet: 'venus', sign: vSign, aspect: rc.mercuryVenus }] : []),
-    ...(rc.mercuryJupiter ? [{ text: `Mercure ${verbFor(rc.mercuryJupiter.type)} Jupiter : tes conversations amoureuses ont tendance à devenir de vraies explorations plutôt que de simples échanges polis. Un(e) partenaire qui s'ennuie de parler avec toi n'a probablement pas cherché assez loin.`, planet: 'venus', sign: vSign, aspect: rc.mercuryJupiter }] : []),
+    ...(rc.mercuryJupiter ? [{ text: `Mercure ${verbFor(rc.mercuryJupiter.type)} Jupiter : tes conversations amoureuses ont tendance à devenir de vraies explorations plutôt que de simples échanges polis. Un partenaire qui s'ennuie de parler avec toi n'a probablement pas cherché assez loin.`, planet: 'venus', sign: vSign, aspect: rc.mercuryJupiter }] : []),
     ...(rc.jupiterSaturn ? [{ text: `Jupiter ${verbFor(rc.jupiterSaturn.type)} Saturne : tu veux à la fois l'aventure et la promesse que ça durera. Ce n'est pas contradictoire — c'est simplement rare, et ça vaut la peine d'attendre que quelqu'un puisse tenir les deux bouts.`, planet: 'jupiter', sign: jupSign, aspect: rc.jupiterSaturn }] : []),
     ...(rc.venusMars ? [{ text: `Vénus ${verbFor(rc.venusMars.type)} Mars, vus autrement : la tendresse et l'appétit ne sont pas censés cohabiter sans friction chez toi — et c'est exactement cette friction qui empêche tes histoires de sombrer dans la tiédeur.`, planet: 'venus', sign: vSign, aspect: rc.venusMars }] : []),
     ...(rc.moonNeptune ? [{ text: `Lune ${verbFor(rc.moonNeptune.type)} Neptune, vu sous un autre angle : tu sens l'état émotionnel d'un partenaire avant qu'il ne le formule lui-même. Un don, à condition de ne jamais l'utiliser pour deviner à sa place ce qu'il devrait te dire lui-même.`, planet: 'moon', sign: mSign, aspect: rc.moonNeptune }] : []),
@@ -824,7 +788,7 @@ const TRAVAIL_TEMPLATES: TemplGen = (ch) => {
     { text: `${rc.tenseAspects} aspects tendus dans ton ciel : la friction est ton moteur professionnel. Sans obstacle, tu stagnes. Avec, tu excelles.`, planet: 'mars', sign: marsSign },
     { text: `${rc.harmoniousAspects} aspects harmonieux : certains talents coulent naturellement chez toi. Le piège serait de ne pas les exploiter parce qu'ils te semblent trop faciles.`, planet: 'jupiter', sign: jupSign },
     { text: `Modalité ${rc.dominantModality} : ta nature profonde est de ${MODALITY_WORDS[rc.dominantModality]}. Les rôles qui respectent ce rythme te libèrent. Les autres t'étouffent.`, planet: 'saturn', sign: satSign },
-    { text: `Jupiter en ${jupSign}, Saturne en ${satSign} — expansion et structure. Tu as besoin des deux : un rêve ET un plan. L'un sans l'autre te laisse insatisfait(e).`, planet: 'jupiter', sign: jupSign },
+    { text: `Jupiter en ${jupSign}, Saturne en ${satSign} — expansion et structure. Tu as besoin des deux : un rêve ET un plan. L'un sans l'autre te laisse insatisfait.`, planet: 'jupiter', sign: jupSign },
     { text: `Mars en ${marsSign} et Mercure en ${mercSign} : la force brute rencontre l'intelligence. Dans ta carrière, c'est quand tu combines action et réflexion que tu frappes le plus fort.`, planet: 'mars', sign: marsSign },
     ...(marsAsp ? [{ text: `${PN[marsAsp.planet1]} ${verbFor(marsAsp.type)} ${PN[marsAsp.planet2]} — chaque obstacle est une rampe de lancement. Tu ne contournes pas les problèmes, tu les traverses.`, planet: 'mars', sign: marsSign, aspect: marsAsp }] : []),
     ...(satAsp ? [{ text: `Saturne ${verbFor(satAsp.type)} ${PN[satAsp.planet1 === 'saturn' ? satAsp.planet2 : satAsp.planet1]} : la discipline et la patience sont tes armes secrètes dans un monde qui récompense la vitesse.`, planet: 'saturn', sign: satSign, aspect: satAsp }] : []),
@@ -838,7 +802,7 @@ const TRAVAIL_TEMPLATES: TemplGen = (ch) => {
     ...(rc.sunMercury ? [{ text: `Soleil ${verbFor(rc.sunMercury.type)} Mercure : ${rc.sunMercury.type === 'Conjonction' ? "ta pensée et ton identité ne font qu'un. Chaque idée que tu lances porte ta signature — les bonnes personnes le reconnaissent" : "ton intelligence est un outil de pouvoir professionnel. Utilise-la stratégiquement"}.`, planet: 'mercury', sign: mercSign, aspect: rc.sunMercury }] : []),
     ...(rc.marsSaturn ? [{ text: `Mars ${verbFor(rc.marsSaturn.type)} Saturne : ${rc.marsSaturn.type === 'Trigone' || rc.marsSaturn.type === 'Sextile' ? "discipline et action s'allient — tu es une machine de productivité quand tu trouves le bon rythme" : "la frustration professionnelle cache un moteur surpuissant. Chaque obstacle pulvérisé te forge davantage"}.`, planet: 'mars', sign: marsSign, aspect: rc.marsSaturn }] : []),
     ...(rc.sunJupiter ? [{ text: `Soleil ${verbFor(rc.sunJupiter.type)} Jupiter : une vision expansive de ta carrière. ${rc.sunJupiter.type === 'Trigone' || rc.sunJupiter.type === 'Sextile' ? "Les opportunités te sourient naturellement — mais c'est ton audace qui les transforme en succès" : "Tu oscilles entre ambition démesurée et prudence. Le juste milieu est ton terrain de victoire"}.`, planet: 'jupiter', sign: jupSign, aspect: rc.sunJupiter }] : []),
-    ...(rc.sunUranus ? [{ text: `Soleil ${verbFor(rc.sunUranus.type)} Uranus : ta carrière ne suivra jamais une trajectoire conventionnelle. ${rc.sunUranus.type === 'Trigone' || rc.sunUranus.type === 'Sextile' ? "Embrasse l'imprévisible — c'est là que tu brilles" : "Cesse de forcer les cases classiques. Tu es fait(e) pour inventer ta propre voie"}.`, planet: 'uranus', sign: uraSign, aspect: rc.sunUranus }] : []),
+    ...(rc.sunUranus ? [{ text: `Soleil ${verbFor(rc.sunUranus.type)} Uranus : ta carrière ne suivra jamais une trajectoire conventionnelle. ${rc.sunUranus.type === 'Trigone' || rc.sunUranus.type === 'Sextile' ? "Embrasse l'imprévisible — c'est là que tu brilles" : "Cesse de forcer les cases classiques. Tu es fait pour inventer ta propre voie"}.`, planet: 'uranus', sign: uraSign, aspect: rc.sunUranus }] : []),
     ...(rc.mercurySaturn ? [{ text: `Mercure ${verbFor(rc.mercurySaturn.type)} Saturne : ${rc.mercurySaturn.type === 'Trigone' || rc.mercurySaturn.type === 'Sextile' ? "une rigueur intellectuelle redoutable. Tes analyses sont des armes de précision" : "tu mets parfois trop de temps à formuler. Mais quand tu parles, chaque mot compte et chaque mot frappe"}.`, planet: 'mercury', sign: mercSign, aspect: rc.mercurySaturn }] : []),
     ...(rc.venusJupiter ? [{ text: `Vénus ${verbFor(rc.venusJupiter.type)} Jupiter : le networking est un talent inné chez toi. Les partenariats professionnels prospèrent sous cette configuration.`, planet: 'venus', sign: vSign, aspect: rc.venusJupiter }] : []),
     ...(rc.stellium ? [{ text: `Stellium en ${rc.stellium.sign} (${rc.stellium.planets.map(p => PN[p]).join(', ')}) — une puissance concentrée. Professionnellement, c'est ta zone de génie et ton plus grand avantage compétitif.`, planet: rc.stellium.planets[0], sign: rc.stellium.sign }] : []),
@@ -861,7 +825,7 @@ const TRAVAIL_TEMPLATES: TemplGen = (ch) => {
     { text: `Pluton en ${plSign}, Mars en ${marsSign} : ta capacité à te reconstruire professionnellement après un effondrement dépasse largement ce que tu t'accordes le droit de croire.`, planet: 'pluto', sign: plSign },
     { text: `Il existe un mot pour ce que tu ressens quand une réunion s'éternise sans but : c'est ton Mars en ${marsSign} qui réclame, tout simplement, qu'on avance. Ce n'est pas de l'impatience mal placée, c'est un instinct correct.`, planet: 'mars', sign: marsSign },
     { text: `Vénus en ${vSign}, Jupiter en ${jupSign} : ton réseau ne se construit jamais aussi bien que lorsque tu arrêtes de le construire stratégiquement et que tu laisses simplement l'intérêt sincère faire le travail.`, planet: 'venus', sign: vSign },
-    { text: `Modalité ${rc.dominantModality} au travail : tu es fait(e) pour ${rc.dominantModality === 'Cardinal' ? "démarrer les choses, pas pour les faire tourner indéfiniment une fois lancées" : rc.dominantModality === 'Fixe' ? "aller au fond d'un seul sujet plutôt que d'en effleurer dix" : "circuler entre les rôles, pas pour rester assigné(e) à un seul pour toujours"}.`, planet: 'saturn', sign: satSign },
+    { text: `Modalité ${rc.dominantModality} au travail : tu es fait pour ${rc.dominantModality === 'Cardinal' ? "démarrer les choses, pas pour les faire tourner indéfiniment une fois lancées" : rc.dominantModality === 'Fixe' ? "aller au fond d'un seul sujet plutôt que d'en effleurer dix" : "circuler entre les rôles, pas pour rester assigné à un seul pour toujours"}.`, planet: 'saturn', sign: satSign },
     { text: `Mercure en ${mercSign}, Pluton en ${plSign} : tu remarques ce que la salle entière a manqué, et ce détail invisible pour les autres finit souvent par être celui qui change toute la décision.`, planet: 'mercury', sign: mercSign },
     { text: `Saturne en ${satSign} : demander ce que tu vaux n'a jamais été de l'arrogance. C'est juste la première personne qui devait le reconnaître avant que quelqu'un d'autre ne s'en charge à ta place — et cette personne, c'est toi.`, planet: 'saturn', sign: satSign },
     { text: `${rc.dominantElement === 'Feu' ? "Un travail qui ne bouge jamais t'éteint lentement, comme une flamme privée d'air" : rc.dominantElement === 'Eau' ? "Un travail sans sens te vide de l'intérieur, même quand le salaire est correct" : rc.dominantElement === 'Terre' ? "Un travail instable te fait douter de tout, même de ce que tu maîtrises parfaitement" : "Un travail qui n'échange jamais d'idées t'ennuie jusqu'à l'épuisement, même bien payé"} — ton thème ne fait pas de compromis là-dessus.`, planet: 'sun', sign: sSign },
@@ -871,7 +835,7 @@ const TRAVAIL_TEMPLATES: TemplGen = (ch) => {
     { text: `Jupiter en ${jupSign}, Uranus en ${uraSign} : ta plus grande réussite professionnelle viendra probablement d'un domaine que tu n'envisages pas encore comme une vraie option aujourd'hui.`, planet: 'jupiter', sign: jupSign },
     ...(marsAsp ? [{ text: `${PN[marsAsp.planet1]} ${verbFor(marsAsp.type)} ${PN[marsAsp.planet2]} : ${marsAsp.type === 'Carré' || marsAsp.type === 'Opposition' ? "chaque obstacle professionnel te met en colère avant de t'apprendre quelque chose — dans cet ordre précis, et ce n'est pas un problème" : "l'action te vient avec une facilité presque déloyale par rapport à ceux qui doivent se forcer chaque matin"}.`, planet: 'mars', sign: marsSign, aspect: marsAsp }] : []),
     ...(rc.venusSaturn ? [{ text: `Vénus ${verbFor(rc.venusSaturn.type)} Saturne : tu ne t'investis jamais dans une collaboration à la légère, et certains ont pris ça pour de la froideur. C'est en réalité la raison pour laquelle ce que tu bâtis professionnellement tient debout plus longtemps que le reste.`, planet: 'venus', sign: vSign, aspect: rc.venusSaturn }] : []),
-    ...(rc.moonSaturn ? [{ text: `Lune ${verbFor(rc.moonSaturn.type)} Saturne : tu portes une charge de responsabilité émotionnelle au travail que peu de collègues devinent. Personne ne te demande de tout porter seul(e) — même si une partie de toi continue d'agir comme si c'était le cas.`, planet: 'moon', sign: mSign, aspect: rc.moonSaturn }] : []),
+    ...(rc.moonSaturn ? [{ text: `Lune ${verbFor(rc.moonSaturn.type)} Saturne : tu portes une charge de responsabilité émotionnelle au travail que peu de collègues devinent. Personne ne te demande de tout porter seul — même si une partie de toi continue d'agir comme si c'était le cas.`, planet: 'moon', sign: mSign, aspect: rc.moonSaturn }] : []),
     ...(rc.moonPluto ? [{ text: `Lune ${verbFor(rc.moonPluto.type)} Pluton : les crises professionnelles ne t'effleurent jamais — elles remontent d'anciennes peurs bien plus profondes que la situation présente ne le justifie. Sépare les deux avant de réagir.`, planet: 'moon', sign: mSign, aspect: rc.moonPluto }] : []),
     ...(rc.venusMars ? [{ text: `Vénus ${verbFor(rc.venusMars.type)} Mars : tu sais autant charmer une salle que t'y imposer, ce qui te rend difficile à catégoriser pour une hiérarchie qui préfère les profils simples à comprendre. Ce n'est pas un défaut — c'est simplement rare.`, planet: 'venus', sign: vSign, aspect: rc.venusMars }] : []),
     ...(rc.mercuryVenus ? [{ text: `Mercure ${verbFor(rc.mercuryVenus.type)} Vénus : tu sais présenter une idée pour qu'elle donne envie d'être suivie, pas seulement comprise. C'est une compétence de négociation à part entière, même si personne ne l'a jamais nommée ainsi sur ton CV.`, planet: 'mercury', sign: mercSign, aspect: rc.mercuryVenus }] : []),
@@ -879,7 +843,7 @@ const TRAVAIL_TEMPLATES: TemplGen = (ch) => {
     ...(rc.moonNeptune ? [{ text: `Lune ${verbFor(rc.moonNeptune.type)} Neptune : tu absorbes l'ambiance d'une équipe avant même d'en comprendre les raisons concrètes. Fais confiance à ce malaise diffus — il arrive souvent avant les faits qui viendront le confirmer.`, planet: 'moon', sign: mSign, aspect: rc.moonNeptune }] : []),
     { text: `Il y a une forme de courage discret dans le fait de rester à un poste qu'on maîtrise déjà par choix, et non par peur du changement. Vérifie honnêtement, avec Saturne en ${satSign}, de quel côté tu te trouves en ce moment.`, planet: 'saturn', sign: satSign },
     { text: `Mercure en ${mercSign} : vulgariser une idée complexe pour la rendre accessible n'est pas une trahison de sa profondeur. C'est souvent la seule façon qu'elle a d'atteindre les bonnes personnes.`, planet: 'mercury', sign: mercSign },
-    { text: `Soleil en ${sSign}, Mars en ${marsSign} : le jour où tu arrêtes de demander la permission d'être ambitieux(se), les portes ne s'ouvrent pas différemment — c'est toi qui remarques enfin qu'elles étaient déjà entrouvertes.`, planet: 'sun', sign: sSign },
+    { text: `Soleil en ${sSign}, Mars en ${marsSign} : le jour où tu arrêtes de demander la permission d'être ambitieux, les portes ne s'ouvrent pas différemment — c'est toi qui remarques enfin qu'elles étaient déjà entrouvertes.`, planet: 'sun', sign: sSign },
   ];
 };
 
@@ -918,20 +882,20 @@ const SOI_TEMPLATES: TemplGen = (ch) => {
     { text: `Pluton en ${plSign} promet : chaque effondrement est une mue. Ce que tu perds te libère toujours de quelque chose qui ne te servait plus.`, planet: 'pluto', sign: plSign },
     { text: `Neptune en ${nepSign} te permet de voir au-delà des masques. Ce don est un phare — utilise-le pour te guider, pas pour juger.`, planet: 'neptune', sign: nepSign },
     { text: `L'essence du ${sSign} et l'instinct du ${mSign} — cette combinaison te donne une intuition que la logique ne peut pas égaler. Fie-toi à elle.`, planet: 'sun', sign: sSign },
-    { text: `Tu n'es pas perdu(e). Le ${elWord(sSign)} de ton Soleil te guide toujours vers la vérité, même quand le chemin semble disparaître.`, planet: 'sun', sign: sSign },
+    { text: `Tu n'es pas perdu. Le ${elWord(sSign)} de ton Soleil te guide toujours vers la vérité, même quand le chemin semble disparaître.`, planet: 'sun', sign: sSign },
     { text: `Mercure en ${mercSign} porte les mots que tu n'oses pas dire. Ils brûlent tant que tu les gardes — libère-les et regarde ce qui émerge.`, planet: 'mercury', sign: mercSign },
     { text: `Mars en ${marsSign} est ta force brute intérieure. Quand le doute te paralyse, rappelle-toi : tu as survécu à tout ce que tu croyais insurmontable.`, planet: 'mars', sign: marsSign },
     { text: `Saturne en ${satSign} t'a appris la patience par la douleur. Ce savoir n'est pas une blessure — c'est une armure.`, planet: 'saturn', sign: satSign },
-    { text: `Uranus en ${uraSign} insuffle en toi le besoin de briser les moules. Tu n'es pas fait(e) pour rentrer dans les cases — tu es fait(e) pour les redéfinir.`, planet: 'uranus', sign: uraSign },
+    { text: `Uranus en ${uraSign} insuffle en toi le besoin de briser les moules. Tu n'es pas fait pour rentrer dans les cases — tu es fait pour les redéfinir.`, planet: 'uranus', sign: uraSign },
     { text: `Vénus en ${vSign} te murmure : tes zones d'ombre ne sont pas des ennemies. Chaque peur porte en elle un courage que tu n'as pas encore découvert.`, planet: 'venus', sign: vSign },
     { text: `Élément dominant ${rc.dominantElement} — tu es fondamentalement une âme de ${rc.dominantElement === 'Feu' ? "feu : la tiédeur est ta kryptonite" : rc.dominantElement === 'Eau' ? "eau : tu absorbes le monde à travers un filtre émotionnel puissant" : rc.dominantElement === 'Terre' ? "terre : quand tout s'effondre, tu es la dernière personne debout" : "air : mille idées à la seconde, apprendre à en choisir une est ta leçon"}.`, planet: 'sun', sign: sSign },
     { text: `Modalité ${rc.dominantModality} — ta nature profonde est de ${MODALITY_WORDS[rc.dominantModality]}. Accepte ce compas intérieur au lieu de lutter contre lui.`, planet: 'sun', sign: sSign },
     { text: `Ce que tu appelles chaos, Pluton en ${plSign} appelle gestation. Quelque chose naît dans le ${elWord(mSign)} de ton être — tu ne peux pas encore le nommer, et c'est normal.`, planet: 'pluto', sign: plSign },
     { text: `Jupiter en ${jupSign} te rappelle que tes limites actuelles ne sont pas permanentes. Tu grandis encore — et tu n'as même pas atteint la moitié de ton potentiel.`, planet: 'jupiter', sign: jupSign },
     { text: `Tout ce qui vibre à ta fréquence finira par te trouver. Arrête de forcer. Ton ${elWord(sSign)} intérieur fera le reste.`, planet: 'sun', sign: sSign },
-    { text: `Tes ${rc.totalAspects} aspects nataux forment une architecture unique. ${rc.tenseAspects} tensions, ${rc.harmoniousAspects} harmonies — tu n'es pas contradictoire, tu es multidimensionnel(le).`, planet: 'sun', sign: sSign },
+    { text: `Tes ${rc.totalAspects} aspects nataux forment une architecture unique. ${rc.tenseAspects} tensions, ${rc.harmoniousAspects} harmonies — tu n'es pas contradictoire, tu es multidimensionnel.`, planet: 'sun', sign: sSign },
     { text: `La Lune en ${mSign} et Neptune en ${nepSign} : tu perçois des fréquences que la plupart ignorent. Ce n'est pas de l'hypersensibilité — c'est de la clairvoyance.`, planet: 'moon', sign: mSign },
-    ...(smAsp ? [{ text: `Soleil ${smAsp.type.toLowerCase()} Lune : ton conscient et ton inconscient ${smAsp.type === 'Trigone' || smAsp.type === 'Sextile' ? "coulent dans le même sens — quand tu te fais confiance, tu es inarrêtable" : "se défient sans cesse. Cette tension est épuisante mais te rend extraordinairement vivant(e)"}.`, planet: 'sun', sign: sSign, aspect: { planet1: 'sun', planet2: 'moon', type: smAsp.type } }] : []),
+    ...(smAsp ? [{ text: `Soleil ${smAsp.type.toLowerCase()} Lune : ton conscient et ton inconscient ${smAsp.type === 'Trigone' || smAsp.type === 'Sextile' ? "coulent dans le même sens — quand tu te fais confiance, tu es inarrêtable" : "se défient sans cesse. Cette tension est épuisante mais te rend extraordinairement vivant"}.`, planet: 'sun', sign: sSign, aspect: { planet1: 'sun', planet2: 'moon', type: smAsp.type } }] : []),
     ...(plAsp ? [{ text: `${PN[plAsp.planet1]} ${verbFor(plAsp.type)} ${PN[plAsp.planet2]} : chaque crise te forge. Tu es un phénix — les autres voient la destruction, toi tu sens déjà la renaissance.`, planet: 'pluto', sign: plSign, aspect: plAsp }] : []),
     ...(sAsp ? [{ text: `${PN[sAsp.planet1]} ${verbFor(sAsp.type)} ${PN[sAsp.planet2]} — une dualité fascinante au cœur de ton identité. Tu n'es pas contradictoire, tu es complexe.`, planet: 'sun', sign: sSign, aspect: sAsp }] : []),
     ...(mAsp ? [{ text: `Lune ${verbFor(mAsp.type)} ${PN[mAsp.planet1 === 'moon' ? mAsp.planet2 : mAsp.planet1]} : ton monde émotionnel est plus vaste que ce que tu montres. C'est ta profondeur secrète.`, planet: 'moon', sign: mSign, aspect: mAsp }] : []),
@@ -941,7 +905,7 @@ const SOI_TEMPLATES: TemplGen = (ch) => {
     ...(rc.moonPluto ? [{ text: `Lune ${verbFor(rc.moonPluto.type)} Pluton : tu as accès à des couches de la psyché que la plupart ne visitent jamais. Tu sens les non-dits, les motivations cachées, les mues nécessaires.`, planet: 'moon', sign: mSign, aspect: rc.moonPluto }] : []),
     ...(rc.sunMercury ? [{ text: `Soleil ${verbFor(rc.sunMercury.type)} Mercure : ta pensée nourrit ton essence. ${rc.sunMercury.type === 'Conjonction' ? "Tu comprends le monde à travers les mots — écrire ou parler est ta forme de méditation" : "Entre ce que tu penses et ce que tu es, il y a un dialogue fascinant qui ne s'arrête jamais"}.`, planet: 'sun', sign: sSign, aspect: rc.sunMercury }] : []),
     ...(rc.sunVenus ? [{ text: `Soleil ${verbFor(rc.sunVenus.type)} Vénus : tu te découvres à travers ce que tu aimes. Tes goûts, tes passions, tes attirances — tout cela est un miroir de qui tu es vraiment.`, planet: 'sun', sign: sSign, aspect: rc.sunVenus }] : []),
-    ...(rc.moonSaturn ? [{ text: `Lune ${verbFor(rc.moonSaturn.type)} Saturne : une gravité émotionnelle que tu portes depuis l'enfance. ${rc.moonSaturn.type === 'Carré' || rc.moonSaturn.type === 'Opposition' ? "Ce poids t'a rendu(e) plus fort(e) que la plupart — accepte-le comme un don déguisé" : "Ta maturité émotionnelle est un phare dans la tempête"}.`, planet: 'moon', sign: mSign, aspect: rc.moonSaturn }] : []),
+    ...(rc.moonSaturn ? [{ text: `Lune ${verbFor(rc.moonSaturn.type)} Saturne : une gravité émotionnelle que tu portes depuis l'enfance. ${rc.moonSaturn.type === 'Carré' || rc.moonSaturn.type === 'Opposition' ? "Ce poids t'a rendu plus fort que la plupart — accepte-le comme un don déguisé" : "Ta maturité émotionnelle est un phare dans la tempête"}.`, planet: 'moon', sign: mSign, aspect: rc.moonSaturn }] : []),
     ...(rc.moonNeptune ? [{ text: `Lune ${verbFor(rc.moonNeptune.type)} Neptune : ta sensibilité est un instrument accordé sur des fréquences que l'œil ne capte pas. Fais-en un art, pas un fardeau.`, planet: 'moon', sign: mSign, aspect: rc.moonNeptune }] : []),
     ...(rc.marsUranus ? [{ text: `Mars ${verbFor(rc.marsUranus.type)} Uranus : une énergie rebelle coule en toi. ${rc.marsUranus.type === 'Carré' || rc.marsUranus.type === 'Opposition' ? "Cette impatience n'est pas un défaut — c'est le cri d'une âme qui refuse la médiocrité" : "Tu agis par éclairs de génie. Apprends à surfer sur ces impulsions au lieu de les brider"}.`, planet: 'mars', sign: marsSign, aspect: rc.marsUranus }] : []),
     ...(rc.sunJupiter ? [{ text: `Soleil ${verbFor(rc.sunJupiter.type)} Jupiter : un optimisme fondamental te traverse. Tu crois en toi-même plus que tu ne le penses — et c'est ce qui te porte quand tout semble s'effondrer.`, planet: 'sun', sign: sSign, aspect: rc.sunJupiter }] : []),
@@ -952,7 +916,7 @@ const SOI_TEMPLATES: TemplGen = (ch) => {
     { text: `Jupiter en ${jupSign} : ta plus grande erreur ne serait pas d'échouer. Ce serait de rapetisser volontairement pour que ton existence dérange moins de monde.`, planet: 'jupiter', sign: jupSign },
     { text: `Uranus en ${uraSign} fait de toi quelqu'un d'irréductible à une seule case. Arrête d'essayer de rentrer dans un moule qui n'a de toute façon jamais été taillé pour toi.`, planet: 'uranus', sign: uraSign },
     { text: `Ton Soleil en ${sSign} sait déjà, avec certitude, qui tu es. C'est ton mental qui doute — pas ton essence, qui elle n'a jamais vacillé.`, planet: 'sun', sign: sSign },
-    { text: `Saturne en ${satSign} t'a obligé(e) à grandir plus vite que d'autres sur certains points précis. Ce n'était pas juste — mais ce n'est pas non plus une malédiction. C'est une longueur d'avance qui n'a simplement pas encore de nom.`, planet: 'saturn', sign: satSign },
+    { text: `Saturne en ${satSign} t'a obligé à grandir plus vite que d'autres sur certains points précis. Ce n'était pas juste — mais ce n'est pas non plus une malédiction. C'est une longueur d'avance qui n'a simplement pas encore de nom.`, planet: 'saturn', sign: satSign },
     { text: `Pluton en ${plSign} : tu n'as jamais eu besoin de tout contrôler pour être en sécurité. Cette croyance appartient à une version plus jeune de toi — pas à celle que tu es en train de devenir.`, planet: 'pluto', sign: plSign },
     { text: `Neptune en ${nepSign} t'a donné une sensibilité que le monde qualifie parfois de "trop". Elle n'a jamais été de trop. Elle est simplement rare, et les gens rares dérangent avant d'être compris.`, planet: 'neptune', sign: nepSign },
     { text: `Mars en ${marsSign} : ta colère n'est pas un défaut de caractère qu'il faudrait polir. C'est une information brute qui te dit, sans détour, exactement où une limite vient d'être franchie.`, planet: 'mars', sign: marsSign },
@@ -962,19 +926,19 @@ const SOI_TEMPLATES: TemplGen = (ch) => {
     { text: `Vénus en ${vSign} : ce que tu admires chez les autres est très souvent ce que tu portes déjà en toi, mais que tu n'as pas encore osé reconnaître à voix haute.`, planet: 'venus', sign: vSign },
     { text: `Jupiter en ${jupSign} et Saturne en ${satSign} cohabitent rarement aussi bien que chez toi : l'élan d'un côté, la structure de l'autre. La plupart des gens n'ont accès qu'à l'un des deux à la fois.`, planet: 'jupiter', sign: jupSign },
     { text: `Ce que tu appelles indécision est peut-être simplement du discernement mal aimé. Ton Mercure en ${mercSign} pèse chaque option plus longtemps que la moyenne avant de trancher — ce n'est pas une faiblesse, c'est de la rigueur.`, planet: 'mercury', sign: mercSign },
-    { text: `Uranus en ${uraSign} : les périodes où tu te sens décalé(e) par rapport à tout le monde sont, la plupart du temps, celles où tu es le plus proche de ta vraie nature — pas le plus éloigné(e).`, planet: 'uranus', sign: uraSign },
+    { text: `Uranus en ${uraSign} : les périodes où tu te sens décalé par rapport à tout le monde sont, la plupart du temps, celles où tu es le plus proche de ta vraie nature — pas le plus éloigné.`, planet: 'uranus', sign: uraSign },
     { text: `Pluton en ${plSign}, Mars en ${marsSign} : ta force ne se donne jamais à voir depuis l'extérieur. Elle se mesure à tout ce que tu as traversé sans jamais t'effondrer complètement — même les fois où personne ne l'a su.`, planet: 'pluto', sign: plSign },
     { text: `${rc.harmoniousAspects} aspects harmonieux dans ton thème : certains de tes talents te paraissent si naturels que tu as oublié qu'ils en étaient. Regarde-les à nouveau, comme si tu venais de les découvrir.`, planet: 'venus', sign: vSign },
     { text: `Neptune en ${nepSign} : le doute que tu ressens face à ton intuition n'a jamais enlevé la moindre once de justesse à ce qu'elle te souffle. Écoute-la même sans pouvoir l'expliquer d'un point à un autre.`, planet: 'neptune', sign: nepSign },
     { text: `Ton élément dominant, ${rc.dominantElement}, ne se négocie pas avec le monde extérieur. Un environnement qui l'ignore t'épuise en silence ; un environnement qui l'honore te fait respirer différemment.`, planet: 'sun', sign: sSign },
     { text: `Saturne en ${satSign} bâtit en toi une autorité intérieure que rien d'extérieur ne peut réellement t'enlever — même les jours où tu ne la sens pas du tout.`, planet: 'saturn', sign: satSign },
     { text: `Mercure en ${mercSign} et Lune en ${mSign} ne racontent pas toujours la même histoire : ce que tu penses et ce que tu ressens divergent parfois. Les deux ont raison — juste pas au même moment.`, planet: 'mercury', sign: mercSign },
-    { text: `Soleil en ${sSign} : tu n'as jamais eu besoin de devenir quelqu'un d'autre pour mériter d'être aimé(e). Ce ciel a déjà tout prévu pour que ta version brute, non retouchée, suffise amplement.`, planet: 'sun', sign: sSign },
-    { text: `Ce que tu appelles procrastination cache le plus souvent une peur bien précise : celle de vouloir vraiment quelque chose, et d'échouer quand même après s'y être investi(e) pour de vrai.`, planet: 'mars', sign: marsSign },
+    { text: `Soleil en ${sSign} : tu n'as jamais eu besoin de devenir quelqu'un d'autre pour mériter d'être aimé. Ce ciel a déjà tout prévu pour que ta version brute, non retouchée, suffise amplement.`, planet: 'sun', sign: sSign },
+    { text: `Ce que tu appelles procrastination cache le plus souvent une peur bien précise : celle de vouloir vraiment quelque chose, et d'échouer quand même après s'y être investi pour de vrai.`, planet: 'mars', sign: marsSign },
     { text: `Jupiter en ${jupSign} : ta capacité à espérer, malgré tout ce que tu as traversé, n'est jamais de la naïveté. C'est une force que beaucoup ont perdue en chemin sans même s'en rendre compte — protège-la comme une ressource rare.`, planet: 'jupiter', sign: jupSign },
     { text: `Vénus en ${vSign}, Mars en ${marsSign} : le désir et la tendresse ne cohabitent pas de la même façon en toi que chez les autres. Personne ne ressent exactement de cette manière-là — c'est une signature, pas une anomalie.`, planet: 'venus', sign: vSign },
     { text: `Pluton en ${plSign} : tu n'as pas besoin de tout comprendre pour continuer à avancer. Certaines transformations se font entièrement dans le noir, bien avant que la moindre lumière n'arrive pour les éclairer.`, planet: 'pluto', sign: plSign },
-    { text: `${rc.tenseAspects} tensions natales, ce sont ${rc.tenseAspects} endroits précis où tu as appris, seul(e), à te débrouiller sans qu'on te montre le chemin. Ce n'est pas rien — c'est une compétence que peu de gens ont eu à développer aussi tôt.`, planet: 'saturn', sign: satSign },
+    { text: `${rc.tenseAspects} tensions natales, ce sont ${rc.tenseAspects} endroits précis où tu as appris, seul, à te débrouiller sans qu'on te montre le chemin. Ce n'est pas rien — c'est une compétence que peu de gens ont eu à développer aussi tôt.`, planet: 'saturn', sign: satSign },
     { text: `Uranus en ${uraSign} : ta différence n'a jamais été le problème, aussi loin que tu remontes. Le problème, c'est le nombre de fois où on t'a poliment demandé de la ranger dans un tiroir.`, planet: 'uranus', sign: uraSign },
     { text: `Neptune en ${nepSign}, Lune en ${mSign} : tu perçois des couches de réalité que la logique pure n'atteint tout simplement pas. Ce n'est pas un délire, ni une fragilité — c'est un autre type d'intelligence, moins reconnu, tout aussi réel.`, planet: 'neptune', sign: nepSign },
     { text: `Soleil en ${sSign}, Mercure en ${mercSign} : la façon dont tu racontes qui tu es change avec le temps, et c'est très bien ainsi. C'est le signe d'un esprit encore vivant, pas d'un manque de constance qu'il faudrait corriger.`, planet: 'sun', sign: sSign },
@@ -985,7 +949,7 @@ const SOI_TEMPLATES: TemplGen = (ch) => {
     ...(rc.mercuryJupiter ? [{ text: `Mercure ${verbFor(rc.mercuryJupiter.type)} Jupiter : ta pensée a naturellement de l'ampleur, ${rc.mercuryJupiter.type === 'Trigone' || rc.mercuryJupiter.type === 'Sextile' ? "et tu arrives rarement à voir grand sans perdre le fil du détail — un équilibre peu commun" : "même si le grand écart entre le détail et la vue d'ensemble reste ton terrain d'entraînement permanent"}.`, planet: 'mercury', sign: mercSign, aspect: rc.mercuryJupiter }] : []),
     ...(rc.venusSaturn ? [{ text: `Vénus ${verbFor(rc.venusSaturn.type)} Saturne : tu n'accordes jamais ta confiance à la légère, et c'est une qualité, pas un mur. Ce que tu choisis finalement de garder dure, précisément parce que tu ne l'as pas donné à n'importe qui.`, planet: 'venus', sign: vSign, aspect: rc.venusSaturn }] : []),
     ...(rc.marsPluto ? [{ text: `Mars ${verbFor(rc.marsPluto.type)} Pluton : ta volonté possède une intensité que peu de gens autour de toi possèdent réellement. Ne t'excuse jamais de vouloir les choses aussi fort que tu les veux.`, planet: 'mars', sign: marsSign, aspect: rc.marsPluto }] : []),
-    ...(rc.venusMars ? [{ text: `Vénus ${verbFor(rc.venusMars.type)} Mars : douceur et intensité se disputent en permanence ta façon d'exister au monde. C'est précisément cette friction interne qui te rend difficile à oublier, une fois qu'on t'a vraiment rencontré(e).`, planet: 'venus', sign: vSign, aspect: rc.venusMars }] : []),
+    ...(rc.venusMars ? [{ text: `Vénus ${verbFor(rc.venusMars.type)} Mars : douceur et intensité se disputent en permanence ta façon d'exister au monde. C'est précisément cette friction interne qui te rend difficile à oublier, une fois qu'on t'a vraiment rencontré.`, planet: 'venus', sign: vSign, aspect: rc.venusMars }] : []),
     ...(rc.mercurySaturn ? [{ text: `Mercure ${verbFor(rc.mercurySaturn.type)} Saturne : tu réfléchis longtemps avant de parler, parfois trop longtemps au goût des autres. Mais quand tu finis par t'exprimer, ce que tu dis a un poids que les mots impulsifs des autres n'ont pas.`, planet: 'mercury', sign: mercSign, aspect: rc.mercurySaturn }] : []),
     ...(rc.venusJupiter ? [{ text: `Vénus ${verbFor(rc.venusJupiter.type)} Jupiter : ta capacité à t'émerveiller n'a jamais vraiment disparu, même dans les périodes les plus dures. Elle sait simplement se faire discrète — pas absente.`, planet: 'venus', sign: vSign, aspect: rc.venusJupiter }] : []),
     ...(rc.jupiterSaturn ? [{ text: `Jupiter ${verbFor(rc.jupiterSaturn.type)} Saturne : tu portes en toi à la fois l'élan qui pousse à commencer et la rigueur qui pousse à finir. C'est rare de posséder les deux sans que l'un n'écrase l'autre — chez toi, ils cohabitent.`, planet: 'jupiter', sign: jupSign, aspect: rc.jupiterSaturn }] : []),
@@ -1065,7 +1029,7 @@ const AVENIR_TEMPLATES: TemplGen = (ch) => {
     { text: `Ta Lune en ${mSign} sent déjà que quelque chose approche, avant même que ton esprit n'ait trouvé les mots pour le nommer. Ce n'est pas de l'anxiété — c'est de l'anticipation qui n'a pas encore été identifiée comme telle.`, planet: 'moon', sign: mSign },
     { text: `Mercure en ${mercSign} : une conversation que tu n'as pas encore eue comptera plus que tu ne l'imagines aujourd'hui. Fais attention à qui tu choisis de parler de tes projets dans les semaines à venir.`, planet: 'mercury', sign: mercSign },
     { text: `Vénus en ${vSign} : quelque chose de nouveau s'apprête à entrer dans ta vie affective ou créative, presque sans prévenir. Reste disponible, sans pour autant l'attendre de façon anxieuse.`, planet: 'venus', sign: vSign },
-    { text: `Soleil en ${sSign}, Jupiter en ${jupSign} : une phase d'expansion commence à peine. Le seul vrai risque, ici, serait de rester trop prudent(e) pour la saisir pleinement quand elle se présentera.`, planet: 'sun', sign: sSign },
+    { text: `Soleil en ${sSign}, Jupiter en ${jupSign} : une phase d'expansion commence à peine. Le seul vrai risque, ici, serait de rester trop prudent pour la saisir pleinement quand elle se présentera.`, planet: 'sun', sign: sSign },
     { text: `Mars en ${marsSign}, Uranus en ${uraSign} : une décision prise presque sur un coup de tête pourrait, avec le recul, s'avérer être la plus juste de toute l'année.`, planet: 'mars', sign: marsSign },
     { text: `Saturne en ${satSign} : ce que tu construis actuellement sans la moindre reconnaissance deviendra, d'ici quelques années, ta plus grande source de fierté silencieuse.`, planet: 'saturn', sign: satSign },
     { text: `${rc.dominantElement === 'Feu' ? "Ton avenir s'écrit dans l'action, pas dans la planification interminable" : rc.dominantElement === 'Eau' ? "Ton avenir se dessine à travers tes intuitions, bien avant qu'un tableau ne le confirme" : rc.dominantElement === 'Terre' ? "Ton avenir se construit brique après brique, sans raccourci qui tienne vraiment la route" : "Ton avenir prend forme à travers tes connexions et tes idées, jamais dans l'isolement"} — c'est écrit noir sur blanc dans la répartition de ton thème.`, planet: 'sun', sign: sSign },
@@ -1085,7 +1049,7 @@ const AVENIR_TEMPLATES: TemplGen = (ch) => {
     { text: `Mercure en ${mercSign}, Uranus en ${uraSign} : une idée qui te paraît trop originale pour être prise au sérieux pourrait, précisément, être celle qu'il fallait suivre sans en douter davantage.`, planet: 'mercury', sign: mercSign },
     { text: `Ta Lune en ${mSign} : les mois qui viennent réclameront plus de repos que d'action. Ce n'est pas du retard sur ta propre trajectoire — c'est une gestation dont tu as réellement besoin.`, planet: 'moon', sign: mSign },
     { text: `Saturne en ${satSign}, Uranus en ${uraSign} : la structure et la rupture s'apprêtent à se croiser dans ta trajectoire. De cette tension naîtra quelque chose à la fois solide et neuf, plus rare qu'on ne le pense.`, planet: 'saturn', sign: satSign },
-    { text: `Vénus en ${vSign} : quelque chose ou quelqu'un que tu croyais définitivement perdu pourrait revenir sous une forme différente. Reste ouvert(e), mais sans t'y accrocher trop tôt.`, planet: 'venus', sign: vSign },
+    { text: `Vénus en ${vSign} : quelque chose ou quelqu'un que tu croyais définitivement perdu pourrait revenir sous une forme différente. Reste ouvert, mais sans t'y accrocher trop tôt.`, planet: 'venus', sign: vSign },
     { text: `Modalité ${rc.dominantModality} : ton avenir se dessine selon ${rc.dominantModality === 'Cardinal' ? "les débuts que tu oses provoquer toi-même, sans attendre le bon moment" : rc.dominantModality === 'Fixe' ? "ce que tu choisis de ne jamais lâcher, même quand tout pousse à abandonner" : "ta capacité à t'ajuster sans jamais perdre le fil de ta propre direction"}.`, planet: 'sun', sign: sSign },
     { text: `Mars en ${marsSign}, Saturne en ${satSign} : l'endurance que tu développes en ce moment deviendra ton avantage décisif dans un an — probablement plus tôt que ça, si tu tiens la distance.`, planet: 'mars', sign: marsSign },
     { text: `Soleil en ${sSign} : ce qui ressemble aujourd'hui à une pause forcée est, en réalité, une préparation pour quelque chose de plus grand que ce que tu envisages sérieusement pour l'instant.`, planet: 'sun', sign: sSign },
@@ -1093,7 +1057,7 @@ const AVENIR_TEMPLATES: TemplGen = (ch) => {
     ...(rc.moonPluto ? [{ text: `Lune ${verbFor(rc.moonPluto.type)} Pluton : une transformation émotionnelle profonde se prépare, plus intérieure que visible depuis l'extérieur pour les gens qui t'entourent.`, planet: 'moon', sign: mSign, aspect: rc.moonPluto }] : []),
     ...(rc.sunSaturn ? [{ text: `Soleil ${verbFor(rc.sunSaturn.type)} Saturne : les prochains mois demandent de la persévérance plus que de la vitesse d'exécution. ${rc.sunSaturn.type === 'Carré' || rc.sunSaturn.type === 'Opposition' ? "Le résultat viendra, mais rarement au rythme que tu voudrais qu'il vienne" : "Ta discipline naturelle est en train de porter des fruits qui ne se voient pas encore"}.`, planet: 'sun', sign: sSign, aspect: rc.sunSaturn }] : []),
     ...(rc.venusJupiter ? [{ text: `Vénus ${verbFor(rc.venusJupiter.type)} Jupiter : une expansion dans ta vie affective ou créative se profile à l'horizon — reste disponible pour ce qui se présentera, même sous une forme que tu n'avais pas envisagée.`, planet: 'venus', sign: vSign, aspect: rc.venusJupiter }] : []),
-    ...(rc.mercuryJupiter ? [{ text: `Mercure ${verbFor(rc.mercuryJupiter.type)} Jupiter : une idée que tu t'apprêtes à partager aura plus de portée que tu ne l'imagines aujourd'hui. Ne la garde pas trop longtemps pour toi seul(e).`, planet: 'mercury', sign: mercSign, aspect: rc.mercuryJupiter }] : []),
+    ...(rc.mercuryJupiter ? [{ text: `Mercure ${verbFor(rc.mercuryJupiter.type)} Jupiter : une idée que tu t'apprêtes à partager aura plus de portée que tu ne l'imagines aujourd'hui. Ne la garde pas trop longtemps pour toi seul.`, planet: 'mercury', sign: mercSign, aspect: rc.mercuryJupiter }] : []),
     ...(rc.marsSaturn ? [{ text: `Mars ${verbFor(rc.marsSaturn.type)} Saturne : ${rc.marsSaturn.type === 'Trigone' || rc.marsSaturn.type === 'Sextile' ? "ta capacité à tenir l'effort dans la durée est sur le point de payer, plus vite que tu ne l'anticipes" : "la frustration que tu accumules cherche une sortie constructive — trouve-la avant qu'elle ne s'en trouve une par elle-même"}.`, planet: 'mars', sign: marsSign, aspect: rc.marsSaturn }] : []),
     ...(rc.sunVenus ? [{ text: `Soleil ${verbFor(rc.sunVenus.type)} Vénus : ce que tu deviens et ce que tu désires commencent à converger vers un même point sur ta trajectoire, après une période où les deux semblaient tirer chacun de leur côté.`, planet: 'sun', sign: sSign, aspect: rc.sunVenus }] : []),
     ...(rc.moonVenus ? [{ text: `Lune ${verbFor(rc.moonVenus.type)} Vénus : les mois à venir réconcilient peu à peu ce que tu ressens et ce que tu désires vraiment, deux voix qui n'ont pas toujours chanté juste ensemble jusqu'ici.`, planet: 'moon', sign: mSign, aspect: rc.moonVenus }] : []),
@@ -1145,7 +1109,7 @@ const GENERAL_TEMPLATES: TemplGen = (ch) => {
     { text: `Mercure en ${mercSign} aiguise tes perceptions. Ce que tu cherches te cherche aussi — avec la même urgence, la même intensité.`, planet: 'mercury', sign: mercSign },
     { text: `Ton thème : ${rc.dominantElement} dominant, modalité ${rc.dominantModality}. Tu es fondamentalement ${rc.dominantElement === 'Feu' ? "passion et vision" : rc.dominantElement === 'Eau' ? "intuition et profondeur" : rc.dominantElement === 'Terre' ? "ancrage et fiabilité" : "mouvement et curiosité"}.`, planet: 'sun', sign: sSign },
     { text: `Neptune en ${nepSign} brouille parfois ta vision. Mais sous le voile, la vérité attend — patiente, intacte, prête à se révéler.`, planet: 'neptune', sign: nepSign },
-    { text: `Uranus en ${uraSign} te rappelle : tu n'es pas obligé(e) de tout faire dans l'ordre. Les meilleurs chemins sont ceux que personne n'a tracés.`, planet: 'uranus', sign: uraSign },
+    { text: `Uranus en ${uraSign} te rappelle : tu n'es pas obligé de tout faire dans l'ordre. Les meilleurs chemins sont ceux que personne n'a tracés.`, planet: 'uranus', sign: uraSign },
     { text: `Tes ${rc.harmoniousAspects} aspects harmonieux sont tes talents naturels. Tes ${rc.tenseAspects} aspects tendus sont tes zones de croissance. Ensemble, ils font de toi un être d'une complexité magnifique.`, planet: 'sun', sign: sSign },
     { text: `Soleil ${sSign}, Vénus ${vSign}, Mars ${marsSign} — la trinité de ton expression : identité, amour, action. Trois notes, une seule mélodie.`, planet: 'sun', sign: sSign },
     { text: `Pluton en ${plSign} et Saturne en ${satSign} veillent — le premier te transforme, le second te structure. Tu es entre de bonnes mains cosmiques.`, planet: 'pluto', sign: plSign },
@@ -1156,7 +1120,7 @@ const GENERAL_TEMPLATES: TemplGen = (ch) => {
     ...(vAsp ? [{ text: `Vénus ${verbFor(vAsp.type)} ${PN[vAsp.planet1 === 'venus' ? vAsp.planet2 : vAsp.planet1]} : ta façon d'aimer et de créer est marquée par cette tension. Elle te rend unique.`, planet: 'venus', sign: vSign, aspect: vAsp }] : []),
     ...(marsAsp ? [{ text: `Mars ${verbFor(marsAsp.type)} ${PN[marsAsp.planet1 === 'mars' ? marsAsp.planet2 : marsAsp.planet1]} : ton énergie d'action est canalisée par cette configuration. La friction est ton carburant.`, planet: 'mars', sign: marsSign, aspect: marsAsp }] : []),
     ...(jupAsp ? [{ text: `Jupiter ${verbFor(jupAsp.type)} ${PN[jupAsp.planet1 === 'jupiter' ? jupAsp.planet2 : jupAsp.planet1]} : la chance n'est jamais aveugle dans ton thème. Elle récompense tes mouvements.`, planet: 'jupiter', sign: jupSign, aspect: jupAsp }] : []),
-    ...(smAsp ? [{ text: `Soleil ${smAsp.type.toLowerCase()} Lune — ${smAsp.type === 'Trigone' || smAsp.type === 'Sextile' ? "cohérence intérieure rare. Quand tu parles, ton cœur et ta tête disent la même chose" : "dialogue intérieur permanent. C'est fatigant, mais ça te rend vivant(e) comme peu de gens le sont"}.`, planet: 'sun', sign: sSign, aspect: { planet1: 'sun', planet2: 'moon', type: smAsp.type } }] : []),
+    ...(smAsp ? [{ text: `Soleil ${smAsp.type.toLowerCase()} Lune — ${smAsp.type === 'Trigone' || smAsp.type === 'Sextile' ? "cohérence intérieure rare. Quand tu parles, ton cœur et ta tête disent la même chose" : "dialogue intérieur permanent. C'est fatigant, mais ça te rend vivant comme peu de gens le sont"}.`, planet: 'sun', sign: sSign, aspect: { planet1: 'sun', planet2: 'moon', type: smAsp.type } }] : []),
     ...(svAsp ? [{ text: `Soleil ${verbFor(svAsp.type)} Vénus : ton identité et tes valeurs sont intimement liées. Tu ne peux pas être toi-même sans être authentique dans ce que tu aimes.`, planet: 'sun', sign: sSign, aspect: svAsp }] : []),
     ...(rc.sunSaturn ? [{ text: `Soleil ${verbFor(rc.sunSaturn.type)} Saturne : ${rc.sunSaturn.type === 'Carré' || rc.sunSaturn.type === 'Opposition' ? "la tension entre qui tu es et ce qu'on attend de toi forge une résilience rare" : "l'autorité que tu émanes n'est pas imposée — elle est naturelle"}.`, planet: 'sun', sign: sSign, aspect: rc.sunSaturn }] : []),
     ...(rc.moonVenus ? [{ text: `Lune ${verbFor(rc.moonVenus.type)} Vénus : une sensibilité esthétique profonde qui colore tout ce que tu fais. ${rc.moonVenus.type === 'Trigone' || rc.moonVenus.type === 'Sextile' ? "La beauté n'est pas un luxe pour toi — c'est un besoin vital" : "Ce que tu trouves beau et ce qui te rassure ne coïncident pas toujours. Explore cette tension"}.`, planet: 'moon', sign: mSign, aspect: rc.moonVenus }] : []),
@@ -1174,7 +1138,7 @@ const GENERAL_TEMPLATES: TemplGen = (ch) => {
     { text: `Jupiter en ${jupSign} : ce qui t'attend dépasse largement ce que tu oses imaginer aujourd'hui, à cette heure précise, dans cet état d'esprit précis.`, planet: 'jupiter', sign: jupSign },
     { text: `Saturne en ${satSign} : la patience n'a jamais été de l'attente passive. C'est un effort silencieux que personne ne remarque avant d'en voir enfin le résultat.`, planet: 'saturn', sign: satSign },
     { text: `Uranus en ${uraSign} : ce qui te dérange le plus chez les autres est, très souvent, un miroir tendu vers ce que tu refuses encore de regarder chez toi.`, planet: 'uranus', sign: uraSign },
-    { text: `Neptune en ${nepSign} : entre le rêve et l'illusion, il n'existe qu'une seule vraie différence — l'action que tu es réellement prêt(e) à entreprendre pour le faire exister.`, planet: 'neptune', sign: nepSign },
+    { text: `Neptune en ${nepSign} : entre le rêve et l'illusion, il n'existe qu'une seule vraie différence — l'action que tu es réellement prêt à entreprendre pour le faire exister.`, planet: 'neptune', sign: nepSign },
     { text: `Pluton en ${plSign} : rien de ce qui compte vraiment ne se construit sans une part de démolition préalable, aussi inconfortable soit-elle à traverser.`, planet: 'pluto', sign: plSign },
     { text: `Mercure en ${mercSign} : les mots que tu choisis de te répéter façonnent la réalité que tu vis bien plus que tu ne veux généralement l'admettre.`, planet: 'mercury', sign: mercSign },
     { text: `Soleil en ${sSign}, Lune en ${mSign} : ta vérité personnelle n'a jamais eu besoin d'être validée par quelqu'un d'autre pour être parfaitement réelle.`, planet: 'sun', sign: sSign },
@@ -1184,7 +1148,7 @@ const GENERAL_TEMPLATES: TemplGen = (ch) => {
     { text: `Pluton en ${plSign}, Saturne en ${satSign} : ce que tu es en train de traverser a une fin, même si elle demeure complètement invisible depuis l'endroit où tu te trouves actuellement.`, planet: 'pluto', sign: plSign },
     { text: `Uranus en ${uraSign} : le chaos apparent d'aujourd'hui est très souvent l'ordre de demain, simplement encore mal compris par tout le monde, y compris par toi.`, planet: 'uranus', sign: uraSign },
     { text: `Mercure en ${mercSign}, Jupiter en ${jupSign} : une bonne question vaut fréquemment bien plus qu'une réponse toute faite, prête à l'emploi, qu'on n'a même pas eu à chercher.`, planet: 'mercury', sign: mercSign },
-    { text: `Soleil en ${sSign} : tu n'as jamais eu besoin d'attendre de te sentir prêt(e) pour commencer réellement. La préparation parfaite, celle-là, n'a jamais existé pour personne.`, planet: 'sun', sign: sSign },
+    { text: `Soleil en ${sSign} : tu n'as jamais eu besoin d'attendre de te sentir prêt pour commencer réellement. La préparation parfaite, celle-là, n'a jamais existé pour personne.`, planet: 'sun', sign: sSign },
     { text: `Neptune en ${nepSign}, Lune en ${mSign} : fais confiance à ce que tu ressens avant même d'être capable de l'expliquer clairement avec des mots qui tiennent la route.`, planet: 'neptune', sign: nepSign },
     { text: `Mars en ${marsSign} : ce que tu remets sans cesse à plus tard cache très probablement une peur précise que tu n'as pas encore pris la peine de nommer clairement.`, planet: 'mars', sign: marsSign },
     { text: `${rc.dominantElement} dominant dans ton thème : la réponse à cette question est déjà en toi, écrite dans une langue que ${rc.dominantElement === 'Feu' ? "l'instinct" : rc.dominantElement === 'Eau' ? "l'émotion" : rc.dominantElement === 'Terre' ? "le corps" : "la pensée"} comprend bien avant que les mots n'arrivent à suivre.`, planet: 'sun', sign: sSign },
@@ -1196,7 +1160,7 @@ const GENERAL_TEMPLATES: TemplGen = (ch) => {
     { text: `Pluton en ${plSign} : ce qui t'effraie le plus dissimule très souvent ce que tu désires le plus profondément, quelque part sous la peur elle-même.`, planet: 'pluto', sign: plSign },
     { text: `Uranus en ${uraSign}, Mercure en ${mercSign} : la solution que tu cherches ne se trouve probablement pas là où tu regardes depuis le tout début de ta recherche.`, planet: 'uranus', sign: uraSign },
     { text: `${rc.tenseAspects} tensions dans ton thème : ce n'est jamais ce qui est facile qui finit par te définir. C'est ce que tu traverses, précisément dans les moments où c'est difficile.`, planet: 'saturn', sign: satSign },
-    { text: `Soleil en ${sSign}, Mars en ${marsSign} : agir avant d'être totalement certain(e) reste, parfois, le seul moyen réel de le devenir un jour.`, planet: 'sun', sign: sSign },
+    { text: `Soleil en ${sSign}, Mars en ${marsSign} : agir avant d'être totalement certain reste, parfois, le seul moyen réel de le devenir un jour.`, planet: 'sun', sign: sSign },
     { text: `Neptune en ${nepSign} : certaines réponses ne se trouvent jamais par la recherche active — elles se laissent simplement traverser, avec le temps, sans qu'on ait à les forcer.`, planet: 'neptune', sign: nepSign },
     { text: `Vénus en ${vSign}, Saturne en ${satSign} : ce que tu construis avec patience finit toujours, sur la durée, par valoir davantage que ce que tu obtiens dans la précipitation.`, planet: 'venus', sign: vSign },
     { text: `Modalité ${rc.dominantModality} : ${rc.dominantModality === 'Cardinal' ? "tu n'as jamais eu besoin de la permission de qui que ce soit pour commencer quelque chose de nouveau" : rc.dominantModality === 'Fixe' ? "ta persévérance vaut, à elle seule, bien plus que n'importe quelle stratégie compliquée qu'on pourrait t'imposer" : "ta capacité à t'adapter sans cesse est une force réelle, jamais un manque de direction à corriger"}.`, planet: 'sun', sign: sSign },
@@ -1204,7 +1168,7 @@ const GENERAL_TEMPLATES: TemplGen = (ch) => {
     { text: `Jupiter en ${jupSign} : ce que la vie finit par t'offrir ne ressemble jamais exactement à ce que tu avais imaginé au départ. C'est très souvent bien mieux que prévu, une fois qu'on a fait le deuil du plan initial.`, planet: 'jupiter', sign: jupSign },
     { text: `Il y a une différence nette entre écouter un conseil et attendre qu'on décide à ta place. Aujourd'hui, plus que jamais, seule la deuxième option te maintient immobile.`, planet: 'saturn', sign: satSign },
     { text: `Mercure en ${mercSign} : parfois la question que tu poses n'est pas celle qui compte vraiment. Regarde une seconde fois ce qui se cache juste en dessous, avant de te satisfaire d'une première réponse trop rapide.`, planet: 'mercury', sign: mercSign },
-    ...(rc.moonPluto ? [{ text: `Lune ${verbFor(rc.moonPluto.type)} Pluton : tu perçois des couches de vérité que la plupart des gens préfèrent délibérément ignorer. Ce n'est pas un fardeau à porter seul(e) — c'est une forme de lucidité peu commune.`, planet: 'moon', sign: mSign, aspect: rc.moonPluto }] : []),
+    ...(rc.moonPluto ? [{ text: `Lune ${verbFor(rc.moonPluto.type)} Pluton : tu perçois des couches de vérité que la plupart des gens préfèrent délibérément ignorer. Ce n'est pas un fardeau à porter seul — c'est une forme de lucidité peu commune.`, planet: 'moon', sign: mSign, aspect: rc.moonPluto }] : []),
     ...(rc.sunJupiter ? [{ text: `Soleil ${verbFor(rc.sunJupiter.type)} Jupiter : ${rc.sunJupiter.type === 'Trigone' || rc.sunJupiter.type === 'Sextile' ? "une confiance fondamentale te traverse, même dans les moments les plus difficiles à vivre" : "ton optimisme naturel et ta prudence instinctive se disputent constamment la direction à prendre. Écoute les deux avant de trancher pour de bon"}.`, planet: 'sun', sign: sSign, aspect: rc.sunJupiter }] : []),
     ...(rc.venusSaturn ? [{ text: `Vénus ${verbFor(rc.venusSaturn.type)} Saturne : ce que tu choisis d'aimer ou de valoriser, tu le fais avec un sérieux et un engagement rares. Rien chez toi n'est jamais vraiment superficiel, même quand ça y ressemble de loin.`, planet: 'venus', sign: vSign, aspect: rc.venusSaturn }] : []),
     ...(rc.moonSaturn ? [{ text: `Lune ${verbFor(rc.moonSaturn.type)} Saturne : ta maturité émotionnelle dépasse largement ton âge réel, depuis longtemps déjà. Ce n'est pas toujours confortable à porter, mais c'est une vraie force qui ne trompe jamais.`, planet: 'moon', sign: mSign, aspect: rc.moonSaturn }] : []),
@@ -1261,7 +1225,7 @@ const SOCIAL_TEMPLATES: TemplGen = (ch) => {
     { text: `${rc.tenseAspects} aspects tendus dans ton ciel : tes amitiés les plus profondes sont nées de frictions. Tu ne t'attaches pas facilement — mais quand tu le fais, c'est pour de vrai.`, planet: 'venus', sign: vSign },
     { text: `Modalité ${rc.dominantModality} dans tes liens : tu as besoin de ${rc.dominantModality === 'Cardinal' ? "lancer des projets avec les autres" : rc.dominantModality === 'Fixe' ? "loyauté et constance dans tes amitiés" : "renouvellement et variété dans tes relations"}. C'est non-négociable.`, planet: 'venus', sign: vSign },
     ...(vAsp ? [{ text: `Vénus ${verbFor(vAsp.type)} ${PN[vAsp.planet1 === 'venus' ? vAsp.planet2 : vAsp.planet1]} : cette configuration colore chacune de tes interactions sociales. Tu ${vAsp.type === 'Trigone' || vAsp.type === 'Sextile' ? "charmes sans effort — les gens gravitent naturellement autour de toi" : "testes inconsciemment les gens avant de leur faire confiance"}.`, planet: 'venus', sign: vSign, aspect: vAsp }] : []),
-    ...(mercAsp ? [{ text: `Mercure ${verbFor(mercAsp.type)} ${PN[mercAsp.planet1 === 'mercury' ? mercAsp.planet2 : mercAsp.planet1]} : ta communication a une complexité fascinante. ${mercAsp.type === 'Trigone' || mercAsp.type === 'Sextile' ? "Les mots te viennent facilement — mais c'est entre les lignes que tu brilles vraiment" : "Le malentendu te guette parfois, mais quand tu es compris(e), c'est une connexion fulgurante"}.`, planet: 'mercury', sign: mercSign, aspect: mercAsp }] : []),
+    ...(mercAsp ? [{ text: `Mercure ${verbFor(mercAsp.type)} ${PN[mercAsp.planet1 === 'mercury' ? mercAsp.planet2 : mercAsp.planet1]} : ta communication a une complexité fascinante. ${mercAsp.type === 'Trigone' || mercAsp.type === 'Sextile' ? "Les mots te viennent facilement — mais c'est entre les lignes que tu brilles vraiment" : "Le malentendu te guette parfois, mais quand tu es compris, c'est une connexion fulgurante"}.`, planet: 'mercury', sign: mercSign, aspect: mercAsp }] : []),
     ...(mAsp ? [{ text: `Lune ${verbFor(mAsp.type)} ${PN[mAsp.planet1 === 'moon' ? mAsp.planet2 : mAsp.planet1]} : tes besoins émotionnels dans le groupe sont uniques. Tu ne cherches pas des amis — tu cherches des âmes qui résonnent à ta fréquence.`, planet: 'moon', sign: mSign, aspect: mAsp }] : []),
     ...(jupAsp ? [{ text: `Jupiter ${verbFor(jupAsp.type)} ${PN[jupAsp.planet1 === 'jupiter' ? jupAsp.planet2 : jupAsp.planet1]} : une expansion sociale se dessine. De nouvelles connexions arrivent — celles qui comptent, pas celles qui remplissent.`, planet: 'jupiter', sign: jupSign, aspect: jupAsp }] : []),
     ...(marsAsp ? [{ text: `Mars ${verbFor(marsAsp.type)} ${PN[marsAsp.planet1 === 'mars' ? marsAsp.planet2 : marsAsp.planet1]} : en société, tu oscilles entre retrait et affirmation. Cette dynamique n'est pas un défaut — c'est un instinct de survie ancestral.`, planet: 'mars', sign: marsSign, aspect: marsAsp }] : []),
@@ -1278,13 +1242,13 @@ const SOCIAL_TEMPLATES: TemplGen = (ch) => {
     ...(rc.moonPluto ? [{ text: `Lune ${verbFor(rc.moonPluto.type)} Pluton : tes amitiés ne sont jamais superficielles. Tu transformes les gens qui t'entourent — et ils te transforment en retour. C'est un pacte cosmique.`, planet: 'moon', sign: mSign, aspect: rc.moonPluto }] : []),
     ...(rc.marsPluto ? [{ text: `Mars ${verbFor(rc.marsPluto.type)} Pluton : quand tu défends tes proches, tu dégages une puissance qui surprend même toi. Cette loyauté féroce est ta marque.`, planet: 'mars', sign: marsSign, aspect: rc.marsPluto }] : []),
     ...(rc.stellium ? [{ text: `Stellium en ${rc.stellium.sign} — ${rc.stellium.planets.map(p => PN[p]).join(', ')} concentrés. En société, tu polarises : on t'adore ou on ne te comprend pas. Ceux qui restent sont les bons.`, planet: rc.stellium.planets[0], sign: rc.stellium.sign }] : []),
-    { text: `Vénus en ${vSign} : les gens qui te méritent réellement ne te demanderont jamais de te faire plus petit(e) simplement pour qu'ils se sentent plus grands à côté de toi.`, planet: 'venus', sign: vSign },
+    { text: `Vénus en ${vSign} : les gens qui te méritent réellement ne te demanderont jamais de te faire plus petit simplement pour qu'ils se sentent plus grands à côté de toi.`, planet: 'venus', sign: vSign },
     { text: `Ta Lune en ${mSign} sait, presque instantanément, qui est sincère dans une pièce — souvent avant même que la personne n'ait ouvert la bouche pour se présenter.`, planet: 'moon', sign: mSign },
     { text: `Mercure en ${mercSign} : la façon dont tu choisis de t'exprimer détermine largement qui finit par se sentir proche de toi. Ne t'excuse jamais de parler avec autant de précision.`, planet: 'mercury', sign: mercSign },
-    { text: `Jupiter en ${jupSign} : ton cercle social est sur le point de s'élargir dans une direction que tu n'avais pas du tout anticipée. Reste curieux(se) face aux rencontres qui sortent du script habituel.`, planet: 'jupiter', sign: jupSign },
+    { text: `Jupiter en ${jupSign} : ton cercle social est sur le point de s'élargir dans une direction que tu n'avais pas du tout anticipée. Reste curieux face aux rencontres qui sortent du script habituel.`, planet: 'jupiter', sign: jupSign },
     { text: `Saturne en ${satSign} : tu n'as jamais eu besoin d'un grand nombre d'amis. Tu as besoin des bons — et il y a fort à parier que tu les as déjà identifiés depuis un moment.`, planet: 'saturn', sign: satSign },
     { text: `Mars en ${marsSign} : poser une limite claire n'a rien d'un acte d'agressivité. C'est simplement le strict minimum pour te faire respecter dans un groupe, sur la durée.`, planet: 'mars', sign: marsSign },
-    { text: `Uranus en ${uraSign} : tu n'as jamais été taillé(e) pour plaire à tout le monde en même temps. Ceux qui te comprennent vraiment ne seront jamais nombreux — et c'est très bien ainsi.`, planet: 'uranus', sign: uraSign },
+    { text: `Uranus en ${uraSign} : tu n'as jamais été taillé pour plaire à tout le monde en même temps. Ceux qui te comprennent vraiment ne seront jamais nombreux — et c'est très bien ainsi.`, planet: 'uranus', sign: uraSign },
     { text: `Neptune en ${nepSign} : tu absorbes les états d'âme d'un groupe entier comme une éponge absorbe l'eau. Apprends à te délimiter, pas seulement à ressentir tout ce qui passe.`, planet: 'neptune', sign: nepSign },
     { text: `Pluton en ${plSign} : les amitiés purement superficielles ne te retiennent jamais très longtemps. Ton besoin de profondeur trie naturellement ton entourage, sans même que tu aies à le décider consciemment.`, planet: 'pluto', sign: plSign },
     { text: `Soleil en ${sSign} : la personne que tu es en société et celle que tu es dans la solitude ne devraient jamais être aussi différentes qu'elles le sont parfois.`, planet: 'sun', sign: sSign },
@@ -1305,7 +1269,7 @@ const SOCIAL_TEMPLATES: TemplGen = (ch) => {
     { text: `Vénus en ${vSign}, Jupiter en ${jupSign} : ta capacité à créer du lien est bien plus solide que tu ne le crois, surtout les jours où tu arrêtes complètement d'y penser stratégiquement.`, planet: 'venus', sign: vSign },
     { text: `Pluton en ${plSign} : les personnes qui ont vraiment vu qui tu es en profondeur, un jour, ne t'oublient jamais complètement — même après plusieurs années sans le moindre contact entre vous.`, planet: 'pluto', sign: plSign },
     { text: `Neptune en ${nepSign} : il existe une frontière fine entre l'empathie et l'auto-sacrifice. Ressentir pour les autres ne devrait jamais te vider entièrement de toi-même, sur la durée.`, planet: 'neptune', sign: nepSign },
-    { text: `Soleil en ${sSign} : tu n'as jamais eu besoin d'être aimé(e) par tout le monde pour être en paix avec la personne que tu es réellement, au fond.`, planet: 'sun', sign: sSign },
+    { text: `Soleil en ${sSign} : tu n'as jamais eu besoin d'être aimé par tout le monde pour être en paix avec la personne que tu es réellement, au fond.`, planet: 'sun', sign: sSign },
     { text: `${rc.harmoniousAspects} aspects harmonieux : certaines de tes relations te semblent faciles parce qu'elles le sont vraiment, sincèrement. Ne va pas chercher de complication là où il n'y en a, en réalité, aucune.`, planet: 'venus', sign: vSign },
     { text: `Uranus en ${uraSign}, Saturne en ${satSign} : tu as besoin à la fois de liberté et de stabilité dans tes relations. Ce n'est absolument pas contradictoire — c'est simplement rare à trouver réuni chez la même personne.`, planet: 'uranus', sign: uraSign },
     { text: `Jupiter en ${jupSign} : ouvre-toi à des cercles sociaux que tu n'aurais jamais sérieusement envisagés avant aujourd'hui. L'expansion vient rarement de l'endroit où on l'attendait le plus.`, planet: 'jupiter', sign: jupSign },
@@ -1429,6 +1393,8 @@ export default function TheVoid({ onBack }: { onBack?: () => void }) {
   const [question, setQuestion] = useState('');
   const [resp, setResp] = useState<VoidResponse | null>(null);
   const [cat, setCat] = useState('general');
+  const [displayed, setDisplayed] = useState('');
+  const [revealing, setRevealing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [blocked, setBlocked] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
@@ -1451,7 +1417,6 @@ export default function TheVoid({ onBack }: { onBack?: () => void }) {
   const [chartSum, setChartSum] = useState('');
   const [relatedSuggestions, setRelatedSuggestions] = useState<string[]>([]);
   const [loaderText, setLoaderText] = useState('');
-  const [showSourceDetails, setShowSourceDetails] = useState(false);
   const [activeCategory, setActiveCategory] = useState<VoidCategory>('soi');
   const [displayedQuestions, setDisplayedQuestions] = useState<Record<VoidCategory, string[]>>({
     soi: filterAndLimitQuestions(VOID_QUESTIONS_POOL.soi, []),
@@ -1459,7 +1424,6 @@ export default function TheVoid({ onBack }: { onBack?: () => void }) {
     travail: filterAndLimitQuestions(VOID_QUESTIONS_POOL.travail, []),
     social: filterAndLimitQuestions(VOID_QUESTIONS_POOL.social, []),
   });
-  const inputRef = useRef<HTMLInputElement>(null);
   const starsRef = useRef<HTMLCanvasElement>(null);
 
   // ─── Compute chart ─────────────────────────────────────
@@ -1505,7 +1469,8 @@ export default function TheVoid({ onBack }: { onBack?: () => void }) {
           .filter((e, i, arr) => arr.findIndex(x => x.timestamp === e.timestamp && x.question === e.question) === i)
           .sort((a, b) => b.timestamp - a.timestamp)
           .slice(0, 50);
-        if (merged.length !== localH.length) {
+        // Comparer le contenu, pas la taille : à 50 entrées locales, des entrées distantes plus récentes étaient ignorées.
+        if (JSON.stringify(merged) !== JSON.stringify(localH)) {
           setHistory(merged);
           localStorage.setItem(HK, JSON.stringify(merged));
         }
@@ -1520,6 +1485,15 @@ export default function TheVoid({ onBack }: { onBack?: () => void }) {
       if (cloudBD && !localBD) {
         localStorage.setItem(BK, JSON.stringify(cloudBD));
         computeChart(cloudBD);
+        // Sans ça, le thème était restauré mais l'écran restait sur le formulaire vide.
+        if (cloudBD.date) {
+          const [y, m, d] = cloudBD.date.split('-');
+          setBirthDate(cloudBD.date);
+          setBirthDateDisplay(`${d}/${m}/${y}`);
+        }
+        if (cloudBD.time) { setBirthTime(cloudBD.time); setBirthTimeDisplay(cloudBD.time); }
+        if (cloudBD.city) setBirthCity(cloudBD.city);
+        setScreen(current => (current === 'birth-form' ? 'void' : current));
       } else if (!cloudBD && localBD) {
         pushVoidCloudData({ birthData: localBD });
       }
@@ -1533,13 +1507,6 @@ export default function TheVoid({ onBack }: { onBack?: () => void }) {
     if (!chartInfo) return null;
     return generateResponsesForChart(chartInfo);
   }, [chartInfo]);
-
-  // Auto-focus input when entering void screen
-  useEffect(() => {
-    if (screen === 'void') {
-      setTimeout(() => inputRef.current?.focus(), 400);
-    }
-  }, [screen]);
 
   // ─── Starry sky canvas ─────────────────────────────────
   useEffect(() => {
@@ -1588,6 +1555,20 @@ export default function TheVoid({ onBack }: { onBack?: () => void }) {
       window.removeEventListener('resize', resize);
     };
   }, []);
+
+  // ─── Typewriter effect ─────────────────────────────────
+  useEffect(() => {
+    if (!revealing || !resp) return;
+    const full = resp.text; let i = 0; setDisplayed('');
+    // Vitesse adaptative : les réponses longues défilent plus vite pour rester sous ~2s,
+    // les courtes gardent un rythme plus posé.
+    const charDelay = Math.max(8, Math.min(26, 1100 / full.length));
+    const iv = setInterval(() => {
+      if (i < full.length) { setDisplayed(full.slice(0, i + 1)); i++; }
+      else { clearInterval(iv); setRevealing(false); }
+    }, charDelay);
+    return () => clearInterval(iv);
+  }, [revealing, resp]);
 
   // Remélanger les questions quand on change de catégorie
   useEffect(() => {
@@ -1660,9 +1641,9 @@ export default function TheVoid({ onBack }: { onBack?: () => void }) {
 
   // ─── Navigation ─────────────────────────────────────────
   const goVoid = useCallback(() => {
-    setScreen('void'); setQuestion(''); setResp(null);
+    setScreen('void'); setQuestion(''); setResp(null); setDisplayed('');
     setBlocked(false); setPinned(false); setHearted(false);
-    setShowMenu(false); setShowSourceDetails(false);
+    setShowMenu(false);
     // Renouveller les questions affichées (filtrées des questions déjà posées)
     const askedQuestions = history.map(h => h.question);
     setDisplayedQuestions({
@@ -1679,12 +1660,12 @@ export default function TheVoid({ onBack }: { onBack?: () => void }) {
     if (hasReachedDailyLimit) { setScreen('void'); return; }
     if (isBlocked(q)) { setQuestion(q); setBlocked(true); return; }
     setQuestion(q); setBlocked(false); setScreen('result'); setLoading(true);
-    setPinned(false); setHearted(false); setShowSourceDetails(false);
+    setPinned(false); setHearted(false);
     setLoaderText(LOADER_TEXTS[Math.floor(Math.random() * LOADER_TEXTS.length)]);
     const c = detectCategory(q); setCat(c);
     setTimeout(() => {
       const r = getVoidResponse(q, responses, history);
-      setResp(r); setLoading(false);
+      setResp(r); setLoading(false); setRevealing(true);
       setRelatedSuggestions(getRandomSuggestions(c, [...history.map(h => h.question), q]));
       const entry: HistoryEntry = { question: q, response: r, pinned: false, liked: null, timestamp: Date.now() };
       const nh = [entry, ...history];
@@ -1709,25 +1690,33 @@ export default function TheVoid({ onBack }: { onBack?: () => void }) {
   const doShare = useCallback(() => {
     if (!resp) return;
     const t = `✨ The Void :\n\n« ${resp.text} »\n\n— ${PS[resp.planet]} ${PN[resp.planet]} en ${resp.sign}`;
-    navigator.share ? navigator.share({ text: t }).catch(() => {}) : navigator.clipboard.writeText(t).catch(() => {});
+    if (navigator.share) navigator.share({ text: t }).catch(() => {});
+    else navigator.clipboard.writeText(t).catch(() => {});
   }, [resp]);
+
+  // Entrée affichée à l'écran : pas forcément la plus récente quand on rouvre une réponse depuis le menu.
+  const displayedEntryIndex = useCallback(() => {
+    const byRef = history.findIndex(h => h.response === resp);
+    if (byRef >= 0) return byRef;
+    return Math.max(0, history.findIndex(h => h.question === question && h.response.text === resp?.text));
+  }, [history, resp, question]);
 
   const doPin = useCallback(() => {
     setPinned(p => !p);
-    if (history.length) { const nh = [...history]; nh[0] = { ...nh[0], pinned: !pinned }; setHistory(nh); saveH(nh); }
-  }, [history, pinned]);
+    if (history.length) { const nh = [...history]; const i = displayedEntryIndex(); nh[i] = { ...nh[i], pinned: !pinned }; setHistory(nh); saveH(nh); }
+  }, [history, pinned, displayedEntryIndex]);
 
   // Persiste le "cœur" dans l'historique, exactement comme doPin le fait pour l'épingle.
   const doLike = useCallback(() => {
     setHearted(h => !h);
-    if (history.length) { const nh = [...history]; nh[0] = { ...nh[0], liked: !hearted }; setHistory(nh); saveH(nh); }
-  }, [history, hearted]);
+    if (history.length) { const nh = [...history]; const i = displayedEntryIndex(); nh[i] = { ...nh[i], liked: !hearted }; setHistory(nh); saveH(nh); }
+  }, [history, hearted, displayedEntryIndex]);
 
   // Ouvre une entrée d'historique (récente ou épinglée) — logique partagée entre les deux listes du menu.
   const openHistoryEntry = useCallback((e: HistoryEntry) => {
     setShowMenu(false);
     setQuestion(e.question); setResp(e.response); setCat(detectCategory(e.question));
-    setLoading(false); setShowSourceDetails(false);
+    setDisplayed(e.response.text); setRevealing(false); setLoading(false);
     setHearted(e.liked === true); setPinned(e.pinned); setScreen('result');
   }, []);
 
@@ -1754,17 +1743,15 @@ export default function TheVoid({ onBack }: { onBack?: () => void }) {
     const color = CATEGORY_BADGE[id]?.color;
     return color ? { color, background: `${color}22`, boxShadow: `0 0 18px ${color}55` } : undefined;
   };
-  const responseStructure = resp ? structureVoidResponse(resp.text) : null;
-  const responseAction = getVoidAction(cat);
 
   // ═══ RENDER ═══
   return (
-    <div className="void-page">
-      <canvas ref={starsRef} className="tv-stars-canvas" />
+    <div className="void-page void-comfort">
+      <canvas ref={starsRef} className="tv-stars-canvas" aria-hidden="true" />
 
       {/* ═══ ÉCRAN 0 : FORMULAIRE NAISSANCE ═══ */}
       {screen === 'birth-form' && (
-        <div className="tv-page tv-page--birth tv-emerge">
+        <div className="tv-page tv-page--detail tv-emerge">
           {onBack && (
             <button onClick={onBack} className="tv-corner-btn tv-corner-left" aria-label="Retour">
               <ArrowLeft size={18} />
@@ -1772,7 +1759,7 @@ export default function TheVoid({ onBack }: { onBack?: () => void }) {
           )}
           <div className="tv-center">
             <form onSubmit={handleBirthSubmit} className="tv-birth-form">
-              <p className="tv-birth-hint">Pour que le vide te réponde, il a besoin de savoir quand tu es né(e).</p>
+              <p className="tv-birth-hint">Pour que le vide te réponde, il a besoin de savoir quand tu es né.</p>
               <div className="tv-birth-fields">
                 <div>
                   <label className="tv-birth-label"><Calendar size={12} /> Naissance</label>
@@ -1801,16 +1788,7 @@ export default function TheVoid({ onBack }: { onBack?: () => void }) {
 
       {/* ═══ ÉCRAN 1 : THE VOID ═══ */}
       {screen === 'void' && (
-        <div className="tv-page tv-page--void tv-emerge">
-          {onBack && (
-            <button onClick={onBack} className="tv-corner-btn tv-corner-left" aria-label="Quitter">
-              <X size={18} />
-            </button>
-          )}
-          <button className="tv-corner-btn tv-corner-right" onClick={() => setShowMenu(m => !m)} aria-label="Menu">
-            {showMenu ? <X size={18} /> : <Menu size={18} />}
-          </button>
-
+        <div className="tv-page tv-page--questions tv-emerge">
           {hasReachedDailyLimit ? (
             <div className="tv-limit-reached tv-emerge">
               <p className="tv-limit-title">Le vide se repose jusqu'à demain</p>
@@ -1820,68 +1798,50 @@ export default function TheVoid({ onBack }: { onBack?: () => void }) {
               </p>
             </div>
           ) : (
-            <main className="tv-void-shell">
-              <header className="tv-void-header">
-                <span className="tv-void-kicker">Oracle personnel</span>
-                <h1 className="tv-void-title">Le Vide</h1>
-                <span className="tv-void-sigil" aria-hidden="true">✦</span>
-              </header>
-
-              {/* Catégories */}
-              <div className="tv-categories" role="tablist" aria-label="Catégories de questions">
-                {VOID_CATEGORIES.map(cat => {
-                  const Icon = cat.icon;
-                  const isActive = activeCategory === cat.id;
-                  return (
-                    <button
-                      key={cat.id}
-                      onClick={() => setActiveCategory(cat.id)}
-                      className={`tv-category-btn ${isActive ? 'active' : ''}`}
-                      role="tab"
-                      aria-pressed={isActive}
-                      title={cat.label}
-                    >
-                      <div className="tv-cat-icon-ring" style={isActive ? { borderColor: cat.color, boxShadow: `0 0 16px ${cat.color}33, 0 0 32px ${cat.color}18, inset 0 0 10px ${cat.color}12` } : {}}>
-                        <Icon />
-                      </div>
-                      <span className="tv-cat-label" style={isActive ? { color: cat.color } : {}}>{cat.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Questions prédéfinies */}
-              <section className="tv-question-section">
-                <div className="tv-question-toolbar">
-                  <p className="tv-question-heading">Questions suggérées</p>
-                  <button onClick={surpriseMe} className="tv-surprise-btn">
-                    <Sparkles size={14} />
-                    <span>Surprends-moi</span>
-                  </button>
-                </div>
-                <div className="tv-questions-zone" key={activeCategory}>
-                  {displayedQuestions[activeCategory].map((q, i) => {
-                    const label = q.charAt(0) + q.slice(1).toLowerCase();
+            <>
+              <main className="tv-scroll-content" aria-label="Choisir une question">
+                {/* Catégories */}
+                <div className="tv-categories" role="group" aria-label="Catégories de questions">
+                  {VOID_CATEGORIES.map(cat => {
+                    const Icon = cat.icon;
+                    const isActive = activeCategory === cat.id;
                     return (
                       <button
-                        key={q}
-                        className="tv-question-item"
-                        style={{ animationDelay: `${i * 55}ms` }}
-                        onClick={() => askQuestion(label)}
+                        key={cat.id}
+                        onClick={() => setActiveCategory(cat.id)}
+                        className={`tv-category-btn ${isActive ? 'active' : ''}`}
+                        aria-pressed={isActive}
+                        title={cat.label}
                       >
-                        <span>{label}</span>
-                        <ChevronRight size={16} aria-hidden="true" />
+                        <div className="tv-cat-icon-ring" style={isActive ? { borderColor: cat.color, boxShadow: `0 0 16px ${cat.color}33, 0 0 32px ${cat.color}18, inset 0 0 10px ${cat.color}12` } : {}}>
+                          <Icon />
+                        </div>
+                        <span className="tv-cat-label" style={isActive ? { color: cat.color } : {}}>{cat.label}</span>
                       </button>
                     );
                   })}
                 </div>
-                </section>
+
+                {/* Questions prédéfinies */}
+                <div className="tv-questions-zone" key={activeCategory}>
+                  {displayedQuestions[activeCategory].map((q, i) => (
+                    <button
+                      key={q}
+                      className="tv-question-item"
+                      style={{ animationDelay: `${i * 70}ms` }}
+                      onClick={() => askQuestion(q.charAt(0) + q.slice(1).toLowerCase())}
+                    >
+                      {q.charAt(0) + q.slice(1).toLowerCase() + '\u00a0?'}
+                    </button>
+                  ))}
+                </div>
+              </main>
 
               {/* Champ de saisie en bas */}
               <div className="tv-bottom-input">
                 <div className="tv-input-wrap-v2">
                   <input
-                    ref={inputRef}
+                    id="void-question"
                     type="text"
                     value={question}
                     onChange={e => { setQuestion(e.target.value); setBlocked(false); }}
@@ -1908,12 +1868,25 @@ export default function TheVoid({ onBack }: { onBack?: () => void }) {
                   </div>
                 )}
               </div>
-            </main>
+            </>
           )}
+
+          <div className="tv-utility-row">
+            {onBack && (
+              <button onClick={onBack} className="tv-utility-btn" aria-label="Quitter"><ArrowLeft size={17} /></button>
+            )}
+            {!hasReachedDailyLimit && (
+              <button onClick={surpriseMe} className="tv-surprise-btn">Surprends-moi</button>
+            )}
+            <button className="tv-utility-btn tv-utility-menu" onClick={() => setShowMenu(m => !m)} aria-label="Menu" aria-expanded={showMenu}>
+              <Menu size={17} />
+            </button>
+          </div>
 
           {showMenu && (
             <div className="tv-menu-overlay" onClick={() => setShowMenu(false)}>
               <div className="tv-menu-panel tv-emerge" onClick={e => e.stopPropagation()}>
+                <button className="tv-menu-close" onClick={() => setShowMenu(false)} aria-label="Fermer le menu"><X size={20} /></button>
                 {chartSum && <p className="tv-menu-chart">{chartSum}</p>}
                 <button onClick={() => { setShowMenu(false); setScreen('birth-form'); }} className="tv-menu-item">
                   <RotateCcw size={14} /> Changer mes données
@@ -1951,7 +1924,7 @@ export default function TheVoid({ onBack }: { onBack?: () => void }) {
 
       {/* ═══ ÉCRAN 2 : RÉSULTAT ═══ */}
       {screen === 'result' && (
-        <div className="tv-page tv-page--result tv-emerge">
+        <div className="tv-page tv-page--detail tv-emerge">
           <button onClick={goVoid} className="tv-corner-btn tv-corner-left" aria-label="Retour">
             <X size={18} />
           </button>
@@ -1959,12 +1932,6 @@ export default function TheVoid({ onBack }: { onBack?: () => void }) {
           <div className="tv-center">
             {loading ? (
               <div className="tv-loading">
-                <p
-                  className="tv-question-absorb"
-                  style={{ '--tv-ritual-color': CATEGORY_BADGE[cat]?.color || '#ffd07a' } as React.CSSProperties}
-                >
-                  « {question} »
-                </p>
                 <div className="tv-loading-orbit">
                   <div className="tv-loading-ring" />
                   <div className="tv-loading-core" />
@@ -1983,45 +1950,16 @@ export default function TheVoid({ onBack }: { onBack?: () => void }) {
                   </span>
                 )}
                 <p className="tv-response-question">« {question} »</p>
-                {resp && responseStructure && (
+                <p className="tv-response-text">
+                  {revealing ? <>{displayed}<span className="tv-cursor-blink" /></> : resp && fmtText(resp.text)}
+                </p>
+
+                {!revealing && resp && (
                   <>
-                    <section className="tv-response-reading" aria-label="Lecture du Vide">
-                      <div className="tv-response-phase tv-response-essence">
-                        <span className="tv-response-phase-label">Le message</span>
-                        <p>{fmtText(responseStructure.essence)}</p>
-                      </div>
-
-                      {responseStructure.explanation && (
-                        <div className="tv-response-phase tv-response-explanation">
-                          <span className="tv-response-phase-label">Ce que cela éclaire</span>
-                          <p>{fmtText(responseStructure.explanation)}</p>
-                        </div>
-                      )}
-
-                      <div className="tv-response-phase tv-response-practice">
-                        <span className="tv-response-phase-label">À faire aujourd’hui</span>
-                        <p>{responseAction}</p>
-                      </div>
-                    </section>
-
-                    <div className={`tv-source-wrap${showSourceDetails ? ' is-open' : ''}`}>
-                      <button
-                        type="button"
-                        className="tv-source-seal"
-                        onClick={() => setShowSourceDetails(value => !value)}
-                        aria-expanded={showSourceDetails}
-                      >
-                        <span className="tv-source-glyph" aria-hidden="true">{PS[resp.planet]}</span>
-                        <span className="tv-source-copy">
-                          <small>Source du message</small>
-                          <strong>{PN[resp.planet]} en {resp.sign}</strong>
-                        </span>
-                        <ChevronRight className="tv-source-chevron" size={16} aria-hidden="true" />
-                      </button>
-                      {showSourceDetails && (
-                        <p className="tv-source-detail tv-emerge">{getSourceExplanation(resp)}</p>
-                      )}
-                    </div>
+                    <p className="tv-response-source">
+                      {PS[resp.planet]} {PN[resp.planet]} en {resp.sign}
+                      {resp.aspect && ` · ${PS[resp.aspect.planet1]} ${AS[resp.aspect.type]} ${PS[resp.aspect.planet2]}`}
+                    </p>
 
                     <div className="tv-response-actions">
                       <button onClick={doLike} className={`tv-action-btn ${hearted ? 'active' : ''}`} aria-label="Aimer">

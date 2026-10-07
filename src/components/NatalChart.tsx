@@ -1,15 +1,21 @@
 import { useEffect, useState } from "react";
 import { Maximize2 } from "lucide-react";
+import { getBirthLocalParts } from "../lib/birthDate";
 
 interface NatalChartProps {
   name: string;
   birthDate: Date;
   birthPlace: string;
+  /** Décalage UTC du lieu de naissance : affiche l'heure civile de naissance, pas celle du navigateur. */
+  birthTimezoneOffset?: number;
+  /** Heure inconnue : maisons, Ascendant et MC ne sont pas fiables, donc pas dessinés. */
+  birthTimeUnknown?: boolean;
   planetPositions: Record<string, any>;
   houses: any[];
   aspects: any[];
   onAspectClick?: (aspect: any) => void;
   onPlanetClick?: (planetKey: string) => void;
+  activePlanetKey?: string | null;
   fullscreenMode?: boolean;
   enableNavigation?: boolean;
 }
@@ -100,11 +106,14 @@ export default function NatalChart({
   name,
   birthDate,
   birthPlace,
+  birthTimezoneOffset,
+  birthTimeUnknown = false,
   planetPositions,
   houses,
   aspects,
   onAspectClick,
   onPlanetClick,
+  activePlanetKey,
   fullscreenMode = false,
 }: NatalChartProps) {
   const [selectedPlanet, setSelectedPlanet] = useState<string | null>(null);
@@ -123,6 +132,10 @@ export default function NatalChart({
   };
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isMobileWheel, setIsMobileWheel] = useState(false);
+
+  useEffect(() => {
+    setSelectedPlanet(activePlanetKey ?? null);
+  }, [activePlanetKey]);
 
   useEffect(() => {
     const query = window.matchMedia("(max-width: 640px)");
@@ -199,7 +212,7 @@ export default function NatalChart({
     ];
     const allBodies = [
       ...Object.entries(planetPositions).map(([key, pos]) => ({ key, longitude: pos.longitude as number })),
-      ...cardinals,
+      ...(birthTimeUnknown ? [] : cardinals),
     ].sort((a, b) => a.longitude - b.longitude);
 
     // Group bodies that are angularly close
@@ -293,7 +306,7 @@ export default function NatalChart({
     });
   };
 
-  const cardinalPoints = getCardinalPoints();
+  const cardinalPoints = birthTimeUnknown ? [] : getCardinalPoints();
   const focusedPlanet = hoveredPlanet || selectedPlanet;
   const aspectTouchesFocusedPlanet = (aspect: any) => (
     !focusedPlanet ||
@@ -302,8 +315,8 @@ export default function NatalChart({
   );
 
   const formatBirthInfo = () => {
-    const date = new Date(birthDate);
-    const day = date.getDate();
+    const local = getBirthLocalParts(new Date(birthDate), birthTimezoneOffset);
+    const day = local.day;
     const monthNames = [
       "janvier",
       "février",
@@ -318,10 +331,11 @@ export default function NatalChart({
       "novembre",
       "décembre",
     ];
-    const month = monthNames[date.getMonth()];
-    const year = date.getFullYear();
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const month = monthNames[local.month - 1];
+    const year = local.year;
+    if (birthTimeUnknown) return `${day} ${month} ${year} · heure inconnue`;
+    const hours = String(local.hour).padStart(2, "0");
+    const minutes = String(local.minute).padStart(2, "0");
     return `${day} ${month} ${year} à ${hours}:${minutes}`;
   };
 
@@ -735,7 +749,7 @@ export default function NatalChart({
               opacity="0.8"
             />
 
-            {houses.map((house, i) => {
+            {!birthTimeUnknown && houses.map((house, i) => {
               const angle = house.cusp;
               const { x: x1, y: y1 } = getXY(angle, radiusInner);
               const { x: x2, y: y2 } = getXY(angle, radiusHouses);
@@ -768,7 +782,7 @@ export default function NatalChart({
               );
             })}
 
-            {houses.map((house, i) => {
+            {!birthTimeUnknown && houses.map((house, i) => {
               const nextHouse = houses[(i + 1) % 12];
               let midAngle = (house.cusp + nextHouse.cusp) / 2;
               if (nextHouse.cusp < house.cusp) {
@@ -931,14 +945,31 @@ export default function NatalChart({
               return (
                 <g
                   key={`planet-${key}`}
+                  className="natal-planet-interactive"
                   data-natal-interactive="true"
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`${planetNames[key] || key} en ${pos.sign}. Afficher un aperçu.`}
                   opacity={isDimmed ? 0.38 : 1}
                   style={{
                     transition: "opacity 0.32s ease, filter 0.32s ease",
+                    cursor: "pointer",
                     filter: isHighlighted
                       ? "drop-shadow(0 0 10px rgba(255, 230, 173, 0.34))"
                       : "none",
                   }}
+                  onClick={() => handlePlanetSelection(key)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      handlePlanetSelection(key);
+                    }
+                  }}
+                  onPointerDown={(event) => {
+                    if ((event.pointerType as string) !== "") event.currentTarget.blur();
+                  }}
+                  onMouseEnter={() => setHoveredPlanet(key)}
+                  onMouseLeave={() => setHoveredPlanet(null)}
                 >
                   <line
                     x1={lineX}
@@ -964,9 +995,6 @@ export default function NatalChart({
                       transition: "all 0.32s ease",
                       cursor: "pointer",
                     }}
-                    onClick={() => handlePlanetSelection(key)}
-                    onMouseEnter={() => setHoveredPlanet(key)}
-                    onMouseLeave={() => setHoveredPlanet(null)}
                   />
 
                   {/* Premium 3D highlight overlay */}
@@ -1091,14 +1119,31 @@ export default function NatalChart({
               return (
                 <g
                   key={`cardinal-${i}`}
+                  className="natal-planet-interactive"
                   data-natal-interactive="true"
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Ascendant en ${houses[0]?.sign || "signe inconnu"}. Afficher un aperçu.`}
                   opacity={isDimmed ? 0.38 : 1}
                   style={{
                     transition: "opacity 0.32s ease, filter 0.32s ease",
+                    cursor: "pointer",
                     filter: isHighlighted
                       ? "drop-shadow(0 0 10px rgba(255, 230, 173, 0.3))"
                       : "none",
                   }}
+                  onClick={() => handlePlanetSelection("ascendant")}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      handlePlanetSelection("ascendant");
+                    }
+                  }}
+                  onPointerDown={(event) => {
+                    if ((event.pointerType as string) !== "") event.currentTarget.blur();
+                  }}
+                  onMouseEnter={() => setHoveredPlanet("ascendant")}
+                  onMouseLeave={() => setHoveredPlanet(null)}
                 >
                   <line x1={lineX} y1={lineY} x2={x} y2={y}
                     stroke={isHighlighted ? "#F3D9A2" : "rgba(205, 213, 224, 0.82)"}
@@ -1112,9 +1157,6 @@ export default function NatalChart({
                     strokeWidth={isHighlighted ? "4" : "2.9"}
                     filter="url(#planetDiscShine)"
                     style={{ transition: "all 0.32s ease", cursor: "pointer" }}
-                    onClick={() => handlePlanetSelection("ascendant")}
-                    onMouseEnter={() => setHoveredPlanet("ascendant")}
-                    onMouseLeave={() => setHoveredPlanet(null)}
                   />
                   <circle cx={x} cy={y}
                     r={isHighlighted ? "40" : "35"}
@@ -1198,6 +1240,7 @@ export default function NatalChart({
       {!isFullscreen && !fullscreenMode && (
         <>
           <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-1 md:gap-2 w-full mt-2 md:mt-3">
+            {!birthTimeUnknown && (
             <button
               key="ascendant"
               onClick={() => {
@@ -1230,6 +1273,7 @@ export default function NatalChart({
                 </div>
               </div>
             </button>
+            )}
             {Object.entries(planetPositions).map(([key, pos]) => (
               <button
                 key={key}

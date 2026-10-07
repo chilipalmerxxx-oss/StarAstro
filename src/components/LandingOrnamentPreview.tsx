@@ -575,20 +575,20 @@ export default function LandingOrnamentPreview({ onClosePreview }: LandingOrname
       <header className="lop-header">
         <div>
           <h1 className="lop-title">Ornements</h1>
-          <p className="lop-kicker">Choix du sceau sous NIGHTSTAR</p>
+          <p className="lop-kicker">Choix du sceau sous NIGHT ONE</p>
         </div>
         <button className="lop-close" type="button" onClick={onClosePreview} aria-label="Fermer la preview">
           ×
         </button>
       </header>
 
-      <section className="lop-grid" aria-label="Options d’ornements NIGHTSTAR">
+      <section className="lop-grid" aria-label="Options d’ornements NIGHT ONE">
         {ornamentOptions.map(option => (
           <article className="lop-card" key={option.id}>
             <div className="lop-sample">
               <div className="lop-brand" aria-hidden>
                 <div className="lop-brand-rule" />
-                <div className="lop-brand-word">NIGHTSTAR</div>
+                <div className="lop-brand-word">NIGHT ONE</div>
                 <div className="lop-brand-rule" />
                 <Ornament id={option.id} />
               </div>

@@ -1,0 +1,245 @@
+/* "Ta journée en un coup d'œil" — fast-planet transit cards. */
+
+.sky-carousel {
+  --sky-gold: #c9a84c;
+  --sky-gold-soft: rgba(201, 168, 76, 0.32);
+  --sky-ink: #f4ecdc;
+  --sky-muted: rgba(244, 236, 220, 0.62);
+  --sky-fluide: #d9b866;
+  --sky-tendu: #d0835a;
+  --sky-fusion: #efe2bd;
+  position: relative;
+  margin: 0 -16px;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  color: var(--sky-ink);
+}
+
+.sky-carousel__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 0 16px 18px;
+  text-align: center;
+}
+
+/* Carousel: 84% cards with the next one peeking. */
+.sky-carousel__list {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 0;
+  padding: 4px 10% 6px;
+  list-style: none;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding: 0 10%;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.sky-carousel__list::-webkit-scrollbar {
+  display: none;
+}
+
+.sky-card {
+  --sky-accent: var(--sky-fluide);
+  position: relative;
+  flex: 0 0 80%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px 12px;
+  scroll-snap-align: center;
+  border: 1px solid var(--sky-gold-soft);
+  border-radius: 18px;
+  background:
+    radial-gradient(ellipse 90% 60% at 50% 0%, color-mix(in srgb, var(--sky-accent) 14%, transparent), transparent 70%),
+    linear-gradient(180deg, rgba(20, 18, 26, 0.86), rgba(10, 10, 16, 0.92));
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 236, 196, 0.08);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.sky-card--tendu { --sky-accent: var(--sky-tendu); }
+.sky-card--fusion { --sky-accent: var(--sky-fusion); }
+
+.sky-card__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.sky-card__domain {
+  padding: 3px 10px;
+  border: 1px solid color-mix(in srgb, var(--sky-accent) 45%, transparent);
+  border-radius: 999px;
+  color: var(--sky-accent);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+
+.sky-card__duration {
+  color: var(--sky-muted);
+  font-style: italic;
+}
+
+/* Transit planet and natal planet as two overlapping discs. */
+.sky-card__heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sky-card__pair {
+  display: flex;
+  flex-shrink: 0;
+}
+
+.sky-card__disc {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(240, 214, 150, 0.4);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.1), #0c0b12 70%);
+  font-family: 'Segoe UI Symbol', 'Noto Sans Symbols', serif;
+  font-size: 15px;
+  line-height: 1;
+}
+
+.sky-card__disc + .sky-card__disc {
+  margin-left: -8px;
+}
+
+.sky-card__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--sky-ink);
+}
+
+.sky-card__headline {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.35;
+  color: rgba(244, 236, 220, 0.86);
+}
+
+.sky-card__headline--veiled {
+  filter: blur(5px);
+  user-select: none;
+}
+
+.sky-card__teaser {
+  margin: 0;
+  font-size: 14px;
+  font-style: italic;
+  color: var(--sky-gold);
+}
+
+.sky-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 2px;
+  padding-top: 9px;
+  border-top: 1px solid rgba(240, 214, 150, 0.12);
+}
+
+.sky-card__intensity {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.sky-card__intensity-bar {
+  width: 12px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(244, 236, 220, 0.14);
+}
+
+.sky-card__intensity-bar.is-on {
+  background: var(--sky-accent);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--sky-accent) 60%, transparent);
+}
+
+.sky-card__orb {
+  margin-left: 8px;
+  font-size: 13px;
+  color: var(--sky-muted);
+  white-space: nowrap;
+}
+
+.sky-card__why-toggle {
+  padding: 4px 12px;
+  border: 1px solid rgba(240, 214, 150, 0.3);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--sky-ink);
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.sky-card__why {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--sky-muted);
+  animation: sky-why-in 0.3s ease;
+}
+
+@keyframes sky-why-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: none; }
+}
+
+.sky-card--tomorrow .sky-card__heading {
+  opacity: 0.7;
+}
+
+.sky-card--tomorrow {
+  border-style: dashed;
+  border-color: rgba(201, 168, 76, 0.4);
+}
+
+.sky-carousel__dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding-top: 14px;
+}
+
+.sky-carousel__dot {
+  width: 6px;
+  height: 6px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(244, 236, 220, 0.22);
+  cursor: pointer;
+  transition: width 0.25s ease, background 0.25s ease;
+}
+
+.sky-carousel__dot.is-active {
+  width: 18px;
+  border-radius: 3px;
+  background: var(--sky-gold);
+}
+
+.sky-carousel__dot--tomorrow:not(.is-active) {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px rgba(201, 168, 76, 0.6);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sky-card__why { animation: none; }
+}

@@ -9,6 +9,7 @@ type EditableBirthData = {
   latitude: number;
   longitude: number;
   timezoneOffset: number;
+  timeUnknown?: boolean;
 };
 
 interface You2PageProps {
@@ -18,6 +19,7 @@ interface You2PageProps {
   birthLatitude?: number;
   birthLongitude?: number;
   birthTimezoneOffset?: number;
+  birthTimeUnknown?: boolean;
   planetPositions: Record<string, any>;
   houses: any[];
   aspects?: any[];
@@ -35,6 +37,7 @@ export default function You2Page({
   birthLatitude,
   birthLongitude,
   birthTimezoneOffset,
+  birthTimeUnknown,
   planetPositions,
   houses,
   aspects = [],
@@ -93,6 +96,7 @@ export default function You2Page({
         birthLatitude={birthLatitude}
         birthLongitude={birthLongitude}
         birthTimezoneOffset={birthTimezoneOffset}
+        birthTimeUnknown={birthTimeUnknown}
         planetPositions={planetPositions}
         houses={houses}
         aspects={aspects}

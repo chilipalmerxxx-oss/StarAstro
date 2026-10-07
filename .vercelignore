@@ -13,3 +13,15 @@ project_temp
 CODE_SOURCE_*
 test-neptune-pluto.js
 Nightstar-Local-Llama.code-workspace
+.codex-backups
+.vercel.*
+.agents
+.codex
+Nightstar-roue-interactive-loaded
+tmp
+ui-mocks
+costar-background-proposals
+costar-premium-art-proposals
+mcps
+rapport-lea-sacha.pdf
+Ouvrir-NIGHTSTAR.cmd

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { getBirthOffsetAt, resolveBirthTimeZone } from '../lib/birthTimezone';
 
 interface BirthDataFormProps {
   onSubmit: (data: {
@@ -70,7 +71,7 @@ export default function BirthDataForm({ onSubmit, loading = false }: BirthDataFo
         }));
         // Déduplique par nom de ville
         const uniqueCities = Array.from(
-          new Map(cities.map(c => [c.name, c])).values()
+          new Map(cities.map((c: { name: string }) => [c.name, c])).values()
         );
         setSuggestions(uniqueCities);
       } catch (error) {
@@ -137,7 +138,7 @@ export default function BirthDataForm({ onSubmit, loading = false }: BirthDataFo
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Si une ville a été sélectionnée via les suggestions, utilise ses données
@@ -153,6 +154,8 @@ export default function BirthDataForm({ onSubmit, loading = false }: BirthDataFo
       cityData = CITIES[0];
     }
 
+    // Décalage réel à la date de naissance (heure d'été comprise), pas un offset fixe.
+    const timeZone = await resolveBirthTimeZone(cityData.lat, cityData.lon);
     onSubmit({
       name,
       date,
@@ -160,7 +163,7 @@ export default function BirthDataForm({ onSubmit, loading = false }: BirthDataFo
       place: selectedCity,
       latitude: cityData.lat,
       longitude: cityData.lon,
-      timezoneOffset: cityData.tz,
+      timezoneOffset: getBirthOffsetAt(date, time, timeZone, cityData.lon),
     });
   };
 

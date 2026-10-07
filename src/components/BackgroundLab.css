@@ -1,0 +1,44 @@
+/* Preview-only background switcher (?youbg). */
+
+.bg-lab {
+  position: fixed;
+  left: 50%;
+  bottom: calc(132px + env(safe-area-inset-bottom));
+  z-index: 200;
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  transform: translateX(-50%);
+  border: 1px solid rgba(201, 168, 76, 0.32);
+  border-radius: 999px;
+  background: rgba(8, 9, 20, 0.78);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+
+.bg-lab__option {
+  padding: 7px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(246, 240, 226, 0.7);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.bg-lab__option--active {
+  background: rgba(201, 168, 76, 0.2);
+  color: #f1dc9f;
+}
+
+@media (max-width: 420px) {
+  .bg-lab__option {
+    padding: 6px 9px;
+    font-size: 13px;
+  }
+}

@@ -70,7 +70,7 @@ function TitleSample({ id }: { id: string }) {
     <div className={`ltp-sample ltp-sample--${id}`}>
       <div className="ltp-title-wrap" aria-hidden>
         <div className="ltp-brand-rule" />
-        <div className={`ltp-brand-title ltp-brand-title--${id}`}>NIGHTSTAR</div>
+        <div className={`ltp-brand-title ltp-brand-title--${id}`}>NIGHT ONE</div>
         <div className="ltp-brand-rule" />
         <div className="ltp-mini-sigil">
           <span />
@@ -448,14 +448,14 @@ export default function LandingTitlePreview({ onClosePreview }: LandingTitlePrev
       <header className="ltp-header">
         <div>
           <h1 className="ltp-heading">Titres</h1>
-          <p className="ltp-kicker">Choix du mot NIGHTSTAR</p>
+          <p className="ltp-kicker">Choix du mot NIGHT ONE</p>
         </div>
         <button className="ltp-close" type="button" onClick={onClosePreview} aria-label="Fermer la preview">
           ×
         </button>
       </header>
 
-      <section className="ltp-grid" aria-label="Options de design du titre NIGHTSTAR">
+      <section className="ltp-grid" aria-label="Options de design du titre NIGHT ONE">
         {titleOptions.map(option => (
           <article className="ltp-card" key={option.id}>
             <TitleSample id={option.id} />

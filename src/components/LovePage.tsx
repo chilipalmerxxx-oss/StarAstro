@@ -44,28 +44,6 @@ const ELEMENT_LABELS: Record<string, string> = {
   water: 'eau',
 };
 
-const MODALITY_LABELS: Record<string, string> = {
-  cardinal: 'cardinal',
-  fixed: 'fixe',
-  mutable: 'mutable',
-};
-
-const MODALITY_PLURALS: Record<string, string> = {
-  cardinal: 'cardinaux',
-  fixed: 'fixes',
-  mutable: 'mutables',
-};
-
-const ASPECT_DESCS: Record<number, string> = {
-  0: 'une conjonction de signes : mêmes réflexes amoureux, même rythme, et parfois les mêmes angles morts.',
-  1: 'un semi-sextile : deux langages proches en apparence, mais des priorités qui ne se devinent pas toutes seules.',
-  2: 'un sextile : l’accord se construit facilement, avec de la curiosité, du dialogue et des ajustements naturels.',
-  3: 'un carré : une tension réelle, stimulante si elle devient une conversation plutôt qu’un bras de fer.',
-  4: 'un trigone : une circulation naturelle entre les deux signes, avec une compréhension presque instinctive.',
-  5: 'un quinconce : l’attirance existe, mais la relation demande traduction, patience et un peu de mode d’emploi.',
-  6: 'une opposition : deux pôles complémentaires, capables de se révéler autant que de se provoquer.',
-};
-
 function getElementInsight(el1: string, el2: string): string {
   if (el1 === el2) {
     const sameElementInsights: Record<string, string> = {
@@ -180,12 +158,6 @@ function getAxisVerdict(_axis: InstantReadingAxis['id'], score: number): string 
   return 'Délicat';
 }
 
-const LOVE_GAUGE_SEGMENTS = 10;
-
-function getGaugeSegments(score: number): number {
-  return Math.max(1, Math.min(LOVE_GAUGE_SEGMENTS, Math.round(score / 10)));
-}
-
 function getInstantReading(score: number, s1: number, s2: number): InstantReadingAxis[] {
   const el1 = SIGNS[s1].element;
   const el2 = SIGNS[s2].element;
@@ -249,54 +221,6 @@ function getInstantReading(score: number, s1: number, s2: number): InstantReadin
   ];
 
   return axes.map(axis => ({ ...axis, verdict: getAxisVerdict(axis.id, axis.score) }));
-}
-
-type RelationshipKey = {
-  title: string;
-  text: string;
-  practice: string;
-};
-
-function getRelationshipKey(score: number, s1: number, s2: number): RelationshipKey {
-  const first = SIGNS[s1];
-  const second = SIGNS[s2];
-  const diff = Math.abs(s1 - s2);
-  const distance = Math.min(diff, 12 - diff);
-  const elementKey = `${first.element}-${second.element}`;
-
-  if (distance === 3 || distance === 6) {
-    return {
-      title: 'Clarifier les besoins',
-      text: `${first.name} et ${second.name} ne réagissent pas toujours au même signal. Les non-dits peuvent vite devenir un sport de combat.`,
-      practice: 'À privilégier : dire le besoin précis derrière chaque désaccord.',
-    };
-  }
-  if (SAME_PAIRS.has(elementKey)) {
-    return {
-      title: 'Préserver l’autonomie',
-      text: 'Vos réflexes se ressemblent, ce qui aide beaucoup. Garder un espace à soi évite de transformer la fusion en abonnement illimité.',
-      practice: 'À privilégier : soutenir un projet personnel de l’autre, sans le piloter.',
-    };
-  }
-  if (COMPAT_PAIRS.has(elementKey)) {
-    return {
-      title: 'Structurer la relation',
-      text: 'Votre complémentarité aide le lien à respirer. Elle devient vraiment forte quand elle s’incarne dans des habitudes simples.',
-      practice: 'À privilégier : créer un rendez-vous régulier, même court, consacré au lien.',
-    };
-  }
-  if (score >= 75) {
-    return {
-      title: 'Aborder les sujets sensibles',
-      text: 'La compatibilité est bonne, mais elle ne lit pas dans les pensées. Les sujets évités finissent toujours par prendre une voix plus forte.',
-      practice: 'À privilégier : poser une question directe et écouter la réponse sans préparer la défense.',
-    };
-  }
-  return {
-    title: 'Traduire vos attentes',
-    text: `${first.name} et ${second.name} n’expriment pas l’attachement de la même manière. Ce n’est pas un problème si chacun donne la légende de sa carte.`,
-    practice: 'À privilégier : préciser ce qui permet à chacun de se sentir choisi.',
-  };
 }
 
 const PAIR_VERDICTS: Record<string, string> = {
@@ -460,107 +384,6 @@ function getLabel(score: number): { title: string; desc: string; color: string }
 }
 
 // ─── Per-pair mystical descriptions ─────────────────────
-const PAIR_DESCS: Record<string, string> = {};
-
-function getPairDesc(s1: number, s2: number): string {
-  const key = `${Math.min(s1, s2)}-${Math.max(s1, s2)}`;
-  return POETIC_PAIR_DESCS[key] || PAIR_DESCS[key] || '';
-}
-
-function getPairSubtitle(s1: number, s2: number): string {
-  const description = getPairDesc(s1, s2);
-  const opening = (description.split('—')[0] || description.split('.')[0] || description)
-    .trim()
-    .replace(/[.,;:]$/, '');
-
-  if (opening) return opening;
-  return `${SIGNS[s1].name} et ${SIGNS[s2].name}, une alchimie singulière`;
-}
-
-const POETIC_PAIR_DESCS: Record<string, string> = {
-  '0-0': "Deux impulsions franches se reconnaissent vite. C’est vivant, direct, parfois un peu trop rapide pour la tendresse.",
-  '0-1': "L’un veut foncer, l’autre veut sécuriser. Le lien devient fort quand l’élan respecte le besoin de preuve.",
-  '0-2': "L’attirance passe par le jeu et la conversation. Le feu ose, l’air répond, et la complicité se réveille vite.",
-  '0-3': "L’un agit, l’autre ressent. Le lien peut être très attachant si la vitesse du premier laisse de la place à la sensibilité du second.",
-  '0-4': "Deux tempéraments solaires se stimulent. C’est chaud, généreux, parfois très fier, donc pensez à laisser une place à l’autre sur scène.",
-  '0-5': "L’élan rencontre la précision. Ça fonctionne quand l’action accepte les nuances et que l’analyse ne transforme pas tout en audit.",
-  '0-6': "L’attirance vient du contraste. L’un décide vite, l’autre cherche l’accord, et la relation devient belle quand personne ne force le tempo.",
-  '0-7': "Connexion magnétique, difficile à ignorer. Le lien demande de la franchise, sinon la passion peut vite mettre une couronne au contrôle.",
-  '0-8': "Deux feux qui aiment l’espace. La relation respire dans l’aventure, l’humour et la liberté qui ne sert pas d’excuse pour disparaître.",
-  '0-9': "L’un pousse, l’autre structure. Si l’impatience accepte la maturité, le lien peut devenir solide sans perdre son feu.",
-  '0-10': "Attirance stimulante, parfois imprévisible. Ça marche quand chacun garde sa liberté sans traiter l’engagement comme une alarme incendie.",
-  '0-11': "Le feu réveille l’eau, l’eau adoucit le feu. C’est beau quand le désir apprend à écouter avant d’accélérer.",
-  '1-1': "Deux signes qui cherchent la paix, la fidélité et le concret. Le lien avance lentement, mais il peut devenir très rassurant.",
-  '1-2': "La stabilité rencontre la curiosité. L’attirance tient si l’un accepte le mouvement et si l’autre respecte le besoin de calme.",
-  '1-3': "Un lien doux, protecteur, presque familier. La terre rassure l’eau, et l’eau donne plus de profondeur à la tendresse.",
-  '1-4': "Beaucoup de sensualité et de chaleur. L’un cherche le confort, l’autre la reconnaissance, et chacun peut nourrir l’autre.",
-  '1-5': "Compatibilité calme et concrète. Ici, l’amour se prouve dans la présence, les gestes fiables et les petites attentions régulières.",
-  '1-6': "Lien charmeur, sensuel et esthétique. Il devient très doux quand les attentes restent simples, sincères, et pas trop scénarisées.",
-  '1-7': "Attirance profonde, parfois possessive. Le lien devient puissant quand la confiance remplace le besoin de vérifier trois fois.",
-  '1-8': "La sécurité rencontre le besoin d’horizon. Pour durer, la relation doit protéger sans enfermer.",
-  '1-9': "Deux énergies patientes et constructives. Le lien peut manquer de légèreté, mais il sait tenir quand les choses deviennent réelles.",
-  '1-10': "La stabilité croise l’indépendance. Relation intéressante si chacun accepte une façon différente d’aimer, sans vouloir corriger le logiciel de l’autre.",
-  '1-11': "Lien tendre et enveloppant. La terre donne un appui, l’eau apporte l’imaginaire, et l’amour peut devenir très doux.",
-  '2-2': "Deux esprits rapides se captent facilement. La relation vit de conversation, de jeu et d’une curiosité toujours rallumée.",
-  '2-3': "L’un parle, l’autre ressent. Le lien devient beau quand les mots ne remplacent pas l’écoute émotionnelle.",
-  '2-4': "Relation vive et lumineuse. L’un amuse, l’autre rayonne, mais les petits jeux d’ego méritent une pause café.",
-  '2-5': "Deux signes qui observent beaucoup. L’amour passe par l’intelligence, les détails et une complicité qui se construit.",
-  '2-6': "Affinité élégante et légère. Les mots circulent bien, le charme agit vite, et le lien reste agréable s’il ne fuit pas les vrais sujets.",
-  '2-7': "La légèreté rencontre l’intensité. L’attirance intrigue, mais la relation demande plus de profondeur que d’esquive.",
-  '2-8': "Deux signes qui ont besoin d’air. La complicité est forte quand l’amour reste vivant, mobile et ouvert.",
-  '2-9': "L’humour rencontre le sérieux. La relation gagne en force quand chacun respecte la façon d’avancer de l’autre.",
-  '2-10': "Connexion mentale très naturelle. Le lien peut être libre, original et nourri par des idées que personne d’autre ne suit.",
-  '2-11': "L’esprit rencontre l’intuition. Il y a de la magie, à condition de clarifier les attentes et les silences.",
-  '3-3': "Deux sensibilités se comprennent sans beaucoup parler. C’est doux, protecteur, mais il faut éviter d’absorber chaque variation d’humeur.",
-  '3-4': "La tendresse rencontre la chaleur. L’un nourrit, l’autre rassure par sa présence, et le cœur peut s’ouvrir vite.",
-  '3-5': "Relation faite de soin et de discrétion. L’amour se montre dans les attentions concrètes plus que dans les grands discours.",
-  '3-6': "Lien tendre qui cherche l’harmonie. La douceur est la clé, surtout quand les émotions changent de météo.",
-  '3-7': "Deux signes d’eau, beaucoup d’intuition. La relation peut être profonde si elle garde des repères simples.",
-  '3-8': "Le besoin de refuge rencontre le besoin d’ailleurs. L’amour tient si l’aventure sait revenir vers le cœur.",
-  '3-9': "La sensibilité rencontre l’ambition. Le lien devient fort quand la pudeur émotionnelle trouve une vraie sécurité.",
-  '3-10': "Relation délicate, entre besoin d’intimité et besoin d’espace. Elle demande confiance, douceur et un peu moins de devinettes.",
-  '3-11': "Deux imaginaires se rejoignent facilement. Le lien est tendre et inspiré, mais il doit rester ancré dans le réel.",
-  '4-4': "Deux cœurs fiers et généreux. L’amour peut être magnifique si chacun admire l’autre sans chercher à prendre toute la lumière.",
-  '4-5': "L’éclat rencontre la précision. La relation fonctionne quand la chaleur du cœur respecte les détails de l’autre.",
-  '4-6': "Alliance de charme et de lumière. Le lien aime la beauté, les attentions et le sentiment d’être choisi.",
-  '4-7': "Attirance intense entre lumière et profondeur. Pour durer, il faut de la loyauté et beaucoup de vérité.",
-  '4-8': "Deux feux qui aiment vivre grand. La relation est joyeuse, directe, et a besoin de projets qui donnent envie.",
-  '4-9': "La fierté rencontre la maîtrise. Le lien devient solide quand l’admiration remplace la compétition.",
-  '4-10': "Le besoin d’être vu rencontre le besoin d’être libre. C’est fort si chacun respecte la singularité de l’autre.",
-  '4-11': "Le soleil réchauffe l’eau. La relation peut être très romantique si la sensibilité ne se sent pas brusquée.",
-  '5-5': "Deux signes attentifs, parfois exigeants. L’amour se construit par la confiance, la fiabilité et les gestes utiles.",
-  '5-6': "Relation fine, polie, attentive aux détails. Elle devient très belle quand elle ose aussi la spontanéité.",
-  '5-7': "L’analyse rencontre le mystère. Le lien grandit quand la prudence accepte de se laisser toucher.",
-  '5-8': "L’ordre rencontre l’appel du large. L’amour demande de la souplesse pour ne pas transformer la différence en critique.",
-  '5-9': "Deux signes de terre, sérieux et loyaux. Le lien peut sembler discret, mais il sait devenir très fiable.",
-  '5-10': "La précision rencontre l’originalité. La relation marche si chacun voit la richesse de l’autre au lieu de la corriger.",
-  '5-11': "Le concret rencontre le rêve. L’amour peut être doux et réparateur si les promesses restent simples.",
-  '6-6': "Deux signes qui cherchent la justesse. Le lien est charmeur et raffiné, mais doit parfois oser dire ce qui dérange.",
-  '6-7': "La douceur rencontre l’intensité. L’attirance est forte, surtout quand le charme laisse place à la confiance.",
-  '6-8': "Relation légère et vivante. L’amour respire quand il garde de la joie, de la sincérité et un peu d’espace.",
-  '6-9': "L’élégance rencontre la retenue. Le lien peut devenir noble et stable si la tendresse n’est pas trop contrôlée.",
-  '6-10': "Deux signes d’air, libres et curieux. La relation peut être originale, complice et très stimulante mentalement.",
-  '6-11': "La beauté rencontre la sensibilité. Le lien est doux, parfois idéalisé, mais il peut inspirer beaucoup de tendresse.",
-  '7-7': "Deux intensités se reconnaissent. Le lien est profond et loyal, mais il demande de ne pas tester l’amour comme une alarme.",
-  '7-8': "La profondeur rencontre la liberté. L’attirance est forte si le besoin d’espace ne blesse pas le besoin de sécurité.",
-  '7-9': "Relation dense, sérieuse, capable de tenir. Le lien grandit dans la confiance et les preuves discrètes.",
-  '7-10': "L’intensité rencontre l’indépendance. Relation puissante si chacun accepte de ne pas tout comprendre.",
-  '7-11': "Deux eaux intuitives et profondes. Le lien peut être très fusionnel, à condition de garder des repères clairs.",
-  '8-8': "Deux esprits libres se reconnaissent vite. L’amour a besoin d’horizon, de sincérité et de mouvement.",
-  '8-9': "L’aventure rencontre la construction. Le lien devient fort quand le rêve trouve une direction concrète.",
-  '8-10': "Relation libre, inventive, parfois surprenante. Elle fonctionne si l’engagement ne ressemble pas à une contrainte.",
-  '8-11': "L’élan rencontre le rêve. Le lien peut être inspirant, mais il doit garder un cap pour ne pas se disperser.",
-  '9-9': "Deux signes solides, pudiques, ambitieux. L’amour se construit lentement, mais avec une vraie profondeur.",
-  '9-10': "La structure rencontre l’imprévu. La relation devient intéressante quand la sécurité accepte un peu de nouveauté.",
-  '9-11': "Le réalisme rencontre la sensibilité. L’un stabilise, l’autre adoucit, et le lien peut devenir très protecteur.",
-  '10-10': "Deux indépendances se comprennent. Le lien est fort quand personne ne cherche à posséder l’autre.",
-  '10-11': "La vision rencontre l’intuition. La relation peut être douce et singulière si elle reste honnête sur ses besoins.",
-  '11-11': "Deux sensibilités se devinent facilement. L’amour peut être très tendre, presque silencieux, s’il reste ancré.",
-};
-
-function withoutFinalPeriod(text: string): string {
-  return text.replace(/\.\s*$/, '');
-}
 
 function playSoftSelectChime() {
   try {
@@ -1298,7 +1121,7 @@ function SignPicker({ onSelect, onClose, sign1, sign2, clearSelectionHighlights 
         </div>
         <div className="text-center" style={{ marginBottom: 18 }}>
           <p style={{ margin: 0, fontSize: 8.5, color: '#C6A783', letterSpacing: 3, textTransform: 'uppercase', fontWeight: 750 }}>Les douze archétypes</p>
-          <h2 style={{ margin: '5px 0 0', fontFamily: 'Cormorant Garamond, Georgia, serif', color: '#FFF8EF', fontSize: 25, fontWeight: 500 }}>Choisissez un signe</h2>
+          <h2 style={{ margin: '5px 0 0', fontFamily: 'Cormorant Garamond, Georgia, serif', color: '#FFF8EF', fontSize: 25, fontWeight: 500 }}>Choisis un signe</h2>
         </div>
         <div className="grid grid-cols-4 gap-2">
           {SIGNS.map(s => {
@@ -1540,7 +1363,8 @@ export default function LovePage() {
     draw();
     window.addEventListener('resize', resize);
     return () => { cancelAnimationFrame(raf); window.removeEventListener('resize', resize); };
-  }, []);
+    // Relancé au retour de la page premium : le canvas est recréé, l'ancien ne s'affiche plus.
+  }, [showPremiumSales]);
 
   if (showPremiumSales) {
     return <LovePremiumSalesPage onBack={() => setShowPremiumSales(false)} />;
@@ -1890,7 +1714,7 @@ export default function LovePage() {
           <div style={{ width: '100%', marginTop: 24, textAlign: 'center', animation: 'love-rise .6s ease both' }}>
             <div style={{ width: 34, height: 1, margin: '0 auto 13px', background: 'rgba(229,196,164,0.26)' }} />
             <p style={{ margin: 0, color: '#AFA1A9', fontSize: 10.5, lineHeight: 1.5, letterSpacing: 0.35 }}>
-              Sélectionnez les deux signes pour commencer l’analyse.
+              Sélectionne les deux signes pour commencer l’analyse.
             </p>
           </div>
         )}
@@ -1921,7 +1745,7 @@ function LovePremiumSalesPage({ onBack }: { onBack: () => void }) {
     {
       label: 'Désir et sécurité',
       detail: 'Vénus, Mars, la Lune et les aspects exacts révèlent l’attraction, les besoins et les tensions.',
-      note: 'Vous voyez ce qui attire, ce qui rassure, et ce qui peut créer une distance.',
+      note: 'Tu vois ce qui attire, ce qui rassure, et ce qui peut créer une distance.',
     },
     {
       label: 'Potentiel du lien',
@@ -2002,7 +1826,7 @@ function LovePremiumSalesPage({ onBack }: { onBack: () => void }) {
               textShadow: '0 12px 34px rgba(0,0,0,0.42)',
             }}
           >
-            Découvrez ce que votre lien révèle vraiment
+            Découvre ce que votre lien révèle vraiment
           </h1>
           <div
             style={{
@@ -2234,7 +2058,7 @@ function LovePremiumSalesPage({ onBack }: { onBack: () => void }) {
             Accès premium
           </p>
           <h2 style={{ margin: '7px 0 0', fontFamily: 'Cormorant Garamond, Georgia, serif', fontSize: 22, lineHeight: 1.08, fontWeight: 500 }}>
-            Obtenez votre lecture complète, personnelle et détaillée.
+            Obtiens ta lecture complète, personnelle et détaillée.
           </h2>
         </section>
       </div>
@@ -2265,298 +2089,6 @@ function LovePremiumSalesPage({ onBack }: { onBack: () => void }) {
         </button>
       </div>
     </div>
-  );
-}
-
-function LoveResultPanel({
-  sign1,
-  sign2,
-  score,
-  label,
-  title,
-  description,
-  axes,
-  compact,
-  onOpenFullReport,
-}: {
-  sign1: number;
-  sign2: number;
-  score: number;
-  label: { title: string; desc: string; color: string };
-  title: string;
-  description: string;
-  axes: InstantReadingAxis[];
-  compact: boolean;
-  onOpenFullReport: () => void;
-}) {
-  const first = SIGNS[sign1];
-  const second = SIGNS[sign2];
-  const firstColor = first.element === 'fire' ? '#D98FA2' : ELEMENT_COLORS[first.element];
-  const secondColor = second.element === 'air' ? '#E8C77D' : ELEMENT_COLORS[second.element];
-  const scoreColor = score >= 88 ? '#E8C77D' : '#D8A84E';
-  const specks = [
-    ['14%', '15%', 0.18],
-    ['82%', '13%', 0.2],
-    ['9%', '34%', 0.16],
-    ['91%', '39%', 0.15],
-    ['50%', '18%', 0.22],
-    ['23%', '73%', 0.14],
-    ['76%', '76%', 0.16],
-  ] as const;
-
-  return (
-    <section
-      className="love-result-panel w-full"
-      style={{
-        position: 'relative',
-        overflow: 'hidden',
-        flexShrink: 0,
-        boxSizing: 'border-box',
-        marginTop: compact ? 0 : 4,
-        padding: compact ? '26px 21px 24px' : '34px 38px 34px',
-        borderRadius: compact ? 30 : 38,
-        border: '1px solid rgba(216,168,78,0.36)',
-        background: `radial-gradient(circle at 50% 21%, ${label.color}12, transparent 28%), radial-gradient(circle at 50% 33%, rgba(216,168,78,0.13), transparent 34%), linear-gradient(180deg, rgba(255,255,255,0.026), rgba(255,255,255,0.006) 32%, rgba(255,255,255,0.018)), rgba(7,8,11,0.96)`,
-        boxShadow: '0 28px 78px rgba(0,0,0,0.56), inset 0 1px 0 rgba(255,255,255,0.06), inset 0 0 0 1px rgba(255,223,174,0.035)',
-        animation: 'love-rise .72s ease both',
-      }}
-    >
-      {specks.map(([left, top, opacity], index) => (
-        <span
-          key={`${left}-${top}`}
-          className="love-result-speck"
-          style={{ left, top, opacity, animationDelay: `${index * 180}ms` }}
-          aria-hidden="true"
-        />
-      ))}
-
-      <div className="relative z-10 flex flex-col items-center text-center">
-        <div className="love-result-kicker" style={{ color: '#E8C77D' }}>
-          <span aria-hidden="true" style={{ display: 'block', marginBottom: compact ? 10 : 12, fontSize: compact ? 19 : 22, lineHeight: 1 }}>✶</span>
-          Compatibilité astrale
-        </div>
-        <p
-          style={{
-            margin: compact ? '12px 0 0' : '14px 0 0',
-            color: 'rgba(242,232,216,0.74)',
-            fontFamily: 'Cormorant Garamond, Georgia, serif',
-            fontSize: 'clamp(21px, 5.7vw, 30px)',
-            lineHeight: 1.06,
-            fontWeight: 360,
-          }}
-        >
-          Explorez la signature de votre lien
-        </p>
-
-        <div
-          className="relative w-full"
-          style={{
-            marginTop: compact ? 34 : 50,
-            minHeight: compact ? 164 : 204,
-          }}
-        >
-          <svg
-            aria-hidden="true"
-            className="pointer-events-none absolute left-1/2 top-0 -translate-x-1/2"
-            width="100%"
-            height={compact ? 132 : 158}
-            viewBox="0 0 360 150"
-            preserveAspectRatio="none"
-            style={{
-              maxWidth: compact ? 330 : 500,
-              opacity: 0.92,
-              filter: 'drop-shadow(0 0 12px rgba(216,168,78,0.24))',
-            }}
-          >
-            <defs>
-              <radialGradient id={`love-center-aura-${sign1}-${sign2}`} cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="#F7C46F" stopOpacity="0.45" />
-                <stop offset="46%" stopColor="#D8A84E" stopOpacity="0.12" />
-                <stop offset="100%" stopColor="#D8A84E" stopOpacity="0" />
-              </radialGradient>
-              <linearGradient id={`love-premium-bridge-${sign1}-${sign2}`} x1="62" x2="298" y1="70" y2="70" gradientUnits="userSpaceOnUse">
-                <stop stopColor={firstColor} stopOpacity="0.68" />
-                <stop offset="0.5" stopColor="#E8C77D" stopOpacity="0.88" />
-                <stop offset="1" stopColor={secondColor} stopOpacity="0.72" />
-              </linearGradient>
-              <linearGradient id={`love-premium-bridge-soft-${sign1}-${sign2}`} x1="62" x2="298" y1="70" y2="70" gradientUnits="userSpaceOnUse">
-                <stop stopColor={firstColor} stopOpacity="0.22" />
-                <stop offset="0.5" stopColor="#F2E8D8" stopOpacity="0.34" />
-                <stop offset="1" stopColor={secondColor} stopOpacity="0.22" />
-              </linearGradient>
-            </defs>
-            <circle className="love-result-orbit" cx="180" cy="70" r="47" fill="none" stroke="rgba(216,168,78,0.18)" strokeWidth="0.75" />
-            <circle className="love-result-orbit" cx="180" cy="70" r="30" fill="none" stroke="rgba(216,168,78,0.12)" strokeWidth="0.75" />
-            <circle cx="180" cy="70" r="54" fill={`url(#love-center-aura-${sign1}-${sign2})`} />
-            <path className="love-bridge-line" pathLength={1} d="M64 70 C106 20, 140 20, 180 70 S254 120, 296 70" fill="none" stroke={`url(#love-premium-bridge-${sign1}-${sign2})`} strokeWidth="1.2" strokeLinecap="round" />
-            <path className="love-bridge-line love-bridge-line--soft" pathLength={1} d="M64 70 C106 120, 140 120, 180 70 S254 20, 296 70" fill="none" stroke={`url(#love-premium-bridge-soft-${sign1}-${sign2})`} strokeWidth="1" strokeLinecap="round" />
-            <g className="love-center-star" style={{ transformOrigin: '180px 70px' }}>
-              <path d="M180 47 L185 65 L203 70 L185 75 L180 93 L175 75 L157 70 L175 65 Z" fill="#F7C46F" opacity="0.95" />
-              <circle cx="180" cy="70" r="4.5" fill="#FFF0BF" opacity="0.98" />
-            </g>
-            <circle className="love-bridge-node" cx="64" cy="70" r="2.8" fill={firstColor} style={{ animationDelay: '180ms' }} />
-            <circle className="love-bridge-node" cx="296" cy="70" r="2.8" fill={secondColor} style={{ animationDelay: '320ms' }} />
-          </svg>
-
-          <div className="relative z-10 flex w-full items-start justify-between">
-            {[{ sign: first, color: firstColor, side: 'left' as const }, { sign: second, color: secondColor, side: 'right' as const }].map(({ sign, color, side }) => (
-              <div
-                key={`${side}-${sign.id}`}
-                className={`love-result-sign love-result-sign--${side} flex flex-col items-center`}
-                style={{
-                  width: compact ? '38%' : '34%',
-                  minWidth: 0,
-                  color,
-                }}
-                aria-hidden="true"
-              >
-                <span
-                  className="love-result-medallion love-result-zodiac flex items-center justify-center"
-                  style={{
-                    width: 'clamp(92px, 27vw, 128px)',
-                    height: 'clamp(92px, 27vw, 128px)',
-                    borderRadius: 999,
-                    border: `1px solid ${color}88`,
-                    background: `radial-gradient(circle at 50% 42%, ${color}28, rgba(255,255,255,0.028) 48%, rgba(6,6,8,0.8)), linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.006))`,
-                    color,
-                    fontSize: 'clamp(38px, 11vw, 56px)',
-                    boxShadow: `0 0 32px ${color}22, inset 0 1px 0 rgba(255,255,255,0.08)`,
-                  }}
-                >
-                  <img
-                    src={sign.iconPath}
-                    alt=""
-                    draggable={false}
-                    style={{
-                      width: '82%',
-                      height: '82%',
-                      objectFit: 'contain',
-                      filter: 'brightness(1.06) saturate(1.08) drop-shadow(0 2px 3px rgba(0,0,0,.8))',
-                    }}
-                  />
-                </span>
-                <span
-                  style={{
-                    marginTop: compact ? 14 : 18,
-                    color,
-                    fontFamily: 'Cinzel, Cormorant Garamond, Georgia, serif',
-                    fontSize: 'clamp(10px, 2.8vw, 13px)',
-                    letterSpacing: compact ? 3.2 : 4.4,
-                    textTransform: 'uppercase',
-                    fontWeight: 600,
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  {sign.name}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div style={{ marginTop: compact ? 20 : 28, width: '100%' }}>
-          <div className="flex items-center justify-center gap-4" aria-hidden="true">
-            <span style={{ width: compact ? 20 : 34, height: 1, background: 'linear-gradient(90deg, transparent, rgba(232,199,125,0.7))' }} />
-            <span style={{ color: '#E8C77D', fontSize: compact ? 16 : 19, lineHeight: 1 }}>✦</span>
-            <span style={{ width: compact ? 20 : 34, height: 1, background: 'linear-gradient(90deg, rgba(232,199,125,0.7), transparent)' }} />
-          </div>
-          <h2
-            style={{
-              margin: compact ? '8px auto 0' : '10px auto 0',
-              maxWidth: 470,
-              color: '#F2E8D8',
-              fontFamily: 'Cormorant Garamond, Georgia, serif',
-              fontSize: 'clamp(48px, 13.8vw, 76px)',
-              lineHeight: 0.92,
-              fontWeight: 360,
-              letterSpacing: 0,
-              textShadow: '0 0 22px rgba(242,232,216,0.15), 0 14px 42px rgba(0,0,0,0.5)',
-            }}
-          >
-            {title}
-          </h2>
-          <div className="flex items-center justify-center gap-4" style={{ marginTop: compact ? 16 : 20 }}>
-            <span style={{ width: compact ? 54 : 88, height: 1, background: 'linear-gradient(90deg, transparent, rgba(216,168,78,0.45))' }} />
-            <p
-              style={{
-                margin: 0,
-                color: scoreColor,
-                fontFamily: 'Cormorant Garamond, Georgia, serif',
-                fontSize: 'clamp(42px, 11vw, 56px)',
-                lineHeight: 0.9,
-                fontWeight: 360,
-                textShadow: '0 0 18px rgba(216,168,78,0.22)',
-              }}
-            >
-              {score}<small style={{ fontSize: '0.45em', marginLeft: 6 }}>%</small>
-            </p>
-            <span style={{ width: compact ? 54 : 88, height: 1, background: 'linear-gradient(90deg, rgba(216,168,78,0.45), transparent)' }} />
-          </div>
-          <p
-            style={{
-              margin: compact ? '22px auto 0' : '26px auto 0',
-              maxWidth: 420,
-              color: 'rgba(242,232,216,0.78)',
-              fontFamily: 'Cormorant Garamond, Georgia, serif',
-              fontSize: 'clamp(21px, 5.4vw, 29px)',
-              lineHeight: 1.3,
-              fontWeight: 360,
-            }}
-          >
-            {withoutFinalPeriod(description)}
-          </p>
-        </div>
-
-        <InstantReadingReport
-          key={`${sign1}-${sign2}`}
-          axes={axes}
-          compact={compact}
-          embedded
-        />
-
-        <p
-          style={{
-            margin: compact ? '28px auto 0' : '36px auto 0',
-            maxWidth: 460,
-            color: 'rgba(242,232,216,0.76)',
-            fontFamily: 'Cormorant Garamond, Georgia, serif',
-            fontSize: 'clamp(22px, 5.9vw, 31px)',
-            lineHeight: 1.34,
-            fontWeight: 360,
-          }}
-        >
-          Entre vous, la curiosité, l'élan et la réponse<br />
-          créent une <span style={{ color: '#E8C77D' }}>alchimie vivante</span>
-        </p>
-
-        <div style={{ marginTop: compact ? 30 : 38, width: '100%' }}>
-          <div style={{ width: '46%', height: 1, margin: '0 auto 18px', background: 'linear-gradient(90deg, transparent, rgba(216,168,78,0.4), transparent)' }} />
-          <button
-            type="button"
-            onClick={onOpenFullReport}
-            className="love-result-action love-interactive flex w-full items-center justify-center gap-4"
-            style={{
-              minHeight: 58,
-              padding: compact ? '15px 18px' : '18px 24px',
-              borderRadius: 999,
-              border: '1px solid rgba(232,199,125,0.72)',
-              background: 'linear-gradient(180deg, rgba(63,46,30,0.52), rgba(12,10,9,0.86))',
-              color: '#E8C77D',
-              fontFamily: 'Cinzel, Cormorant Garamond, Georgia, serif',
-              fontSize: 'clamp(10px, 2.8vw, 13px)',
-              fontWeight: 600,
-              letterSpacing: compact ? 2.2 : 3.4,
-              textTransform: 'uppercase',
-              boxShadow: '0 0 26px rgba(216,168,78,0.18), inset 0 1px 0 rgba(255,243,205,0.11)',
-              cursor: 'pointer',
-            }}
-          >
-            <Sparkles size={compact ? 16 : 20} strokeWidth={1.25} />
-            Découvrir la lecture complète
-          </button>
-        </div>
-      </div>
-    </section>
   );
 }
 
@@ -2639,42 +2171,6 @@ function SignCard({ sign, label, onClick, quiet = false }: {
         </>
       )}
     </button>
-  );
-}
-
-function RelationshipKeyCard({ insight, compact }: { insight: RelationshipKey; compact: boolean }) {
-  return (
-    <section
-      className="w-full flex-shrink-0"
-      style={{
-        position: 'relative',
-        overflow: 'hidden',
-        marginTop: compact ? 12 : 14,
-        padding: compact ? '15px 15px 16px' : '17px 17px 18px',
-        borderRadius: 14,
-        border: '1px solid rgba(229,196,164,0.25)',
-        background: 'radial-gradient(circle at 0% 0%, rgba(229,196,164,0.12), transparent 40%), linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01)), rgba(8,6,9,0.88)',
-        boxShadow: '0 16px 38px rgba(0,0,0,0.26), inset 0 1px 0 rgba(255,255,255,0.06)',
-      }}
-    >
-      <div className="absolute left-1/2 top-0 h-px -translate-x-1/2" style={{ width: '38%', background: 'linear-gradient(90deg, transparent, rgba(238,207,176,0.62), transparent)' }} />
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2" style={{ color: '#DCBF9B', fontSize: 8.4, letterSpacing: 2.4, textTransform: 'uppercase', fontWeight: 800 }}>
-          <Sparkles size={10} strokeWidth={1.45} />
-          Clé du lien
-        </div>
-        <span style={{ width: 28, height: 1, background: 'rgba(229,196,164,0.22)' }} />
-      </div>
-      <h3 style={{ margin: '8px 0 0', color: '#FFF6EF', fontFamily: 'Cormorant Garamond, Georgia, serif', fontSize: compact ? 20 : 22, lineHeight: 1.06, fontWeight: 550 }}>
-        {insight.title}
-      </h3>
-      <p style={{ margin: '8px 0 0', color: '#EDE4E6', fontSize: compact ? 12.5 : 13.1, lineHeight: 1.48, fontWeight: 450, textShadow: '0 1px 2px rgba(0,0,0,0.35)' }}>
-        {insight.text}
-      </p>
-      <p style={{ margin: '10px 0 0', paddingTop: 10, borderTop: '1px solid rgba(229,196,164,0.14)', color: '#EBC69F', fontSize: compact ? 11.8 : 12.4, lineHeight: 1.45, fontWeight: 520, fontStyle: 'italic' }}>
-        {insight.practice}
-      </p>
-    </section>
   );
 }
 
@@ -2941,171 +2437,6 @@ function CompatibilityScoreStar({ axes, score, compact }: { axes: InstantReading
         </g>
         <circle className="love-score-star-core" cx={cx} cy={cy - 22} r="1.6" fill="#FFF8EF" aria-hidden="true" />
       </svg>
-    </section>
-  );
-}
-
-function InstantReadingReport({ axes, compact, embedded = false }: { axes: InstantReadingAxis[]; compact: boolean; embedded?: boolean }) {
-  const revealKey = axes.map(axis => axis.score).join('-');
-
-  useEffect(() => {
-    const timers = [0, 1, 2].map(index => window.setTimeout(() => {
-      navigator.vibrate?.(index === 2 ? 16 : 10);
-    }, 260 + index * 230));
-    return () => timers.forEach(timer => window.clearTimeout(timer));
-  }, [revealKey]);
-
-  if (false && embedded) {
-    return (
-      <section
-        className="love-instant-reading w-full"
-        style={{
-          boxSizing: 'border-box',
-          position: 'relative',
-          overflow: 'hidden',
-          flexShrink: 0,
-          marginTop: compact ? 30 : 42,
-          padding: compact ? '11px 10px' : '16px 15px',
-          borderRadius: compact ? 24 : 26,
-          border: '1px solid rgba(216,168,78,0.36)',
-          background: 'linear-gradient(180deg, rgba(255,255,255,0.024), rgba(255,255,255,0.006)), rgba(24,18,17,0.82)',
-          boxShadow: '0 20px 52px rgba(0,0,0,0.34), inset 0 1px 0 rgba(255,255,255,0.045)',
-        }}
-      >
-        <div className="absolute left-1/2 top-0 h-px -translate-x-1/2" style={{ width: '72%', background: 'linear-gradient(90deg, transparent, rgba(216,168,78,0.56), transparent)' }} />
-        <div className="grid w-full">
-          {axes.map((axis, index) => {
-            const AxisIcon = axis.id === 'emotion' ? Heart : Sparkles;
-            const displayColor = axis.id === 'emotion' ? '#D98FA2' : axis.id === 'desire' ? '#E8B65D' : '#F2E8D8';
-            return (
-              <div
-                key={axis.id}
-                className="love-instant-row"
-                style={{
-                  position: 'relative',
-                  display: 'grid',
-                  gridTemplateColumns: compact ? '42px minmax(0,1fr) minmax(70px, auto)' : '54px minmax(0,1fr) minmax(112px, auto)',
-                  gap: compact ? 10 : 15,
-                  alignItems: 'center',
-                  width: '100%',
-                  minWidth: 0,
-                  padding: compact ? '12px 8px' : '14px 12px',
-                  borderTop: index === 0 ? 'none' : '1px solid rgba(216,168,78,0.12)',
-                  animation: `love-rise .5s ${index * 130}ms ease both`,
-                }}
-              >
-                <span
-                  className="flex items-center justify-center"
-                  style={{
-                    width: compact ? 38 : 48,
-                    height: compact ? 38 : 48,
-                    borderRadius: 999,
-                    border: `1px solid ${displayColor}52`,
-                    color: displayColor,
-                    background: `radial-gradient(circle, ${displayColor}24, rgba(255,255,255,0.02) 58%, rgba(6,6,8,0.78))`,
-                    boxShadow: `0 0 18px ${displayColor}1F, inset 0 1px 0 rgba(255,255,255,0.08)`,
-                  }}
-                  aria-hidden="true"
-                >
-                  <AxisIcon size={compact ? 19 : 23} strokeWidth={1.35} fill={axis.id === 'emotion' ? `${displayColor}44` : 'none'} />
-                </span>
-                <div style={{ minWidth: 0, textAlign: 'left' }}>
-                  <div style={{ color: displayColor, fontFamily: 'Cinzel, Cormorant Garamond, Georgia, serif', fontSize: compact ? 10 : 12, letterSpacing: compact ? 2.8 : 4.4, textTransform: 'uppercase', fontWeight: 600, lineHeight: 1.1 }}>
-                    {axis.label}
-                  </div>
-                  <div style={{ marginTop: compact ? 5 : 7, color: 'rgba(242,232,216,0.74)', fontFamily: 'Cormorant Garamond, Georgia, serif', fontSize: compact ? 16 : 20, lineHeight: 1.08, fontWeight: 360 }}>
-                    {axis.detail}
-                  </div>
-                </div>
-                <div
-                  style={{
-                    minWidth: 0,
-                    paddingLeft: compact ? 8 : 17,
-                    borderLeft: '1px dotted rgba(216,168,78,0.28)',
-                    color: displayColor,
-                    fontFamily: 'Cormorant Garamond, Georgia, serif',
-                    fontSize: compact ? 17 : 22,
-                    lineHeight: 1.05,
-                    fontWeight: 420,
-                    textAlign: 'right',
-                    overflowWrap: 'anywhere',
-                    textShadow: `0 0 15px ${displayColor}26`,
-                  }}
-                >
-                  {axis.verdict}
-                  <span aria-hidden="true" style={{ marginLeft: compact ? 6 : 10, color: '#E8C77D', fontSize: compact ? 12 : 15 }}>✦</span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-    );
-  }
-
-  return (
-    <section
-      className="w-full"
-      style={{
-        boxSizing: 'border-box',
-        position: 'relative',
-        overflow: 'hidden',
-        flexShrink: 0,
-        marginTop: embedded ? (compact ? 14 : 16) : (compact ? 10 : 12),
-        padding: embedded ? '0' : (compact ? '13px 14px 12px' : '14px 16px 13px'),
-        border: embedded ? 'none' : '1px solid rgba(229,196,164,0.2)',
-        borderRadius: embedded ? 0 : 14,
-        background: embedded ? 'transparent' : 'linear-gradient(145deg, rgba(255,255,255,0.048), rgba(255,255,255,0.01)), rgba(8,6,9,0.86)',
-        boxShadow: embedded ? 'none' : '0 16px 38px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.055)',
-      }}
-    >
-      {!embedded && (
-        <div className="absolute left-1/2 top-0 h-px -translate-x-1/2" style={{ width: '48%', background: 'linear-gradient(90deg, transparent, rgba(238,207,176,0.55), transparent)' }} />
-      )}
-      <div className="grid w-full" style={{ gap: compact ? 10 : 11 }}>
-        {axes.map((axis, index) => {
-          const filledSegments = getGaugeSegments(axis.score);
-
-          return (
-            <div
-              key={axis.id}
-              style={{
-                width: '100%',
-                animation: `love-rise .42s ${index * 130}ms ease both`,
-              }}
-            >
-              <div className="flex items-center justify-between gap-3">
-                <span style={{ color: '#EEE3E1', fontSize: compact ? 11.4 : 12.1, letterSpacing: 1.7, textTransform: 'uppercase', fontWeight: 850, lineHeight: 1.1 }}>
-                  {axis.label}
-                </span>
-                <span style={{ color: axis.color, fontSize: compact ? 11.2 : 12, fontWeight: 760, lineHeight: 1, textShadow: `0 0 10px ${axis.color}42` }}>
-                  {axis.score}%
-                </span>
-              </div>
-              <div
-                className="love-axis-segments"
-                role="meter"
-                aria-label={`${axis.label} : ${axis.verdict}`}
-                aria-valuemin={0}
-                aria-valuemax={LOVE_GAUGE_SEGMENTS}
-                aria-valuenow={filledSegments}
-              >
-                {Array.from({ length: LOVE_GAUGE_SEGMENTS }).map((_, segmentIndex) => (
-                  <span
-                    key={segmentIndex}
-                    className={`love-axis-segment ${segmentIndex < filledSegments ? 'is-filled' : ''}`}
-                    style={{
-                      '--love-axis-color': axis.color,
-                      '--love-axis-delay': `${780 + index * 520 + segmentIndex * 170}ms`,
-                    } as CSSProperties}
-                    aria-hidden="true"
-                  />
-                ))}
-              </div>
-            </div>
-          );
-        })}
-      </div>
     </section>
   );
 }

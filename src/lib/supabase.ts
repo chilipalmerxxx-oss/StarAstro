@@ -8,7 +8,7 @@ const hasSupabaseConfig = Boolean(supabaseUrl && supabaseAnonKey);
 
 if (!hasSupabaseConfig) {
   console.error(
-    '[Nightstar] Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY. Chart save/load will be disabled until env vars are set on Vercel.',
+    '[Night One] Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY. Chart save/load will be disabled until env vars are set on Vercel.',
   );
 }
 

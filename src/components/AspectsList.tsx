@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { Aspect } from "../services/astrology";
 import { PLANET_INFO, getAspectInterpretation } from "../data/interpretations";
@@ -83,7 +83,7 @@ export default function AspectsList({ aspects }: AspectsListProps) {
             <p className="text-sm text-slate-600 italic">
               Ces aspects ont besoin de plus de temps pour se stabiliser. Ce
               sont principalement l'effet des planètes lentes sur les planètes
-              plus rapides dans votre thème.
+              plus rapides dans ton thème.
             </p>
           </div>
         </div>
@@ -95,8 +95,8 @@ export default function AspectsList({ aspects }: AspectsListProps) {
         </h2>
         <p className="text-sm text-slate-600 mb-4">
           Les aspects, ou connexions, sont les liens qui relient les planètes
-          dans votre carte natale. Ils décrivent des accords harmonieux entre
-          les différentes énergies planétaires dans votre carte natale ou
+          dans ta carte natale. Ils décrivent des accords harmonieux entre
+          les différentes énergies planétaires dans ta carte natale ou
           identifient les formes de conflit qui nécessitent des compromis et un
           travail personnel pour être surmontés.
         </p>
@@ -184,7 +184,7 @@ export default function AspectsList({ aspects }: AspectsListProps) {
         </div>
 
         <p className="text-sm text-slate-500 mt-4 text-center italic">
-          Veuillez noter que certaines interprétations d'ici Zet Astrologie dans
+          Note que certaines interprétations d'ici Zet Astrologie dans
           cette partie peuvent ne pas apparaître si l'aspect n'était pas assez
           pertinent.
         </p>

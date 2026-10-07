@@ -112,7 +112,7 @@ export default function FriendsPage({ onBack }: FriendsPageProps) {
         <section className="friends-page__empty">
           <h2 className="friends-page__empty-title">Ajoute quelqu’un</h2>
           <p className="friends-page__empty-text">
-            Comparez vos thèmes et découvrez si vous êtes faits pour vous entendre.
+            Compare vos thèmes et découvre si vous êtes faits pour vous entendre.
           </p>
           <button type="button" className="friends-page__cta" onClick={openSheet}>
             <span className="friends-page__cta-aura" aria-hidden="true" />

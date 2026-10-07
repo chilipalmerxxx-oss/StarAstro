@@ -3,13 +3,17 @@ import { createRoot } from 'react-dom/client';
 import { registerSW } from 'virtual:pwa-register';
 import App from './App.tsx';
 import ThemeToggle from './components/ThemeToggle.tsx';
+import ChartRecalcNotice from './components/ChartRecalcNotice.tsx';
 import './index.css';
+import './components/AstralProfile.css';
 
 const rootEl = document.getElementById('root');
 
 function showBootError(error: unknown) {
-  const message = error instanceof Error ? error.message : String(error);
-  console.error('[Nightstar boot error]', error);
+  // Échappé : le message est injecté via innerHTML ci-dessous.
+  const message = (error instanceof Error ? error.message : String(error))
+    .replace(/[&<>"']/g, (char) => `&#${char.charCodeAt(0)};`);
+  console.error('[Night One boot error]', error);
   if (!rootEl) return;
   rootEl.innerHTML = `
     <div style="min-height:100svh;display:grid;place-items:center;padding:24px;background:#050608;color:#f4efe6;font-family:system-ui,sans-serif;text-align:center;">
@@ -63,6 +67,7 @@ try {
     <StrictMode>
       <ThemeToggle />
       <App />
+      <ChartRecalcNotice />
     </StrictMode>
   );
 } catch (error) {

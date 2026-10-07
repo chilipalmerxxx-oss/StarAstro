@@ -58,6 +58,8 @@ export default defineConfig({
         globIgnores: ['**/index.html', '**/*.map'],
         navigateFallback: null,
         cleanupOutdatedCaches: true,
+        // Push + notificationclick handlers for the daily challenge reminder.
+        importScripts: ['push-sw.js'],
         clientsClaim: true,
         skipWaiting: true,
         runtimeCaching: [

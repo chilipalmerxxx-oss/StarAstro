@@ -1,0 +1,4891 @@
+/*  You page (AstralProfile) — styles moved out of index.css. Loaded after index.css from main.tsx.  */
+
+@keyframes astral-premium-seal-turn {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes astral-section-card-reveal {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes astral-accordion-open {
+  to {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+}
+
+@keyframes astral-accordion-content-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes astral-section-symbol-aura {
+  0%, 100% { opacity: 0.42; transform: translate(-50%, -50%) scale(0.92); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.12); }
+}
+
+@keyframes astral-section-symbol-lift {
+  0%, 100% { transform: translateY(-1px) scale(1.1); }
+  50% { transform: translateY(-2px) scale(1.17); }
+}
+
+@keyframes you2-halo-breathe {
+  0%, 100% {
+    opacity: 0.72;
+    transform: translate3d(var(--you2-halo-x), var(--you2-halo-y), -12px) scale(0.98);
+  }
+  50% {
+    opacity: 0.96;
+    transform: translate3d(var(--you2-halo-x), var(--you2-halo-y), -12px) scale(1.035);
+  }
+}
+
+@keyframes you2-star-twinkle {
+  0%, 100% { opacity: 0.16; }
+  44% { opacity: 0.26; }
+  61% { opacity: 0.2; }
+}
+
+@keyframes you2-panel-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes you-wheel-insight-in {
+  from { opacity: 0; transform: translateY(16px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes you-star-classic-twinkle {
+  0%, 100% { opacity: 0.34; }
+  48% { opacity: 0.82; }
+  64% { opacity: 0.54; }
+}
+
+@keyframes you-planet-ring-turn {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes you-wheel-signal-in {
+  to { transform: scaleY(1); }
+}
+
+@keyframes you-wheel-signal-dot {
+  to { opacity: 1; }
+}
+.astral-profile {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 48px 24px 120px;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  color: #ffffff;
+  background: #1d1f28;
+  animation: void-slide-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.astral-profile-wheel-page {
+  height: calc(100svh - 36px - max(8px, env(safe-area-inset-bottom)));
+  min-height: 620px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 10px 0;
+  overflow: hidden;
+  background: #050608;
+}
+.astral-profile-wheel-page .zodiac-wheel-container {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.astral-profile-wheel-page .natal-identity-panel {
+  flex: 0 0 auto;
+  margin-bottom: 0;
+}
+.astral-profile-wheel-page .natal-chart-card {
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.astral-profile-wheel-page .natal-chart-wheel-stage,
+.astral-profile-wheel-page .natal-chart-wheel-frame {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+.astral-profile-wheel-page .natal-chart-svg {
+  width: min(100vw, calc((100svh - 36px) * 1.06), 1280px) !important;
+  max-width: none;
+}
+@media (max-width: 768px) {
+.astral-profile-wheel-page {
+    height: calc(100svh - 36px - max(8px, env(safe-area-inset-bottom)));
+    min-height: 0;
+    padding: 8px 0;
+  }
+.astral-profile-wheel-page .natal-chart-wheel-frame {
+    transform: translateY(12px);
+  }
+}
+.astral-profile__pills {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 40px;
+}
+.astral-profile__inline-section {
+  width: 100%;
+}
+.astral-profile__accordion-card {
+  overflow: hidden;
+  border: 1px solid rgba(232, 215, 168, 0.12);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.044), rgba(255, 255, 255, 0.012)),
+    rgba(9, 10, 13, 0.72);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.055),
+    0 10px 24px rgba(0, 0, 0, 0.15);
+  transition:
+    border-color 0.25s ease,
+    background 0.25s ease,
+    box-shadow 0.25s ease;
+}
+.astral-profile__accordion-card--active {
+  border-color: rgba(255, 184, 107, 0.5);
+  background:
+    linear-gradient(180deg, rgba(255, 184, 107, 0.11), rgba(255, 255, 255, 0.02)),
+    rgba(12, 12, 15, 0.88);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.09),
+    inset 3px 0 0 var(--aspect-accent, rgba(255, 184, 107, 0.72)),
+    0 14px 30px rgba(0, 0, 0, 0.2),
+    0 0 24px var(--aspect-glow, rgba(255, 184, 107, 0.09));
+}
+.astral-profile__accordion-card > .astral-profile__sign-pill,
+.astral-profile__accordion-card > .astral-profile__aspect-item {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.astral-profile__accordion-card > .astral-profile__sign-pill:hover,
+.astral-profile__accordion-card > .astral-profile__aspect-item:hover {
+  transform: none;
+}
+.astral-profile__sign-pill {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 7px 10px;
+  font-size: 10px;
+  font-weight: 600;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  color: rgba(232, 236, 245, 0.78);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.052), rgba(255, 255, 255, 0.018)),
+    rgba(9, 10, 13, 0.72);
+  border: 1px solid rgba(232, 215, 168, 0.11);
+  border-radius: 8px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 -18px 28px rgba(0, 0, 0, 0.16),
+    0 10px 24px rgba(0, 0, 0, 0.16);
+  backdrop-filter: blur(12px) saturate(1.06);
+  -webkit-backdrop-filter: blur(12px) saturate(1.06);
+  cursor: pointer;
+  overflow: hidden;
+  isolation: isolate;
+  transition: all 0.25s ease;
+  width: 100%;
+  justify-content: flex-start;
+}
+.astral-profile__sign-pill::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(110deg, transparent 0%, rgba(255, 255, 255, 0.06) 42%, transparent 64%),
+    radial-gradient(circle at 12% 0%, rgba(255, 184, 107, 0.12), transparent 38%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.astral-profile__sign-pill > * {
+  position: relative;
+  z-index: 1;
+}
+.astral-profile__sign-pill:hover {
+  color: rgba(255, 246, 230, 0.96);
+  border-color: rgba(255, 184, 107, 0.34);
+  background:
+    linear-gradient(180deg, rgba(255, 184, 107, 0.085), rgba(255, 255, 255, 0.024)),
+    rgba(12, 12, 15, 0.82);
+  transform: translateY(-1px);
+}
+.astral-profile__sign-pill:hover::before,
+.astral-profile__sign-pill--active::before {
+  opacity: 1;
+}
+.astral-profile__sign-pill--active {
+  color: #FFE6AD;
+  border-color: rgba(255, 184, 107, 0.48);
+  background:
+    linear-gradient(180deg, rgba(255, 184, 107, 0.13), rgba(255, 255, 255, 0.03)),
+    rgba(12, 12, 15, 0.9);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.09),
+    inset 3px 0 0 rgba(255, 184, 107, 0.74),
+    0 14px 30px rgba(0, 0, 0, 0.22),
+    0 0 24px rgba(255, 184, 107, 0.09),
+    0 0 0 1px rgba(255, 235, 198, 0.045);
+}
+.astral-profile__pill-glyph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  color: var(--planet-accent, #f6f1e8);
+  background:
+    radial-gradient(circle at 34% 24%, rgba(255, 255, 255, 0.16), transparent 34%),
+    linear-gradient(145deg, rgba(31, 30, 33, 0.98), rgba(8, 8, 10, 0.98));
+  border: 1px solid var(--planet-ring, rgba(246, 241, 232, 0.18));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -8px 14px rgba(0, 0, 0, 0.18),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.035),
+    0 7px 16px rgba(0, 0, 0, 0.18),
+    0 0 14px var(--planet-glow, rgba(246, 241, 232, 0.08)),
+    0 0 0 3px rgba(255, 255, 255, 0.018);
+  font-family: "Times New Roman", "Cambria Math", "DejaVu Sans", serif;
+  font-size: 14px;
+  line-height: 1;
+  opacity: 1;
+  text-shadow: 0 0 10px var(--planet-glow, rgba(246, 241, 232, 0.12));
+}
+.astral-profile__pill-sign {
+  margin-left: 2px;
+  padding: 2px 6px;
+  color: rgba(255, 255, 255, 0.58);
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  font-size: 10px;
+  letter-spacing: 0.4px;
+}
+.astral-profile__row-chevron {
+  flex: 0 0 auto;
+  margin-left: auto;
+  color: rgba(255, 255, 255, 0.52);
+  transition:
+    color 0.22s ease,
+    transform 0.22s ease;
+}
+.astral-profile__sign-pill:hover .astral-profile__row-chevron,
+.astral-profile__sign-pill--active .astral-profile__row-chevron,
+.astral-profile__aspect-item:hover .astral-profile__row-chevron,
+.astral-profile__aspect-item--active .astral-profile__row-chevron {
+  color: rgba(255, 184, 107, 0.92);
+}
+.astral-profile__row-chevron--open {
+  transform: rotate(180deg);
+}
+.astral-profile__collapse-bottom {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  margin: 4px auto 10px;
+  color: rgba(255, 255, 255, 0.62);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 184, 107, 0.12), transparent 58%),
+    rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 999px;
+  cursor: pointer;
+  transform: rotate(180deg);
+  transition:
+    color 0.22s ease,
+    border-color 0.22s ease,
+    background 0.22s ease;
+}
+.astral-profile__collapse-bottom:hover {
+  color: rgba(255, 184, 107, 0.94);
+  border-color: rgba(255, 184, 107, 0.24);
+  background: rgba(255, 184, 107, 0.07);
+}
+.astral-profile__section-switch {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  width: 100%;
+  margin: 24px 0 0;
+  padding: 7px;
+  border: 1px solid rgba(232, 215, 168, 0.12);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.052), rgba(255, 255, 255, 0.018)),
+    rgba(7, 8, 11, 0.82);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.34),
+    0 18px 44px rgba(0, 0, 0, 0.24),
+    0 0 0 1px rgba(255, 255, 255, 0.018);
+  backdrop-filter: blur(16px) saturate(1.08);
+  -webkit-backdrop-filter: blur(16px) saturate(1.08);
+  overflow: hidden;
+}
+.astral-profile__section-switch::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: 7px;
+  background:
+    radial-gradient(circle at 50% -10%, rgba(255, 230, 173, 0.12), transparent 44%),
+    linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.035), transparent);
+  pointer-events: none;
+}
+.astral-profile__section-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 76px;
+  padding: 14px 9px 12px;
+  color: rgba(210, 216, 230, 0.74);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.006)),
+    rgba(255, 255, 255, 0.012);
+  border: 1px solid rgba(255, 255, 255, 0.055);
+  border-radius: 7px;
+  overflow: hidden;
+  cursor: pointer;
+  transition:
+    color 0.24s ease,
+    background 0.24s ease,
+    border-color 0.24s ease,
+    box-shadow 0.24s ease,
+    transform 0.24s ease;
+}
+.astral-profile__section-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 230, 173, 0.12), transparent 46%),
+    linear-gradient(115deg, transparent 0%, rgba(255, 255, 255, 0.07) 45%, transparent 68%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.24s ease;
+}
+.astral-profile__section-card::after {
+  content: "";
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  bottom: 8px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+  opacity: 0;
+  transition: opacity 0.24s ease;
+}
+.astral-profile__section-card:hover:not(:disabled) {
+  color: rgba(255, 255, 255, 0.94);
+  border-color: rgba(255, 184, 107, 0.26);
+  background:
+    linear-gradient(180deg, rgba(255, 184, 107, 0.075), rgba(255, 255, 255, 0.016)),
+    rgba(255, 255, 255, 0.018);
+  transform: translateY(-1px);
+}
+.astral-profile__section-card:hover:not(:disabled)::before,
+.astral-profile__section-card--active::before {
+  opacity: 1;
+}
+.astral-profile__section-card--active {
+  color: #ffffff;
+  border-color: rgba(255, 184, 107, 0.44);
+  background:
+    linear-gradient(180deg, rgba(255, 184, 107, 0.18), rgba(255, 255, 255, 0.028)),
+    rgba(17, 15, 14, 0.74);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -2px 0 rgba(255, 184, 107, 0.74),
+    0 10px 24px rgba(0, 0, 0, 0.22),
+    0 0 22px rgba(255, 184, 107, 0.08);
+}
+.astral-profile__section-card--active::after {
+  opacity: 1;
+}
+.astral-profile__section-card:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+.astral-profile__section-card-title {
+  position: relative;
+  z-index: 1;
+  color: rgba(255, 255, 255, 0.94);
+  font-size: 15px;
+  line-height: 1;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+}
+.astral-profile__planet-mark {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+}
+.astral-profile__saturn-mark {
+  width: 54px;
+  height: 28px;
+  overflow: visible;
+  filter: drop-shadow(0 0 8px rgba(255, 184, 107, 0.16));
+}
+.astral-profile__saturn-body {
+  fill: rgba(12, 12, 15, 0.96);
+  stroke: rgba(255, 230, 173, 0.5);
+  stroke-width: 1.05;
+  filter:
+    drop-shadow(0 0 7px rgba(255, 184, 107, 0.42))
+    drop-shadow(0 0 12px rgba(255, 232, 190, 0.14));
+}
+.astral-profile__link-mark {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+}
+.astral-profile__mini-wheel {
+  width: 54px;
+  height: 28px;
+  overflow: visible;
+  filter: drop-shadow(0 0 8px rgba(255, 184, 107, 0.16));
+}
+.astral-profile__mini-wheel-ring {
+  fill: none;
+  stroke: rgba(255, 230, 173, 0.44);
+  stroke-width: 1.15;
+}
+.astral-profile__mini-wheel-chord {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.7);
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 5px rgba(255, 184, 107, 0.26));
+}
+.astral-profile__mini-wheel-point {
+  fill: rgba(255, 232, 190, 0.92);
+  stroke: rgba(10, 10, 12, 0.92);
+  stroke-width: 1.1;
+  filter: drop-shadow(0 0 5px rgba(255, 184, 107, 0.36));
+}
+.astral-profile__drawer {
+  width: 100%;
+  padding: 20px 0 0;
+}
+.astral-profile__drawer .astral-profile__pills,
+.astral-profile__drawer .astral-profile__aspects-list {
+  margin-bottom: 24px;
+}
+.astral-profile__aspects-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.astral-profile__aspect-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 42px;
+  padding: 7px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  color: rgba(232, 236, 245, 0.76);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.046), rgba(255, 255, 255, 0.014)),
+    rgba(9, 10, 13, 0.7);
+  border: 1px solid rgba(166, 176, 195, 0.1);
+  border-radius: 8px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.055),
+    inset 0 -18px 28px rgba(0, 0, 0, 0.14),
+    0 10px 24px rgba(0, 0, 0, 0.14);
+  backdrop-filter: blur(12px) saturate(1.04);
+  -webkit-backdrop-filter: blur(12px) saturate(1.04);
+  transition: all 0.25s ease;
+  overflow: hidden;
+  isolation: isolate;
+  cursor: pointer;
+}
+.astral-profile__aspect-item::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 9% 0%, var(--aspect-glow, rgba(255, 184, 107, 0.11)), transparent 38%),
+    linear-gradient(110deg, transparent 0%, rgba(255, 255, 255, 0.055) 43%, transparent 66%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.astral-profile__aspect-item > * {
+  position: relative;
+  z-index: 1;
+}
+.astral-profile__aspect-item:hover {
+  border-color: rgba(255, 184, 107, 0.3);
+  background:
+    linear-gradient(180deg, rgba(255, 184, 107, 0.078), rgba(255, 255, 255, 0.018)),
+    rgba(12, 12, 15, 0.8);
+  color: rgba(255, 246, 230, 0.96);
+  transform: translateY(-1px);
+}
+.astral-profile__aspect-item:hover::before,
+.astral-profile__aspect-item--active::before {
+  opacity: 1;
+}
+.astral-profile__aspect-item--active {
+  color: #FFE6AD;
+  border-color: rgba(255, 184, 107, 0.52);
+  background:
+    linear-gradient(180deg, rgba(255, 184, 107, 0.13), rgba(255, 255, 255, 0.03)),
+    rgba(12, 12, 15, 0.9);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.09),
+    inset 3px 0 0 var(--aspect-accent, rgba(255, 184, 107, 0.74)),
+    0 14px 30px rgba(0, 0, 0, 0.2),
+    0 0 24px var(--aspect-glow, rgba(255, 184, 107, 0.09)),
+    0 0 0 1px rgba(255, 235, 198, 0.04);
+}
+.astral-profile__aspect-glyph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 21px;
+  width: 21px;
+  height: 21px;
+  border-radius: 999px;
+  color: var(--planet-accent, #f6f1e8);
+  background:
+    radial-gradient(circle at 34% 24%, rgba(255, 255, 255, 0.14), transparent 34%),
+    linear-gradient(145deg, rgba(29, 28, 31, 0.96), rgba(7, 7, 10, 0.98));
+  border: 1px solid var(--planet-ring, rgba(246, 241, 232, 0.16));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.03),
+    0 5px 12px rgba(0, 0, 0, 0.16),
+    0 0 12px var(--planet-glow, rgba(246, 241, 232, 0.07)),
+    0 0 0 3px rgba(255, 255, 255, 0.014);
+  font-family: "Times New Roman", "Cambria Math", "DejaVu Sans", serif;
+  font-size: 12px;
+  line-height: 1;
+  opacity: 1;
+  flex-shrink: 0;
+  text-shadow: 0 0 9px var(--planet-glow, rgba(246, 241, 232, 0.1));
+}
+.astral-profile__aspect-planet {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  line-height: 1;
+  opacity: 0.8;
+  white-space: nowrap;
+}
+.astral-profile__aspect-symbol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  min-width: 20px;
+  height: 24px;
+  color: var(--aspect-accent, #f6f1e8);
+  font-family: "Times New Roman", "Cambria Math", "DejaVu Sans", serif;
+  font-size: 18px;
+  line-height: 1;
+  opacity: 0.9;
+  flex-shrink: 0;
+  text-shadow: 0 0 10px var(--aspect-glow, rgba(246, 241, 232, 0.14));
+}
+.astral-profile__aspect-symbol-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
+  line-height: 1;
+}
+.astral-profile__aspect-symbol.aspect-trigone {
+  font-size: 14px;
+}
+.astral-profile__aspect-symbol.aspect-carre .astral-profile__aspect-symbol-mark {
+  transform: translateY(-2px);
+}
+.astral-profile__aspect-item:hover.aspect-conjonction-border { border-color: rgba(249, 115, 22, 0.4); background: rgba(249, 115, 22, 0.04); }
+.astral-profile__aspect-item:hover.aspect-trigone-border { border-color: rgba(16, 185, 129, 0.4); background: rgba(16, 185, 129, 0.04); }
+.astral-profile__aspect-item:hover.aspect-carre-border { border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.04); }
+.astral-profile__aspect-item:hover.aspect-opposition-border { border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.04); }
+.astral-profile__aspect-item:hover.aspect-sextile-border { border-color: rgba(59, 130, 246, 0.4); background: rgba(59, 130, 246, 0.04); }
+.astral-profile__content {
+  animation: void-slide-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  margin-bottom: 48px;
+}
+.astral-profile__content--inline {
+  width: min(100%, 560px);
+  margin: 10px auto 18px;
+  padding: 24px 18px 8px;
+  scroll-margin-top: 14px;
+  overflow-anchor: none;
+  border-radius: 14px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 184, 107, 0.08), transparent 42%),
+    rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-sizing: border-box;
+  text-align: center;
+}
+.astral-profile__content--accordion {
+  width: 100%;
+  margin: 0;
+  padding: 20px 14px 10px;
+  scroll-margin-top: 14px;
+  overflow-anchor: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 184, 107, 0.055), transparent 44%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.018), transparent 34%);
+  box-sizing: border-box;
+  text-align: center;
+}
+.astral-profile__content--accordion .astral-profile__title {
+  font-size: 23px;
+  line-height: 1.16;
+}
+.astral-profile__content--accordion .astral-profile__sign-subtitle {
+  margin-bottom: 22px;
+}
+.astral-profile__content--drawer {
+  width: min(100%, 580px);
+  margin: 0 auto 44px;
+  padding: 26px 18px 8px;
+  scroll-margin-top: 14px;
+  overflow-anchor: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 184, 107, 0.06), transparent 42%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.018), transparent 34%);
+  box-sizing: border-box;
+  text-align: center;
+}
+.astral-profile__title {
+  font-size: 28px;
+  font-weight: 400;
+  color: #ffffff;
+  text-align: center;
+  margin: 0 0 4px;
+  letter-spacing: 1px;
+}
+.astral-profile__sign-subtitle {
+  font-size: 14px;
+  color: #A6B0C3;
+  text-align: center;
+  margin: 0 0 32px;
+  letter-spacing: 2px;
+}
+.astral-profile__jupiter-glyph {
+  display: block;
+  width: 10px;
+  height: 11px;
+  overflow: visible;
+}
+.astral-profile__jupiter-glyph path,
+.astral-profile__jupiter-glyph line {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.astral-profile__aspect-glyph .astral-profile__jupiter-glyph {
+  width: 9px;
+  height: 10px;
+}
+.astral-profile__orb-display {
+  display: block;
+  font-size: 12px;
+  margin-top: 4px;
+  letter-spacing: 1px;
+  opacity: 0.7;
+}
+.astral-profile__paragraph {
+  font-size: 17px;
+  line-height: 1.85;
+  color: rgba(255, 255, 255, 0.78);
+  margin: 0 0 20px;
+  text-align: justify;
+  hyphens: auto;
+}
+.astral-profile__paragraph:first-of-type::first-letter {
+  font-size: 48px;
+  float: left;
+  line-height: 1;
+  margin-right: 8px;
+  margin-top: 4px;
+  color: #FFB86B;
+  font-weight: 300;
+}
+.astral-profile__premium-cta {
+  position: relative;
+  width: min(100%, 360px);
+  margin: 26px auto 18px;
+  padding: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 214, 153, 0.24);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 214, 153, 0.14), transparent 58%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.018)),
+    rgba(7, 8, 11, 0.92);
+  box-shadow:
+    0 22px 56px rgba(0, 0, 0, 0.32),
+    0 0 34px rgba(255, 184, 107, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+.astral-profile__premium-cta-shine {
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 230, 173, 0.78), transparent);
+  pointer-events: none;
+}
+.astral-profile__premium-cta-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin-bottom: 10px;
+  color: #FFE6AD;
+  border: 1px solid rgba(255, 230, 173, 0.32);
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 35% 22%, rgba(255, 255, 255, 0.22), transparent 34%),
+    rgba(255, 184, 107, 0.08);
+  box-shadow: 0 0 24px rgba(255, 184, 107, 0.16);
+}
+.astral-profile__premium-cta-copy {
+  position: relative;
+  z-index: 1;
+}
+.astral-profile__premium-cta-kicker {
+  display: block;
+  margin-bottom: 6px;
+  color: rgba(255, 213, 153, 0.78);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2.7px;
+  text-transform: uppercase;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+.astral-profile__premium-cta-title {
+  margin: 0;
+  color: #FFFFFF;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 22px;
+  line-height: 1.02;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+.astral-profile__premium-cta-text {
+  margin: 9px 0 0;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 13px;
+  line-height: 1.5;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+.astral-profile__premium-cta-button {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  margin-top: 13px;
+  padding: 11px 14px;
+  color: #120D07;
+  background: linear-gradient(90deg, #FFE6AD, #F0C875 58%, #B98233);
+  border: 1px solid rgba(255, 230, 173, 0.54);
+  border-radius: 999px;
+  box-shadow:
+    0 0 28px rgba(255, 184, 107, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    transform 0.24s ease,
+    box-shadow 0.24s ease;
+}
+.astral-profile__premium-cta-button:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 0 40px rgba(255, 184, 107, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+.app-content--you .astral-profile-wheel-page {
+  min-height: 0;
+  padding-bottom: 0;
+}
+.app-content--you .astral-profile {
+  padding-top: 0;
+}
+@media (max-width: 480px) {
+.astral-profile {
+    padding: 32px 16px 0;
+  }
+.astral-profile__title {
+    font-size: 24px;
+  }
+.astral-profile__content--inline {
+    margin: 8px 0 14px;
+    padding: 16px 12px 4px;
+    border-radius: 10px;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255, 184, 107, 0.05), transparent 38%),
+      rgba(255, 255, 255, 0.018);
+  }
+.astral-profile__content--inline .astral-profile__title {
+    font-size: 21px;
+    line-height: 1.15;
+    margin-bottom: 6px;
+  }
+.astral-profile__content--inline .astral-profile__sign-subtitle {
+    font-size: 12px;
+    letter-spacing: 1.4px;
+    margin-bottom: 20px;
+  }
+.astral-profile__paragraph {
+    font-size: 15px;
+    line-height: 1.7;
+    text-align: left;
+    margin-bottom: 16px;
+  }
+.astral-profile__sign-pill {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+.astral-profile__pill-glyph,
+  .astral-profile__aspect-glyph {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 22px;
+    width: 22px;
+    height: 22px;
+    line-height: 1;
+    font-family: "Times New Roman", "Cambria Math", "DejaVu Sans", serif;
+  }
+.astral-profile__pill-glyph.planet-venus,
+  .astral-profile__aspect-glyph.planet-venus {
+    transform: translate(-2px, -1px);
+  }
+.astral-profile__pill-glyph.planet-mars,
+  .astral-profile__aspect-glyph.planet-mars {
+    transform: translate(-2px, -2px);
+  }
+}
+.astral-profile__content--inline,
+.astral-profile__accordion-card,
+.astral-profile__section-card {
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045);
+}
+.astral-profile__paragraph,
+.astral-profile__sign-subtitle {
+  color: var(--text-secondary);
+}
+.astral-profile__action-suite {
+  position: relative;
+  isolation: isolate;
+  width: min(100%, 430px);
+  margin: 30px auto 18px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 222, 169, 0.2);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(255, 208, 139, 0.12), transparent 38%),
+    linear-gradient(155deg, rgba(22, 20, 25, 0.98), rgba(7, 8, 12, 0.98));
+  box-shadow:
+    0 26px 70px rgba(0, 0, 0, 0.38),
+    0 0 42px rgba(255, 184, 107, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.09);
+}
+.astral-profile__action-suite .astral-profile__premium-cta {
+  position: relative;
+  width: 100%;
+  margin: 0;
+  padding: 22px 22px 20px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.astral-profile__premium-cta-aura {
+  position: absolute;
+  width: 190px;
+  height: 190px;
+  top: -112px;
+  right: -70px;
+  border: 1px solid rgba(255, 226, 173, 0.12);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 20px rgba(255, 226, 173, 0.018),
+    0 0 0 48px rgba(255, 226, 173, 0.012);
+  pointer-events: none;
+}
+.astral-profile__action-suite .astral-profile__premium-cta-shine {
+  left: 10%;
+  right: 10%;
+}
+.astral-profile__premium-cta-heading {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.astral-profile__premium-cta-heading .astral-profile__premium-cta-icon {
+  display: flex;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  margin: 0;
+  border-radius: 11px;
+}
+.astral-profile__premium-cta-heading .astral-profile__premium-cta-kicker {
+  margin: 0;
+  color: rgba(255, 222, 169, 0.78);
+  letter-spacing: 2.2px;
+}
+.astral-profile__premium-cta-badge {
+  margin-left: auto;
+  padding: 5px 8px 4px;
+  color: rgba(255, 231, 189, 0.88);
+  background: rgba(255, 213, 145, 0.07);
+  border: 1px solid rgba(255, 222, 169, 0.18);
+  border-radius: 999px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+.astral-profile__action-suite .astral-profile__premium-cta-copy {
+  margin-top: 19px;
+}
+.astral-profile__action-suite .astral-profile__premium-cta-title {
+  max-width: 340px;
+  color: #fff9ef;
+  font-size: clamp(25px, 6.5vw, 30px);
+  line-height: 1.02;
+  letter-spacing: -0.4px;
+}
+.astral-profile__action-suite .astral-profile__premium-cta-text {
+  max-width: 365px;
+  margin-top: 11px;
+  color: rgba(240, 235, 228, 0.68);
+  line-height: 1.55;
+}
+.astral-profile__premium-cta-topics {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 7px;
+  margin-top: 16px;
+}
+.astral-profile__premium-cta-topics span {
+  padding: 6px 9px;
+  color: rgba(255, 231, 195, 0.66);
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.065);
+  border-radius: 999px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.astral-profile__action-suite .astral-profile__premium-cta-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 18px;
+  padding: 13px 15px 13px 17px;
+  border-radius: 11px;
+  background: linear-gradient(105deg, #ffe9bd, #f1cb82 58%, #c18a3e);
+}
+.astral-profile__premium-cta-button svg {
+  transition: transform 0.24s ease;
+}
+.astral-profile__premium-cta-button:hover svg {
+  transform: translateX(3px);
+}
+.astral-profile__premium-cta-button:focus-visible {
+  outline: 2px solid rgba(255, 221, 164, 0.88);
+  outline-offset: -3px;
+}
+@media (max-width: 380px) {
+.astral-profile__action-suite .astral-profile__premium-cta {
+    padding: 20px 17px 18px;
+  }
+.astral-profile__premium-cta-topics span {
+    padding-inline: 7px;
+    font-size: 8px;
+  }
+}
+.app-content--you .astral-profile__action-suite--eclipse {
+  border-color: rgba(231, 216, 191, 0.19);
+  border-radius: 38px 38px 17px 17px;
+  background:
+    radial-gradient(circle at 50% 31%, rgba(220, 179, 118, 0.105), transparent 30%),
+    radial-gradient(circle at 50% 0%, rgba(255, 245, 227, 0.055), transparent 24%),
+    linear-gradient(180deg, #0d0d10 0%, #06070a 72%);
+  box-shadow:
+    0 34px 82px rgba(0, 0, 0, 0.56),
+    0 0 44px rgba(220, 179, 118, 0.045),
+    inset 0 1px 0 rgba(255, 255, 255, 0.075);
+}
+.app-content--you .astral-profile__action-suite--eclipse::before {
+  inset: 7px;
+  border-color: rgba(238, 220, 191, 0.065);
+  border-radius: 31px 31px 12px 12px;
+}
+.astral-profile__action-suite--eclipse .astral-profile__premium-cta-frame {
+  inset: 12px;
+  border-color: rgba(255, 249, 239, 0.022);
+  border-radius: 27px 27px 9px 9px;
+}
+.app-content--you .astral-profile__action-suite--eclipse .astral-profile__premium-cta {
+  text-align: center;
+}
+.astral-profile__action-suite--eclipse .astral-profile__premium-cta-aura,
+.astral-profile__action-suite--eclipse .astral-profile__premium-constellation {
+  display: none;
+}
+.astral-profile__action-suite--eclipse .astral-profile__premium-cta-shine {
+  left: 22%;
+  right: 22%;
+  background: linear-gradient(90deg, transparent, rgba(241, 221, 190, 0.5), transparent);
+}
+.app-content--you .astral-profile__action-suite--eclipse .astral-profile__premium-cta-heading {
+  justify-content: center;
+}
+.app-content--you .astral-profile__action-suite--eclipse .astral-profile__premium-cta-icon {
+  display: none;
+}
+.app-content--you .astral-profile__action-suite--eclipse .astral-profile__premium-cta-kicker {
+  color: rgba(235, 216, 185, 0.68);
+}
+.app-content--you .astral-profile__action-suite--eclipse .astral-profile__premium-cta-badge {
+  position: absolute;
+  right: 0;
+  margin: 0;
+  color: rgba(231, 224, 212, 0.48);
+  background: rgba(255, 255, 255, 0.018);
+  border-color: rgba(238, 220, 190, 0.08);
+}
+.app-content--you .astral-profile__action-suite--eclipse .astral-profile__premium-cta-copy {
+  max-width: 360px;
+  margin: 0 auto;
+}
+.app-content--you .astral-profile__action-suite--eclipse .astral-profile__premium-cta-title {
+  color: #fffaf2;
+  text-align: center;
+}
+.app-content--you .astral-profile__action-suite--eclipse .astral-profile__premium-cta-text {
+  margin: 13px auto 0;
+  color: rgba(235, 231, 223, 0.6);
+  text-align: center;
+}
+.app-content--you .astral-profile__action-suite--eclipse .astral-profile__premium-cta-topics span {
+  align-items: center;
+  color: rgba(239, 226, 206, 0.68);
+}
+.app-content--you .astral-profile__action-suite--eclipse .astral-profile__premium-cta-button {
+  overflow: hidden;
+  color: #17110a;
+  background: linear-gradient(110deg, #fff2d9 0%, #d8ae70 38%, #f4ddb8 63%, #b9813f 100%);
+  border-color: rgba(255, 241, 216, 0.72);
+  box-shadow:
+    inset 0 1px 0 #ffffff,
+    0 14px 30px rgba(0, 0, 0, 0.3),
+    0 0 30px rgba(218, 169, 99, 0.11);
+}
+.astral-profile__action-suite--eclipse .astral-profile__premium-cta-button::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: -35%;
+  bottom: -35%;
+  left: -36%;
+  width: 32%;
+  background: rgba(255, 255, 255, 0.34);
+  transform: skewX(-22deg);
+  transition: left 0.58s ease;
+  pointer-events: none;
+}
+.astral-profile__action-suite--eclipse .astral-profile__premium-cta-button:hover::after {
+  left: 116%;
+}
+.astral-profile__action-suite--eclipse .astral-profile__premium-cta-button span,
+.astral-profile__action-suite--eclipse .astral-profile__premium-cta-button svg {
+  position: relative;
+  z-index: 1;
+}
+.astral-profile__premium-celestial-seal {
+  position: relative;
+  z-index: 1;
+  width: 76px;
+  height: 76px;
+  margin: 17px auto 20px;
+  filter: drop-shadow(0 0 16px rgba(220, 179, 118, 0.16));
+}
+.astral-profile__premium-celestial-seal svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.astral-profile__premium-seal-ring {
+  fill: rgba(10, 10, 13, 0.7);
+  stroke: rgba(234, 210, 171, 0.34);
+  stroke-width: 1;
+}
+.astral-profile__premium-seal-orbit {
+  fill: none;
+  stroke: rgba(234, 210, 171, 0.2);
+  stroke-width: 0.8;
+  stroke-dasharray: 2 5;
+  transform-origin: 36px 36px;
+  animation: astral-premium-seal-turn 18s linear infinite;
+}
+.astral-profile__premium-seal-star {
+  fill: rgba(232, 199, 148, 0.12);
+  stroke: #e5c18a;
+  stroke-width: 0.9;
+  stroke-linejoin: round;
+}
+.astral-profile__premium-seal-core {
+  fill: #f3ddba;
+  filter: drop-shadow(0 0 4px rgba(235, 197, 139, 0.72));
+}
+@media (max-width: 380px) {
+.astral-profile__premium-celestial-seal {
+    width: 68px;
+    height: 68px;
+    margin-block: 15px 18px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+.astral-profile__premium-seal-orbit {
+    animation: none;
+  }
+}
+.app-content--you .astral-profile {
+  border-top: 1px solid rgba(236, 216, 184, 0.035);
+}
+.astral-profile__birth-editor {
+  position: fixed;
+  z-index: 120;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background:
+    radial-gradient(circle at 50% 12%, rgba(230, 210, 172, 0.11), transparent 38%),
+    rgba(3, 4, 7, 0.76);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+.astral-profile__birth-editor-panel {
+  position: relative;
+  width: min(100%, 520px);
+  max-height: min(88vh, 680px);
+  overflow-y: auto;
+  padding: 22px;
+  color: #f6f0e6;
+  background:
+    radial-gradient(circle at 14% 0%, rgba(232, 216, 190, 0.12), transparent 38%),
+    linear-gradient(180deg, rgba(18, 18, 22, 0.98), rgba(8, 9, 13, 0.98));
+  border: 1px solid rgba(232, 216, 190, 0.16);
+  border-radius: 18px;
+  box-shadow:
+    0 28px 80px rgba(0, 0, 0, 0.56),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.astral-profile__birth-editor-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  color: rgba(246, 240, 230, 0.74);
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(232, 216, 190, 0.12);
+  border-radius: 999px;
+}
+.astral-profile__birth-editor-heading {
+  padding-right: 44px;
+  margin-bottom: 20px;
+}
+.astral-profile__birth-editor-heading span,
+.astral-profile__birth-editor-field > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(232, 216, 190, 0.64);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.7px;
+  text-transform: uppercase;
+}
+.astral-profile__birth-editor-heading h2 {
+  margin: 7px 0 0;
+  color: #fff8ea;
+  font-size: clamp(1.35rem, 4vw, 2rem);
+  font-weight: 700;
+  letter-spacing: 0;
+}
+.astral-profile__birth-editor-form {
+  display: grid;
+  gap: 14px;
+}
+.astral-profile__birth-editor-wheel-section {
+  display: grid;
+  gap: 10px;
+}
+.astral-profile__birth-editor-section-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: rgba(232, 216, 190, 0.68);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.7px;
+  text-transform: uppercase;
+}
+.astral-profile__birth-editor-wheel-grid {
+  display: grid;
+  gap: 9px;
+}
+.astral-profile__birth-editor-wheel-grid--date {
+  grid-template-columns: 0.85fr 1fr 1.05fr;
+}
+.astral-profile__birth-editor-wheel-grid--time {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.astral-profile__birth-wheel {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.astral-profile__birth-wheel-label {
+  color: rgba(232, 216, 190, 0.48);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+.astral-profile__birth-wheel-control {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 76px;
+  overflow: hidden;
+  color: #fff8ea;
+  border: 1px solid rgba(232, 216, 190, 0.15);
+  border-radius: 14px;
+  background:
+    radial-gradient(ellipse at 50% -16%, rgba(244, 221, 180, 0.18), transparent 58%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.018)),
+    rgba(255, 255, 255, 0.035);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 -18px 34px rgba(0, 0, 0, 0.16);
+}
+.astral-profile__birth-wheel-control::before,
+.astral-profile__birth-wheel-control::after {
+  content: '';
+  position: absolute;
+  right: 10px;
+  left: 10px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(232, 216, 190, 0.2), transparent);
+  pointer-events: none;
+}
+.astral-profile__birth-wheel-control::before {
+  top: 17px;
+}
+.astral-profile__birth-wheel-control::after {
+  bottom: 17px;
+}
+.astral-profile__birth-wheel-control select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  opacity: 0;
+}
+.astral-profile__birth-wheel-control strong {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  color: #fff8ea;
+  font-size: clamp(1.12rem, 5vw, 1.65rem);
+  font-weight: 650;
+  line-height: 1;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.astral-profile__birth-wheel-control small {
+  margin-top: 5px;
+  max-width: 100%;
+  overflow: hidden;
+  color: rgba(232, 216, 190, 0.58);
+  font-size: 10px;
+  line-height: 1;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.astral-profile__birth-editor-field {
+  display: grid;
+  gap: 8px;
+}
+.astral-profile__birth-editor-field input {
+  width: 100%;
+  min-height: 45px;
+  padding: 11px 12px;
+  color: #fbf7ef;
+  background: rgba(255, 255, 255, 0.055);
+  border: 1px solid rgba(232, 216, 190, 0.15);
+  border-radius: 12px;
+  outline: none;
+  font-size: 15px;
+}
+.astral-profile__birth-editor-field input:focus {
+  border-color: rgba(244, 221, 180, 0.42);
+  box-shadow: 0 0 0 3px rgba(244, 221, 180, 0.08);
+}
+.astral-profile__birth-editor-help,
+.astral-profile__birth-editor-empty {
+  margin: -1px 0 0;
+  color: rgba(232, 216, 190, 0.52);
+  font-size: 11px;
+  line-height: 1.45;
+}
+.astral-profile__birth-editor-empty {
+  margin-top: -3px;
+  padding: 9px 10px;
+  border: 1px solid rgba(232, 216, 190, 0.1);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.028);
+}
+.astral-profile__birth-editor-suggestions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: -4px;
+}
+.astral-profile__birth-editor-suggestions button {
+  display: grid;
+  min-width: 0;
+  min-height: 44px;
+  padding: 7px 10px;
+  color: rgba(246, 240, 230, 0.84);
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(232, 216, 190, 0.12);
+  border-radius: 12px;
+  font-size: 12px;
+  text-align: left;
+  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+.astral-profile__birth-editor-suggestions button:hover,
+.astral-profile__birth-editor-suggestions button:focus-visible,
+.astral-profile__birth-editor-suggestions button.is-selected {
+  color: #fff8ea;
+  border-color: rgba(244, 221, 180, 0.34);
+  background:
+    radial-gradient(ellipse at 16% 0%, rgba(244, 221, 180, 0.12), transparent 56%),
+    rgba(255, 255, 255, 0.074);
+}
+.astral-profile__birth-editor-suggestions span,
+.astral-profile__birth-editor-suggestions small {
+  overflow: hidden;
+  min-width: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.astral-profile__birth-editor-suggestions small {
+  color: rgba(232, 216, 190, 0.56);
+  font-size: 10px;
+}
+.astral-profile__birth-editor-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 6px;
+}
+.astral-profile__birth-editor-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.1px;
+  text-transform: uppercase;
+}
+.astral-profile__birth-editor-actions button:first-child {
+  color: rgba(246, 240, 230, 0.72);
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(232, 216, 190, 0.1);
+}
+.astral-profile__birth-editor-actions button:last-child {
+  color: #17130c;
+  background: linear-gradient(135deg, #f4e5bd, #d7b467);
+  border: 1px solid rgba(255, 239, 201, 0.48);
+}
+.astral-profile__birth-editor-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+@media (max-width: 560px) {
+.astral-profile__birth-editor {
+    align-items: end;
+    padding: 10px;
+  }
+.astral-profile__birth-editor-panel {
+    width: 100%;
+    max-height: 86vh;
+    padding: 19px 16px 16px;
+    border-radius: 16px;
+  }
+.astral-profile__birth-editor-wheel-grid--date {
+    grid-template-columns: 0.78fr 1fr 0.95fr;
+    gap: 7px;
+  }
+.astral-profile__birth-wheel-control {
+    min-height: 68px;
+  }
+.astral-profile__birth-wheel-control strong {
+    font-size: clamp(1rem, 6vw, 1.35rem);
+  }
+.astral-profile__birth-editor-suggestions {
+    grid-template-columns: 1fr;
+  }
+.astral-profile__birth-editor-actions {
+    flex-direction: column-reverse;
+  }
+.astral-profile__birth-editor-actions button {
+    width: 100%;
+  }
+}
+.app-content--you .astral-profile-wheel-page .natal-chart-wheel-frame {
+  transform: translateY(-4px);
+}
+.app-content--you .astral-profile__section-switch {
+  border-radius: 13px;
+}
+.app-content--you .astral-profile__section-switch::before {
+  border-radius: 10px;
+}
+.app-content--you .astral-profile__section-card {
+  border-radius: 9px;
+}
+.app-content--you .astral-profile__section-card::before {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(229, 230, 234, 0.075), transparent 48%),
+    linear-gradient(115deg, transparent, rgba(255, 255, 255, 0.035), transparent);
+}
+.app-content--you .astral-profile__section-card:hover:not(:disabled) {
+  color: rgba(240, 240, 242, 0.88);
+}
+.app-content--you .astral-profile__section-card::after {
+  bottom: 5px;
+  background: linear-gradient(90deg, transparent, rgba(225, 226, 230, 0.32), transparent);
+}
+.app-content--you .astral-profile__section-card-title {
+  color: rgba(239, 239, 241, 0.88);
+  font-size: 13px;
+  letter-spacing: 2.4px;
+}
+.app-content--you .astral-profile__saturn-mark,
+.app-content--you .astral-profile__mini-wheel {
+  width: 42px;
+  height: 20px;
+  filter: drop-shadow(0 0 6px rgba(220, 221, 225, 0.08));
+}
+.app-content--you .astral-profile__saturn-body {
+  stroke: rgba(222, 222, 224, 0.42);
+  filter: drop-shadow(0 0 5px rgba(220, 221, 225, 0.12));
+}
+.app-content--you .astral-profile__mini-wheel-ring,
+.app-content--you .astral-profile__mini-wheel-chord {
+  stroke: rgba(221, 222, 226, 0.42);
+  filter: none;
+}
+.app-content--you .astral-profile__mini-wheel-point {
+  fill: rgba(229, 229, 231, 0.7);
+}
+.astral-profile__section-switch--reveal {
+  opacity: 0;
+  transform: translateY(14px) scale(0.985);
+  transition:
+    opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.astral-profile__section-switch--reveal.is-revealed {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+.astral-profile__section-switch--reveal.is-revealed .astral-profile__section-card:first-child {
+  animation: astral-section-card-reveal 0.46s 0.08s both;
+}
+.astral-profile__section-switch--reveal.is-revealed .astral-profile__section-card:last-child {
+  animation: astral-section-card-reveal 0.46s 0.16s both;
+}
+.app-content--you .astral-profile__action-suite--eclipse .astral-profile__premium-cta-button {
+  padding-block: 12px;
+}
+@media (prefers-reduced-motion: reduce) {
+.astral-profile__section-switch--reveal,
+  .astral-profile__section-switch--reveal.is-revealed .astral-profile__section-card {
+    opacity: 1;
+    transform: none;
+    animation: none;
+    transition: none;
+  }
+}
+.astral-profile__accordion-motion {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  animation: astral-accordion-open 0.52s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.astral-profile__accordion-motion-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+.astral-profile__accordion-motion .astral-profile__content {
+  animation: astral-accordion-content-in 0.42s 0.09s ease both;
+}
+.astral-profile__action-suite--eclipse .astral-profile__premium-cta-title {
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+@media (prefers-reduced-motion: reduce) {
+.astral-profile__accordion-motion {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    animation: none;
+  }
+.astral-profile__accordion-motion .astral-profile__content {
+    animation: none;
+    transition: none;
+  }
+}
+.app-content--you .astral-profile-wheel-page .natal-chart-card {
+  padding-bottom: 0 !important;
+}
+.app-content--you .astral-profile-wheel-page .natal-chart-wheel-stage,
+.app-content--you .astral-profile-wheel-page .natal-chart-wheel-frame {
+  align-items: center;
+  justify-content: center;
+}
+@media (min-width: 769px) {
+.app-content--you .astral-profile-wheel-page .natal-chart-svg {
+    width: min(66vw, calc((100svh - 10px) * 0.68), 790px) !important;
+    margin: auto !important;
+  }
+}
+.app-content--you {
+  background-image:
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E"),
+    radial-gradient(circle, rgba(255, 250, 237, 0.34) 0 0.5px, transparent 1px),
+    radial-gradient(circle at 16% 17%, transparent 0 34px, rgba(91, 74, 57, 0.1) 35px, transparent 37px),
+    radial-gradient(circle at 86% 39%, transparent 0 52px, rgba(255, 245, 223, 0.14) 53px, rgba(101, 84, 67, 0.07) 55px, transparent 58px),
+    radial-gradient(ellipse at 47% 8%, rgba(255, 239, 208, 0.3), transparent 39%),
+    radial-gradient(ellipse at 8% 67%, rgba(109, 91, 74, 0.12), transparent 46%),
+    linear-gradient(180deg, #d4c8b5 0%, #bcae9b 42%, #91877e 73%, #67646a 100%);
+  background-size: 180px 180px, 157px 173px, auto, auto, auto, auto, auto;
+  background-position: 0 0, 31px 41px, center, center, center, center, center;
+}
+.app-content--you .astral-profile {
+  position: relative;
+  isolation: isolate;
+}
+.app-content--you .astral-profile::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+  opacity: 1;
+  background-image:
+    radial-gradient(circle at 13% 22%, transparent 0 27px, rgba(74, 61, 49, 0.075) 28px, transparent 31px),
+    radial-gradient(circle at 91% 58%, transparent 0 43px, rgba(255, 244, 222, 0.11) 44px, rgba(78, 65, 53, 0.06) 46px, transparent 49px),
+    radial-gradient(ellipse at 48% 77%, rgba(255, 238, 208, 0.09), transparent 48%),
+    linear-gradient(160deg, transparent 0 31%, rgba(255, 249, 235, 0.035) 47%, transparent 65%);
+  background-size: auto;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.app-content--you .astral-profile__section-card--active {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.065), rgba(255, 255, 255, 0.012)),
+    rgba(9, 10, 15, 0.68);
+}
+@media (prefers-reduced-motion: reduce) {
+.astral-profile__premium-cta-button svg {
+    transition: none;
+  }
+}
+.app-content--you {
+  position: relative;
+  isolation: isolate;
+}
+.app-content--you::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.72;
+  background-image:
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.86' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E"),
+    radial-gradient(ellipse at 50% -12%, rgba(218, 184, 122, 0.12), transparent 45%),
+    radial-gradient(ellipse at 12% 28%, rgba(83, 73, 91, 0.18), transparent 42%),
+    radial-gradient(ellipse at 88% 58%, rgba(37, 45, 66, 0.2), transparent 48%),
+    linear-gradient(122deg, transparent 0%, rgba(255, 246, 226, 0.025) 44%, transparent 58%),
+    repeating-linear-gradient(112deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 17px);
+  background-size:
+    120px 120px,
+    auto,
+    auto,
+    auto,
+    auto,
+    220px 220px;
+  background-position:
+    0 0,
+    center,
+    center,
+    center,
+    center,
+    0 0;
+  mix-blend-mode: soft-light;
+}
+.app-content--you .astral-profile__section-switch {
+  border-color: rgba(231, 218, 194, 0.12);
+}
+.app-content--you .astral-profile__section-switch::before {
+  background:
+    radial-gradient(circle at 50% -12%, rgba(237, 219, 186, 0.075), transparent 48%),
+    linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.018), transparent);
+}
+.app-content--you .astral-profile__section-card {
+  color: rgba(235, 235, 238, 0.82);
+  border-color: rgba(242, 228, 204, 0.12);
+  background:
+    radial-gradient(circle at 50% -18%, rgba(245, 222, 185, 0.075), transparent 56%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.052), rgba(255, 255, 255, 0.008)),
+    rgba(255, 255, 255, 0.014);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.11),
+    inset 0 -4px 8px rgba(0, 0, 0, 0.24),
+    0 5px 0 rgba(2, 2, 4, 0.42),
+    0 10px 20px rgba(0, 0, 0, 0.3),
+    0 0 22px rgba(226, 205, 172, 0.025);
+  filter: brightness(0.82) saturate(0.72);
+  transform: perspective(500px) translateY(2px) translateZ(-10px) scale(0.975);
+  transition:
+    color 0.24s ease,
+    background 0.24s ease,
+    border-color 0.24s ease,
+    box-shadow 0.24s ease,
+    filter 0.24s ease,
+    transform 0.28s cubic-bezier(0.2, 1.45, 0.35, 1);
+}
+.app-content--you .astral-profile__section-card:hover:not(:disabled) {
+  border-color: rgba(240, 217, 180, 0.28);
+  background:
+    radial-gradient(circle at 50% -12%, rgba(245, 222, 185, 0.13), transparent 58%),
+    linear-gradient(180deg, rgba(240, 220, 190, 0.085), rgba(255, 255, 255, 0.012)),
+    rgba(255, 255, 255, 0.018);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    inset 0 -4px 8px rgba(0, 0, 0, 0.2),
+    0 6px 0 rgba(2, 2, 4, 0.38),
+    0 13px 24px rgba(0, 0, 0, 0.32),
+    0 0 26px rgba(232, 207, 168, 0.075);
+  filter: brightness(0.94) saturate(0.88);
+  transform: perspective(500px) translateY(0) translateZ(-4px) scale(0.988) rotateX(0.6deg);
+}
+.app-content--you .astral-profile__section-card--active::after {
+  opacity: 0;
+  background: none;
+  box-shadow: none;
+}
+.app-content--you .astral-profile__section-card--active,
+.app-content--you .astral-profile__section-card--active:hover:not(:disabled) {
+  z-index: 2;
+  color: #fcfaf5;
+  border-color: rgba(255, 222, 164, 0.98);
+  background:
+    radial-gradient(circle at 50% -4%, rgba(255, 231, 190, 0.29), transparent 62%),
+    linear-gradient(180deg, rgba(250, 226, 185, 0.18), rgba(255, 255, 255, 0.022)),
+    rgba(15, 14, 16, 0.78);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 252, 242, 0.38),
+    inset 0 -5px 10px rgba(53, 35, 12, 0.4),
+    inset 0 0 17px rgba(255, 210, 142, 0.1),
+    0 0 0 1px rgba(255, 205, 126, 0.55),
+    0 15px 30px rgba(0, 0, 0, 0.46),
+    0 0 15px rgba(255, 203, 124, 0.34),
+    0 0 38px rgba(232, 183, 108, 0.22);
+  filter: brightness(1.08) saturate(1.08);
+  transform: perspective(500px) translateY(-6px) rotateX(2deg) scale(1.012);
+}
+.app-content--you .astral-profile__section-card:active:not(:disabled) {
+  box-shadow:
+    inset 0 3px 8px rgba(0, 0, 0, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 2px 0 rgba(2, 2, 4, 0.46),
+    0 6px 12px rgba(0, 0, 0, 0.3);
+  filter: brightness(0.9) saturate(0.84);
+  transform: perspective(500px) translateY(5px) translateZ(-14px) scale(0.95);
+  transition-duration: 65ms;
+  transition-timing-function: ease-in;
+}
+.app-content--you .astral-profile__section-card--active:active:not(:disabled) {
+  border-color: rgba(255, 222, 164, 0.9);
+  box-shadow:
+    inset 0 3px 9px rgba(62, 38, 9, 0.48),
+    inset 0 0 12px rgba(255, 210, 142, 0.08),
+    0 0 0 1px rgba(255, 205, 126, 0.42),
+    0 8px 16px rgba(0, 0, 0, 0.36),
+    0 0 18px rgba(255, 203, 124, 0.2);
+  filter: brightness(1) saturate(1);
+  transform: perspective(500px) translateY(-1px) rotateX(0.5deg) scale(0.985);
+}
+.app-content--you .astral-profile__section-card--active .astral-profile__planet-mark::before,
+.app-content--you .astral-profile__section-card--active .astral-profile__link-mark::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 54px;
+  height: 32px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(255, 211, 141, 0.3), transparent 68%);
+  filter: blur(4px);
+  transform: translate(-50%, -50%);
+  animation: astral-section-symbol-aura 2.4s ease-in-out infinite;
+  pointer-events: none;
+}
+.app-content--you .astral-profile__section-card--active .astral-profile__saturn-mark,
+.app-content--you .astral-profile__section-card--active .astral-profile__mini-wheel {
+  transform: translateY(-1px) scale(1.14);
+  filter:
+    drop-shadow(0 0 5px rgba(255, 244, 219, 0.72))
+    drop-shadow(0 0 12px rgba(255, 196, 105, 0.56));
+  animation: astral-section-symbol-lift 2.4s ease-in-out infinite;
+}
+.app-content--you .astral-profile__section-card--active .astral-profile__saturn-body,
+.app-content--you .astral-profile__section-card--active .astral-profile__mini-wheel-ring,
+.app-content--you .astral-profile__section-card--active .astral-profile__mini-wheel-chord {
+  stroke: rgba(255, 229, 185, 0.95);
+}
+.app-content--you .astral-profile__section-card--active .astral-profile__mini-wheel-point {
+  fill: #ffe6ba;
+  stroke: rgba(83, 51, 12, 0.9);
+}
+@media (prefers-reduced-motion: reduce) {
+.app-content--you .astral-profile__section-card--active .astral-profile__planet-mark::before,
+  .app-content--you .astral-profile__section-card--active .astral-profile__link-mark::before,
+  .app-content--you .astral-profile__section-card--active .astral-profile__saturn-mark,
+  .app-content--you .astral-profile__section-card--active .astral-profile__mini-wheel {
+    animation: none;
+  }
+}
+.app-content--you .astral-profile__accordion-card {
+  border-color: rgba(231, 218, 194, 0.085);
+}
+.app-content--you .astral-profile__sign-pill,
+.app-content--you .astral-profile__aspect-item {
+  color: rgba(231, 231, 233, 0.76);
+}
+.app-content--you .astral-profile__pill-sign {
+  border-color: rgba(237, 225, 204, 0.045);
+}
+.app-content--you .astral-profile__row-chevron {
+  color: rgba(218, 216, 211, 0.46);
+}
+.app-content--you .astral-profile__pill-sign {
+  margin-left: 2px;
+  padding: 0;
+  color: rgba(220, 210, 194, 0.54);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.25px;
+}
+.app-content--you .astral-profile__action-suite {
+  border-color: rgba(235, 207, 162, 0.24);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 14% -8%, rgba(235, 203, 153, 0.13), transparent 38%),
+    radial-gradient(circle at 100% 100%, rgba(178, 184, 207, 0.055), transparent 42%),
+    linear-gradient(150deg, rgba(17, 15, 15, 0.99), rgba(5, 6, 8, 0.995));
+  box-shadow:
+    0 32px 78px rgba(0, 0, 0, 0.52),
+    0 0 38px rgba(225, 190, 137, 0.055),
+    inset 0 1px 0 rgba(255, 248, 235, 0.1);
+}
+.app-content--you .astral-profile__action-suite::before {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  inset: 6px;
+  border: 1px solid rgba(238, 215, 179, 0.08);
+  border-radius: 15px;
+  pointer-events: none;
+}
+.astral-profile__premium-cta-frame {
+  position: absolute;
+  z-index: 0;
+  inset: 12px;
+  border: 1px solid rgba(255, 246, 229, 0.025);
+  border-radius: 12px;
+  pointer-events: none;
+}
+.app-content--you .astral-profile__action-suite .astral-profile__premium-cta {
+  padding: 25px 25px 24px;
+}
+.app-content--you .astral-profile__premium-cta-aura {
+  top: -126px;
+  right: -82px;
+  width: 220px;
+  height: 220px;
+  border-color: rgba(238, 213, 172, 0.09);
+  box-shadow:
+    0 0 0 24px rgba(238, 213, 172, 0.012),
+    0 0 0 56px rgba(238, 213, 172, 0.008);
+}
+.astral-profile__premium-constellation {
+  position: absolute;
+  z-index: 0;
+  top: 72px;
+  right: 16px;
+  width: 104px;
+  height: 70px;
+  overflow: visible;
+  opacity: 0.17;
+  pointer-events: none;
+}
+.astral-profile__premium-constellation path {
+  fill: none;
+  stroke: rgba(239, 216, 179, 0.72);
+  stroke-width: 0.7;
+}
+.astral-profile__premium-constellation circle {
+  fill: #f2dcb9;
+  filter: drop-shadow(0 0 3px rgba(244, 219, 179, 0.65));
+}
+.app-content--you .astral-profile__premium-cta-heading .astral-profile__premium-cta-icon {
+  width: 36px;
+  height: 36px;
+  flex-basis: 36px;
+  color: #f1d9b2;
+  border-color: rgba(240, 212, 168, 0.28);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 25%, rgba(255, 255, 255, 0.15), transparent 32%),
+    linear-gradient(145deg, rgba(47, 38, 29, 0.74), rgba(12, 11, 12, 0.92));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 22px rgba(224, 180, 111, 0.1);
+}
+.app-content--you .astral-profile__premium-cta-kicker {
+  color: rgba(236, 214, 180, 0.72);
+  font-size: 9px;
+  letter-spacing: 2.45px;
+}
+.app-content--you .astral-profile__premium-cta-badge {
+  padding: 5px 8px;
+  color: rgba(231, 219, 199, 0.62);
+  background: rgba(255, 255, 255, 0.018);
+  border-color: rgba(237, 218, 187, 0.1);
+  font-size: 8px;
+  letter-spacing: 1.2px;
+}
+.app-content--you .astral-profile__action-suite .astral-profile__premium-cta-copy {
+  max-width: 330px;
+  margin-top: 24px;
+}
+.app-content--you .astral-profile__action-suite .astral-profile__premium-cta-title {
+  max-width: 300px;
+  color: #fffaf1;
+  font-size: clamp(29px, 7vw, 34px);
+  line-height: 0.98;
+  letter-spacing: -0.55px;
+  text-wrap: balance;
+}
+.app-content--you .astral-profile__action-suite .astral-profile__premium-cta-text {
+  max-width: 330px;
+  margin-top: 14px;
+  color: rgba(234, 230, 222, 0.61);
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+.app-content--you .astral-profile__premium-cta-topics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  margin-top: 22px;
+  padding: 11px 0;
+  border-top: 1px solid rgba(236, 216, 184, 0.1);
+  border-bottom: 1px solid rgba(236, 216, 184, 0.075);
+}
+.app-content--you .astral-profile__premium-cta-topics span {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 1px 11px;
+  color: rgba(240, 226, 204, 0.7);
+  background: transparent;
+  border: 0;
+  border-right: 1px solid rgba(236, 216, 184, 0.075);
+  border-radius: 0;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.35px;
+  text-transform: none;
+}
+.app-content--you .astral-profile__premium-cta-topics span:first-child {
+  padding-left: 0;
+}
+.app-content--you .astral-profile__premium-cta-topics span:last-child {
+  padding-right: 0;
+  border-right: 0;
+}
+.astral-profile__premium-cta-topics small {
+  color: rgba(221, 189, 139, 0.46);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+}
+.app-content--you .astral-profile__action-suite .astral-profile__premium-cta-button {
+  margin-top: 21px;
+  padding: 14px 15px 14px 17px;
+  color: #15110c;
+  background:
+    linear-gradient(105deg, #fff3dc 0%, #ead0a5 42%, #c99e61 78%, #f0d7b0 100%);
+  border-color: rgba(255, 239, 213, 0.58);
+  border-radius: 10px;
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.28),
+    0 0 30px rgba(216, 169, 99, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  font-size: 10px;
+  letter-spacing: 1.75px;
+}
+@media (max-width: 380px) {
+.app-content--you .astral-profile__action-suite .astral-profile__premium-cta {
+    padding: 22px 20px 21px;
+  }
+.app-content--you .astral-profile__premium-cta-badge {
+    display: none;
+  }
+}
+.app-content--you .astral-profile__section-switch {
+  margin-top: 0;
+}
+.app-content--you .astral-profile {
+  padding-bottom: calc(92px + env(safe-area-inset-bottom)) !important;
+}
+.app-content--you .astral-profile__action-suite--eclipse {
+  width: min(100%, 350px);
+  margin: 22px auto 0;
+}
+.app-content--you .astral-profile__action-suite--eclipse .astral-profile__premium-cta {
+  padding: 18px 19px 17px;
+}
+.astral-profile__action-suite--eclipse .astral-profile__premium-celestial-seal {
+  width: 48px;
+  height: 48px;
+  margin: 9px auto 12px;
+}
+.app-content--you .astral-profile__action-suite--eclipse .astral-profile__premium-cta-heading {
+  min-height: 19px;
+}
+.app-content--you .astral-profile__action-suite--eclipse .astral-profile__premium-cta-kicker {
+  font-size: 8px;
+  letter-spacing: 2.1px;
+}
+.app-content--you .astral-profile__action-suite--eclipse .astral-profile__premium-cta-badge {
+  padding: 4px 7px;
+  font-size: 7px;
+}
+.app-content--you .astral-profile__action-suite--eclipse .astral-profile__premium-cta-title {
+  max-width: 300px;
+  font-size: clamp(24px, 6vw, 27px);
+  line-height: 1.02;
+}
+.app-content--you .astral-profile__action-suite--eclipse .astral-profile__premium-cta-text {
+  max-width: 292px;
+  margin-top: 8px;
+  font-size: 11.5px;
+  line-height: 1.45;
+}
+.app-content--you .astral-profile__action-suite--eclipse .astral-profile__premium-cta-topics {
+  margin-top: 12px;
+  padding-block: 6px;
+}
+.app-content--you .astral-profile__action-suite--eclipse .astral-profile__premium-cta-topics span {
+  gap: 2px;
+  font-size: 11px;
+}
+.app-content--you .astral-profile__action-suite--eclipse .astral-profile__premium-cta-button {
+  min-height: 40px;
+  margin-top: 12px;
+  padding: 10px 13px 10px 15px;
+  font-size: 9px;
+}
+@media (max-width: 380px) {
+.app-content--you .astral-profile__action-suite--eclipse .astral-profile__premium-cta {
+    padding: 17px 16px 16px;
+  }
+}
+.astral-profile__gold-divider {
+  position: relative;
+  z-index: 6;
+  width: 100%;
+  height: 22px;
+  background: transparent;
+  pointer-events: none;
+}
+.astral-profile__gold-divider::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(72%, 480px);
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(190, 139, 69, 0.2) 16%,
+    rgba(231, 193, 132, 0.72) 44%,
+    rgba(255, 232, 190, 0.92) 50%,
+    rgba(231, 193, 132, 0.72) 56%,
+    rgba(190, 139, 69, 0.2) 84%,
+    transparent
+  );
+  box-shadow: 0 0 9px rgba(218, 172, 102, 0.13);
+  transform: translate(-50%, -50%);
+}
+.app-content--you .astral-profile__section-switch {
+  gap: 9px;
+}
+.app-content--you .astral-profile__section-card {
+  min-height: 66px;
+  padding: 11px 10px 10px;
+}
+.app-content--you .astral-profile__planet-mark,
+.app-content--you .astral-profile__link-mark {
+  margin-top: 8px;
+}
+.app-content--you .astral-profile__accordion-card {
+  isolation: isolate;
+  border: 1px solid transparent;
+  border-radius: 9px;
+}
+.app-content--you .astral-profile__accordion-card::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+}
+.app-content--you .astral-profile__accordion-card:hover {
+  border-color: transparent;
+}
+.app-content--you .astral-profile__accordion-card--active {
+  border-color: transparent;
+}
+.app-content--you .astral-profile__accordion-card > .astral-profile__sign-pill,
+.app-content--you .astral-profile__accordion-card > .astral-profile__aspect-item,
+.app-content--you .astral-profile__accordion-card .astral-profile__content--accordion {
+  position: relative;
+  z-index: 1;
+}
+.app-content--you .astral-profile {
+  background:
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.84' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.11'/%3E%3C/svg%3E") 0 0 / 120px 120px,
+    radial-gradient(ellipse at 50% -10%, rgba(225, 190, 128, 0.12), transparent 39%),
+    radial-gradient(ellipse at 16% 24%, rgba(67, 55, 76, 0.26), transparent 44%),
+    radial-gradient(ellipse at 84% 42%, rgba(34, 43, 66, 0.24), transparent 48%),
+    radial-gradient(ellipse at 50% 105%, rgba(0, 0, 0, 0.82), transparent 58%),
+    linear-gradient(112deg, transparent 0%, rgba(255, 246, 229, 0.024) 38%, transparent 54%),
+    linear-gradient(180deg, #0c0c10 0%, #08090d 48%, #050609 100%);
+}
+.app-content--you .astral-profile__accordion-card {
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.app-content--you .astral-profile__accordion-card::after {
+  inset: 3px;
+  background:
+    linear-gradient(90deg, rgba(255, 238, 210, 0.72), transparent) top left / 23px 1px no-repeat,
+    linear-gradient(180deg, rgba(255, 238, 210, 0.72), transparent) top left / 1px 23px no-repeat,
+    linear-gradient(270deg, rgba(255, 238, 210, 0.72), transparent) top right / 23px 1px no-repeat,
+    linear-gradient(180deg, rgba(255, 238, 210, 0.72), transparent) top right / 1px 23px no-repeat,
+    linear-gradient(90deg, rgba(241, 226, 202, 0.48), transparent) bottom left / 23px 1px no-repeat,
+    linear-gradient(0deg, rgba(241, 226, 202, 0.48), transparent) bottom left / 1px 23px no-repeat,
+    linear-gradient(270deg, rgba(241, 226, 202, 0.48), transparent) bottom right / 23px 1px no-repeat,
+    linear-gradient(0deg, rgba(241, 226, 202, 0.48), transparent) bottom right / 1px 23px no-repeat;
+  filter: none;
+}
+.app-content--you .astral-profile__sign-pill > span:nth-child(2),
+.app-content--you .astral-profile__aspect-planet {
+  color: rgba(250, 249, 247, 0.92);
+  font-weight: 560;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.42);
+}
+.app-content--you .astral-profile__pill-glyph,
+.app-content--you .astral-profile__aspect-glyph,
+.app-content--you .astral-profile__aspect-symbol {
+  color: rgba(255, 236, 207, 0.92);
+  opacity: 1;
+  text-shadow:
+    0 0 9px rgba(244, 218, 179, 0.24),
+    0 0 18px rgba(83, 122, 196, 0.12);
+}
+.app-content--you .astral-profile__accordion-card--active {
+  background: transparent;
+  box-shadow: none;
+}
+.app-content--you .astral-profile__accordion-card:hover {
+  background: transparent;
+  box-shadow: none;
+}
+.app-content--you .astral-profile__accordion-card--active::after {
+  filter: none;
+}
+.app-content--you .astral-profile__accordion-card > .astral-profile__sign-pill,
+.app-content--you .astral-profile__accordion-card > .astral-profile__aspect-item {
+  border-color: rgba(226, 235, 250, 0.1);
+  background:
+    radial-gradient(ellipse at 20% -28%, rgba(243, 247, 255, 0.1), transparent 48%),
+    linear-gradient(180deg, rgba(235, 241, 252, 0.035), rgba(177, 193, 220, 0.008)),
+    rgba(7, 9, 15, 0.24);
+  box-shadow:
+    inset 0 1px 0 rgba(248, 250, 255, 0.07),
+    inset 0 -12px 22px rgba(2, 4, 9, 0.12),
+    0 8px 18px rgba(0, 0, 0, 0.1);
+}
+.app-content--you .astral-profile__sign-pill::before,
+.app-content--you .astral-profile__aspect-item::before {
+  background:
+    radial-gradient(circle at 12% 0%, rgba(247, 250, 255, 0.2), transparent 40%),
+    linear-gradient(112deg, transparent 5%, rgba(224, 235, 252, 0.09) 44%, transparent 68%);
+}
+.app-content--you .astral-profile__accordion-card > .astral-profile__sign-pill:hover,
+.app-content--you .astral-profile__accordion-card > .astral-profile__aspect-item:hover {
+  color: rgba(250, 252, 255, 0.97);
+  border-color: rgba(232, 240, 254, 0.24);
+  background:
+    radial-gradient(ellipse at 22% -20%, rgba(250, 252, 255, 0.18), transparent 50%),
+    linear-gradient(180deg, rgba(226, 236, 252, 0.07), rgba(177, 195, 225, 0.012)),
+    rgba(9, 12, 20, 0.34);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.13),
+    0 10px 22px rgba(0, 0, 0, 0.14),
+    0 0 18px rgba(185, 207, 240, 0.055);
+}
+.app-content--you .astral-profile__accordion-card > .astral-profile__sign-pill--active,
+.app-content--you .astral-profile__accordion-card > .astral-profile__aspect-item--active {
+  color: #f8fbff;
+  border-color: rgba(238, 244, 255, 0.34);
+  background:
+    radial-gradient(ellipse at 24% -16%, rgba(255, 255, 255, 0.23), transparent 52%),
+    linear-gradient(180deg, rgba(222, 234, 252, 0.09), rgba(164, 184, 218, 0.018)),
+    rgba(9, 11, 19, 0.46);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 3px 0 0 rgba(220, 232, 252, 0.66),
+    0 12px 25px rgba(0, 0, 0, 0.17),
+    0 0 22px rgba(190, 214, 248, 0.09);
+}
+.app-content--you .astral-profile__accordion-card > .astral-profile__aspect-item:hover {
+  border-color: color-mix(in srgb, var(--aspect-accent, #eef4ff) 48%, transparent);
+  background:
+    radial-gradient(ellipse at 18% -16%, var(--aspect-glow, rgba(238, 244, 255, 0.16)), transparent 54%),
+    linear-gradient(180deg, rgba(238, 244, 255, 0.055), rgba(164, 184, 218, 0.01)),
+    rgba(9, 11, 18, 0.38);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.13),
+    inset 3px 0 0 var(--aspect-accent, rgba(224, 235, 252, 0.6)),
+    0 10px 22px rgba(0, 0, 0, 0.15),
+    0 0 22px var(--aspect-glow, rgba(190, 214, 248, 0.08));
+}
+.app-content--you .astral-profile__aspect-item:hover::before {
+  background:
+    radial-gradient(circle at 10% 0%, var(--aspect-glow, rgba(238, 244, 255, 0.16)), transparent 42%),
+    linear-gradient(112deg, transparent 5%, rgba(241, 246, 255, 0.1) 44%, transparent 68%);
+}
+.app-content--you .astral-profile__accordion-card > .astral-profile__sign-pill:hover {
+  border-color: color-mix(in srgb, var(--planet-row-accent, #eef4ff) 48%, transparent);
+  background:
+    radial-gradient(ellipse at 18% -16%, var(--planet-row-glow, rgba(238, 244, 255, 0.16)), transparent 54%),
+    linear-gradient(180deg, rgba(238, 244, 255, 0.055), rgba(164, 184, 218, 0.01)),
+    rgba(9, 11, 18, 0.38);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.13),
+    inset 3px 0 0 var(--planet-row-accent, rgba(224, 235, 252, 0.6)),
+    0 10px 22px rgba(0, 0, 0, 0.15),
+    0 0 22px var(--planet-row-glow, rgba(190, 214, 248, 0.08));
+}
+.app-content--you .astral-profile__sign-pill:hover::before {
+  background:
+    radial-gradient(circle at 10% 0%, var(--planet-row-glow, rgba(238, 244, 255, 0.16)), transparent 42%),
+    linear-gradient(112deg, transparent 5%, rgba(241, 246, 255, 0.1) 44%, transparent 68%);
+}
+.app-content--you .astral-profile__accordion-card::before {
+  z-index: 3;
+  inset: 0 1px;
+  border: 0;
+  opacity: 1;
+}
+.app-content--you .astral-profile__accordion-card--active::before {
+  background:
+    linear-gradient(rgba(255, 238, 210, 0.76), rgba(241, 226, 202, 0.48)) left center / 1px 100% no-repeat,
+    linear-gradient(rgba(255, 238, 210, 0.76), rgba(241, 226, 202, 0.48)) right center / 1px 100% no-repeat;
+}
+.app-content--you .astral-profile__section-card .astral-profile__mini-wheel {
+  width: 38px;
+  height: 18px;
+}
+.app-content--you .astral-profile__sign-pill .astral-profile__pill-sign {
+  font-size: 11px;
+  line-height: 1.1;
+}
+.app-content--you .astral-profile__pills,
+.app-content--you .astral-profile__aspects-list {
+  gap: 11px;
+}
+.app-content--you .astral-profile__accordion-card .astral-profile__content--accordion {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 11% 17%, rgba(255, 255, 255, 0.64) 0 0.65px, transparent 1.3px),
+    radial-gradient(circle at 83% 13%, rgba(224, 222, 226, 0.48) 0 0.7px, transparent 1.4px),
+    radial-gradient(circle at 71% 38%, rgba(255, 255, 255, 0.38) 0 0.55px, transparent 1.2px),
+    radial-gradient(circle at 20% 58%, rgba(205, 203, 210, 0.3) 0 0.65px, transparent 1.35px),
+    radial-gradient(circle at 91% 72%, rgba(255, 255, 255, 0.3) 0 0.6px, transparent 1.25px),
+    radial-gradient(ellipse at 50% -12%, rgba(244, 240, 235, 0.09), transparent 46%),
+    radial-gradient(ellipse at 88% 42%, rgba(151, 146, 158, 0.045), transparent 42%),
+    linear-gradient(180deg, rgba(9, 9, 13, 0.94), rgba(3, 3, 6, 0.92));
+  border-top-color: rgba(235, 232, 228, 0.12);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.065),
+    inset 0 20px 36px rgba(239, 233, 225, 0.016),
+    inset 0 -28px 46px rgba(0, 0, 0, 0.25);
+}
+.app-content--you .astral-profile__description-aspect-signature {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  letter-spacing: 0;
+}
+.app-content--you .astral-profile__description-aspect-signature .astral-profile__aspect-planet {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  color: rgba(231, 229, 228, 0.78);
+  font-size: 11.5px;
+  line-height: 1;
+}
+.app-content--you .astral-profile__description-aspect-signature .astral-profile__aspect-symbol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
+}
+.app-content--you .astral-profile__description-aspect-signature .astral-profile__orb-display {
+  flex-basis: 100%;
+  margin-top: 2px;
+}
+.app-content--you .astral-profile__description-aspect-glyph,
+.app-content--you .astral-profile__description-planet-medallion {
+  transform: none;
+  vertical-align: middle;
+}
+.app-content--you .astral-profile__description-planet-signature {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  column-gap: 9px;
+  row-gap: 7px;
+  padding-top: 2px;
+  letter-spacing: 0;
+}
+.app-content--you .astral-profile__description-planet-sign {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  color: rgba(228, 225, 222, 0.78);
+  font-size: 13px;
+  line-height: 1;
+  letter-spacing: 0.55px;
+}
+.app-content--you .astral-profile__content--accordion {
+  padding: 28px 16px 18px;
+}
+.app-content--you .astral-profile__content--accordion .astral-profile__title {
+  max-width: 92%;
+  margin: 0 auto 14px;
+  font-size: clamp(21px, 5.2vw, 24px);
+  line-height: 1.18;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+  text-shadow: none;
+}
+.app-content--you .astral-profile__content--accordion .astral-profile__sign-subtitle {
+  margin-bottom: 28px;
+  color: rgba(224, 221, 218, 0.62);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+}
+.app-content--you .astral-profile__content--accordion .astral-profile__paragraph {
+  width: 100%;
+  margin: 0 auto 18px;
+  padding: 0 2px;
+  color: rgba(245, 243, 240, 0.84);
+  font-size: clamp(14px, 3.5vw, 15px);
+  letter-spacing: 0.08px;
+  hyphens: none;
+  overflow-wrap: break-word;
+}
+.app-content--you .astral-profile__content--accordion .astral-profile__paragraph:first-of-type {
+  color: rgba(250, 248, 245, 0.9);
+}
+.app-content--you .astral-profile__content--accordion .astral-profile__paragraph:first-of-type::first-letter {
+  float: none;
+  margin: 0;
+  color: inherit;
+  font: inherit;
+}
+.astral-profile__pill-glyph .astral-profile__planet-glyph-character,
+.astral-profile__aspect-glyph .astral-profile__planet-glyph-character {
+  position: relative;
+  inset: auto;
+  font-family: "Cambria Math", "DejaVu Sans", "Times New Roman", serif;
+  font-variant-emoji: text;
+  transform: translate(0, -0.2px);
+}
+.astral-profile__pill-glyph.planet-moon .astral-profile__planet-glyph-character,
+.astral-profile__aspect-glyph.planet-moon .astral-profile__planet-glyph-character {
+  transform: translate(-0.35px, -0.15px);
+}
+.astral-profile__pill-glyph.planet-mercury .astral-profile__planet-glyph-character,
+.astral-profile__aspect-glyph.planet-mercury .astral-profile__planet-glyph-character {
+  transform: translate(0, 0.35px);
+}
+.astral-profile__pill-glyph.planet-venus .astral-profile__planet-glyph-character,
+.astral-profile__aspect-glyph.planet-venus .astral-profile__planet-glyph-character {
+  transform: translate(0, -0.1px);
+}
+.astral-profile__pill-glyph.planet-mars .astral-profile__planet-glyph-character,
+.astral-profile__aspect-glyph.planet-mars .astral-profile__planet-glyph-character {
+  transform: translate(-0.25px, 0.15px);
+}
+.astral-profile__pill-glyph.planet-saturn .astral-profile__planet-glyph-character,
+.astral-profile__aspect-glyph.planet-saturn .astral-profile__planet-glyph-character {
+  transform: translate(0.25px, -0.2px);
+}
+.astral-profile__pill-glyph.planet-uranus .astral-profile__planet-glyph-character,
+.astral-profile__aspect-glyph.planet-uranus .astral-profile__planet-glyph-character,
+.astral-profile__pill-glyph.planet-neptune .astral-profile__planet-glyph-character,
+.astral-profile__aspect-glyph.planet-neptune .astral-profile__planet-glyph-character,
+.astral-profile__pill-glyph.planet-pluto .astral-profile__planet-glyph-character,
+.astral-profile__aspect-glyph.planet-pluto .astral-profile__planet-glyph-character {
+  transform: translate(0, -0.25px);
+}
+.astral-profile__pill-glyph.planet-jupiter .astral-profile__jupiter-glyph,
+.astral-profile__aspect-glyph.planet-jupiter .astral-profile__jupiter-glyph {
+  margin: 0;
+  transform: translate(0, 0.2px);
+}
+html[data-theme="light"] .app-content--you,
+html[data-theme="light"] .app-content--you > .min-h-screen {
+  background: #eee8de !important;
+}
+html[data-theme="light"] .app-content--you::before {
+  opacity: 0.22;
+  mix-blend-mode: soft-light;
+}
+html[data-theme="light"] .app-content--you .astral-profile {
+  color: #29232b;
+  background:
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.075'/%3E%3C/svg%3E") 0 0 / 120px 120px,
+    radial-gradient(ellipse at 50% -8%, rgba(255, 255, 255, 0.72), transparent 38%),
+    radial-gradient(ellipse at 14% 24%, rgba(98, 79, 96, 0.13), transparent 42%),
+    radial-gradient(ellipse at 86% 38%, rgba(155, 120, 78, 0.12), transparent 46%),
+    linear-gradient(118deg, transparent 0%, rgba(96, 72, 87, 0.035) 42%, transparent 58%),
+    linear-gradient(180deg, #f4f0e9, #e6ded2 72%, #ded5c8);
+}
+html[data-theme="light"] .app-content--you .astral-profile__section-switch {
+  border-color: rgba(105, 87, 68, 0.18);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.62), rgba(239, 233, 223, 0.34)),
+    rgba(225, 217, 205, 0.68);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.78),
+    0 16px 38px rgba(69, 52, 35, 0.13);
+}
+html[data-theme="light"] .app-content--you .astral-profile__section-card {
+  color: #514953;
+}
+html[data-theme="light"] .app-content--you .astral-profile__section-card--active,
+html[data-theme="light"] .app-content--you .astral-profile__section-card--active:hover:not(:disabled) {
+  color: #211b22;
+}
+html[data-theme="light"] .app-content--you .astral-profile__section-card-title {
+  color: #312a31;
+}
+html[data-theme="light"] .app-content--you .astral-profile__saturn-body {
+  fill: rgba(250, 245, 237, 0.96);
+  stroke: rgba(92, 77, 86, 0.68);
+}
+html[data-theme="light"] .app-content--you .astral-profile__mini-wheel-ring,
+html[data-theme="light"] .app-content--you .astral-profile__mini-wheel-chord {
+  stroke: rgba(76, 67, 78, 0.66);
+}
+html[data-theme="light"] .app-content--you .astral-profile__mini-wheel-point {
+  fill: rgba(88, 72, 85, 0.82);
+}
+html[data-theme="light"] .app-content--you .astral-profile__accordion-card > .astral-profile__sign-pill,
+html[data-theme="light"] .app-content--you .astral-profile__accordion-card > .astral-profile__aspect-item {
+  color: #4f4852;
+  border-color: rgba(90, 76, 88, 0.13);
+  background:
+    radial-gradient(ellipse at 20% -28%, rgba(255, 255, 255, 0.78), transparent 48%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.48), rgba(213, 205, 197, 0.12)),
+    rgba(239, 235, 229, 0.72);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.88),
+    inset 0 -12px 22px rgba(96, 78, 61, 0.045),
+    0 8px 18px rgba(64, 49, 37, 0.08);
+}
+html[data-theme="light"] .app-content--you .astral-profile__sign-pill > span:nth-child(2),
+html[data-theme="light"] .app-content--you .astral-profile__aspect-planet {
+  color: #302a31;
+  text-shadow: none;
+}
+html[data-theme="light"] .app-content--you .astral-profile__pill-sign {
+  color: rgba(62, 54, 62, 0.72);
+  background: rgba(255, 255, 255, 0.5);
+  border-color: rgba(84, 68, 78, 0.12);
+}
+html[data-theme="light"] .app-content--you .astral-profile__row-chevron {
+  color: rgba(56, 49, 58, 0.62);
+}
+html[data-theme="light"] .app-content--you .astral-profile__accordion-card > .astral-profile__sign-pill--active,
+html[data-theme="light"] .app-content--you .astral-profile__accordion-card > .astral-profile__aspect-item--active {
+  color: #211d24;
+  border-color: rgba(125, 99, 73, 0.28);
+  background:
+    radial-gradient(ellipse at 24% -16%, rgba(255, 255, 255, 0.9), transparent 52%),
+    linear-gradient(180deg, rgba(235, 226, 215, 0.76), rgba(211, 201, 191, 0.24)),
+    rgba(240, 235, 228, 0.88);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.94),
+    inset 3px 0 0 rgba(151, 116, 73, 0.62),
+    0 12px 25px rgba(69, 52, 38, 0.1);
+}
+html[data-theme="light"] .app-content--you .astral-profile__accordion-card .astral-profile__content--accordion {
+  color: #302a31;
+  background:
+    radial-gradient(circle at 11% 17%, rgba(82, 72, 85, 0.34) 0 0.65px, transparent 1.3px),
+    radial-gradient(circle at 83% 13%, rgba(135, 102, 66, 0.28) 0 0.7px, transparent 1.4px),
+    radial-gradient(circle at 71% 38%, rgba(75, 65, 78, 0.2) 0 0.55px, transparent 1.2px),
+    radial-gradient(ellipse at 50% -12%, rgba(255, 255, 255, 0.82), transparent 48%),
+    linear-gradient(180deg, rgba(245, 241, 235, 0.98), rgba(225, 218, 209, 0.96));
+  border-top-color: rgba(100, 82, 92, 0.14);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.92),
+    inset 0 -28px 46px rgba(90, 67, 43, 0.06);
+}
+html[data-theme="light"] .app-content--you .astral-profile__content--accordion .astral-profile__title {
+  color: #4a3542;
+  background: linear-gradient(102deg, #241d25, #78525f 48%, #453440 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: none;
+}
+html[data-theme="light"] .app-content--you .astral-profile__content--accordion .astral-profile__sign-subtitle,
+html[data-theme="light"] .app-content--you .astral-profile__description-planet-sign,
+html[data-theme="light"] .app-content--you .astral-profile__description-aspect-signature .astral-profile__aspect-planet {
+  color: rgba(65, 57, 66, 0.74);
+}
+html[data-theme="light"] .app-content--you .astral-profile__content--accordion .astral-profile__paragraph {
+  color: rgba(45, 39, 45, 0.86);
+}
+html[data-theme="light"] .app-content--you .astral-profile__collapse-bottom {
+  color: rgba(69, 57, 67, 0.7);
+  background: rgba(255, 255, 255, 0.44);
+  border-color: rgba(86, 69, 80, 0.14);
+}
+html[data-theme="light"] .astral-profile__birth-editor {
+  background:
+    radial-gradient(circle at 50% 12%, rgba(125, 96, 64, 0.13), transparent 38%),
+    rgba(238, 232, 222, 0.74);
+}
+html[data-theme="light"] .astral-profile__birth-editor-panel {
+  color: #2f292d;
+  background:
+    radial-gradient(circle at 14% 0%, rgba(255, 255, 255, 0.78), transparent 38%),
+    linear-gradient(180deg, rgba(247, 243, 237, 0.98), rgba(226, 217, 205, 0.98));
+  border-color: rgba(105, 87, 68, 0.18);
+  box-shadow:
+    0 26px 70px rgba(72, 54, 38, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82);
+}
+html[data-theme="light"] .astral-profile__birth-editor-heading h2,
+html[data-theme="light"] .astral-profile__birth-editor-field input {
+  color: #2f292d;
+}
+html[data-theme="light"] .astral-profile__birth-editor-heading span,
+html[data-theme="light"] .astral-profile__birth-editor-field > span {
+  color: rgba(92, 72, 50, 0.7);
+}
+html[data-theme="light"] .astral-profile__birth-editor-field input,
+html[data-theme="light"] .astral-profile__birth-editor-close,
+html[data-theme="light"] .astral-profile__birth-editor-suggestions button,
+html[data-theme="light"] .astral-profile__birth-editor-actions button:first-child {
+  background: rgba(255, 255, 255, 0.54);
+  border-color: rgba(100, 82, 92, 0.16);
+}
+html[data-theme="light"] .astral-profile__birth-editor-section-title,
+html[data-theme="light"] .astral-profile__birth-wheel-label {
+  color: rgba(92, 72, 50, 0.7);
+}
+html[data-theme="light"] .astral-profile__birth-wheel-control {
+  color: #2f292d;
+  border-color: rgba(100, 82, 92, 0.16);
+  background:
+    radial-gradient(ellipse at 50% -16%, rgba(255, 255, 255, 0.72), transparent 58%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.58), rgba(236, 228, 218, 0.36)),
+    rgba(255, 255, 255, 0.5);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.76),
+    inset 0 -18px 34px rgba(92, 72, 50, 0.06);
+}
+html[data-theme="light"] .astral-profile__birth-wheel-control strong {
+  color: #2f292d;
+}
+html[data-theme="light"] .astral-profile__birth-wheel-control small {
+  color: rgba(79, 64, 49, 0.66);
+}
+html[data-theme="light"] .astral-profile__birth-editor-suggestions button:hover,
+html[data-theme="light"] .astral-profile__birth-editor-suggestions button:focus-visible,
+html[data-theme="light"] .astral-profile__birth-editor-suggestions button.is-selected {
+  color: #241e22;
+  border-color: rgba(150, 105, 45, 0.42);
+  background:
+    radial-gradient(ellipse at 16% 0%, rgba(255, 255, 255, 0.78), transparent 56%),
+    rgba(255, 255, 255, 0.68);
+}
+html[data-theme="light"] .astral-profile__birth-editor-help,
+html[data-theme="light"] .astral-profile__birth-editor-empty,
+html[data-theme="light"] .astral-profile__birth-editor-suggestions small {
+  color: rgba(79, 64, 49, 0.66);
+}
+html[data-theme="light"] #root > .app-shell:not(.app-shell--you):not(.app-shell--x-report) {
+  filter: invert(0.93) hue-rotate(180deg) brightness(1.025) contrast(1.06) saturate(0.88);
+  transition: filter 0.48s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+html[data-theme="light"] #root > .app-shell:not(.app-shell--you):not(.app-shell--x-report) img,
+html[data-theme="light"] #root > .app-shell:not(.app-shell--you):not(.app-shell--x-report) video {
+  filter: invert(1) hue-rotate(180deg) saturate(1.1) brightness(0.98);
+}
+html[data-theme="light"] #root > .app-shell:not(.app-shell--you):not(.app-shell--x-report) .bottom-nav {
+  filter: invert(1) hue-rotate(180deg) saturate(1.08) brightness(0.98);
+}
+html[data-theme="light"] .app-shell--you .astral-profile__section-card-title,
+html[data-theme="light"] .app-shell--you .astral-profile__sign-pill > span:nth-child(2),
+html[data-theme="light"] .app-shell--you .astral-profile__aspect-planet,
+html[data-theme="light"] .app-shell--you .astral-profile__description-planet-sign {
+  opacity: 1;
+}
+html[data-theme="light"] .app-shell--you .astral-profile__content--accordion .astral-profile__paragraph {
+  color: rgba(39, 34, 40, 0.9);
+}
+html[data-theme="light"] .app-shell--you .astral-profile__content--accordion .astral-profile__sign-subtitle,
+html[data-theme="light"] .app-shell--you .astral-profile__orb-display {
+  color: rgba(61, 54, 63, 0.78);
+  opacity: 1;
+}
+html[data-theme="light"] .app-shell--you .astral-profile__row-chevron {
+  color: rgba(49, 43, 51, 0.72);
+  opacity: 1;
+}
+html[data-theme="light"] .app-shell--you .astral-profile__section-switch {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(232, 224, 213, 0.56)),
+    #e8e0d5;
+  border-color: rgba(91, 72, 58, 0.24);
+}
+html[data-theme="light"] .app-shell--you .astral-profile__section-card {
+  background:
+    radial-gradient(circle at 50% -18%, rgba(255, 255, 255, 0.92), transparent 58%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.68), rgba(217, 207, 196, 0.32)),
+    #e7dfd4;
+  border-color: rgba(83, 67, 77, 0.22);
+}
+html[data-theme="light"] .app-shell--you .astral-profile__section-card-title {
+  color: #302831;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.72);
+}
+html[data-theme="light"] .app-shell--you .astral-profile__section-card--active .astral-profile__section-card-title {
+  color: #21191f;
+}
+html[data-theme="light"] .app-shell--you .astral-profile__mini-wheel-ring,
+html[data-theme="light"] .app-shell--you .astral-profile__mini-wheel-chord {
+  stroke: rgba(49, 39, 50, 0.9);
+  stroke-width: 1.45;
+  filter: drop-shadow(0 1px 2px rgba(255, 255, 255, 0.6));
+}
+html[data-theme="light"] .app-shell--you .astral-profile__mini-wheel-point {
+  fill: #594553;
+  stroke: rgba(255, 255, 255, 0.86);
+}
+html[data-theme="light"] .app-shell--you .astral-profile__saturn-body {
+  fill: #f8f2e9;
+  stroke: rgba(57, 44, 54, 0.9);
+  stroke-width: 1.35;
+}
+html[data-theme="light"] .app-shell--you .astral-profile__accordion-card > .astral-profile__sign-pill,
+html[data-theme="light"] .app-shell--you .astral-profile__accordion-card > .astral-profile__aspect-item {
+  color: #302a31;
+  background:
+    radial-gradient(ellipse at 20% -28%, rgba(255, 255, 255, 0.96), transparent 50%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.66), rgba(211, 201, 192, 0.2)),
+    #eee8df;
+  border-color: rgba(76, 62, 73, 0.18);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.96),
+    inset 0 -10px 20px rgba(76, 58, 43, 0.045),
+    0 7px 16px rgba(62, 47, 35, 0.1);
+}
+html[data-theme="light"] .app-shell--you .astral-profile__accordion-card > .astral-profile__sign-pill--active,
+html[data-theme="light"] .app-shell--you .astral-profile__accordion-card > .astral-profile__aspect-item--active {
+  border-color: rgba(112, 83, 65, 0.32);
+  background:
+    radial-gradient(ellipse at 22% -20%, rgba(255, 255, 255, 1), transparent 52%),
+    linear-gradient(180deg, rgba(244, 235, 225, 0.92), rgba(213, 201, 190, 0.42)),
+    #ede5db;
+}
+html[data-theme="light"] .app-shell--you .astral-profile__pill-glyph,
+html[data-theme="light"] .app-shell--you .astral-profile__aspect-glyph {
+  color: var(--planet-accent, #514754);
+  background:
+    radial-gradient(circle at 34% 24%, rgba(255, 255, 255, 0.22), transparent 34%),
+    linear-gradient(145deg, #403740, #171319);
+  opacity: 1;
+}
+html[data-theme="light"] .app-shell--you .astral-profile__aspect-symbol {
+  color: var(--aspect-accent, #514754);
+  opacity: 1;
+  text-shadow: 0 0 7px var(--aspect-glow, rgba(65, 55, 66, 0.16));
+}
+html[data-theme="light"] .app-shell--you .astral-profile__aspect-symbol.aspect-conjonction { color: #b95f1f; }
+html[data-theme="light"] .app-shell--you .astral-profile__aspect-symbol.aspect-trigone { color: #137a5b; }
+html[data-theme="light"] .app-shell--you .astral-profile__aspect-symbol.aspect-carre { color: #b9363d; }
+html[data-theme="light"] .app-shell--you .astral-profile__aspect-symbol.aspect-opposition { color: #b63d4b; }
+html[data-theme="light"] .app-shell--you .astral-profile__aspect-symbol.aspect-sextile { color: #326db8; }
+.astral-profile__planet-glyph-character {
+  display: inline-flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+.astral-profile__pill-glyph.planet-sun .astral-profile__planet-glyph-character,
+.astral-profile__aspect-glyph.planet-sun .astral-profile__planet-glyph-character {
+  font-size: 11px;
+  transform: translateY(-0.35px);
+}
+.astral-profile__pill-glyph.planet-ascendant .astral-profile__planet-glyph-character,
+.astral-profile__aspect-glyph.planet-ascendant .astral-profile__planet-glyph-character {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  transform: translateY(-0.1px);
+}
+html:not([data-theme="light"]) .app-content--you .astral-profile__section-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  color: rgba(245, 241, 239, 0.86);
+  border-color: rgba(238, 230, 224, 0.23);
+  background:
+    radial-gradient(ellipse at 28% -18%, rgba(255, 255, 255, 0.17), transparent 48%),
+    linear-gradient(145deg, rgba(82, 80, 90, 0.52) 0%, rgba(30, 30, 38, 0.42) 48%, rgba(7, 8, 12, 0.66) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.42),
+    0 16px 34px rgba(0, 0, 0, 0.4),
+    0 3px 8px rgba(0, 0, 0, 0.24),
+    0 0 22px rgba(203, 190, 174, 0.035);
+  backdrop-filter: blur(27px) saturate(0.76) brightness(0.8);
+  -webkit-backdrop-filter: blur(27px) saturate(0.76) brightness(0.8);
+  filter: none;
+  transform: translateY(0) scale(1);
+}
+html:not([data-theme="light"]) .app-content--you .astral-profile__section-card::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    linear-gradient(118deg, rgba(255, 255, 255, 0.19) 0%, rgba(255, 255, 255, 0.055) 24%, transparent 44%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.065), transparent 44%);
+  opacity: 0.86;
+  pointer-events: none;
+}
+.app-content--you .astral-profile__section-card > * {
+  position: relative;
+  z-index: 1;
+}
+html:not([data-theme="light"]) .app-content--you .astral-profile__section-card:hover:not(:disabled) {
+  border-color: rgba(237, 220, 193, 0.28);
+  background:
+    radial-gradient(ellipse at 28% -18%, rgba(255, 255, 255, 0.15), transparent 48%),
+    linear-gradient(145deg, rgba(84, 80, 88, 0.5), rgba(31, 30, 37, 0.4) 50%, rgba(9, 10, 14, 0.6));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.38),
+    0 15px 32px rgba(0, 0, 0, 0.37);
+  filter: none;
+  transform: translateY(-1px) scale(1);
+}
+html:not([data-theme="light"]) .app-content--you .astral-profile__section-card--active,
+html:not([data-theme="light"]) .app-content--you .astral-profile__section-card--active:hover:not(:disabled) {
+  color: #fffaf2;
+  border-color: rgba(245, 209, 151, 0.72);
+  background:
+    radial-gradient(ellipse at 50% -16%, rgba(250, 216, 162, 0.25), transparent 54%),
+    linear-gradient(145deg, rgba(101, 87, 72, 0.52), rgba(40, 33, 35, 0.46) 52%, rgba(9, 8, 11, 0.69));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 247, 230, 0.24),
+    inset 0 -1px 0 rgba(66, 43, 18, 0.34),
+    0 0 0 1px rgba(227, 184, 118, 0.12),
+    0 16px 34px rgba(0, 0, 0, 0.4),
+    0 0 32px rgba(226, 178, 105, 0.19);
+  backdrop-filter: blur(29px) saturate(0.88) brightness(0.9);
+  -webkit-backdrop-filter: blur(29px) saturate(0.88) brightness(0.9);
+  filter: none;
+  transform: translateY(-2px) scale(1.008);
+}
+.app-content--you .astral-profile__sign-pill .astral-profile__pill-house {
+  flex-shrink: 0;
+  margin-left: 2px;
+  padding-left: 0;
+  color: rgba(220, 210, 194, 0.54);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 8.5px;
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: 0.25px;
+  text-shadow: none;
+}
+html[data-theme="light"] .app-content--you .astral-profile__sign-pill .astral-profile__pill-house {
+  color: rgba(62, 54, 62, 0.72);
+  text-shadow: none;
+}
+.app-content--you .astral-profile__description-meta {
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  color: rgba(218, 207, 209, 0.58);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 1.55px;
+  text-align: center;
+  text-transform: uppercase;
+  opacity: 1;
+}
+.app-content--you .astral-profile__description-meta::before,
+.app-content--you .astral-profile__description-meta::after {
+  content: "";
+  width: 22px;
+  height: 1px;
+  flex: 0 0 22px;
+  background: linear-gradient(90deg, transparent, rgba(216, 195, 194, 0.42));
+}
+.app-content--you .astral-profile__description-meta::after {
+  transform: scaleX(-1);
+}
+html[data-theme="light"] .app-content--you .astral-profile__description-meta {
+  color: rgba(73, 62, 70, 0.68);
+}
+html[data-theme="light"] .app-content--you .astral-profile__description-meta::before,
+html[data-theme="light"] .app-content--you .astral-profile__description-meta::after {
+  background: linear-gradient(90deg, transparent, rgba(102, 77, 87, 0.32));
+}
+html[data-theme="light"] .app-content--you .astral-profile__section-card {
+  border-color: rgba(74, 66, 75, 0.2);
+  background:
+    radial-gradient(ellipse at 28% -18%, rgba(255, 255, 255, 0.86), transparent 48%),
+    linear-gradient(145deg, rgba(119, 112, 121, 0.2), rgba(83, 78, 87, 0.12) 48%, rgba(54, 51, 59, 0.16));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.86),
+    inset 0 -1px 0 rgba(61, 53, 62, 0.13),
+    0 13px 28px rgba(52, 44, 54, 0.14);
+  backdrop-filter: blur(24px) saturate(0.68);
+  -webkit-backdrop-filter: blur(24px) saturate(0.68);
+  filter: none;
+  transform: translateY(0) scale(1);
+}
+html[data-theme="light"] .app-content--you .astral-profile__section-card--active,
+html[data-theme="light"] .app-content--you .astral-profile__section-card--active:hover:not(:disabled) {
+  border-color: rgba(148, 103, 44, 0.56);
+  background:
+    radial-gradient(ellipse at 50% -16%, rgba(255, 246, 226, 0.88), transparent 54%),
+    linear-gradient(145deg, rgba(176, 150, 116, 0.28), rgba(116, 99, 95, 0.15) 54%, rgba(69, 62, 70, 0.18));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 0 0 1px rgba(159, 111, 49, 0.1),
+    0 16px 31px rgba(71, 53, 40, 0.17),
+    0 0 22px rgba(190, 139, 72, 0.1);
+  filter: none;
+  transform: translateY(-2px) scale(1.008);
+}
+.app-content--you .astral-profile__content--accordion.astro-aspect-background--active {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 8%, rgba(194, 139, 62, 0.11), transparent 28%),
+    radial-gradient(circle at 18% 28%, rgba(174, 75, 54, 0.055), transparent 23%),
+    radial-gradient(circle at 82% 28%, rgba(72, 118, 174, 0.055), transparent 23%),
+    linear-gradient(180deg, #05070b 0%, #030406 48%, #050609 100%);
+}
+.app-content--you .astro-aspect-background__stars,
+.app-content--you .astro-aspect-background__grain,
+.app-content--you .astro-aspect-background__halo,
+.app-content--you .astro-aspect-background__circle {
+  position: absolute;
+  pointer-events: none;
+}
+.app-content--you .astro-aspect-background__stars {
+  inset: 0;
+  z-index: -2;
+  background-image:
+    radial-gradient(circle at 8% 14%, rgba(255, 241, 206, 0.8) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 18% 32%, rgba(255, 255, 255, 0.55) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 30% 9%, rgba(255, 219, 157, 0.65) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 46% 22%, rgba(255, 255, 255, 0.5) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 63% 11%, rgba(255, 220, 157, 0.72) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 78% 31%, rgba(255, 255, 255, 0.55) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 91% 16%, rgba(255, 230, 178, 0.7) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 12% 67%, rgba(255, 255, 255, 0.35) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 89% 73%, rgba(255, 226, 173, 0.38) 0 1px, transparent 1.5px);
+  background-size:
+    330px 310px,
+    420px 390px,
+    510px 470px,
+    380px 430px,
+    540px 510px,
+    450px 420px,
+    360px 340px,
+    500px 460px,
+    480px 520px;
+}
+.app-content--you .astro-aspect-background__grain {
+  inset: 0;
+  z-index: -1;
+  opacity: 0.13;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.25) 0 0.5px, transparent 0.8px);
+  background-size: 6px 6px;
+  mix-blend-mode: soft-light;
+}
+.app-content--you .astro-aspect-background__halo {
+  z-index: -3;
+  border-radius: 50%;
+  filter: blur(70px);
+}
+.app-content--you .astro-aspect-background__halo--gold {
+  top: -120px;
+  left: 50%;
+  width: 560px;
+  height: 560px;
+  transform: translateX(-50%);
+  background: radial-gradient(circle, rgba(217, 157, 73, 0.2), rgba(217, 157, 73, 0.04) 44%, transparent 72%);
+}
+.app-content--you .astro-aspect-background__halo--red {
+  top: 180px;
+  left: -100px;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(217, 105, 76, 0.12), transparent 70%);
+}
+.app-content--you .astro-aspect-background__halo--blue {
+  top: 180px;
+  right: -100px;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(89, 139, 202, 0.12), transparent 70%);
+}
+.app-content--you .astro-aspect-background__circle {
+  z-index: -1;
+  width: 430px;
+  height: 430px;
+  border: 1px solid rgba(202, 157, 89, 0.11);
+  border-radius: 50%;
+}
+.app-content--you .astro-aspect-background__circle::before,
+.app-content--you .astro-aspect-background__circle::after {
+  content: "";
+  position: absolute;
+  border: 1px solid rgba(202, 157, 89, 0.075);
+  border-radius: 50%;
+}
+.app-content--you .astro-aspect-background__circle::before {
+  inset: 24px;
+}
+.app-content--you .astro-aspect-background__circle::after {
+  inset: 52px;
+}
+.app-content--you .astro-aspect-background__circle--top {
+  top: -260px;
+  left: -190px;
+}
+.app-content--you .astro-aspect-background__circle--bottom {
+  right: -210px;
+  bottom: -280px;
+}
+@media (max-width: 520px) {
+.app-content--you .astro-aspect-background__halo--gold {
+    width: 390px;
+    height: 390px;
+  }
+.app-content--you .astro-aspect-background__halo--red,
+  .app-content--you .astro-aspect-background__halo--blue {
+    width: 260px;
+    height: 260px;
+  }
+.app-content--you .astro-aspect-background__circle {
+    width: 300px;
+    height: 300px;
+  }
+}
+.app-content--you .astral-profile__section-switch {
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  overflow: visible !important;
+}
+.app-content--you .astral-profile__section-switch::before {
+  content: none !important;
+  display: none !important;
+}
+.app-content--you .astral-profile__accordion-card {
+  position: relative !important;
+  overflow: hidden !important;
+}
+.app-content--you .astral-profile__accordion-card::before {
+  content: "" !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: auto !important;
+  height: 34px !important;
+  border-radius: 999px !important;
+  background:
+    linear-gradient(180deg, rgba(255, 224, 166, 0.82), rgba(255, 184, 107, 0.28)) left center / 2px 100% no-repeat,
+    linear-gradient(180deg, rgba(255, 224, 166, 0.82), rgba(255, 184, 107, 0.28)) right center / 2px 100% no-repeat !important;
+  box-shadow:
+    -1px 0 10px rgba(255, 184, 107, 0.14),
+    1px 0 10px rgba(255, 184, 107, 0.14) !important;
+  transform: translateY(-50%) !important;
+  pointer-events: none !important;
+}
+.app-content--you {
+  padding-bottom: 0 !important;
+  background:
+    radial-gradient(ellipse at 50% 24%, rgba(255, 244, 220, 0.72), transparent 44%),
+    radial-gradient(ellipse at 50% 78%, rgba(211, 190, 162, 0.32), transparent 58%),
+    linear-gradient(180deg, #f5f0e7 0%, #e8dfd2 48%, #d7cbbd 100%) !important;
+}
+.app-content--you .astral-profile-wheel-page {
+  width: 100% !important;
+  height: 100svh !important;
+  min-height: 100svh !important;
+  position: relative !important;
+  isolation: isolate !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  padding: max(8px, env(safe-area-inset-top)) 0 0 !important;
+  overflow: hidden !important;
+  background:
+    radial-gradient(ellipse 92% 70% at 50% 20%, rgba(48, 58, 120, 0.46), transparent 58%),
+    radial-gradient(ellipse 72% 52% at 70% 72%, rgba(28, 20, 70, 0.5), transparent 56%),
+    radial-gradient(ellipse 62% 46% at 20% 82%, rgba(20, 40, 90, 0.4), transparent 52%),
+    linear-gradient(180deg, #0a0d22 0%, #060814 42%, #03040c 100%) !important;
+}
+.app-content--you .astral-profile-wheel-page::before {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+  pointer-events: none !important;
+}
+.app-content--you .astral-profile-wheel-page::after {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+  pointer-events: none !important;
+}
+.app-content--you .stars-layer-2 {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+.app-content--you .star-drift {
+  position: absolute;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 5px currentColor;
+  animation: drift 45s ease-in-out infinite;
+}
+.app-content--you .star-drift--one {
+  top: 18%;
+  left: 30%;
+  width: 2.6px;
+  height: 2.6px;
+  color: rgba(235, 242, 255, 0.72);
+  animation-duration: 38s;
+}
+.app-content--you .star-drift--two {
+  top: 31%;
+  left: 76%;
+  width: 3px;
+  height: 3px;
+  color: rgba(255, 238, 218, 0.68);
+  animation-duration: 56s;
+  animation-delay: -11s;
+}
+.app-content--you .astral-profile-wheel-page .zodiac-wheel-container {
+  position: relative !important;
+  z-index: 1 !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+}
+.app-content--you .astral-profile-wheel-page .natal-identity-panel {
+  flex: 0 0 auto !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-bottom: 0 !important;
+  transform: translateY(-2px) !important;
+  align-self: stretch !important;
+  box-sizing: border-box !important;
+}
+.app-content--you .astral-profile-wheel-page .natal-chart-card {
+  width: 100% !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0 !important;
+  background: transparent !important;
+}
+.app-content--you .astral-profile-wheel-page .natal-chart-wheel-stage,
+.app-content--you .astral-profile-wheel-page .natal-chart-wheel-frame {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+}
+.app-content--you .astral-profile-wheel-page .natal-chart-wheel-frame {
+  transform: translateY(clamp(34px, 5.2svh, 58px)) !important;
+}
+.app-content--you .astral-profile-wheel-page .natal-chart-svg {
+  width: min(100vw, calc(100svh * 1.06), 1280px) !important;
+  max-width: none !important;
+  height: auto !important;
+}
+@media (max-width: 768px) {
+.app-content--you .astral-profile-wheel-page {
+    height: 100svh !important;
+    min-height: 100svh !important;
+    padding: max(6px, env(safe-area-inset-top)) 0 0 !important;
+  }
+.app-content--you .astral-profile-wheel-page .natal-chart-wheel-frame {
+    transform: translateY(clamp(38px, 5.6svh, 58px)) !important;
+  }
+.app-content--you .astral-profile-wheel-page .natal-chart-svg {
+    width: min(100vw, 680px) !important;
+    max-width: none !important;
+    transform: none !important;
+  }
+}
+.app-content--you2 .astral-profile--you2 {
+  background: transparent;
+}
+.app-content--you2 .astral-profile-wheel-page--you2 {
+  height: clamp(520px, 68svh, 720px);
+  min-height: 520px;
+  padding: clamp(18px, 4svh, 34px) 0 clamp(8px, 2svh, 18px);
+  overflow: hidden;
+  perspective: 1100px;
+}
+.app-content--you2 .astral-profile-wheel-page--you2::before {
+  content: "" !important;
+  position: absolute;
+  inset: -12% -10% -2%;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 50% 34%, rgba(205, 187, 154, 0.17), transparent 42%),
+    radial-gradient(ellipse at 50% 62%, rgba(126, 79, 58, 0.12), transparent 56%),
+    linear-gradient(180deg, rgba(7, 9, 15, 0.7), rgba(5, 5, 8, 0.18) 58%, rgba(5, 5, 7, 0));
+  transform: translate3d(var(--you2-shift-x), var(--you2-shift-y), 0);
+  transition: transform 420ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.app-content--you2 .astral-profile-wheel-page--you2::after {
+  content: "" !important;
+  position: absolute;
+  inset: 16% 8% 2%;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse at 50% 34%, rgba(242, 228, 200, 0.09), transparent 44%),
+    radial-gradient(ellipse at 50% 72%, rgba(178, 92, 58, 0.12), transparent 60%);
+}
+.app-content--you2 .you2-depth-layer {
+  position: absolute;
+  inset: 2% 2% 0;
+  z-index: 1;
+  pointer-events: none;
+  border-radius: 50%;
+  transform-style: preserve-3d;
+}
+.app-content--you2 .you2-depth-layer--stars {
+  inset: -4% -2% 2%;
+  border-radius: 24%;
+  background-image:
+    radial-gradient(circle at 18% 28%, rgba(255, 235, 198, 0.76) 0 0.62px, transparent 1.2px),
+    radial-gradient(circle at 82% 34%, rgba(242, 204, 151, 0.56) 0 0.58px, transparent 1.1px),
+    radial-gradient(circle at 60% 78%, rgba(255, 248, 224, 0.42) 0 0.52px, transparent 1px);
+  background-size: 230px 190px, 290px 230px, 210px 260px;
+  opacity: 0.26;
+  transform: translate3d(var(--you2-shift-x), var(--you2-shift-y), -28px);
+}
+.app-content--you2 .you2-depth-layer--halo {
+  inset: 11% 4% 12%;
+  background:
+    radial-gradient(ellipse at 50% 46%, var(--you2-halo-a), transparent 34%),
+    radial-gradient(ellipse at 50% 54%, var(--you2-halo-b), transparent 56%);
+  filter: blur(22px);
+  transform: translate3d(var(--you2-halo-x), var(--you2-halo-y), -12px);
+  animation: you2-halo-breathe 6200ms ease-in-out infinite;
+}
+.app-content--you2 .you2-depth-layer--particles {
+  inset: 8% 0 4%;
+  border-radius: 0;
+  background-image:
+    radial-gradient(circle at 35% 16%, rgba(255, 255, 240, 0.44) 0 0.55px, transparent 1px),
+    radial-gradient(circle at 70% 38%, rgba(232, 166, 106, 0.34) 0 0.55px, transparent 1px),
+    radial-gradient(circle at 47% 84%, rgba(216, 118, 97, 0.24) 0 0.5px, transparent 1px);
+  background-size: 190px 230px, 250px 210px, 290px 260px;
+  opacity: 0.22;
+  transform: translate3d(var(--you2-particle-x), var(--you2-particle-y), 20px);
+  animation: you2-star-twinkle 8600ms ease-in-out infinite;
+}
+.app-content--you2 .astral-profile-wheel-page--you2 .natal-chart-card {
+  background: transparent !important;
+}
+.app-content--you2 .astral-profile-wheel-page--you2 .natal-chart-svg {
+  width: min(96vw, calc((68svh - 70px) * 1.04), 980px) !important;
+}
+.app-content--you2 .astral-profile {
+  position: relative;
+  z-index: 2;
+  width: min(100%, 760px);
+  margin-inline: auto;
+  padding: 0 clamp(16px, 4.5vw, 30px) calc(92px + env(safe-area-inset-bottom));
+}
+.app-content--you2 .astral-profile::before {
+  content: "";
+  position: absolute;
+  inset: -24px -18px auto;
+  height: 220px;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 10%, rgba(221, 191, 146, 0.08), transparent 66%);
+}
+.app-content--you2 .astral-profile__section-switch--you2 {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(7px, 2vw, 10px);
+  width: 100%;
+  margin: 0 auto clamp(16px, 3.2svh, 24px);
+  padding: 7px;
+  border-radius: 24px;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(255, 231, 194, 0.1), transparent 70%),
+    linear-gradient(180deg, rgba(20, 21, 27, 0.68), rgba(9, 9, 13, 0.52));
+  border: 1px solid rgba(237, 210, 164, 0.18);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 16px 44px rgba(0, 0, 0, 0.26);
+  backdrop-filter: blur(18px) saturate(1.08);
+  -webkit-backdrop-filter: blur(18px) saturate(1.08);
+}
+.app-content--you2 .astral-profile__section-switch--you2::before {
+  content: none;
+}
+.app-content--you2 .astral-profile__section-switch--you2 .astral-profile__section-card {
+  min-height: 62px;
+  padding: 10px 6px 9px;
+  border-radius: 18px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(236, 210, 168, 0.12);
+}
+.app-content--you2 .astral-profile__section-switch--you2 .astral-profile__section-card-title {
+  font-size: clamp(0.58rem, 2.25vw, 0.72rem);
+  letter-spacing: 0.08em;
+  color: rgba(246, 233, 212, 0.82);
+}
+.app-content--you2 .astral-profile__section-switch--you2 .astral-profile__section-card--active,
+.app-content--you2 .astral-profile__section-switch--you2 .astral-profile__section-card--active:hover:not(:disabled) {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(255, 232, 196, 0.16), transparent 70%),
+    linear-gradient(180deg, rgba(40, 34, 31, 0.72), rgba(18, 18, 22, 0.64));
+  border-color: rgba(245, 220, 174, 0.36);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 24px rgba(222, 177, 108, 0.12);
+}
+.app-content--you2 .astral-profile__drawer {
+  animation: you2-panel-rise 520ms cubic-bezier(0.18, 0.72, 0.2, 1) both;
+}
+.app-content--you2 .astral-profile__drawer--you2,
+.app-content--you2 .astral-profile__accordion-card--active {
+  position: relative;
+  border-radius: 28px 28px 18px 18px;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(255, 234, 201, 0.11), transparent 56%),
+    linear-gradient(180deg, rgba(21, 22, 28, 0.72), rgba(8, 8, 12, 0.58));
+  border: 1px solid rgba(236, 208, 164, 0.2);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 22px 54px rgba(0, 0, 0, 0.34);
+  backdrop-filter: blur(18px) saturate(1.08);
+  -webkit-backdrop-filter: blur(18px) saturate(1.08);
+}
+.app-content--you2 .astral-profile__you2-panel-handle {
+  width: 42px;
+  height: 4px;
+  margin: 12px auto 2px;
+  border-radius: 999px;
+  background: rgba(255, 231, 190, 0.32);
+  box-shadow: 0 0 12px rgba(255, 214, 153, 0.14);
+}
+.app-content--you2 .astral-profile__you2-grid {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+}
+.app-content--you2 .astral-profile__you2-insight-card {
+  position: relative;
+  overflow: hidden;
+  min-height: 166px;
+  padding: 18px 18px 16px;
+  border-radius: 22px;
+  background:
+    radial-gradient(ellipse at 18% 0%, rgba(255, 226, 181, 0.13), transparent 58%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.018));
+  border: 1px solid rgba(239, 214, 174, 0.14);
+}
+.app-content--you2 .astral-profile__you2-insight-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.06), transparent 38%);
+  opacity: 0.7;
+}
+.app-content--you2 .astral-profile__you2-card-kicker {
+  display: block;
+  margin-bottom: 8px;
+  color: rgba(235, 209, 168, 0.74);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.app-content--you2 .astral-profile__you2-panel-action {
+  position: relative;
+  z-index: 1;
+  margin-top: 14px;
+  min-height: 40px;
+  width: 100%;
+  border-radius: 999px;
+  border: 1px solid rgba(239, 214, 174, 0.22);
+  background: rgba(255, 232, 196, 0.075);
+  color: rgba(255, 244, 226, 0.9);
+  font-size: 0.78rem;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+}
+.app-content--you2 .astral-profile__content--accordion {
+  border-radius: 26px;
+}
+.app-content--you2 .astral-profile__content--accordion .astral-profile__title,
+.app-content--you2 .astral-profile__you2-insight-card .astral-profile__title {
+  color: #fff2df;
+  text-shadow: 0 0 18px rgba(230, 192, 137, 0.16);
+}
+.app-content--you2 .astral-profile__content--accordion .astral-profile__paragraph,
+.app-content--you2 .astral-profile__you2-insight-card .astral-profile__paragraph {
+  color: rgba(246, 238, 226, 0.78);
+  line-height: 1.72;
+}
+@media (min-width: 760px) {
+.app-content--you2 .astral-profile-wheel-page--you2 {
+    height: clamp(620px, 72svh, 820px);
+  }
+.app-content--you2 .astral-profile__you2-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 430px) {
+.app-content--you2 .astral-profile-wheel-page--you2 {
+    height: clamp(500px, 64svh, 600px);
+    min-height: 500px;
+  }
+.app-content--you2 .astral-profile {
+    padding-inline: 12px;
+  }
+.app-content--you2 .astral-profile__section-switch--you2 {
+    gap: 5px;
+    padding: 6px;
+  }
+.app-content--you2 .astral-profile__section-switch--you2 .astral-profile__section-card {
+    min-height: 56px;
+    padding-inline: 4px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+.app-content--you2 .astral-profile-wheel-page--you2::before,
+  .app-content--you2 .you2-depth-layer,
+  .app-content--you2 .astral-profile__drawer {
+    animation: none !important;
+    transition: opacity 180ms ease !important;
+    transform: none !important;
+  }
+}
+.app-content--you .astral-profile {
+  --you-expanded-panel-bg: url('/you-expanded-panel-bg.jpg');
+}
+.app-content--you .astral-profile__accordion-card .astral-profile__content--accordion,
+.app-content--you .astral-profile__content--accordion {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(6, 7, 12, 0.42) 0%, rgba(6, 7, 12, 0.55) 100%),
+    var(--you-expanded-panel-bg) center center / cover no-repeat,
+    #08090d !important;
+  background-blend-mode: normal !important;
+}
+.app-content--you .astro-aspect-background__stars,
+.app-content--you .astro-aspect-background__grain,
+.app-content--you .astro-aspect-background__halo,
+.app-content--you .astro-aspect-background__circle {
+  display: none !important;
+}
+.app-content--you .astro-aspect-background.astro-aspect-background--active {
+  background:
+    linear-gradient(180deg, rgba(6, 7, 12, 0.42) 0%, rgba(6, 7, 12, 0.55) 100%),
+    var(--you-expanded-panel-bg) center center / cover no-repeat,
+    #08090d !important;
+}
+.app-content--you .astral-profile__accordion-card--active::before,
+.app-content--you .astral-profile__accordion-card--active::after {
+  display: none !important;
+  content: none !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+.app-content--you .astral-profile__accordion-card .astral-profile__content--accordion,
+.app-content--you .astral-profile__content--accordion {
+  border-top: 1px solid rgba(255, 240, 220, 0.06) !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+.app-content--you .astral-profile__content--accordion .astral-profile__title {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border: 0 !important;
+}
+.app-content--you .astral-profile__description-planet-house {
+  flex-basis: auto !important;
+  margin-top: 0 !important;
+}
+.app-content--you .astral-profile__description-meta {
+  display: inline-flex !important;
+  width: auto !important;
+  max-width: 100%;
+  padding: 0 !important;
+  border: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+.app-content--you .astro-aspect-background > [class*="astro-aspect-background__"] {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  opacity: 0 !important;
+}
+.app-content--you .astral-profile__content--accordion .astral-profile__paragraph:empty {
+  display: none !important;
+}
+.app-content--you .astral-profile__content--accordion .astral-profile__title {
+  color: #f7f0e8 !important;
+  background: none !important;
+  background-image: none !important;
+  -webkit-text-fill-color: #f7f0e8 !important;
+  background-clip: border-box !important;
+  -webkit-background-clip: border-box !important;
+  filter: none !important;
+  font-family: 'Crimson Pro', 'Spectral', Georgia, serif !important;
+  font-weight: 400 !important;
+}
+.app-content--you .astral-profile__content--accordion .astral-profile__paragraph {
+  font-family: 'Spectral', Georgia, 'Times New Roman', serif !important;
+  font-weight: 400 !important;
+  max-width: min(58ch, 100%) !important;
+  text-align: justify !important;
+  text-align-last: left !important;
+}
+.astral-profile__premium-teaser {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  width: min(100%, 34ch);
+  margin: 8px auto 6px;
+  padding: 16px 14px 14px;
+  border-top: 1px solid rgba(255, 230, 190, 0.1);
+  text-align: center;
+}
+.astral-profile__premium-teaser-text {
+  margin: 0;
+  max-width: 30ch;
+  color: rgba(235, 228, 218, 0.48);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.45;
+  letter-spacing: 0.01em;
+  text-wrap: balance;
+}
+.astral-profile__premium-teaser-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 38px;
+  padding: 0 16px;
+  border: 1px solid rgba(241, 212, 158, 0.28);
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)),
+    rgba(255, 214, 153, 0.06);
+  color: rgba(243, 221, 180, 0.88);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 8px 20px rgba(0, 0, 0, 0.18);
+  transition:
+    color 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease,
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+.astral-profile__premium-teaser-btn:hover {
+  color: #f8e7c4;
+  border-color: rgba(241, 212, 158, 0.42);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 214, 153, 0.08)),
+    rgba(255, 214, 153, 0.08);
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 10px 24px rgba(0, 0, 0, 0.22),
+    0 0 18px rgba(255, 200, 130, 0.08);
+}
+.astral-profile__premium-teaser-btn:active {
+  transform: scale(0.985);
+}
+.astral-profile__premium-teaser-btn svg {
+  opacity: 0.75;
+  flex-shrink: 0;
+}
+.app-content--you .astral-profile__premium-teaser {
+  margin-top: 4px;
+  margin-bottom: 2px;
+}
+html[data-theme="light"] .astral-profile__premium-teaser {
+  border-top-color: rgba(90, 70, 80, 0.12);
+}
+html[data-theme="light"] .astral-profile__premium-teaser-text {
+  color: rgba(70, 58, 66, 0.55);
+}
+html[data-theme="light"] .astral-profile__premium-teaser-btn {
+  color: rgba(92, 68, 40, 0.82);
+  border-color: rgba(160, 120, 70, 0.28);
+  background: rgba(255, 245, 225, 0.55);
+  box-shadow: none;
+}
+html[data-theme="light"] .astral-profile__premium-teaser-btn:hover {
+  color: rgba(70, 50, 28, 0.95);
+  border-color: rgba(160, 120, 70, 0.4);
+  background: rgba(255, 248, 232, 0.85);
+  box-shadow: none;
+}
+.app-content--you2 .astral-profile-wheel-page--you2 {
+  background: radial-gradient(circle at 50% 45%, #10101c 0%, #08080d 55%, #020204 100%) !important;
+}
+.app-content--you2 .astral-profile-wheel-page--you2::before {
+  background-image:
+    radial-gradient(circle at 18% 22%, rgba(255, 255, 255, 0.34) 0 0.9px, transparent 1.6px),
+    radial-gradient(circle at 72% 20%, rgba(255, 245, 218, 0.25) 0 0.86px, transparent 1.55px),
+    radial-gradient(circle at 30% 28%, rgba(230, 238, 255, 0.28) 0 0.78px, transparent 1.45px),
+    radial-gradient(circle at 58% 30%, rgba(255, 232, 218, 0.2) 0 0.7px, transparent 1.35px),
+    radial-gradient(circle at 36% 64%, rgba(210, 226, 255, 0.16) 0 0.65px, transparent 1.4px),
+    radial-gradient(circle at 84% 70%, rgba(255, 255, 255, 0.14) 0 0.7px, transparent 1.5px),
+    radial-gradient(circle at 50% 48%, rgba(110, 135, 190, 0.06), transparent 62%) !important;
+  background-size: 220px 190px, 310px 260px, 170px 120px, 240px 150px, 260px 300px, 380px 330px, 100% 100% !important;
+  background-position: 0 0, 44px 18px, 14px 18px, 72px 28px, 18px 58px, 72px 34px, center !important;
+  opacity: 0.62 !important;
+  filter: none !important;
+}
+.app-content--you2 .astral-profile-wheel-page--you2::after {
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.28) 0 0.35px, transparent 0.8px),
+    linear-gradient(115deg, rgba(255, 255, 255, 0.035), transparent 34%, rgba(255, 255, 255, 0.018) 68%, transparent) !important;
+  background-size: 5px 5px, 100% 100% !important;
+  opacity: 0.035 !important;
+  mix-blend-mode: screen !important;
+  filter: none !important;
+}
+.app-content--you2 .you2-depth-layer--halo {
+  opacity: 0 !important;
+}
+.app-content--you,
+.app-content--you .astral-profile-wheel-page {
+  background: radial-gradient(circle at 50% 45%, #10101c 0%, #08080d 55%, #020204 100%) !important;
+}
+.app-content--you .astral-profile-wheel-page::before {
+  background-image:
+    radial-gradient(circle at 18% 22%, rgba(255, 255, 255, 0.34) 0 0.9px, transparent 1.6px),
+    radial-gradient(circle at 72% 20%, rgba(255, 245, 218, 0.25) 0 0.86px, transparent 1.55px),
+    radial-gradient(circle at 30% 28%, rgba(230, 238, 255, 0.28) 0 0.78px, transparent 1.45px),
+    radial-gradient(circle at 58% 30%, rgba(255, 232, 218, 0.2) 0 0.7px, transparent 1.35px),
+    radial-gradient(circle at 36% 64%, rgba(210, 226, 255, 0.16) 0 0.65px, transparent 1.4px),
+    radial-gradient(circle at 84% 70%, rgba(255, 255, 255, 0.14) 0 0.7px, transparent 1.5px),
+    radial-gradient(circle at 50% 48%, rgba(110, 135, 190, 0.06), transparent 62%) !important;
+  background-size: 220px 190px, 310px 260px, 170px 120px, 240px 150px, 260px 300px, 380px 330px, 100% 100% !important;
+  background-position: 0 0, 44px 18px, 14px 18px, 72px 28px, 18px 58px, 72px 34px, center !important;
+  opacity: 0.62 !important;
+}
+.app-content--you .astral-profile-wheel-page::after {
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.28) 0 0.35px, transparent 0.8px),
+    linear-gradient(115deg, rgba(255, 255, 255, 0.035), transparent 34%, rgba(255, 255, 255, 0.018) 68%, transparent) !important;
+  background-size: 5px 5px, 100% 100% !important;
+  opacity: 0.035 !important;
+  mix-blend-mode: screen !important;
+}
+.app-shell--you,
+.app-shell--you .app-content--you,
+.app-shell--you .app-content--you > .min-h-screen,
+.app-shell--you .astral-profile-wheel-page {
+  background: #111322 !important;
+  background-color: #111322 !important;
+}
+.app-shell--you .app-content--you {
+  min-height: 100dvh;
+  padding-bottom: calc(42px + env(safe-area-inset-bottom)) !important;
+}
+.app-shell--you .bottom-nav {
+  background: #111322 !important;
+  background-color: #111322 !important;
+  border-top-color: rgba(235, 238, 255, 0.1) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+.app-shell--you .bottom-nav::before,
+.app-shell--you .bottom-nav::after {
+  display: none !important;
+}
+@media (max-width: 640px) {
+.app-shell--you,
+  .app-shell--you .app-content--you,
+  .app-shell--you .app-content--you > .min-h-screen,
+  .app-shell--you .astral-profile-wheel-page,
+  .app-shell--you .bottom-nav {
+    background: #111322 !important;
+    background-color: #111322 !important;
+  }
+.app-shell--you .app-content--you {
+    min-height: 100dvh;
+  }
+.app-shell--you .bottom-nav {
+    background:
+      radial-gradient(ellipse at 50% -38%, rgba(216, 178, 103, 0.12), transparent 52%),
+      linear-gradient(180deg, rgba(20, 19, 22, 0.58), rgba(7, 7, 9, 0.66)) !important;
+    backdrop-filter: blur(10px) saturate(1.04) !important;
+    -webkit-backdrop-filter: blur(10px) saturate(1.04) !important;
+    border-top-color: rgba(235, 208, 154, 0.16) !important;
+    box-shadow:
+      0 -8px 24px rgba(0, 0, 0, 0.18),
+      0 -2px 18px rgba(220, 179, 98, 0.055),
+      inset 0 1px 0 rgba(255, 246, 225, 0.08),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.2) !important;
+  }
+.app-shell--you .bottom-nav::before,
+  .app-shell--you .bottom-nav::after {
+    display: block !important;
+  }
+}
+.app-content--you .astral-profile__wheel-insight {
+  --planet-accent: #e8c77d;
+  --planet-rgb: 232, 199, 125;
+  min-height: 250px;
+  border-color: rgba(var(--planet-rgb), 0.46);
+}
+.app-content--you .astral-profile__wheel-insight[data-planet='sun'] { --planet-accent: #ffc857; --planet-rgb: 255, 200, 87; }
+.app-content--you .astral-profile__wheel-insight[data-planet='moon'] { --planet-accent: #c9d7ef; --planet-rgb: 201, 215, 239; }
+.app-content--you .astral-profile__wheel-insight[data-planet='ascendant'] { --planet-accent: #f0d8a1; --planet-rgb: 240, 216, 161; }
+.app-content--you .astral-profile__wheel-insight[data-planet='mercury'] { --planet-accent: #53d5e8; --planet-rgb: 83, 213, 232; }
+.app-content--you .astral-profile__wheel-insight[data-planet='venus'] { --planet-accent: #f171a8; --planet-rgb: 241, 113, 168; }
+.app-content--you .astral-profile__wheel-insight[data-planet='mars'] { --planet-accent: #ff655f; --planet-rgb: 255, 101, 95; }
+.app-content--you .astral-profile__wheel-insight[data-planet='jupiter'] { --planet-accent: #57d6a1; --planet-rgb: 87, 214, 161; }
+.app-content--you .astral-profile__wheel-insight[data-planet='saturn'] { --planet-accent: #d0b28a; --planet-rgb: 208, 178, 138; }
+.app-content--you .astral-profile__wheel-insight[data-planet='uranus'] { --planet-accent: #70a5ff; --planet-rgb: 112, 165, 255; }
+.app-content--you .astral-profile__wheel-insight[data-planet='neptune'] { --planet-accent: #9b7cff; --planet-rgb: 155, 124, 255; }
+.app-content--you .astral-profile__wheel-insight[data-planet='pluto'] { --planet-accent: #bd72ff; --planet-rgb: 189, 114, 255; }
+.app-content--you .astral-profile__wheel-insight::after {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.24;
+  background-image:
+    linear-gradient(30deg, rgba(var(--planet-rgb), 0.2) 1px, transparent 1px),
+    linear-gradient(150deg, rgba(var(--planet-rgb), 0.14) 1px, transparent 1px);
+  background-position: right top;
+  background-size: 38px 66px;
+  -webkit-mask-image: linear-gradient(90deg, transparent 54%, #000 100%);
+  mask-image: linear-gradient(90deg, transparent 54%, #000 100%);
+}
+.app-content--you .astral-profile__wheel-insight > * {
+  position: relative;
+  z-index: 1;
+}
+.app-content--you .astral-profile__wheel-insight-visual {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  right: 0;
+  width: 47%;
+  height: 126px;
+  overflow: hidden;
+  pointer-events: none;
+}
+.app-content--you .astral-profile__wheel-insight-orbit {
+  position: absolute;
+  top: -24px;
+  right: -17px;
+  width: 142px;
+  height: 142px;
+  border: 1px solid rgba(var(--planet-rgb), 0.5);
+  border-radius: 50%;
+  box-shadow: 0 0 34px rgba(var(--planet-rgb), 0.18), inset 0 0 28px rgba(var(--planet-rgb), 0.08);
+}
+.app-content--you .astral-profile__wheel-insight-orbit::before,
+.app-content--you .astral-profile__wheel-insight-orbit::after {
+  content: '';
+  position: absolute;
+  border: 1px solid rgba(var(--planet-rgb), 0.2);
+  border-radius: 50%;
+}
+.app-content--you .astral-profile__wheel-insight-orbit::before { inset: 15px; }
+.app-content--you .astral-profile__wheel-insight-orbit::after { inset: 30px; }
+.app-content--you .astral-profile__wheel-insight-index {
+  position: absolute;
+  top: 12px;
+  right: 13px;
+  color: rgba(255, 255, 255, 0.54);
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+}
+.app-content--you .astral-profile__wheel-insight-glyph {
+  position: absolute;
+  top: 25px;
+  right: 31px;
+  text-shadow: 0 0 12px rgba(var(--planet-rgb), 0.66), 0 0 34px rgba(var(--planet-rgb), 0.38);
+  transform: rotate(-7deg);
+}
+.app-content--you .astral-profile__wheel-insight-glyph .astral-profile__jupiter-glyph {
+  filter: drop-shadow(0 0 10px rgba(var(--planet-rgb), 0.52));
+}
+.app-content--you .astral-profile__wheel-insight-close {
+  left: 13px;
+}
+.app-content--you .astral-profile__wheel-insight-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 51%;
+  min-height: 34px;
+  margin-left: 42px;
+  color: rgba(255, 255, 255, 0.44);
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 6.4px;
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.app-content--you .astral-profile__wheel-insight-meta span:last-child {
+  overflow: hidden;
+  color: var(--planet-accent);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.app-content--you .astral-profile__wheel-insight-heading {
+  justify-content: space-between;
+  margin-top: 20px;
+  padding: 0;
+}
+.app-content--you .astral-profile__wheel-insight h2 {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  text-transform: uppercase;
+}
+.app-content--you .astral-profile__wheel-insight h2 strong {
+  overflow: hidden;
+  color: #fff;
+  font-size: clamp(29px, 8.7vw, 39px);
+  font-weight: 900;
+  letter-spacing: -0.065em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.app-content--you .astral-profile__wheel-insight h2 span {
+  margin-top: 7px;
+  color: var(--planet-accent);
+  font-size: 13px;
+  font-weight: 850;
+  letter-spacing: 0.035em;
+}
+.app-content--you .astral-profile__wheel-insight-copy {
+  width: calc(100% - 58px);
+  margin: 14px 0 0;
+  -webkit-line-clamp: 2;
+  color: rgba(255, 255, 255, 0.72);
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 11.5px;
+  font-weight: 440;
+  line-height: 1.36;
+}
+.app-content--you .astral-profile__wheel-insight-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 11px;
+  min-height: 48px;
+  margin-top: 8px;
+}
+.app-content--you .astral-profile__wheel-insight-footer > span {
+  max-width: 145px;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 7px;
+  font-weight: 800;
+  line-height: 1.35;
+  letter-spacing: 0.13em;
+  text-align: right;
+  text-transform: uppercase;
+}
+.app-content--you .astral-profile__wheel-insight-action {
+  position: relative;
+  flex: 0 0 auto;
+  height: 48px;
+  margin: 0;
+  box-shadow: 0 0 18px rgba(var(--planet-rgb), 0.2), inset 0 0 0 5px rgba(255, 255, 255, 0.025);
+}
+.app-content--you .astral-profile__wheel-insight-action::before {
+  content: '';
+  position: absolute;
+  inset: -5px;
+  border: 1px solid rgba(255, 255, 255, 0.44);
+  border-left-color: transparent;
+  border-radius: 50%;
+  transform: rotate(-28deg);
+  transition: transform 0.35s ease;
+}
+.app-content--you .astral-profile__wheel-insight-action:hover::before,
+.app-content--you .astral-profile__wheel-insight-action:focus-visible::before {
+  transform: rotate(62deg);
+}
+@media (max-width: 640px) {
+.app-content--you .astral-profile__wheel-interface.is-open {
+    bottom: calc(52px + env(safe-area-inset-bottom));
+  }
+.app-content--you .astral-profile-wheel-page:has(.astral-profile__wheel-interface.is-open) .zodiac-wheel-container {
+    transform: translateY(-62px) scale(0.94) !important;
+    transform-origin: 50% 45% !important;
+    transition: transform 0.58s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+.app-content--you .astral-profile__wheel-insight {
+    min-height: 244px;
+  }
+.app-content--you .astral-profile__wheel-insight-heading {
+    margin-top: 16px;
+  }
+.app-content--you .astral-profile__wheel-insight-copy {
+    margin-top: 12px;
+    font-size: 10.8px;
+  }
+}
+.app-content--you .astral-profile__wheel-interface {
+  position: absolute;
+  z-index: 8;
+  left: 50%;
+  bottom: calc(62px + env(safe-area-inset-bottom));
+  width: min(calc(100% - 28px), 430px);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.app-content--you .astral-profile__wheel-instruction {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 9px 14px;
+  border: 1px solid rgba(235, 209, 158, 0.2);
+  border-radius: 999px;
+  background: rgba(4, 6, 11, 0.66);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  color: rgba(245, 237, 224, 0.8);
+  font-size: 10px;
+  font-weight: 650;
+  line-height: 1.25;
+  letter-spacing: 0.025em;
+  text-align: center;
+  pointer-events: auto;
+}
+.app-content--you .astral-profile__wheel-instruction svg {
+  flex: 0 0 auto;
+  color: #e8c77d;
+}
+.app-content--you .astral-profile__wheel-insight {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 15px 16px 13px;
+  overflow: hidden;
+  border: 1px solid rgba(232, 199, 125, 0.34);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(232, 199, 125, 0.13), transparent 36%),
+    linear-gradient(145deg, rgba(19, 18, 25, 0.96), rgba(5, 7, 12, 0.94));
+  box-shadow: 0 20px 54px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  -webkit-backdrop-filter: blur(18px) saturate(1.08);
+  backdrop-filter: blur(18px) saturate(1.08);
+  color: #fff8ef;
+  pointer-events: auto;
+  animation: you-wheel-insight-in 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.app-content--you .astral-profile__wheel-insight::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 14%;
+  width: 72%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 230, 182, 0.7), transparent);
+}
+.app-content--you .astral-profile__wheel-insight-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding-right: 30px;
+}
+.app-content--you .astral-profile__wheel-insight-glyph {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(232, 199, 125, 0.42);
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 30%, rgba(255, 247, 224, 0.16), rgba(8, 9, 15, 0.88) 68%);
+  box-shadow: 0 0 18px rgba(232, 199, 125, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  color: #f4dba4;
+  font-size: 23px;
+  line-height: 1;
+}
+.app-content--you .astral-profile__wheel-insight-glyph .astral-profile__jupiter-glyph {
+  width: 23px;
+  height: 25px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+.app-content--you .astral-profile__wheel-insight h2 {
+  margin: 4px 0 0;
+  color: #fff8ef;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 21px;
+  font-weight: 520;
+  line-height: 1;
+  letter-spacing: 0;
+}
+.app-content--you .astral-profile__wheel-insight h2 small {
+  display: inline-block;
+  margin-left: 8px;
+  color: rgba(225, 209, 190, 0.58);
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  vertical-align: 0.22em;
+}
+.app-content--you .astral-profile__wheel-insight p {
+  display: -webkit-box;
+  margin: 11px 0 0;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  color: rgba(239, 231, 224, 0.78);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 14.5px;
+  font-weight: 420;
+  line-height: 1.34;
+}
+.app-content--you .astral-profile__wheel-insight-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 38px;
+  margin-top: 11px;
+  padding: 8px 14px;
+  border: 1px solid rgba(239, 212, 164, 0.3);
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(232, 199, 125, 0.13), rgba(223, 167, 151, 0.1));
+  color: #f3ddba;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+.app-content--you .astral-profile__wheel-insight-action:hover,
+.app-content--you .astral-profile__wheel-insight-action:focus-visible {
+  border-color: rgba(255, 230, 182, 0.58);
+  background: linear-gradient(90deg, rgba(232, 199, 125, 0.22), rgba(223, 167, 151, 0.17));
+}
+.app-content--you .astral-profile__wheel-insight-action:active {
+  transform: scale(0.985);
+}
+.app-content--you .astral-profile__wheel-insight-close {
+  position: absolute;
+  z-index: 2;
+  top: 10px;
+  right: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.035);
+  color: rgba(242, 232, 216, 0.66);
+}
+@media (max-width: 640px) {
+.app-content--you .astral-profile__wheel-interface {
+    bottom: calc(56px + env(safe-area-inset-bottom));
+    width: min(calc(100% - 24px), 420px);
+  }
+.app-content--you .astral-profile__wheel-insight {
+    padding: 13px 14px 12px;
+    border-radius: 16px;
+  }
+.app-content--you .astral-profile__wheel-insight-glyph {
+    width: 38px;
+    height: 38px;
+    font-size: 21px;
+  }
+.app-content--you .astral-profile__wheel-insight h2 {
+    font-size: 19px;
+  }
+.app-content--you .astral-profile__wheel-insight p {
+    margin-top: 9px;
+    font-size: 13.5px;
+  }
+.app-content--you .astral-profile__wheel-insight-action {
+    min-height: 36px;
+    margin-top: 9px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+.app-content--you .astral-profile__wheel-insight {
+    animation: none;
+  }
+}
+.app-content--you .natal-identity-panel {
+  width: min(100%, 520px) !important;
+  max-width: 520px !important;
+  padding: 8px 44px 7px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  overflow: visible !important;
+}
+.app-content--you .natal-identity-panel::after {
+  width: min(118px, 34%) !important;
+  opacity: 0.42 !important;
+  background: linear-gradient(90deg, transparent, rgba(226, 236, 255, 0.54), transparent) !important;
+}
+.app-content--you .natal-identity-panel__meta span {
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.58) !important;
+}
+@media (max-width: 640px) {
+.app-content--you .natal-identity-panel {
+    transform: none !important;
+  }
+.app-content--you .natal-chart-name {
+    line-height: 1.02 !important;
+  }
+}
+.app-content--you .natal-identity-panel {
+  gap: 6px !important;
+  padding-top: 7px !important;
+}
+.app-content--you .natal-chart-name {
+  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif !important;
+  font-size: clamp(1.12rem, 2.5vw, 1.58rem) !important;
+  font-weight: 720 !important;
+  line-height: 1.02 !important;
+  letter-spacing: 0.005em !important;
+  color: rgba(255, 250, 239, 0.96) !important;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.56) !important;
+}
+.app-content--you .natal-identity-panel__meta {
+  gap: 0 !important;
+  flex-wrap: nowrap !important;
+}
+.app-content--you .natal-identity-panel__meta span {
+  max-width: none !important;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif !important;
+  font-size: clamp(0.68rem, 1.65vw, 0.78rem) !important;
+  font-weight: 520 !important;
+  letter-spacing: 0.015em !important;
+  line-height: 1.2 !important;
+  text-transform: none !important;
+  color: rgba(226, 232, 244, 0.72) !important;
+}
+.app-content--you .natal-identity-panel__meta span + span::before {
+  width: 3px !important;
+  height: 3px !important;
+  margin: 0 10px 2px !important;
+  background: rgba(226, 236, 255, 0.45) !important;
+  box-shadow: none !important;
+}
+@media (max-width: 640px) {
+.app-content--you .natal-identity-panel {
+    padding: 7px 18px 6px !important;
+    gap: 5px !important;
+  }
+.app-content--you .natal-chart-name {
+    font-size: clamp(1.08rem, 5.2vw, 1.38rem) !important;
+    letter-spacing: 0 !important;
+  }
+.app-content--you .natal-identity-panel__meta {
+    width: min(100%, 350px) !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+  }
+.app-content--you .natal-identity-panel__meta span {
+    min-width: 0 !important;
+    max-width: 47% !important;
+    font-size: 0.68rem !important;
+    letter-spacing: 0.005em !important;
+    text-overflow: ellipsis !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+  }
+.app-content--you .natal-identity-panel__meta span + span::before {
+    margin-inline: 8px !important;
+  }
+}
+.app-content--you .natal-identity-panel {
+  display: none !important;
+}
+@media (max-width: 640px) {
+.app-content--you .astral-profile-wheel-page {
+    min-height: 0 !important;
+    padding: 0 0 0 !important;
+    justify-content: center !important;
+  }
+.app-content--you .astral-profile-wheel-page .zodiac-wheel-container {
+    height: 100% !important;
+    justify-content: center !important;
+    transform: none !important;
+  }
+.app-content--you .astral-profile-wheel-page .natal-chart-card,
+  .app-content--you .astral-profile-wheel-page .natal-chart-wheel-stage,
+  .app-content--you .astral-profile-wheel-page .natal-chart-wheel-frame {
+    align-items: center !important;
+    justify-content: center !important;
+  }
+.app-content--you .astral-profile-wheel-page .natal-chart-svg {
+    width: min(100vw, calc((100svh - 42px - env(safe-area-inset-bottom)) * 1.02), 1280px) !important;
+  }
+.app-content--you .astral-profile-wheel-page .zodiac-wheel-container {
+    transform: translateY(clamp(-46px, -6svh, -30px)) !important;
+  }
+.app-content--you {
+    scrollbar-width: none !important;
+  }
+.app-content--you::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
+    display: none !important;
+  }
+.app-content--you .astral-profile__gold-divider {
+    display: none !important;
+  }
+.app-shell--you .app-content--you {
+    padding-bottom: 0 !important;
+  }
+.app-content--you .astral-profile-wheel-page {
+    height: 100svh !important;
+    min-height: 100svh !important;
+  }
+.app-content--you .astral-profile-wheel-page .zodiac-wheel-container {
+    height: 100svh !important;
+  }
+.app-content--you .astral-profile-wheel-page .natal-chart-card,
+  .app-content--you .astral-profile-wheel-page .natal-chart-wheel-stage,
+  .app-content--you .astral-profile-wheel-page .natal-chart-wheel-frame,
+  .app-content--you .astral-profile-wheel-page .natal-chart-svg {
+    overflow: visible !important;
+  }
+.app-content--you .stars-layer-2 {
+    display: block !important;
+    overflow: hidden;
+  }
+.app-content--you .star-drift {
+    display: block;
+    transform-origin: center;
+  }
+.app-content--you .star-drift::before,
+  .app-content--you .star-drift::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border-radius: 999px;
+    background: currentColor;
+    transform: translate(-50%, -50%);
+    opacity: 0.78;
+  }
+.app-content--you .star-drift::before {
+    width: 1px;
+    height: 9px;
+  }
+.app-content--you .star-drift::after {
+    width: 9px;
+    height: 1px;
+  }
+.app-shell--you .app-content--you,
+  .app-shell--you .app-content--you > .min-h-screen,
+  .app-shell--you .astral-profile-wheel-page {
+    background: transparent !important;
+    background-color: transparent !important;
+  }
+.app-shell--you .astral-profile-wheel-page::before {
+    background: none !important;
+  }
+.app-shell--you .astral-profile-wheel-page::after {
+    background-size: 100% 100% !important;
+    -webkit-mask-image: none !important;
+    mask-image: none !important;
+    mix-blend-mode: normal !important;
+  }
+.app-content--you .star-drift {
+    border-radius: 50% !important;
+    background: currentColor !important;
+    box-shadow: 0 0 4px currentColor !important;
+    animation: you-star-classic-twinkle 5.8s ease-in-out infinite !important;
+  }
+.app-content--you .star-drift::before,
+  .app-content--you .star-drift::after {
+    content: none !important;
+    display: none !important;
+  }
+.app-content--you .star-drift--one {
+    top: 25%;
+    left: 8%;
+    width: 2.2px;
+    height: 2.2px;
+    color: rgba(231, 239, 250, 0.64);
+    animation-delay: -1.6s !important;
+  }
+.app-content--you .star-drift--two {
+    top: 76%;
+    left: 91%;
+    width: 2.8px;
+    height: 2.8px;
+    color: rgba(255, 229, 198, 0.58);
+    animation-duration: 7s !important;
+    animation-delay: -3.4s !important;
+  }
+.app-shell--you {
+    background-color: #050302 !important;
+  }
+.app-shell--you .astral-profile-wheel-page::before {
+    background-image:
+      radial-gradient(circle at 12% 18%, rgba(238, 244, 252, 0.58) 0 0.75px, transparent 1.5px),
+      radial-gradient(circle at 87% 24%, rgba(255, 232, 203, 0.48) 0 0.7px, transparent 1.45px),
+      radial-gradient(circle at 7% 82%, rgba(218, 230, 246, 0.48) 0 0.8px, transparent 1.55px),
+      radial-gradient(circle at 89% 89%, rgba(255, 241, 218, 0.46) 0 0.65px, transparent 1.4px) !important;
+    background-size: 100% 100% !important;
+    background-position: center !important;
+    opacity: 0.72 !important;
+  }
+.app-shell--you {
+    background:
+      linear-gradient(180deg, rgba(7, 5, 4, 0.46), rgba(2, 4, 8, 0.15) 38%, rgba(2, 3, 6, 0.3) 100%),
+      url('/costar-29-suggest-glow.jpg') center top / cover no-repeat,
+      #050302 !important;
+  }
+.app-shell--you .astral-profile-wheel-page::after {
+    background:
+      radial-gradient(ellipse 90% 60% at 50% 48%, rgba(1, 3, 7, 0.66) 0%, rgba(1, 3, 7, 0.42) 58%, transparent 82%),
+      linear-gradient(180deg, rgba(4, 3, 3, 0.56) 0%, rgba(2, 3, 6, 0.09) 30%, rgba(2, 3, 6, 0.2) 100%) !important;
+    opacity: 0.75 !important;
+  }
+}
+.app-content--you .astral-profile__wheel-insight[data-planet] {
+  padding: 15px 18px 14px;
+  border-color: rgba(var(--planet-rgb), 0.46);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 84% 13%, rgba(var(--planet-rgb), 0.34), transparent 27%),
+    radial-gradient(circle at 100% 100%, rgba(var(--planet-rgb), 0.13), transparent 42%),
+    linear-gradient(135deg, rgba(19, 20, 20, 0.98), rgba(5, 7, 9, 0.985) 62%, rgba(11, 12, 11, 0.98));
+  box-shadow:
+    0 28px 72px rgba(0, 0, 0, 0.68),
+    0 0 38px rgba(var(--planet-rgb), 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.09);
+}
+.app-content--you .astral-profile__wheel-insight[data-planet]::before {
+  left: 9%;
+  width: 82%;
+  background: linear-gradient(90deg, transparent, rgba(var(--planet-rgb), 0.9), transparent);
+}
+.app-content--you .astral-profile__wheel-insight[data-planet] .astral-profile__wheel-insight-glyph {
+  position: absolute;
+  top: 31px;
+  right: 31px;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--planet-accent);
+  font-size: 36px;
+  line-height: 1;
+  text-shadow: 0 0 12px rgba(var(--planet-rgb), 0.66), 0 0 34px rgba(var(--planet-rgb), 0.38);
+  transform: rotate(-7deg);
+}
+.app-content--you .astral-profile__wheel-insight[data-planet] .astral-profile__wheel-insight-visual {
+  width: 38%;
+}
+.app-content--you .astral-profile__wheel-insight[data-planet] .astral-profile__wheel-insight-orbit {
+  top: 10px;
+  right: 10px;
+  width: 78px;
+  height: 78px;
+}
+.app-content--you .astral-profile__wheel-insight[data-planet] .astral-profile__wheel-insight-orbit::before {
+  inset: 10px;
+}
+.app-content--you .astral-profile__wheel-insight[data-planet] .astral-profile__wheel-insight-orbit::after {
+  inset: 20px;
+}
+.app-content--you .astral-profile__wheel-insight[data-planet] .astral-profile__wheel-insight-index {
+  top: 13px;
+  right: 96px;
+}
+.app-content--you .astral-profile__wheel-insight[data-planet] .astral-profile__wheel-insight-house {
+  position: absolute;
+  top: 94px;
+  right: 10px;
+  width: 78px;
+  min-height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 5px 2px;
+  border: 1px solid rgba(var(--planet-rgb), 0.34);
+  background: rgba(var(--planet-rgb), 0.09);
+  color: rgba(var(--planet-rgb), 0.86);
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 6.8px;
+  font-weight: 850;
+  line-height: 1;
+  letter-spacing: 0.13em;
+  text-align: center;
+  text-transform: uppercase;
+  text-shadow: 0 0 10px rgba(var(--planet-rgb), 0.32);
+}
+.app-content--you .astral-profile__wheel-insight[data-planet] .astral-profile__wheel-insight-glyph .astral-profile__jupiter-glyph {
+  width: 32px;
+  height: 36px;
+  stroke: currentColor;
+  stroke-width: 5;
+}
+.app-content--you .astral-profile__wheel-insight[data-planet] .astral-profile__wheel-insight-close {
+  top: 12px;
+  left: 13px;
+  right: auto;
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.28);
+  color: rgba(255, 255, 255, 0.78);
+}
+.app-content--you .astral-profile__wheel-insight[data-planet] .astral-profile__wheel-insight-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 20px;
+  padding: 0;
+}
+.app-content--you .astral-profile__wheel-insight[data-planet] h2 {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  margin: 0;
+  font-family: Inter, system-ui, sans-serif;
+  line-height: 0.88;
+  text-transform: uppercase;
+  max-width: 70%;
+}
+.app-content--you .astral-profile__wheel-insight[data-planet] .astral-profile__wheel-insight-action {
+  position: relative;
+  flex: 0 0 auto;
+  width: 48px;
+  min-height: 48px;
+  height: 48px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid rgba(var(--planet-rgb), 0.8);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--planet-rgb), 0.19), rgba(0, 0, 0, 0.22) 68%);
+  color: #fff;
+  box-shadow: 0 0 18px rgba(var(--planet-rgb), 0.2), inset 0 0 0 5px rgba(255, 255, 255, 0.025);
+}
+.app-content--you .astral-profile__wheel-insight[data-planet] .astral-profile__wheel-insight-copy {
+  width: calc(100% - 58px);
+  margin: 14px 0 0;
+  color: rgba(255, 255, 255, 0.72);
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 11.5px;
+  font-weight: 440;
+  line-height: 1.36;
+}
+.app-content--you .astral-profile__wheel-insight[data-planet] .astral-profile__wheel-insight-footer > span {
+  max-width: 158px;
+  font-size: 7.4px;
+  letter-spacing: 0.095em;
+}
+@media (max-width: 640px) {
+.app-content--you .astral-profile__wheel-insight[data-planet] {
+    padding: 14px 15px 12px;
+    border-radius: 22px;
+  }
+.app-content--you .astral-profile__wheel-insight[data-planet] .astral-profile__wheel-insight-heading {
+    margin-top: 16px;
+  }
+.app-content--you .astral-profile__wheel-insight[data-planet] .astral-profile__wheel-insight-copy {
+    margin-top: 12px;
+    font-size: 10.8px;
+  }
+}
+.app-content--you .astral-profile__wheel-insight[data-planet] {
+  z-index: 1;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+}
+.app-content--you .astral-profile__wheel-insight[data-planet]:active {
+  cursor: grabbing;
+}
+.app-content--you .astral-profile__wheel-insight[data-planet] .astral-profile__wheel-insight-visual {
+  height: 112px;
+}
+.app-content--you .astral-profile__wheel-insight[data-planet] .astral-profile__wheel-insight-orbit::before {
+  border-style: dashed;
+  border-right-color: transparent;
+  animation: you-planet-ring-turn 14s linear infinite;
+}
+.app-content--you .astral-profile__wheel-interface.is-open::before {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  top: -88px;
+  left: 50%;
+  width: 1px;
+  height: 90px;
+  background: linear-gradient(180deg, transparent, rgba(232, 199, 125, 0.76) 66%, rgba(232, 199, 125, 0.18));
+  box-shadow: 0 0 10px rgba(232, 199, 125, 0.32);
+  transform: scaleY(0);
+  transform-origin: bottom;
+  animation: you-wheel-signal-in 0.72s 0.08s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.app-content--you .astral-profile__wheel-interface.is-open::after {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  top: -91px;
+  left: calc(50% - 2px);
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #f3d9a2;
+  box-shadow: 0 0 12px rgba(243, 217, 162, 0.78);
+  opacity: 0;
+  animation: you-wheel-signal-dot 0.42s 0.42s ease forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+.app-content--you .astral-profile__wheel-insight[data-planet] .astral-profile__wheel-insight-orbit::before,
+  .app-content--you .astral-profile__wheel-interface.is-open::before,
+  .app-content--you .astral-profile__wheel-interface.is-open::after {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+.app-content--you .astral-profile-wheel-page {
+  --wheel-planet-rgb: 232, 199, 125;
+}
+.app-content--you .astral-profile-wheel-page[data-active-planet='sun'] { --wheel-planet-rgb: 255, 200, 87; }
+.app-content--you .astral-profile-wheel-page[data-active-planet='moon'] { --wheel-planet-rgb: 201, 215, 239; }
+.app-content--you .astral-profile-wheel-page[data-active-planet='ascendant'] { --wheel-planet-rgb: 240, 216, 161; }
+.app-content--you .astral-profile-wheel-page[data-active-planet='mercury'] { --wheel-planet-rgb: 83, 213, 232; }
+.app-content--you .astral-profile-wheel-page[data-active-planet='venus'] { --wheel-planet-rgb: 241, 113, 168; }
+.app-content--you .astral-profile-wheel-page[data-active-planet='mars'] { --wheel-planet-rgb: 255, 101, 95; }
+.app-content--you .astral-profile-wheel-page[data-active-planet='jupiter'] { --wheel-planet-rgb: 87, 214, 161; }
+.app-content--you .astral-profile-wheel-page[data-active-planet='saturn'] { --wheel-planet-rgb: 208, 178, 138; }
+.app-content--you .astral-profile-wheel-page[data-active-planet='uranus'] { --wheel-planet-rgb: 112, 165, 255; }
+.app-content--you .astral-profile-wheel-page[data-active-planet='neptune'] { --wheel-planet-rgb: 155, 124, 255; }
+.app-content--you .astral-profile-wheel-page[data-active-planet='pluto'] { --wheel-planet-rgb: 189, 114, 255; }
+.app-content--you .astral-profile__wheel-atmosphere {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  background:
+    radial-gradient(ellipse 72% 48% at 50% 45%, rgba(var(--wheel-planet-rgb), 0.105), transparent 68%);
+  transition: opacity 0.5s ease, filter 0.5s ease;
+}
+.app-content--you .astral-profile-wheel-page[data-active-planet] .astral-profile__wheel-atmosphere {
+  opacity: 1;
+}
+.app-content--you .astral-profile__wheel-atmosphere::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 62% 44% at 50% 45%, transparent 18%, rgba(0, 0, 0, 0.055) 70%, rgba(0, 0, 0, 0.12) 100%),
+    rgba(0, 0, 0, 0.11);
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+.app-content--you .astral-profile-wheel-page--card-open .astral-profile__wheel-atmosphere::before {
+  opacity: 1;
+}
+.app-content--you .astral-profile__wheel-atmosphere::after {
+  content: '';
+  position: absolute;
+  inset: -18%;
+  pointer-events: none;
+  opacity: 0.075;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='.88'/%3E%3C/svg%3E");
+  background-size: 178px 178px;
+  mix-blend-mode: soft-light;
+  -webkit-mask-image: radial-gradient(ellipse 68% 50% at 50% 46%, transparent 8%, rgba(0, 0, 0, 0.42) 58%, #000 100%);
+  mask-image: radial-gradient(ellipse 68% 50% at 50% 46%, transparent 8%, rgba(0, 0, 0, 0.42) 58%, #000 100%);
+  transform: rotate(0.01deg);
+}
+.app-content--you .natal-chart-svg [filter="url(#wheelGrain)"] {
+  filter: none;
+}
+.app-shell--you {
+  background:
+    linear-gradient(180deg, rgba(7, 5, 4, 0.46), rgba(2, 4, 8, 0.15) 38%, rgba(2, 3, 6, 0.3)),
+    url('/costar-29-suggest-glow.jpg') center top / cover no-repeat,
+    #05080c !important;
+  background-color: #05080c !important;
+}
+.app-shell--you .app-content--you,
+.app-shell--you .app-content--you > .min-h-screen,
+.app-shell--you .astral-profile-wheel-page {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+.app-shell--you .app-content--you::before,
+.app-shell--you .astral-profile-wheel-page::before,
+.app-shell--you .astral-profile-wheel-page::after {
+  content: none !important;
+  display: none !important;
+  background: none !important;
+  filter: none !important;
+  opacity: 0 !important;
+}
+.app-content--you .stars-layer-2 {
+  display: none !important;
+}
+.app-shell--you .app-content--you .astral-profile {
+  background: transparent !important;
+}
+.app-shell--you .app-content--you .astral-profile__wheel-atmosphere::after {
+  content: none;
+  display: none;
+}
+.app-shell--you .app-content--you .astral-profile__section-card,
+.app-shell--you .app-content--you .astral-profile__accordion-card {
+  background: linear-gradient(180deg, rgba(24, 30, 38, 0.94), rgba(8, 12, 18, 0.94)) !important;
+  border-color: rgba(219, 199, 160, 0.2) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 240, 212, 0.045), 0 10px 24px rgba(0, 0, 0, 0.18) !important;
+}
+.app-shell--you .app-content--you .astral-profile__section-card:hover:not(:disabled),
+.app-shell--you .app-content--you .astral-profile__section-card--active,
+.app-shell--you .app-content--you .astral-profile__accordion-card--active {
+  background: linear-gradient(180deg, rgba(39, 37, 34, 0.96), rgba(10, 15, 22, 0.96)) !important;
+  border-color: rgba(219, 190, 135, 0.52) !important;
+}
+.app-shell--you .app-content--you .astral-profile__accordion-card > .astral-profile__sign-pill,
+.app-shell--you .app-content--you .astral-profile__accordion-card > .astral-profile__aspect-item {
+  background: transparent !important;
+}
+.app-shell--you .app-content--you .astral-profile__content--accordion,
+.app-shell--you .app-content--you .astro-aspect-background.astro-aspect-background--active,
+.app-shell--you .app-content--you .astral-profile__premium-cta {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(209, 177, 117, 0.07), transparent 58%),
+    linear-gradient(180deg, #101720, #080c12) !important;
+}
+
+/* ==========================================================================
+   You page — additions on top of the original design.
+   ========================================================================== */
+
+/* Sign icon + whole degree inside the planet rows. */
+.astral-profile__pill-sign {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.astral-profile__sign-icon {
+  width: 17px;
+  height: 17px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+.astral-profile__pill-degree {
+  opacity: 0.72;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+/* Premium CTA feedback while the full reading is not available yet. */
+.astral-profile__premium-cta-status {
+  position: relative;
+  z-index: 1;
+  margin: 10px 0 0;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-size: 12px;
+  text-align: center;
+  color: rgba(244, 237, 225, 0.72);
+}
+.astral-profile__premium-cta-status:empty {
+  display: none;
+}
+
+/* Birth data editor trigger (top-left, mirrors the theme toggle). */
+.astral-profile__edit-trigger {
+  position: absolute;
+  z-index: 30;
+  top: max(12px, env(safe-area-inset-top));
+  left: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 46vw;
+  height: 34px;
+  padding: 0 13px;
+  border: 1px solid rgba(201, 168, 76, 0.24);
+  border-radius: 999px;
+  background: rgba(8, 10, 16, 0.58);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  color: rgba(244, 237, 225, 0.86);
+  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+.astral-profile__edit-trigger span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.astral-profile__edit-trigger svg {
+  flex: 0 0 auto;
+  color: #c9a84c;
+}
+html[data-theme="light"] .astral-profile__edit-trigger {
+  border-color: rgba(154, 116, 38, 0.3);
+  background: rgba(255, 252, 246, 0.72);
+  color: #2b2330;
+}
+html[data-theme="light"] .astral-profile__edit-trigger svg {
+  color: #9a7426;
+}
+
+/* Global theme toggle: fades out once the You page scrolls so it never covers content. */
+#root:has(.app-shell--you) > .theme-toggle {
+  transition:
+    color 0.35s ease,
+    background 0.35s ease,
+    border-color 0.35s ease,
+    box-shadow 0.35s ease,
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+html.you-scrolled #root:has(.app-shell--you) > .theme-toggle {
+  opacity: 0;
+  transform: translateY(-8px);
+  pointer-events: none;
+}
+
+/* ── Heure de naissance inconnue ── */
+.astral-profile__time-notice {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: 8px 10px;
+  margin: 18px 0 14px;
+  padding: 12px 14px;
+  border: 1px solid rgba(201, 168, 76, 0.22);
+  border-radius: 14px;
+  background: rgba(201, 168, 76, 0.05);
+  color: rgba(232, 216, 190, 0.78);
+}
+.astral-profile__time-notice svg {
+  margin-top: 2px;
+  color: #C9A84C;
+}
+.astral-profile__time-notice p {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+.astral-profile__time-notice button {
+  grid-column: 2;
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #C9A84C;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.astral-profile__time-note {
+  margin: 0 0 18px;
+  padding: 10px 12px;
+  border-left: 2px solid rgba(201, 168, 76, 0.5);
+  color: rgba(232, 216, 190, 0.74);
+  font-size: 13px;
+  line-height: 1.55;
+}
+.astral-profile__birth-editor-unknown {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 10px;
+  color: rgba(232, 216, 190, 0.72);
+  font-size: 12px;
+  cursor: pointer;
+}
+.astral-profile__birth-editor-unknown input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: #C9A84C;
+}
+.astral-profile__birth-editor-wheel-grid--time.is-unknown {
+  opacity: 0.38;
+}
+html[data-theme="light"] .astral-profile__time-notice,
+html[data-theme="light"] .astral-profile__time-note,
+html[data-theme="light"] .astral-profile__birth-editor-unknown {
+  color: rgba(79, 64, 49, 0.82);
+}
+html[data-theme="light"] .astral-profile__time-notice {
+  border-color: rgba(140, 106, 40, 0.3);
+  background: rgba(201, 168, 76, 0.08);
+}
+html[data-theme="light"] .astral-profile__time-notice svg,
+html[data-theme="light"] .astral-profile__time-notice button {
+  color: #8C6A28;
+}

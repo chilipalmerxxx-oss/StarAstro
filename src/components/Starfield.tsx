@@ -43,7 +43,7 @@ export default function Starfield() {
     }
 
     let animationFrameId: number;
-    let startTime = Date.now();
+    const startTime = Date.now();
 
     const animate = () => {
       // Clear canvas with dark gradient

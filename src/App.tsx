@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import LandingPage from './components/LandingPage';
 import TheVoid from './components/TheVoid';
 import AstralProfile from './components/AstralProfile';
@@ -9,6 +9,7 @@ import CoStarPagePreview from './components/CoStarPagePreview';
 import CoStarHeroPreview from './components/CoStarHeroPreview';
 import CoStarBackgroundExamplesPage from './components/CoStarBackgroundExamplesPage';
 import YouPageWheelPreview from './components/YouPageWheelPreview';
+import BackgroundLab, { YOU_BACKGROUND_OPTIONS, parseBackgroundOption } from './components/BackgroundLab';
 import LandingOrnamentPreview from './components/LandingOrnamentPreview';
 import LandingTitlePreview from './components/LandingTitlePreview';
 import HomeDashboard from './components/HomeDashboard';
@@ -18,8 +19,10 @@ import BottomNavBar, { type TabId } from './components/BottomNavBar';
 import type { OnboardingBirthData } from './components/Onboarding';
 import PremiumOnboardingY from './components/PremiumOnboardingY';
 import { calculateBirthChart } from './services/astrology';
-import { parseBirthDateTime } from './lib/birthDate';
-import { Supabase } from './lib/supabase';
+import { getBirthLocalParts, parseBirthDateTime } from './lib/birthDate';
+import { getBirthOffsetAt, resolveBirthTimeZone } from './lib/birthTimezone';
+import { announceChartRecalculation } from './lib/chartRecalcEvents';
+import { Supabase, isSupabaseConfigured } from './lib/supabase';
 import { getSessionId } from './lib/session';
 
 interface ChartData {
@@ -29,9 +32,26 @@ interface ChartData {
   latitude?: number;
   longitude?: number;
   timezoneOffset?: number;
+  /** Heure de naissance inconnue (12:00 par convention) : Ascendant et maisons non fiables. */
+  birthTimeUnknown?: boolean;
+  /** Version du calcul (voir CHART_CALC_VERSION) ; absente pour les thèmes calculés avant. */
+  calcVersion?: number;
   planetPositions: Record<string, any>;
   houses: any[];
   aspects: any[];
+}
+
+interface StoredBirthChart {
+  name: string;
+  birth_date: string;
+  birth_place: string;
+  latitude: number | string;
+  longitude: number | string;
+  timezone_offset: number | string;
+  birth_time_unknown?: boolean | null;
+  planet_positions: Record<string, unknown> | null;
+  houses: unknown[] | null;
+  aspects: unknown[] | null;
 }
 
 // Fonctions pour la persistance des données
@@ -66,6 +86,122 @@ const loadChartFromLocalStorage = (): ChartData | null => {
 
 const ONBOARDING_STORAGE_KEY = 'nightstarOnboardingComplete';
 
+const mapStoredBirthChart = (stored: StoredBirthChart): ChartData => ({
+  name: stored.name,
+  birthDate: new Date(stored.birth_date),
+  birthPlace: stored.birth_place,
+  latitude: Number(stored.latitude),
+  longitude: Number(stored.longitude),
+  timezoneOffset: Number(stored.timezone_offset),
+  birthTimeUnknown: Boolean(stored.birth_time_unknown),
+  planetPositions: stored.planet_positions ?? {},
+  houses: Array.isArray(stored.houses) ? stored.houses : [],
+  aspects: Array.isArray(stored.aspects) ? stored.aspects : [],
+});
+
+// 2 = décalage horaire réel du lieu de naissance (fuseau IANA, heure d'été comprise).
+// Les thèmes antérieurs utilisaient un décalage fixe et sont recalculés au chargement.
+const CHART_CALC_VERSION = 2;
+
+const padTime = (value: number) => String(value).padStart(2, '0');
+
+const computeChartData = (data: OnboardingBirthData): ChartData => {
+  const birthDateTime = parseBirthDateTime(data.date, data.time, data.timezoneOffset);
+  const chart = calculateBirthChart({
+    date: birthDateTime,
+    latitude: data.latitude,
+    longitude: data.longitude,
+  });
+  return {
+    name: data.name,
+    birthDate: birthDateTime,
+    birthPlace: data.place,
+    latitude: data.latitude,
+    longitude: data.longitude,
+    timezoneOffset: data.timezoneOffset,
+    birthTimeUnknown: data.timeUnknown,
+    calcVersion: CHART_CALC_VERSION,
+    planetPositions: chart.planetPositions,
+    houses: chart.houses,
+    aspects: chart.aspects,
+  };
+};
+
+const saveChartToSupabase = async (chart: ChartData) => {
+  const { data: { user } } = await Supabase.auth.getUser();
+  const row: Record<string, unknown> = {
+    name: chart.name,
+    birth_date: chart.birthDate.toISOString(),
+    birth_place: chart.birthPlace,
+    latitude: chart.latitude,
+    longitude: chart.longitude,
+    timezone_offset: chart.timezoneOffset,
+    birth_time_unknown: Boolean(chart.birthTimeUnknown),
+    planet_positions: chart.planetPositions,
+    houses: chart.houses,
+    aspects: chart.aspects,
+    user_id: user?.id || null,
+    session_id: user ? null : getSessionId(),
+  };
+
+  let { error } = await Supabase.from('birth_charts').insert(row);
+  // Migration birth_time_unknown pas encore appliquée : la colonne est inconnue, on réessaie sans.
+  if (error?.message?.includes('birth_time_unknown')) {
+    delete row.birth_time_unknown;
+    ({ error } = await Supabase.from('birth_charts').insert(row));
+  }
+  return error;
+};
+
+/**
+ * Recalcule un thème antérieur à CHART_CALC_VERSION : l'heure civile saisie se retrouve
+ * avec l'ancien décalage, puis le décalage réel du lieu (heure d'été comprise) est appliqué.
+ * `null` si le recalcul est impossible pour l'instant (coordonnées absentes, fuseau introuvable).
+ */
+const recalculateLegacyChart = async (chart: ChartData): Promise<ChartData | null> => {
+  const { latitude, longitude, timezoneOffset, birthDate } = chart;
+  if (
+    latitude === undefined || longitude === undefined || timezoneOffset === undefined
+    || !Number.isFinite(latitude) || !Number.isFinite(longitude) || !Number.isFinite(timezoneOffset)
+    || Number.isNaN(birthDate.getTime())
+  ) {
+    return null;
+  }
+
+  const local = getBirthLocalParts(birthDate, timezoneOffset);
+  const date = `${local.year}-${padTime(local.month)}-${padTime(local.day)}`;
+  const time = `${padTime(local.hour)}:${padTime(local.minute)}`;
+  const timeZone = await resolveBirthTimeZone(latitude, longitude);
+  if (!timeZone) return null;
+
+  const offset = getBirthOffsetAt(date, time, timeZone, longitude);
+  if (offset === timezoneOffset) return { ...chart, calcVersion: CHART_CALC_VERSION };
+
+  return computeChartData({
+    name: chart.name,
+    date,
+    time,
+    place: chart.birthPlace,
+    latitude,
+    longitude,
+    timezoneOffset: offset,
+    timeUnknown: chart.birthTimeUnknown,
+  });
+};
+
+const describeRecalculation = (before: ChartData, after: ChartData) => {
+  const intro = 'Ton thème a été recalculé avec l’heure légale exacte de ton lieu de naissance, heure d’été comprise.';
+  if (after.birthTimeUnknown) return intro;
+  const previousAscendant = before.houses?.[0]?.sign;
+  const ascendant = after.houses?.[0]?.sign;
+  if (previousAscendant && ascendant && previousAscendant !== ascendant) {
+    return `${intro} Ton Ascendant passe de ${previousAscendant} à ${ascendant}.`;
+  }
+  return ascendant
+    ? `${intro} Ton Ascendant reste en ${ascendant} ; ses degrés et tes maisons ont été affinés.`
+    : intro;
+};
+
 function App() {
   const isCoStarPreviewRoute =
     typeof window !== 'undefined' && window.location.hash === '#costar-preview-v2';
@@ -83,18 +219,103 @@ function App() {
     typeof window !== 'undefined' && window.location.hash === '#compatibility-test';
 
   const savedChart = loadChartFromLocalStorage();
-  const [showLanding, setShowLanding] = useState(true);
+  const initialChartRef = useRef<ChartData | null>(savedChart);
+  // ?youbg opens the YOU tab directly with the background switcher.
+  const youBgLabParam =
+    typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('youbg') : null;
+  const opensYouBgLab = youBgLabParam !== null && savedChart !== null;
+  const [youBgVariant, setYouBgVariant] = useState(() =>
+    parseBackgroundOption(YOU_BACKGROUND_OPTIONS, youBgLabParam),
+  );
+  const [showLanding, setShowLanding] = useState(!opensYouBgLab);
   const [showVoid, setShowVoid] = useState(false);
   const [showCoStar, setShowCoStar] = useState(false);
-  const [chartData, setChartData] = useState<ChartData | null>(savedChart);
+  const [chartData, setChartData] = useState<ChartData | null>(initialChartRef.current);
+  const [isRestoringChart, setIsRestoringChart] = useState(
+    initialChartRef.current === null && isSupabaseConfigured,
+  );
   const [loading, setLoading] = useState(false);
-  const [showSavedCharts, setShowSavedCharts] = useState(false);
-  const [activeTab, setActiveTab] = useState<TabId>('home');
+  const [activeTab, setActiveTab] = useState<TabId>(opensYouBgLab ? 'profile' : 'home');
   const [selectedPlanetForProfile, setSelectedPlanetForProfile] = useState<string | null>(null);
 
   // Sauvegarder les données quand chartData change
   useEffect(() => {
     saveChartToLocalStorage(chartData);
+  }, [chartData]);
+
+  // If iOS did not expose the local PWA storage, restore the latest chart
+  // belonging to the signed-in user or to this anonymous browser session.
+  useEffect(() => {
+    if (initialChartRef.current || !isSupabaseConfigured) {
+      setIsRestoringChart(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    const restoreLatestChart = async () => {
+      try {
+        const { data: { user } } = await Supabase.auth.getUser();
+        let query = Supabase
+          .from('birth_charts')
+          // `*` plutôt qu'une liste : reste valide avant comme après la migration birth_time_unknown.
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(1);
+
+        query = user
+          ? query.eq('user_id', user.id)
+          : query.eq('session_id', getSessionId());
+
+        const { data, error } = await query.maybeSingle();
+        if (error) throw error;
+        if (!data || cancelled) return;
+
+        const restoredChart = mapStoredBirthChart(data as StoredBirthChart);
+        saveChartToLocalStorage(restoredChart);
+        localStorage.setItem(ONBOARDING_STORAGE_KEY, 'true');
+        setChartData(restoredChart);
+        setShowLanding(true);
+        setActiveTab('home');
+      } catch (error) {
+        console.error('Error restoring saved chart:', error);
+      } finally {
+        if (!cancelled) setIsRestoringChart(false);
+      }
+    };
+
+    void restoreLatestChart();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Thèmes calculés avant le fuseau réel : recalcul unique, enregistré et annoncé s'il change.
+  useEffect(() => {
+    if (!chartData || (chartData.calcVersion ?? 1) >= CHART_CALC_VERSION) return;
+    let cancelled = false;
+
+    const upgradeChart = async () => {
+      try {
+        const recalculated = await recalculateLegacyChart(chartData);
+        if (!recalculated || cancelled) return;
+        setChartData(recalculated);
+        if (recalculated.timezoneOffset === chartData.timezoneOffset) return;
+
+        announceChartRecalculation(describeRecalculation(chartData, recalculated));
+        if (isSupabaseConfigured) {
+          const error = await saveChartToSupabase(recalculated);
+          if (error) console.error('Error saving recalculated chart to database:', error);
+        }
+      } catch (error) {
+        console.error('Error recalculating legacy chart:', error);
+      }
+    };
+
+    void upgradeChart();
+    return () => {
+      cancelled = true;
+    };
   }, [chartData]);
 
   // Scroll en haut à chaque changement d'onglet
@@ -116,111 +337,18 @@ function App() {
     return () => clearTimeout(t);
   }, [activeTab, showCoStar, showVoid, showLanding]);
 
-  const handleSubmit = async (data: {
-    name: string;
-    date: string;
-    time: string;
-    place: string;
-    latitude: number;
-    longitude: number;
-    timezoneOffset: number;
-  }) => {
-    setLoading(true);
-
-    try {
-      const birthDateTime = parseBirthDateTime(data.date, data.time, data.timezoneOffset);
-
-      const chart = calculateBirthChart({
-        date: birthDateTime,
-        latitude: data.latitude,
-        longitude: data.longitude,
-      });
-
-      const { data: { user } } = await Supabase.auth.getUser();
-
-      const { error } = await Supabase.from('birth_charts').insert({
-        name: data.name,
-        birth_date: birthDateTime.toISOString(),
-        birth_place: data.place,
-        latitude: data.latitude,
-        longitude: data.longitude,
-        timezone_offset: data.timezoneOffset,
-        planet_positions: chart.planetPositions,
-        houses: chart.houses,
-        aspects: chart.aspects,
-        user_id: user?.id || null,
-        session_id: user ? null : getSessionId(),
-      });
-
-      if (error) {
-        console.error('Error saving to database:', error);
-      }
-
-      setChartData({
-        name: data.name,
-        birthDate: birthDateTime,
-        birthPlace: data.place,
-        latitude: data.latitude,
-        longitude: data.longitude,
-        timezoneOffset: data.timezoneOffset,
-        planetPositions: chart.planetPositions,
-        houses: chart.houses,
-        aspects: chart.aspects,
-      });
-      setShowLanding(false);
-      setShowVoid(false);
-      setShowCoStar(false);
-      setActiveTab('profile');
-    } catch (error) {
-      console.error('Error calculating chart:', error);
-      alert('Une erreur est survenue lors du calcul du thème astral.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleOnboardingComplete = useCallback(async (data: OnboardingBirthData) => {
     setLoading(true);
 
     try {
-      const birthDateTime = parseBirthDateTime(data.date, data.time, data.timezoneOffset);
-      const chart = calculateBirthChart({
-        date: birthDateTime,
-        latitude: data.latitude,
-        longitude: data.longitude,
-      });
-
-      const { data: { user } } = await Supabase.auth.getUser();
-
-      const { error } = await Supabase.from('birth_charts').insert({
-        name: data.name,
-        birth_date: birthDateTime.toISOString(),
-        birth_place: data.place,
-        latitude: data.latitude,
-        longitude: data.longitude,
-        timezone_offset: data.timezoneOffset,
-        planet_positions: chart.planetPositions,
-        houses: chart.houses,
-        aspects: chart.aspects,
-        user_id: user?.id || null,
-        session_id: user ? null : getSessionId(),
-      });
-
+      const completedChart = computeChartData(data);
+      const error = await saveChartToSupabase(completedChart);
       if (error) {
         console.error('Error saving onboarding chart to database:', error);
       }
 
-      setChartData({
-        name: data.name,
-        birthDate: birthDateTime,
-        birthPlace: data.place,
-        latitude: data.latitude,
-        longitude: data.longitude,
-        timezoneOffset: data.timezoneOffset,
-        planetPositions: chart.planetPositions,
-        houses: chart.houses,
-        aspects: chart.aspects,
-      });
+      saveChartToLocalStorage(completedChart);
+      setChartData(completedChart);
       localStorage.setItem(ONBOARDING_STORAGE_KEY, 'true');
       setShowLanding(true);
       setShowVoid(false);
@@ -228,7 +356,7 @@ function App() {
       setActiveTab('home');
     } catch (error) {
       console.error('Error completing onboarding:', error);
-      alert('Une erreur est survenue lors de la création de votre thème.');
+      alert('Une erreur est survenue lors de la création de ton thème.');
       setShowLanding(true);
     } finally {
       setLoading(false);
@@ -247,44 +375,15 @@ function App() {
     setLoading(true);
 
     try {
-      const birthDateTime = parseBirthDateTime(data.date, data.time, data.timezoneOffset);
-      const chart = calculateBirthChart({
-        date: birthDateTime,
-        latitude: data.latitude,
-        longitude: data.longitude,
-      });
-
-      const { data: { user } } = await Supabase.auth.getUser();
-
-      const { error } = await Supabase.from('birth_charts').insert({
-        name: data.name,
-        birth_date: birthDateTime.toISOString(),
-        birth_place: data.place,
-        latitude: data.latitude,
-        longitude: data.longitude,
-        timezone_offset: data.timezoneOffset,
-        planet_positions: chart.planetPositions,
-        houses: chart.houses,
-        aspects: chart.aspects,
-        user_id: user?.id || null,
-        session_id: user ? null : getSessionId(),
-      });
-
+      const editedChart = computeChartData(data);
+      const error = await saveChartToSupabase(editedChart);
       if (error) {
         console.error('Error saving edited chart to database:', error);
       }
 
-      setChartData({
-        name: data.name,
-        birthDate: birthDateTime,
-        birthPlace: data.place,
-        latitude: data.latitude,
-        longitude: data.longitude,
-        timezoneOffset: data.timezoneOffset,
-        planetPositions: chart.planetPositions,
-        houses: chart.houses,
-        aspects: chart.aspects,
-      });
+      saveChartToLocalStorage(editedChart);
+      localStorage.setItem(ONBOARDING_STORAGE_KEY, 'true');
+      setChartData(editedChart);
       setSelectedPlanetForProfile(null);
       setShowLanding(false);
       setShowVoid(false);
@@ -299,25 +398,12 @@ function App() {
     }
   }, []);
 
-  const handleReset = () => {
-    setChartData(null);
-  };
-
   const handleGetStarted = () => {
     // New visitors must enter the current onboarding — never the legacy AstroThème form.
     setShowLanding(false);
     setShowVoid(false);
     setShowCoStar(false);
     setActiveTab('y');
-  };
-
-  const handleBackToHome = () => {
-    setShowLanding(true);
-    setChartData(null);
-  };
-
-  const handleLoadChart = (chart: ChartData) => {
-    setChartData(chart);
   };
 
   const handleTabChange = (tab: TabId) => {
@@ -332,7 +418,7 @@ function App() {
       if (!chartData) {
         setShowLanding(true);
         setActiveTab('home');
-        alert('Veuillez d\'abord créer votre thème astral pour accéder à CoStar');
+        alert('Crée d\'abord ton thème astral pour accéder à CoStar');
         return;
       }
       setShowLanding(false);
@@ -345,7 +431,7 @@ function App() {
       if (!chartData) {
         setShowLanding(true);
         setActiveTab('home');
-        alert('Veuillez d\'abord créer votre thème astral pour voir votre profil');
+        alert('Crée d\'abord ton thème astral pour voir ton profil');
         return;
       }
       setShowLanding(false);
@@ -358,7 +444,7 @@ function App() {
       if (!chartData) {
         setShowLanding(true);
         setActiveTab('home');
-        alert('Veuillez d\'abord creer votre theme astral pour voir You 2');
+        alert('Crée d\'abord ton thème astral pour voir You 2');
         return;
       }
       setShowLanding(false);
@@ -392,15 +478,6 @@ function App() {
     setShowVoid(false);
     setShowCoStar(false);
     setActiveTab(tab);
-  };
-
-  const handlePlanetClick = (planetKey: string) => {
-    if (!chartData) return;
-    setSelectedPlanetForProfile(planetKey);
-    setShowLanding(false);
-    setShowVoid(false);
-    setShowCoStar(false);
-    setActiveTab('profile');
   };
 
   if (isCoStarPreviewRoute) {
@@ -486,6 +563,28 @@ function App() {
     );
   }
 
+  if (isRestoringChart) {
+    return (
+      <div
+        role="status"
+        aria-live="polite"
+        style={{
+          minHeight: '100svh',
+          display: 'grid',
+          placeItems: 'center',
+          padding: '24px',
+          color: 'rgba(255, 250, 241, 0.72)',
+          background: '#08090c',
+          fontFamily: "'Cormorant Garamond', Georgia, serif",
+          fontSize: '18px',
+          letterSpacing: '0.04em',
+        }}
+      >
+        Ouverture de ton ciel…
+      </div>
+    );
+  }
+
   if (showCoStar) {
     return (
       <div className="app-shell app-shell--costar">
@@ -497,6 +596,7 @@ function App() {
             }} 
             chartData={chartData} 
             userName={chartData?.name} 
+            onExplore={() => handleTabChange('profile')}
           />
         </div>
         <BottomNavBar activeTab={activeTab} onTabChange={handleTabChange} />
@@ -598,6 +698,7 @@ function App() {
             birthLatitude={chartData.latitude}
             birthLongitude={chartData.longitude}
             birthTimezoneOffset={chartData.timezoneOffset}
+            birthTimeUnknown={chartData.birthTimeUnknown}
             planetPositions={chartData.planetPositions}
             houses={chartData.houses}
             aspects={chartData.aspects}
@@ -616,7 +717,7 @@ function App() {
 
   if (activeTab === 'profile' && chartData) {
     return (
-      <div className="app-shell app-shell--you">
+      <div className="app-shell app-shell--you" data-you-bg={youBgVariant || undefined}>
         <div className="app-content app-content--you">
           <AstralProfile
             name={chartData.name}
@@ -625,6 +726,7 @@ function App() {
             birthLatitude={chartData.latitude}
             birthLongitude={chartData.longitude}
             birthTimezoneOffset={chartData.timezoneOffset}
+            birthTimeUnknown={chartData.birthTimeUnknown}
             planetPositions={chartData.planetPositions}
             houses={chartData.houses}
             aspects={chartData.aspects}
@@ -634,6 +736,14 @@ function App() {
             editBirthDataLoading={loading}
           />
         </div>
+        {youBgLabParam !== null && (
+          <BackgroundLab
+            param="youbg"
+            options={YOU_BACKGROUND_OPTIONS}
+            value={youBgVariant}
+            onChange={setYouBgVariant}
+          />
+        )}
         <BottomNavBar activeTab={activeTab} onTabChange={(tab) => {
           setSelectedPlanetForProfile(null);
           handleTabChange(tab);
@@ -657,7 +767,7 @@ function App() {
   }
 
   return (
-    <div className="app-shell app-shell--you">
+    <div className="app-shell app-shell--you" data-you-bg={youBgVariant || undefined}>
       <div className="app-content app-content--you">
         <AstralProfile
           name={chartData.name}
@@ -666,6 +776,7 @@ function App() {
           birthLatitude={chartData.latitude}
           birthLongitude={chartData.longitude}
           birthTimezoneOffset={chartData.timezoneOffset}
+          birthTimeUnknown={chartData.birthTimeUnknown}
           planetPositions={chartData.planetPositions}
           houses={chartData.houses}
           aspects={chartData.aspects}

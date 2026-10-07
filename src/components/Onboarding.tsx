@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ChevronLeft, MapPin, Moon, Sparkles } from 'lucide-react';
 import './Onboarding.css';
+import { getBirthOffsetAt, resolveBirthTimeZone } from '../lib/birthTimezone';
 
 export interface OnboardingBirthData {
   name: string;
@@ -10,6 +11,8 @@ export interface OnboardingBirthData {
   latitude: number;
   longitude: number;
   timezoneOffset: number;
+  /** Heure de naissance inconnue : `time` vaut 12:00 par convention, Ascendant et maisons non fiables. */
+  timeUnknown?: boolean;
 }
 
 interface OnboardingProps {
@@ -216,14 +219,18 @@ export default function Onboarding({ onComplete, onSkipAccount }: OnboardingProp
     const birthCity = getBirthCity();
     setIsRevealing(true);
     try {
+      const date = `${year}-${pad(month)}-${pad(day)}`;
+      const time = `${pad(hour)}:${pad(minute)}`;
+      // Décalage réel à la date de naissance (heure d'été comprise), pas un offset fixe.
+      const timeZone = await resolveBirthTimeZone(birthCity.lat, birthCity.lon);
       await onComplete({
-        name: name.trim() || 'Ami(e)',
-        date: `${year}-${pad(month)}-${pad(day)}`,
-        time: `${pad(hour)}:${pad(minute)}`,
+        name: name.trim() || 'Ami',
+        date,
+        time,
         place: birthCity.region ? `${birthCity.name}, ${birthCity.region}` : birthCity.name,
         latitude: birthCity.lat,
         longitude: birthCity.lon,
-        timezoneOffset: birthCity.tz,
+        timezoneOffset: getBirthOffsetAt(date, time, timeZone, birthCity.lon),
       });
     } catch {
       setIsRevealing(false);
@@ -315,7 +322,7 @@ export default function Onboarding({ onComplete, onSkipAccount }: OnboardingProp
           <>
             <section className="onboarding-panel onboarding-panel--compact">
               <span className="onboarding-kicker">Heure exacte</span>
-              <h2>À quelle heure êtes-vous né(e) ?</h2>
+              <h2>À quelle heure êtes-vous né ?</h2>
             </section>
             <div className="onboarding-wheel-grid onboarding-wheel-grid--time">
               <WheelPicker label="Heure" value={hour} options={hourOptions} onChange={setHour} />
@@ -334,7 +341,7 @@ export default function Onboarding({ onComplete, onSkipAccount }: OnboardingProp
           <>
             <section className="onboarding-panel onboarding-panel--compact">
               <span className="onboarding-kicker">Lieu de naissance</span>
-              <h2>Dans quelle ville êtes-vous né(e) ?</h2>
+              <h2>Dans quelle ville êtes-vous né ?</h2>
             </section>
             <div className="onboarding-field-card">
               <label>

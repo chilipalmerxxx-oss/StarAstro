@@ -1,8 +1,14 @@
 ﻿import { useState, useRef, useEffect, useMemo, type FormEvent, type MouseEvent } from 'react';
-import { ArrowRight, Calendar, ChevronDown, Clock, MapPin, Sparkles, X } from 'lucide-react';
+import { ArrowRight, Calendar, ChevronDown, Clock, MapPin, PenLine, Sparkles, X } from 'lucide-react';
+import type { PointerEvent as ReactPointerEvent } from 'react';
 import { getDetailedInterpretation } from '../data/signDetailedInterpretations';
 import { PLANET_INFO, getAspectInterpretation } from '../data/interpretations';
+import { ZODIAC_ICON_PATHS } from '../data/zodiacIcons';
 import NatalChart from './NatalChart';
+import { getBirthLocalParts, parseBirthDateTime } from '../lib/birthDate';
+import { getBirthOffsetAt, resolveBirthTimeZone } from '../lib/birthTimezone';
+import { getPossibleDaySigns } from '../services/astrology';
+import { formatBirthPlace, useCitySearch, type BirthPlace } from '../lib/useCitySearch';
 
 type PlanetKey = 'sun' | 'moon' | 'ascendant' | 'venus' | 'mars' | 'mercury' | 'jupiter' | 'saturn' | 'uranus' | 'neptune' | 'pluto';
 type AstralProfileVariant = 'default' | 'you2';
@@ -18,16 +24,7 @@ type EditableBirthData = {
   latitude: number;
   longitude: number;
   timezoneOffset: number;
-};
-
-type BirthCity = {
-  name: string;
-  region?: string;
-  country: string;
-  aliases?: string[];
-  lat: number;
-  lon: number;
-  tz: number;
+  timeUnknown?: boolean;
 };
 
 type WheelOption = {
@@ -51,139 +48,107 @@ const MONTH_OPTIONS = [
   { value: 12, label: 'Déc', detail: 'décembre' },
 ];
 
-const BIRTH_CITY_OPTIONS: BirthCity[] = [
-  { name: 'Paris', region: 'Île-de-France', country: 'France', lat: 48.8566, lon: 2.3522, tz: 1 },
-  { name: 'Lyon', region: 'Auvergne-Rhône-Alpes', country: 'France', lat: 45.764, lon: 4.8357, tz: 1 },
-  { name: 'Marseille', region: 'Provence-Alpes-Côte d’Azur', country: 'France', lat: 43.2965, lon: 5.3698, tz: 1 },
-  { name: 'Toulouse', region: 'Occitanie', country: 'France', lat: 43.6047, lon: 1.4442, tz: 1 },
-  { name: 'Bordeaux', region: 'Nouvelle-Aquitaine', country: 'France', lat: 44.8378, lon: -0.5792, tz: 1 },
-  { name: 'Lille', region: 'Hauts-de-France', country: 'France', lat: 50.6292, lon: 3.0573, tz: 1 },
-  { name: 'Nice', region: 'Provence-Alpes-Côte d’Azur', country: 'France', lat: 43.7102, lon: 7.262, tz: 1 },
-  { name: 'Nantes', region: 'Pays de la Loire', country: 'France', lat: 47.2184, lon: -1.5536, tz: 1 },
-  { name: 'Strasbourg', region: 'Grand Est', country: 'France', lat: 48.5734, lon: 7.7521, tz: 1 },
-  { name: 'Montpellier', region: 'Occitanie', country: 'France', lat: 43.6108, lon: 3.8767, tz: 1 },
-  { name: 'Rennes', region: 'Bretagne', country: 'France', lat: 48.1173, lon: -1.6778, tz: 1 },
-  { name: 'Reims', region: 'Grand Est', country: 'France', lat: 49.2583, lon: 4.0317, tz: 1 },
-  { name: 'Saint-Étienne', region: 'Auvergne-Rhône-Alpes', country: 'France', lat: 45.4397, lon: 4.3872, tz: 1 },
-  { name: 'Toulon', region: 'Provence-Alpes-Côte d’Azur', country: 'France', lat: 43.1242, lon: 5.928, tz: 1 },
-  { name: 'Le Havre', region: 'Normandie', country: 'France', lat: 49.4944, lon: 0.1079, tz: 1 },
-  { name: 'Grenoble', region: 'Auvergne-Rhône-Alpes', country: 'France', lat: 45.1885, lon: 5.7245, tz: 1 },
-  { name: 'Dijon', region: 'Bourgogne-Franche-Comté', country: 'France', lat: 47.322, lon: 5.0415, tz: 1 },
-  { name: 'Angers', region: 'Pays de la Loire', country: 'France', lat: 47.4784, lon: -0.5632, tz: 1 },
-  { name: 'Nîmes', region: 'Occitanie', country: 'France', lat: 43.8367, lon: 4.3601, tz: 1 },
-  { name: 'Villeurbanne', region: 'Auvergne-Rhône-Alpes', country: 'France', lat: 45.7719, lon: 4.8902, tz: 1 },
-  { name: 'Clermont-Ferrand', region: 'Auvergne-Rhône-Alpes', country: 'France', lat: 45.7772, lon: 3.087, tz: 1 },
-  { name: 'Aix-en-Provence', region: 'Provence-Alpes-Côte d’Azur', country: 'France', lat: 43.5297, lon: 5.4474, tz: 1 },
-  { name: 'Brest', region: 'Bretagne', country: 'France', lat: 48.3904, lon: -4.4861, tz: 1 },
-  { name: 'Limoges', region: 'Nouvelle-Aquitaine', country: 'France', lat: 45.8336, lon: 1.2611, tz: 1 },
-  { name: 'Tours', region: 'Centre-Val de Loire', country: 'France', lat: 47.3941, lon: 0.6848, tz: 1 },
-  { name: 'Amiens', region: 'Hauts-de-France', country: 'France', lat: 49.8941, lon: 2.2958, tz: 1 },
-  { name: 'Metz', region: 'Grand Est', country: 'France', lat: 49.1193, lon: 6.1757, tz: 1 },
-  { name: 'Besançon', region: 'Bourgogne-Franche-Comté', country: 'France', lat: 47.2378, lon: 6.0241, tz: 1 },
-  { name: 'Perpignan', region: 'Occitanie', country: 'France', lat: 42.6887, lon: 2.8948, tz: 1 },
-  { name: 'Orléans', region: 'Centre-Val de Loire', country: 'France', lat: 47.9029, lon: 1.9093, tz: 1 },
-  { name: 'Mulhouse', region: 'Grand Est', country: 'France', lat: 47.7508, lon: 7.3359, tz: 1 },
-  { name: 'Rouen', region: 'Normandie', country: 'France', lat: 49.4431, lon: 1.0993, tz: 1 },
-  { name: 'Caen', region: 'Normandie', country: 'France', lat: 49.1829, lon: -0.3707, tz: 1 },
-  { name: 'Nancy', region: 'Grand Est', country: 'France', lat: 48.6921, lon: 6.1844, tz: 1 },
-  { name: 'Argenteuil', region: 'Île-de-France', country: 'France', lat: 48.9472, lon: 2.2467, tz: 1 },
-  { name: 'Montreuil', region: 'Île-de-France', country: 'France', lat: 48.8638, lon: 2.4485, tz: 1 },
-  { name: 'Saint-Denis', region: 'Île-de-France', country: 'France', lat: 48.9362, lon: 2.3574, tz: 1 },
-  { name: 'Roubaix', region: 'Hauts-de-France', country: 'France', lat: 50.6927, lon: 3.1778, tz: 1 },
-  { name: 'Tourcoing', region: 'Hauts-de-France', country: 'France', lat: 50.724, lon: 3.1612, tz: 1 },
-  { name: 'Avignon', region: 'Provence-Alpes-Côte d’Azur', country: 'France', lat: 43.9493, lon: 4.8055, tz: 1 },
-  { name: 'Poitiers', region: 'Nouvelle-Aquitaine', country: 'France', lat: 46.5802, lon: 0.3404, tz: 1 },
-  { name: 'Pau', region: 'Nouvelle-Aquitaine', country: 'France', lat: 43.2951, lon: -0.3708, tz: 1 },
-  { name: 'La Rochelle', region: 'Nouvelle-Aquitaine', country: 'France', lat: 46.1603, lon: -1.1511, tz: 1 },
-  { name: 'Annecy', region: 'Auvergne-Rhône-Alpes', country: 'France', lat: 45.8992, lon: 6.1294, tz: 1 },
-  { name: 'Bayonne', region: 'Nouvelle-Aquitaine', country: 'France', lat: 43.4929, lon: -1.4748, tz: 1 },
-  { name: 'Biarritz', region: 'Nouvelle-Aquitaine', country: 'France', lat: 43.4832, lon: -1.5586, tz: 1 },
-  { name: 'Ajaccio', region: 'Corse', country: 'France', lat: 41.9192, lon: 8.7386, tz: 1 },
-  { name: 'Bastia', region: 'Corse', country: 'France', lat: 42.6973, lon: 9.4509, tz: 1 },
-  { name: 'Bruxelles', region: 'Bruxelles-Capitale', country: 'Belgique', lat: 50.8503, lon: 4.3517, tz: 1 },
-  { name: 'Liège', region: 'Wallonie', country: 'Belgique', lat: 50.6326, lon: 5.5797, tz: 1 },
-  { name: 'Charleroi', region: 'Wallonie', country: 'Belgique', lat: 50.4108, lon: 4.4446, tz: 1 },
-  { name: 'Genève', region: 'Genève', country: 'Suisse', aliases: ['Geneve'], lat: 46.2044, lon: 6.1432, tz: 1 },
-  { name: 'Lausanne', region: 'Vaud', country: 'Suisse', lat: 46.5197, lon: 6.6323, tz: 1 },
-  { name: 'Zurich', region: 'Zurich', country: 'Suisse', lat: 47.3769, lon: 8.5417, tz: 1 },
-  { name: 'Monaco', region: 'Monaco', country: 'Monaco', lat: 43.7384, lon: 7.4246, tz: 1 },
-  { name: 'Luxembourg', region: 'Luxembourg', country: 'Luxembourg', lat: 49.6116, lon: 6.1319, tz: 1 },
-  { name: 'Londres', region: 'Angleterre', country: 'Royaume-Uni', aliases: ['London'], lat: 51.5074, lon: -0.1278, tz: 0 },
-  { name: 'Dublin', region: 'Leinster', country: 'Irlande', lat: 53.3498, lon: -6.2603, tz: 0 },
-  { name: 'Madrid', region: 'Communauté de Madrid', country: 'Espagne', lat: 40.4168, lon: -3.7038, tz: 1 },
-  { name: 'Barcelone', region: 'Catalogne', country: 'Espagne', aliases: ['Barcelona'], lat: 41.3874, lon: 2.1686, tz: 1 },
-  { name: 'Lisbonne', region: 'Lisbonne', country: 'Portugal', aliases: ['Lisboa'], lat: 38.7223, lon: -9.1393, tz: 0 },
-  { name: 'Rome', region: 'Latium', country: 'Italie', lat: 41.9028, lon: 12.4964, tz: 1 },
-  { name: 'Milan', region: 'Lombardie', country: 'Italie', aliases: ['Milano'], lat: 45.4642, lon: 9.19, tz: 1 },
-  { name: 'Berlin', region: 'Berlin', country: 'Allemagne', lat: 52.52, lon: 13.405, tz: 1 },
-  { name: 'Munich', region: 'Bavière', country: 'Allemagne', aliases: ['München'], lat: 48.1351, lon: 11.582, tz: 1 },
-  { name: 'Amsterdam', region: 'Hollande-Septentrionale', country: 'Pays-Bas', lat: 52.3676, lon: 4.9041, tz: 1 },
-  { name: 'Vienne', region: 'Vienne', country: 'Autriche', aliases: ['Wien'], lat: 48.2082, lon: 16.3738, tz: 1 },
-  { name: 'Copenhague', region: 'Hovedstaden', country: 'Danemark', aliases: ['Copenhagen'], lat: 55.6761, lon: 12.5683, tz: 1 },
-  { name: 'Stockholm', region: 'Stockholm', country: 'Suède', lat: 59.3293, lon: 18.0686, tz: 1 },
-  { name: 'Oslo', region: 'Oslo', country: 'Norvège', lat: 59.9139, lon: 10.7522, tz: 1 },
-  { name: 'New York', region: 'État de New York', country: 'États-Unis', lat: 40.7128, lon: -74.006, tz: -5 },
-  { name: 'Los Angeles', region: 'Californie', country: 'États-Unis', lat: 34.0522, lon: -118.2437, tz: -8 },
-  { name: 'San Francisco', region: 'Californie', country: 'États-Unis', lat: 37.7749, lon: -122.4194, tz: -8 },
-  { name: 'Chicago', region: 'Illinois', country: 'États-Unis', lat: 41.8781, lon: -87.6298, tz: -6 },
-  { name: 'Miami', region: 'Floride', country: 'États-Unis', lat: 25.7617, lon: -80.1918, tz: -5 },
-  { name: 'Montréal', region: 'Québec', country: 'Canada', aliases: ['Montreal'], lat: 45.5017, lon: -73.5673, tz: -5 },
-  { name: 'Québec', region: 'Québec', country: 'Canada', aliases: ['Quebec'], lat: 46.8139, lon: -71.2082, tz: -5 },
-  { name: 'Toronto', region: 'Ontario', country: 'Canada', lat: 43.6532, lon: -79.3832, tz: -5 },
-  { name: 'Vancouver', region: 'Colombie-Britannique', country: 'Canada', lat: 49.2827, lon: -123.1207, tz: -8 },
-  { name: 'Casablanca', region: 'Casablanca-Settat', country: 'Maroc', lat: 33.5731, lon: -7.5898, tz: 1 },
-  { name: 'Rabat', region: 'Rabat-Salé-Kénitra', country: 'Maroc', lat: 34.0209, lon: -6.8416, tz: 1 },
-  { name: 'Marrakech', region: 'Marrakech-Safi', country: 'Maroc', lat: 31.6295, lon: -7.9811, tz: 1 },
-  { name: 'Alger', region: 'Alger', country: 'Algérie', lat: 36.7538, lon: 3.0588, tz: 1 },
-  { name: 'Tunis', region: 'Tunis', country: 'Tunisie', lat: 36.8065, lon: 10.1815, tz: 1 },
-  { name: 'Dakar', region: 'Dakar', country: 'Sénégal', lat: 14.7167, lon: -17.4677, tz: 0 },
-  { name: 'Abidjan', region: 'Abidjan', country: 'Côte d’Ivoire', lat: 5.36, lon: -4.0083, tz: 0 },
-  { name: 'Tokyo', region: 'Kantō', country: 'Japon', lat: 35.6762, lon: 139.6503, tz: 9 },
-  { name: 'Séoul', region: 'Séoul', country: 'Corée du Sud', aliases: ['Seoul'], lat: 37.5665, lon: 126.978, tz: 9 },
-  { name: 'Sydney', region: 'Nouvelle-Galles du Sud', country: 'Australie', lat: -33.8688, lon: 151.2093, tz: 10 },
+// Liste de secours quand la recherche mondiale est indisponible.
+const BIRTH_CITY_OPTIONS: BirthPlace[] = [
+  { name: 'Paris', region: 'Île-de-France', country: 'France', lat: 48.8566, lon: 2.3522 },
+  { name: 'Lyon', region: 'Auvergne-Rhône-Alpes', country: 'France', lat: 45.764, lon: 4.8357 },
+  { name: 'Marseille', region: 'Provence-Alpes-Côte d’Azur', country: 'France', lat: 43.2965, lon: 5.3698 },
+  { name: 'Toulouse', region: 'Occitanie', country: 'France', lat: 43.6047, lon: 1.4442 },
+  { name: 'Bordeaux', region: 'Nouvelle-Aquitaine', country: 'France', lat: 44.8378, lon: -0.5792 },
+  { name: 'Lille', region: 'Hauts-de-France', country: 'France', lat: 50.6292, lon: 3.0573 },
+  { name: 'Nice', region: 'Provence-Alpes-Côte d’Azur', country: 'France', lat: 43.7102, lon: 7.262 },
+  { name: 'Nantes', region: 'Pays de la Loire', country: 'France', lat: 47.2184, lon: -1.5536 },
+  { name: 'Strasbourg', region: 'Grand Est', country: 'France', lat: 48.5734, lon: 7.7521 },
+  { name: 'Montpellier', region: 'Occitanie', country: 'France', lat: 43.6108, lon: 3.8767 },
+  { name: 'Rennes', region: 'Bretagne', country: 'France', lat: 48.1173, lon: -1.6778 },
+  { name: 'Reims', region: 'Grand Est', country: 'France', lat: 49.2583, lon: 4.0317 },
+  { name: 'Saint-Étienne', region: 'Auvergne-Rhône-Alpes', country: 'France', lat: 45.4397, lon: 4.3872 },
+  { name: 'Toulon', region: 'Provence-Alpes-Côte d’Azur', country: 'France', lat: 43.1242, lon: 5.928 },
+  { name: 'Le Havre', region: 'Normandie', country: 'France', lat: 49.4944, lon: 0.1079 },
+  { name: 'Grenoble', region: 'Auvergne-Rhône-Alpes', country: 'France', lat: 45.1885, lon: 5.7245 },
+  { name: 'Dijon', region: 'Bourgogne-Franche-Comté', country: 'France', lat: 47.322, lon: 5.0415 },
+  { name: 'Angers', region: 'Pays de la Loire', country: 'France', lat: 47.4784, lon: -0.5632 },
+  { name: 'Nîmes', region: 'Occitanie', country: 'France', lat: 43.8367, lon: 4.3601 },
+  { name: 'Villeurbanne', region: 'Auvergne-Rhône-Alpes', country: 'France', lat: 45.7719, lon: 4.8902 },
+  { name: 'Clermont-Ferrand', region: 'Auvergne-Rhône-Alpes', country: 'France', lat: 45.7772, lon: 3.087 },
+  { name: 'Aix-en-Provence', region: 'Provence-Alpes-Côte d’Azur', country: 'France', lat: 43.5297, lon: 5.4474 },
+  { name: 'Brest', region: 'Bretagne', country: 'France', lat: 48.3904, lon: -4.4861 },
+  { name: 'Limoges', region: 'Nouvelle-Aquitaine', country: 'France', lat: 45.8336, lon: 1.2611 },
+  { name: 'Tours', region: 'Centre-Val de Loire', country: 'France', lat: 47.3941, lon: 0.6848 },
+  { name: 'Amiens', region: 'Hauts-de-France', country: 'France', lat: 49.8941, lon: 2.2958 },
+  { name: 'Metz', region: 'Grand Est', country: 'France', lat: 49.1193, lon: 6.1757 },
+  { name: 'Besançon', region: 'Bourgogne-Franche-Comté', country: 'France', lat: 47.2378, lon: 6.0241 },
+  { name: 'Perpignan', region: 'Occitanie', country: 'France', lat: 42.6887, lon: 2.8948 },
+  { name: 'Orléans', region: 'Centre-Val de Loire', country: 'France', lat: 47.9029, lon: 1.9093 },
+  { name: 'Mulhouse', region: 'Grand Est', country: 'France', lat: 47.7508, lon: 7.3359 },
+  { name: 'Rouen', region: 'Normandie', country: 'France', lat: 49.4431, lon: 1.0993 },
+  { name: 'Caen', region: 'Normandie', country: 'France', lat: 49.1829, lon: -0.3707 },
+  { name: 'Nancy', region: 'Grand Est', country: 'France', lat: 48.6921, lon: 6.1844 },
+  { name: 'Argenteuil', region: 'Île-de-France', country: 'France', lat: 48.9472, lon: 2.2467 },
+  { name: 'Montreuil', region: 'Île-de-France', country: 'France', lat: 48.8638, lon: 2.4485 },
+  { name: 'Saint-Denis', region: 'Île-de-France', country: 'France', lat: 48.9362, lon: 2.3574 },
+  { name: 'Roubaix', region: 'Hauts-de-France', country: 'France', lat: 50.6927, lon: 3.1778 },
+  { name: 'Tourcoing', region: 'Hauts-de-France', country: 'France', lat: 50.724, lon: 3.1612 },
+  { name: 'Avignon', region: 'Provence-Alpes-Côte d’Azur', country: 'France', lat: 43.9493, lon: 4.8055 },
+  { name: 'Poitiers', region: 'Nouvelle-Aquitaine', country: 'France', lat: 46.5802, lon: 0.3404 },
+  { name: 'Pau', region: 'Nouvelle-Aquitaine', country: 'France', lat: 43.2951, lon: -0.3708 },
+  { name: 'La Rochelle', region: 'Nouvelle-Aquitaine', country: 'France', lat: 46.1603, lon: -1.1511 },
+  { name: 'Annecy', region: 'Auvergne-Rhône-Alpes', country: 'France', lat: 45.8992, lon: 6.1294 },
+  { name: 'Bayonne', region: 'Nouvelle-Aquitaine', country: 'France', lat: 43.4929, lon: -1.4748 },
+  { name: 'Biarritz', region: 'Nouvelle-Aquitaine', country: 'France', lat: 43.4832, lon: -1.5586 },
+  { name: 'Ajaccio', region: 'Corse', country: 'France', lat: 41.9192, lon: 8.7386 },
+  { name: 'Bastia', region: 'Corse', country: 'France', lat: 42.6973, lon: 9.4509 },
+  { name: 'Bruxelles', region: 'Bruxelles-Capitale', country: 'Belgique', lat: 50.8503, lon: 4.3517 },
+  { name: 'Liège', region: 'Wallonie', country: 'Belgique', lat: 50.6326, lon: 5.5797 },
+  { name: 'Charleroi', region: 'Wallonie', country: 'Belgique', lat: 50.4108, lon: 4.4446 },
+  { name: 'Genève', region: 'Genève', country: 'Suisse', aliases: ['Geneve'], lat: 46.2044, lon: 6.1432 },
+  { name: 'Lausanne', region: 'Vaud', country: 'Suisse', lat: 46.5197, lon: 6.6323 },
+  { name: 'Zurich', region: 'Zurich', country: 'Suisse', lat: 47.3769, lon: 8.5417 },
+  { name: 'Monaco', region: 'Monaco', country: 'Monaco', lat: 43.7384, lon: 7.4246 },
+  { name: 'Luxembourg', region: 'Luxembourg', country: 'Luxembourg', lat: 49.6116, lon: 6.1319 },
+  { name: 'Londres', region: 'Angleterre', country: 'Royaume-Uni', aliases: ['London'], lat: 51.5074, lon: -0.1278 },
+  { name: 'Dublin', region: 'Leinster', country: 'Irlande', lat: 53.3498, lon: -6.2603 },
+  { name: 'Madrid', region: 'Communauté de Madrid', country: 'Espagne', lat: 40.4168, lon: -3.7038 },
+  { name: 'Barcelone', region: 'Catalogne', country: 'Espagne', aliases: ['Barcelona'], lat: 41.3874, lon: 2.1686 },
+  { name: 'Lisbonne', region: 'Lisbonne', country: 'Portugal', aliases: ['Lisboa'], lat: 38.7223, lon: -9.1393 },
+  { name: 'Rome', region: 'Latium', country: 'Italie', lat: 41.9028, lon: 12.4964 },
+  { name: 'Milan', region: 'Lombardie', country: 'Italie', aliases: ['Milano'], lat: 45.4642, lon: 9.19 },
+  { name: 'Berlin', region: 'Berlin', country: 'Allemagne', lat: 52.52, lon: 13.405 },
+  { name: 'Munich', region: 'Bavière', country: 'Allemagne', aliases: ['München'], lat: 48.1351, lon: 11.582 },
+  { name: 'Amsterdam', region: 'Hollande-Septentrionale', country: 'Pays-Bas', lat: 52.3676, lon: 4.9041 },
+  { name: 'Vienne', region: 'Vienne', country: 'Autriche', aliases: ['Wien'], lat: 48.2082, lon: 16.3738 },
+  { name: 'Copenhague', region: 'Hovedstaden', country: 'Danemark', aliases: ['Copenhagen'], lat: 55.6761, lon: 12.5683 },
+  { name: 'Stockholm', region: 'Stockholm', country: 'Suède', lat: 59.3293, lon: 18.0686 },
+  { name: 'Oslo', region: 'Oslo', country: 'Norvège', lat: 59.9139, lon: 10.7522 },
+  { name: 'New York', region: 'État de New York', country: 'États-Unis', lat: 40.7128, lon: -74.006 },
+  { name: 'Los Angeles', region: 'Californie', country: 'États-Unis', lat: 34.0522, lon: -118.2437 },
+  { name: 'San Francisco', region: 'Californie', country: 'États-Unis', lat: 37.7749, lon: -122.4194 },
+  { name: 'Chicago', region: 'Illinois', country: 'États-Unis', lat: 41.8781, lon: -87.6298 },
+  { name: 'Miami', region: 'Floride', country: 'États-Unis', lat: 25.7617, lon: -80.1918 },
+  { name: 'Montréal', region: 'Québec', country: 'Canada', aliases: ['Montreal'], lat: 45.5017, lon: -73.5673 },
+  { name: 'Québec', region: 'Québec', country: 'Canada', aliases: ['Quebec'], lat: 46.8139, lon: -71.2082 },
+  { name: 'Toronto', region: 'Ontario', country: 'Canada', lat: 43.6532, lon: -79.3832 },
+  { name: 'Vancouver', region: 'Colombie-Britannique', country: 'Canada', lat: 49.2827, lon: -123.1207 },
+  { name: 'Casablanca', region: 'Casablanca-Settat', country: 'Maroc', lat: 33.5731, lon: -7.5898 },
+  { name: 'Rabat', region: 'Rabat-Salé-Kénitra', country: 'Maroc', lat: 34.0209, lon: -6.8416 },
+  { name: 'Marrakech', region: 'Marrakech-Safi', country: 'Maroc', lat: 31.6295, lon: -7.9811 },
+  { name: 'Alger', region: 'Alger', country: 'Algérie', lat: 36.7538, lon: 3.0588 },
+  { name: 'Tunis', region: 'Tunis', country: 'Tunisie', lat: 36.8065, lon: 10.1815 },
+  { name: 'Dakar', region: 'Dakar', country: 'Sénégal', lat: 14.7167, lon: -17.4677 },
+  { name: 'Abidjan', region: 'Abidjan', country: 'Côte d’Ivoire', lat: 5.36, lon: -4.0083 },
+  { name: 'Tokyo', region: 'Kantō', country: 'Japon', lat: 35.6762, lon: 139.6503 },
+  { name: 'Séoul', region: 'Séoul', country: 'Corée du Sud', aliases: ['Seoul'], lat: 37.5665, lon: 126.978 },
+  { name: 'Sydney', region: 'Nouvelle-Galles du Sud', country: 'Australie', lat: -33.8688, lon: 151.2093 },
 ];
 
 const padBirthValue = (value: number) => String(value).padStart(2, '0');
 
-const getBirthDateParts = (date?: Date) => {
-  const safeDate = date && !Number.isNaN(date.getTime()) ? date : new Date(1998, 5, 12, 12, 0);
-  return {
-    day: safeDate.getDate(),
-    month: safeDate.getMonth() + 1,
-    year: safeDate.getFullYear(),
-    hour: safeDate.getHours(),
-    minute: safeDate.getMinutes(),
-  };
+const getBirthDateParts = (date?: Date, timezoneOffset?: number) => {
+  if (!date || Number.isNaN(date.getTime())) return { day: 12, month: 6, year: 1998, hour: 12, minute: 0 };
+  return getBirthLocalParts(date, timezoneOffset);
 };
 
 const getDaysInMonth = (year: number, month: number) => new Date(year, month, 0).getDate();
-
-const normalizeBirthPlace = (value: string) => value
-  .normalize('NFD')
-  .replace(/[\u0300-\u036f]/g, '')
-  .toLowerCase()
-  .replace(/[^a-z0-9]+/g, ' ')
-  .trim();
-
-const getTimezoneFromLongitude = (longitude: number) => Math.round(longitude / 15);
-
-const findBirthCity = (place: string) => {
-  const normalizedPlace = normalizeBirthPlace(place);
-  if (!normalizedPlace) return null;
-
-  return BIRTH_CITY_OPTIONS.find((city) => {
-    const normalizedCity = normalizeBirthPlace(`${city.name} ${city.region || ''} ${city.country} ${(city.aliases || []).join(' ')}`);
-    return normalizedCity.includes(normalizedPlace) || normalizedPlace.includes(normalizeBirthPlace(city.name));
-  }) || null;
-};
-
-const formatBirthCityValue = (city: BirthCity) => (
-  city.region ? `${city.name}, ${city.region}` : city.name
-);
-
-const formatBirthCityDetail = (city: BirthCity) => (
-  city.region && city.region !== city.country ? `${city.region}, ${city.country}` : city.country
-);
 
 function BirthEditorWheelPicker({
   label,
@@ -252,6 +217,34 @@ const PLANET_LABELS: Record<PlanetKey, string> = {
   pluto: 'Pluton',
 };
 
+const PLANET_THEMES: Record<PlanetKey, string> = {
+  sun: 'Identité et rayonnement',
+  moon: 'Émotions et sécurité intérieure',
+  ascendant: 'Présence et première impression',
+  mercury: 'Pensée et communication',
+  venus: 'Amour et attirance',
+  mars: 'Désir et passage à l’action',
+  jupiter: 'Expansion et confiance',
+  saturn: 'Structure et maturité',
+  uranus: 'Liberté et singularité',
+  neptune: 'Intuition et imaginaire',
+  pluto: 'Transformation et pouvoir intérieur',
+};
+
+const PLANET_CARD_HOOKS: Record<PlanetKey, string> = {
+  sun: 'L’endroit du thème où tu apprends à rayonner sans demander la permission.',
+  moon: 'Ton refuge invisible : ce qui te rassure, te bouleverse et te ramène à toi.',
+  ascendant: 'La présence que tu dégages avant même d’avoir prononcé le premier mot.',
+  mercury: 'La mécanique de ta pensée, de tes mots et de tout ce que tu veux comprendre.',
+  venus: 'Ta manière d’attirer, de choisir et de reconnaître ce qui mérite ton attachement.',
+  mars: 'L’instinct qui te met en mouvement lorsque le désir devient impossible à ignorer.',
+  jupiter: 'L’espace où ta confiance grandit et où la vie t’invite à voir plus grand.',
+  saturn: 'La discipline qui te construit lentement et transforme l’effort en maîtrise.',
+  uranus: 'La force qui refuse les chemins prévisibles et protège ta liberté profonde.',
+  neptune: 'La frontière sensible entre ton intuition, tes rêves et ce que tu idéalises.',
+  pluto: 'Le lieu de tes métamorphoses : là où perdre le contrôle devient une renaissance.',
+};
+
 const isMarsTrineUranusAspect = (aspect: any) => (
   aspect?.type === 'Trigone'
   && [aspect?.planet1, aspect?.planet2].sort().join('-') === 'mars-uranus'
@@ -304,6 +297,8 @@ interface AstralProfileProps {
   birthLatitude?: number;
   birthLongitude?: number;
   birthTimezoneOffset?: number;
+  /** Heure de naissance inconnue : Ascendant et maisons masqués, Lune approximative. */
+  birthTimeUnknown?: boolean;
   planetPositions: Record<string, any>;
   houses: any[];
   aspects?: any[];
@@ -312,6 +307,7 @@ interface AstralProfileProps {
   variant?: AstralProfileVariant;
   onEditBirthData?: (data: EditableBirthData) => Promise<void> | void;
   editBirthDataLoading?: boolean;
+  onOpenFullReading?: () => void;
 }
 
 function getSignForPlanet(
@@ -333,6 +329,19 @@ function getHouseRomanForPlanet(key: PlanetKey, planetPositions: Record<string, 
   return Number.isInteger(house) && house >= 1 && house <= 12 ? HOUSE_ROMANS[house - 1] : null;
 }
 
+// Whole degree inside the sign (27°32′ → 27°).
+function getSignDegreeLabel(key: PlanetKey, planetPositions: Record<string, any>, houses: any[]): string | null {
+  const raw = key === 'ascendant' ? houses?.[0]?.signDegree : planetPositions[key]?.signDegree;
+  if (typeof raw !== 'number' || !Number.isFinite(raw)) return null;
+  return `${Math.floor(raw)}°`;
+}
+
+const renderSignIcon = (signName: string) => (
+  ZODIAC_ICON_PATHS[signName] ? (
+    <img className="astral-profile__sign-icon" src={ZODIAC_ICON_PATHS[signName]} alt="" aria-hidden="true" loading="lazy" decoding="async" />
+  ) : null
+);
+
 export default function AstralProfile({
   name,
   birthDate,
@@ -340,6 +349,7 @@ export default function AstralProfile({
   birthLatitude,
   birthLongitude,
   birthTimezoneOffset,
+  birthTimeUnknown = false,
   planetPositions,
   houses,
   aspects = [],
@@ -348,36 +358,53 @@ export default function AstralProfile({
   variant = 'default',
   onEditBirthData,
   editBirthDataLoading = false,
+  onOpenFullReading,
 }: AstralProfileProps) {
   const isYou2 = variant === 'you2';
   const [activePlanet, setActivePlanet] = useState<PlanetKey>(initialActivePlanet || 'sun');
+  const [wheelActivePlanet, setWheelActivePlanet] = useState<PlanetKey | null>(initialActivePlanet || null);
   const [expandedPlanet, setExpandedPlanet] = useState<PlanetKey | null>(initialActivePlanet || null);
   const [activeAspect, setActiveAspect] = useState<any | null>(null);
   const [activeSection, setActiveSection] = useState<AstralProfileSection>('planets');
   const [sectionSwitchVisible, setSectionSwitchVisible] = useState(false);
+  // The "aperçu" upsell appears once, inside the second reading opened, never on every accordion.
+  const [teaserReadingKey, setTeaserReadingKey] = useState<string | null>(null);
+  const openedReadingsCount = useRef(0);
+  const [fullReadingNotice, setFullReadingNotice] = useState(false);
   const [isEditingBirthData, setIsEditingBirthData] = useState(false);
   const [editName, setEditName] = useState(name);
-  const [birthEditorDate, setBirthEditorDate] = useState(() => getBirthDateParts(birthDate));
+  const [birthEditorDate, setBirthEditorDate] = useState(() => getBirthDateParts(birthDate, birthTimezoneOffset));
+  const [editTimeUnknown, setEditTimeUnknown] = useState(birthTimeUnknown);
+  const [isResolvingEdit, setIsResolvingEdit] = useState(false);
   const [editPlace, setEditPlace] = useState(birthPlace || '');
-  const [selectedEditCity, setSelectedEditCity] = useState<BirthCity | null>(() => findBirthCity(birthPlace || ''));
+  // Lieu retenu pour le recalcul : le lieu actuel au départ, puis uniquement une ville choisie dans la liste.
+  const currentBirthPlace = useMemo<BirthPlace | null>(() => (
+    birthPlace && Number.isFinite(birthLatitude) && Number.isFinite(birthLongitude)
+      ? { name: birthPlace, country: '', lat: birthLatitude as number, lon: birthLongitude as number }
+      : null
+  ), [birthLatitude, birthLongitude, birthPlace]);
+  const [editCity, setEditCity] = useState<BirthPlace | null>(currentBirthPlace);
   const contentRef = useRef<HTMLDivElement>(null);
   const pillsContainerRef = useRef<HTMLDivElement>(null);
   const activePillRef = useRef<HTMLButtonElement>(null);
   const topRef = useRef<HTMLDivElement>(null);
   const sectionSwitchRef = useRef<HTMLDivElement>(null);
+  const wheelSwipeStartX = useRef<number | null>(null);
 
   useEffect(() => {
     if (isEditingBirthData) return;
     setEditName(name);
-    setBirthEditorDate(getBirthDateParts(birthDate));
+    setBirthEditorDate(getBirthDateParts(birthDate, birthTimezoneOffset));
+    setEditTimeUnknown(birthTimeUnknown);
     setEditPlace(birthPlace || '');
-    setSelectedEditCity(findBirthCity(birthPlace || ''));
-  }, [birthDate, birthPlace, isEditingBirthData, name]);
+    setEditCity(currentBirthPlace);
+  }, [birthDate, birthPlace, birthTimeUnknown, birthTimezoneOffset, currentBirthPlace, isEditingBirthData, name]);
 
   // Set active planet when initialActivePlanet prop changes
   useEffect(() => {
     if (initialActivePlanet) {
       setActivePlanet(initialActivePlanet);
+      setWheelActivePlanet(initialActivePlanet);
       setExpandedPlanet(initialActivePlanet);
       setActiveAspect(null);
       setActiveSection('planets');
@@ -408,6 +435,33 @@ export default function AstralProfile({
     observer.observe(sectionSwitch);
     return () => observer.disconnect();
   }, []);
+
+  // The global theme toggle is position: fixed; once the page scrolls it would sit on top of
+  // the list, so it fades out below the top of the page (see .you-scrolled in AstralProfile.css).
+  useEffect(() => {
+    const scroller = topRef.current?.closest('.app-content') as HTMLElement | null;
+    const target: HTMLElement | Window = scroller ?? window;
+    const root = document.documentElement;
+    const update = () => {
+      const offset = scroller ? scroller.scrollTop : window.scrollY;
+      root.classList.toggle('you-scrolled', offset > 32);
+    };
+    update();
+    target.addEventListener('scroll', update, { passive: true });
+    return () => {
+      target.removeEventListener('scroll', update);
+      root.classList.remove('you-scrolled');
+    };
+  }, []);
+
+  const registerOpenedReading = (readingKey: string) => {
+    openedReadingsCount.current += 1;
+    if (openedReadingsCount.current === 2 && teaserReadingKey === null) {
+      setTeaserReadingKey(readingKey);
+    }
+  };
+
+  const getAspectKey = (aspect: any) => `${aspect.planet1}-${aspect.type}-${aspect.planet2}`;
 
   const currentYear = useMemo(() => new Date().getFullYear(), []);
   const daysInSelectedMonth = useMemo(
@@ -450,9 +504,43 @@ export default function AstralProfile({
     });
   };
 
+  // Heure inconnue : l'Ascendant et les maisons dépendent de l'heure exacte, ils disparaissent.
+  const planetKeys = useMemo(
+    () => (birthTimeUnknown ? ASTRAL_PROFILE_PLANET_KEYS.filter((key) => key !== 'ascendant') : ASTRAL_PROFILE_PLANET_KEYS),
+    [birthTimeUnknown]
+  );
+  const chartAspects = useMemo(
+    () => (birthTimeUnknown
+      ? (aspects || []).filter((aspect) => aspect.planet1 !== 'ascendant' && aspect.planet2 !== 'ascendant')
+      : aspects || []),
+    [aspects, birthTimeUnknown]
+  );
+  const houseRomanFor = (key: PlanetKey) => (birthTimeUnknown ? null : getHouseRomanForPlanet(key, planetPositions));
+  // Signes traversés par le Soleil et la Lune sur toute la journée de naissance (heure inconnue).
+  const possibleDaySigns = useMemo(() => {
+    if (!birthTimeUnknown || !birthDate || Number.isNaN(birthDate.getTime())) return null;
+    const offset = birthTimezoneOffset ?? -birthDate.getTimezoneOffset() / 60;
+    const local = getBirthLocalParts(birthDate, offset);
+    const date = `${local.year}-${padBirthValue(local.month)}-${padBirthValue(local.day)}`;
+    return getPossibleDaySigns(parseBirthDateTime(date, '00:00', offset), parseBirthDateTime(date, '23:59', offset));
+  }, [birthDate, birthTimeUnknown, birthTimezoneOffset]);
+  const getDayAmbiguityNote = (key: PlanetKey, retainedSign: string) => {
+    const signs = key === 'sun' || key === 'moon' ? possibleDaySigns?.[key] : undefined;
+    if (!signs || signs.length < 2) return null;
+    const subject = key === 'sun' ? 'ton Soleil est passé' : 'ta Lune est passée';
+    return `Heure de naissance inconnue : ce jour-là, ${subject} du signe ${signs[0]} au signe ${signs[1]}. Cette lecture suit sa position à midi, en ${retainedSign}.`;
+  };
+
   const sign = getSignForPlanet(activePlanet, planetPositions, houses);
-  const activeHouseRoman = getHouseRomanForPlanet(activePlanet, planetPositions);
+  const activeHouseRoman = houseRomanFor(activePlanet);
   const interpretation = getDetailedInterpretation(activePlanet, sign);
+  const activeAmbiguityNote = getDayAmbiguityNote(activePlanet, sign);
+  const wheelSign = wheelActivePlanet ? getSignForPlanet(wheelActivePlanet, planetPositions, houses) : null;
+  const wheelHouseRoman = wheelActivePlanet ? houseRomanFor(wheelActivePlanet) : null;
+  const wheelPlanetIndex = wheelActivePlanet
+    ? planetKeys.indexOf(wheelActivePlanet) + 1
+    : 0;
+  const wheelExcerpt = wheelActivePlanet ? PLANET_CARD_HOOKS[wheelActivePlanet] : '';
   const scrollDescriptionToTop = () => {
     window.requestAnimationFrame(() => {
       window.requestAnimationFrame(() => {
@@ -494,8 +582,55 @@ export default function AstralProfile({
     setExpandedPlanet(shouldOpen ? key : null);
     setActiveAspect(null);
     if (shouldOpen) {
+      registerOpenedReading(`planet-${key}`);
       scrollDescriptionToTop();
     }
+  };
+
+  const handleWheelPlanetClick = (key: string) => {
+    if (!planetKeys.includes(key as PlanetKey)) return;
+    const planetKey = key as PlanetKey;
+    triggerHaptic(10);
+    setWheelActivePlanet(planetKey);
+    setActivePlanet(planetKey);
+    setActiveAspect(null);
+  };
+
+  const showAdjacentWheelPlanet = (direction: -1 | 1) => {
+    if (!wheelActivePlanet) return;
+    const currentIndex = planetKeys.indexOf(wheelActivePlanet);
+    const nextIndex = (currentIndex + direction + planetKeys.length) % planetKeys.length;
+    const nextPlanet = planetKeys[nextIndex];
+    triggerHaptic(7);
+    setWheelActivePlanet(nextPlanet);
+    setActivePlanet(nextPlanet);
+    setActiveAspect(null);
+  };
+
+  const handleWheelCardPointerDown = (event: ReactPointerEvent<HTMLElement>) => {
+    if (!event.isPrimary || (event.target as Element).closest('button')) return;
+    wheelSwipeStartX.current = event.clientX;
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+  };
+
+  const handleWheelCardPointerUp = (event: ReactPointerEvent<HTMLElement>) => {
+    const startX = wheelSwipeStartX.current;
+    wheelSwipeStartX.current = null;
+    if (startX === null) return;
+    const distance = event.clientX - startX;
+    if (Math.abs(distance) < 44) return;
+    showAdjacentWheelPlanet(distance < 0 ? 1 : -1);
+  };
+
+  const openWheelPlanetReading = () => {
+    if (!wheelActivePlanet) return;
+    setActiveSection('planets');
+    setActivePlanet(wheelActivePlanet);
+    setExpandedPlanet(wheelActivePlanet);
+    setActiveAspect(null);
+    setWheelActivePlanet(null);
+    registerOpenedReading(`planet-${wheelActivePlanet}`);
+    scrollDescriptionToTop();
   };
 
   const handleAspectClick = (aspect: any) => {
@@ -504,11 +639,13 @@ export default function AstralProfile({
       return;
     }
     triggerHaptic();
+    setWheelActivePlanet(null);
     const isSameAspect = activeAspect?.planet1 === aspect.planet1 && activeAspect?.planet2 === aspect.planet2 && activeAspect?.type === aspect.type;
     setExpandedPlanet(null);
     setActiveAspect(isSameAspect ? null : aspect);
     setActiveSection('aspects');
     if (!isSameAspect) {
+      registerOpenedReading(getAspectKey(aspect));
       scrollDescriptionToTop();
     }
   };
@@ -528,7 +665,7 @@ export default function AstralProfile({
     };
   };
 
-  const visibleAspects = (aspects || [])
+  const visibleAspects = chartAspects
     .filter((a) => {
       if (a.type === 'Conjonction' && a.orb > 2) {
         return false;
@@ -540,7 +677,7 @@ export default function AstralProfile({
   const signActivations = useMemo(() => {
     const signs = new Map<string, PlanetKey[]>();
 
-    ASTRAL_PROFILE_PLANET_KEYS.forEach((key) => {
+    planetKeys.forEach((key) => {
       const signName = getSignForPlanet(key, planetPositions, houses);
       const currentKeys = signs.get(signName) || [];
       currentKeys.push(key);
@@ -551,7 +688,7 @@ export default function AstralProfile({
       signName,
       keys,
     }));
-  }, [houses, planetPositions]);
+  }, [houses, planetKeys, planetPositions]);
 
   const houseActivations = useMemo(() => (
     (houses || []).slice(0, 12).map((house, index) => ({
@@ -562,20 +699,18 @@ export default function AstralProfile({
     }))
   ), [houses]);
 
-  const editCitySuggestions = useMemo(() => {
-    const query = normalizeBirthPlace(editPlace);
-    if (query.length < 2) return BIRTH_CITY_OPTIONS.slice(0, 10);
-
-    return BIRTH_CITY_OPTIONS
-      .filter((city) => normalizeBirthPlace(`${city.name} ${city.region || ''} ${city.country} ${(city.aliases || []).join(' ')}`).includes(query))
-      .slice(0, 10);
-  }, [editPlace]);
+  const {
+    suggestions: editCitySuggestions,
+    isSearching: isSearchingEditCity,
+    noResult: editCityNoResult,
+  } = useCitySearch(editPlace, { enabled: isEditingBirthData && !editCity, localCities: BIRTH_CITY_OPTIONS, limit: 5 });
 
   const resetBirthEditor = () => {
     setEditName(name);
-    setBirthEditorDate(getBirthDateParts(birthDate));
+    setBirthEditorDate(getBirthDateParts(birthDate, birthTimezoneOffset));
+    setEditTimeUnknown(birthTimeUnknown);
     setEditPlace(birthPlace || '');
-    setSelectedEditCity(findBirthCity(birthPlace || ''));
+    setEditCity(currentBirthPlace);
   };
 
   const closeBirthEditor = () => {
@@ -585,28 +720,28 @@ export default function AstralProfile({
 
   const handleBirthEditSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!onEditBirthData || editBirthDataLoading) return;
+    if (!onEditBirthData || editBirthDataLoading || isResolvingEdit || !editCity) return;
 
-    const place = editPlace.trim();
-    const normalizedPlace = normalizeBirthPlace(place);
-    const matchedSelectedCity = selectedEditCity && normalizeBirthPlace(formatBirthCityValue(selectedEditCity)) === normalizedPlace
-      ? selectedEditCity
-      : null;
-    const matchedCity = matchedSelectedCity || findBirthCity(place) || editCitySuggestions[0] || findBirthCity(birthPlace || '');
-    const fallbackLongitude = birthLongitude ?? matchedCity?.lon ?? BIRTH_CITY_OPTIONS[0].lon;
-    const latitude = matchedCity?.lat ?? birthLatitude ?? BIRTH_CITY_OPTIONS[0].lat;
-    const longitude = matchedCity?.lon ?? fallbackLongitude;
-    const timezoneOffset = matchedCity?.tz ?? birthTimezoneOffset ?? getTimezoneFromLongitude(longitude);
+    const { lat: latitude, lon: longitude } = editCity;
+    const date = `${birthEditorDate.year}-${padBirthValue(birthEditorDate.month)}-${padBirthValue(birthEditorDate.day)}`;
+    const time = editTimeUnknown ? '12:00' : `${padBirthValue(birthEditorDate.hour)}:${padBirthValue(birthEditorDate.minute)}`;
 
-    await onEditBirthData({
-      name: editName.trim() || name,
-      date: `${birthEditorDate.year}-${padBirthValue(birthEditorDate.month)}-${padBirthValue(birthEditorDate.day)}`,
-      time: `${padBirthValue(birthEditorDate.hour)}:${padBirthValue(birthEditorDate.minute)}`,
-      place: place || birthPlace || BIRTH_CITY_OPTIONS[0].name,
-      latitude,
-      longitude,
-      timezoneOffset,
-    });
+    setIsResolvingEdit(true);
+    try {
+      const timeZone = await resolveBirthTimeZone(latitude, longitude, editCity.timeZone);
+      await onEditBirthData({
+        name: editName.trim() || name,
+        date,
+        time,
+        place: formatBirthPlace(editCity),
+        latitude,
+        longitude,
+        timezoneOffset: getBirthOffsetAt(date, time, timeZone, longitude),
+        timeUnknown: editTimeUnknown,
+      });
+    } finally {
+      setIsResolvingEdit(false);
+    }
 
     setIsEditingBirthData(false);
   };
@@ -670,7 +805,7 @@ export default function AstralProfile({
     premium.scrollIntoView({ behavior: 'smooth', block: 'center' });
   };
 
-  const renderPremiumTeaser = () => (
+  const renderPremiumTeaser = (readingKey: string) => (teaserReadingKey === readingKey ? (
     <div className="astral-profile__premium-teaser">
       <p className="astral-profile__premium-teaser-text">
         Ceci n’est qu’un aperçu. La lecture complète révèle les liens entre planètes, maisons et aspects.
@@ -685,7 +820,7 @@ export default function AstralProfile({
         <ArrowRight size={14} strokeWidth={1.7} aria-hidden="true" />
       </button>
     </div>
-  );
+  ) : null);
 
   const renderAspectDescription = (aspect: any, className = 'astral-profile__content astral-profile__content--inline') => (
     <div className={`${className}${usesAstroAspectBackground(aspect) ? ' astro-aspect-background astro-aspect-background--active' : ''}`} key={`${aspect.planet1}-${aspect.type}-${aspect.planet2}`} ref={contentRef}>
@@ -703,7 +838,7 @@ export default function AstralProfile({
         <span className="astral-profile__aspect-planet">{PLANET_INFO[aspect.planet2]?.name || aspect.planet2}</span>
         {renderPlanetGlyph(aspect.planet2 as PlanetKey, 'astral-profile__aspect-glyph astral-profile__description-aspect-glyph')}
         <span className="astral-profile__orb-display astral-profile__description-meta">
-          {aspect.orb.toFixed(1)}° d'orbe
+          {birthTimeUnknown && (aspect.planet1 === 'moon' || aspect.planet2 === 'moon') ? '≈ ' : ''}{aspect.orb.toFixed(1)}° d'orbe
         </span>
       </p>
 
@@ -712,7 +847,7 @@ export default function AstralProfile({
           {paragraph}
         </p>
       ))}
-      {renderPremiumTeaser()}
+      {renderPremiumTeaser(getAspectKey(aspect))}
       <button
         type="button"
         className="astral-profile__collapse-bottom"
@@ -740,6 +875,9 @@ export default function AstralProfile({
         )}
       </p>
 
+      {activeAmbiguityNote && (
+        <p className="astral-profile__time-note">{activeAmbiguityNote}</p>
+      )}
       {interpretation ? (
         interpretation.split('\n\n').map((paragraph, i) => (
           <p key={i} className="astral-profile__paragraph">
@@ -751,7 +889,7 @@ export default function AstralProfile({
           Interprétation détaillée bientôt disponible.
         </p>
       )}
-      {renderPremiumTeaser()}
+      {renderPremiumTeaser(`planet-${activePlanet}`)}
       <button
         type="button"
         className="astral-profile__collapse-bottom"
@@ -769,7 +907,11 @@ export default function AstralProfile({
       <div ref={topRef} />
       {/* Roue Zodiacale en haut */}
       {birthDate && birthPlace && (<>
-        <div className={`${fullscreenMode ? 'astral-profile-wheel-page w-full' : 'relative mb-6 pt-2 pb-6 px-2 sm:px-4'}${isYou2 ? ' astral-profile-wheel-page--you2' : ''} relative before:absolute before:inset-0 before:bg-gradient-to-b before:from-[#040508] before:via-[#030406] before:to-[#020305] before:pointer-events-none before:opacity-100 after:absolute after:top-1/2 after:left-1/2 after:-translate-x-1/2 after:-translate-y-1/2 after:w-[500px] after:h-[500px] after:blur-3xl after:opacity-10 after:pointer-events-none after:rounded-full`} style={{ '--tw-gradient-stops': 'rgb(10, 11, 14), rgb(3, 4, 6)' } as React.CSSProperties}>
+        <div
+          className={`${fullscreenMode ? 'astral-profile-wheel-page w-full' : 'relative mb-6 pt-2 pb-6 px-2 sm:px-4'}${isYou2 ? ' astral-profile-wheel-page--you2' : ''}${wheelActivePlanet ? ' astral-profile-wheel-page--card-open' : ''} relative before:absolute before:inset-0 before:bg-gradient-to-b before:from-[#040508] before:via-[#030406] before:to-[#020305] before:pointer-events-none before:opacity-100 after:absolute after:top-1/2 after:left-1/2 after:-translate-x-1/2 after:-translate-y-1/2 after:w-[500px] after:h-[500px] after:blur-3xl after:opacity-10 after:pointer-events-none after:rounded-full`}
+          data-active-planet={wheelActivePlanet || undefined}
+          style={{ '--tw-gradient-stops': 'rgb(10, 11, 14), rgb(3, 4, 6)' } as React.CSSProperties}
+        >
           <style>{`
             .zodiac-space-bg::after {
               background: radial-gradient(circle, rgba(90, 90, 100, 0.08) 0%, rgba(40, 40, 50, 0.04) 40%, transparent 70%);
@@ -791,6 +933,18 @@ export default function AstralProfile({
               filter: drop-shadow(0 0 24px rgba(0, 0, 0, 0.35));
             }
           `}</style>
+          <div className="astral-profile__wheel-atmosphere" aria-hidden="true" />
+          {onEditBirthData && !isYou2 && (
+            <button
+              type="button"
+              className="astral-profile__edit-trigger"
+              onClick={() => setIsEditingBirthData(true)}
+              aria-label="Modifier mes données de naissance"
+            >
+              <span>{name}</span>
+              <PenLine size={13} strokeWidth={1.7} aria-hidden="true" />
+            </button>
+          )}
           <div className="stars-layer-2" aria-hidden="true">
             <div className="star-drift star-drift--one" />
             <div className="star-drift star-drift--two" />
@@ -808,13 +962,71 @@ export default function AstralProfile({
               name={name}
               birthDate={birthDate}
               birthPlace={birthPlace}
+              birthTimezoneOffset={birthTimezoneOffset}
+              birthTimeUnknown={birthTimeUnknown}
               planetPositions={planetPositions}
               houses={houses}
-              aspects={aspects}
+              aspects={chartAspects}
               onAspectClick={handleAspectClick}
+              onPlanetClick={handleWheelPlanetClick}
+              activePlanetKey={wheelActivePlanet}
               fullscreenMode={fullscreenMode}
             />
             </div>
+          </div>
+          <div className={`astral-profile__wheel-interface ${wheelActivePlanet ? 'is-open' : ''}`} aria-live="polite">
+            {wheelActivePlanet && wheelSign ? (
+              <article
+                key={wheelActivePlanet}
+                className="astral-profile__wheel-insight"
+                data-planet={wheelActivePlanet}
+                aria-label={`${PLANET_LABELS[wheelActivePlanet]} en ${wheelSign}. Fais glisser horizontalement pour changer de planète.`}
+                onPointerDown={handleWheelCardPointerDown}
+                onPointerUp={handleWheelCardPointerUp}
+                onPointerCancel={() => { wheelSwipeStartX.current = null; }}
+              >
+                <button
+                  type="button"
+                  className="astral-profile__wheel-insight-close"
+                  onClick={() => setWheelActivePlanet(null)}
+                  aria-label="Fermer l’aperçu"
+                >
+                  <X size={15} strokeWidth={1.7} aria-hidden="true" />
+                </button>
+                <div className="astral-profile__wheel-insight-visual" aria-hidden="true">
+                  <span className="astral-profile__wheel-insight-index">
+                    {String(wheelPlanetIndex).padStart(2, '0')} / {String(planetKeys.length).padStart(2, '0')}
+                  </span>
+                  <span className="astral-profile__wheel-insight-orbit" />
+                  {renderPlanetGlyph(wheelActivePlanet, 'astral-profile__wheel-insight-glyph')}
+                  {wheelHouseRoman ? (
+                    <span className="astral-profile__wheel-insight-house">Maison {wheelHouseRoman}</span>
+                  ) : null}
+                </div>
+                <div className="astral-profile__wheel-insight-meta">
+                  <span>Night One</span>
+                  <span>{PLANET_THEMES[wheelActivePlanet]}</span>
+                </div>
+                <div className="astral-profile__wheel-insight-heading">
+                  <h2>
+                    <strong>{PLANET_LABELS[wheelActivePlanet]}</strong>
+                    <span>en {wheelSign}</span>
+                  </h2>
+                </div>
+                {wheelExcerpt ? <p className="astral-profile__wheel-insight-copy">{wheelExcerpt}</p> : null}
+                <div className="astral-profile__wheel-insight-footer">
+                  <span>Découvrir ta signature complète</span>
+                  <button type="button" className="astral-profile__wheel-insight-action" onClick={openWheelPlanetReading} aria-label={`Lire l’interprétation de ${PLANET_LABELS[wheelActivePlanet]} en ${wheelSign}`}>
+                    <ArrowRight size={20} strokeWidth={1.7} aria-hidden="true" />
+                  </button>
+                </div>
+              </article>
+            ) : (
+              <div className="astral-profile__wheel-instruction">
+                <Sparkles size={13} strokeWidth={1.6} aria-hidden="true" />
+                <span>Touche une planète pour découvrir ce qu’elle révèle de toi</span>
+              </div>
+            )}
           </div>
         </div>
         <div className="astral-profile__gold-divider" aria-hidden="true" />
@@ -878,20 +1090,28 @@ export default function AstralProfile({
                     <Clock size={14} strokeWidth={1.7} aria-hidden="true" />
                     <span>Heure de naissance</span>
                   </div>
-                  <div className="astral-profile__birth-editor-wheel-grid astral-profile__birth-editor-wheel-grid--time">
+                  <div className={`astral-profile__birth-editor-wheel-grid astral-profile__birth-editor-wheel-grid--time${editTimeUnknown ? ' is-unknown' : ''}`}>
                     <BirthEditorWheelPicker
                       label="Heure"
                       value={birthEditorDate.hour}
                       options={hourOptions}
-                      onChange={(value) => updateBirthEditorDate('hour', value)}
+                      onChange={(value) => { updateBirthEditorDate('hour', value); setEditTimeUnknown(false); }}
                     />
                     <BirthEditorWheelPicker
                       label="Minute"
                       value={birthEditorDate.minute}
                       options={minuteOptions}
-                      onChange={(value) => updateBirthEditorDate('minute', value)}
+                      onChange={(value) => { updateBirthEditorDate('minute', value); setEditTimeUnknown(false); }}
                     />
                   </div>
+                  <label className="astral-profile__birth-editor-unknown">
+                    <input
+                      type="checkbox"
+                      checked={editTimeUnknown}
+                      onChange={(event) => setEditTimeUnknown(event.target.checked)}
+                    />
+                    <span>Je ne connais pas mon heure de naissance</span>
+                  </label>
                 </div>
 
                 <label className="astral-profile__birth-editor-field">
@@ -900,52 +1120,43 @@ export default function AstralProfile({
                     value={editPlace}
                     onChange={(event) => {
                       setEditPlace(event.target.value);
-                      setSelectedEditCity(null);
+                      setEditCity(null);
                     }}
-                    list="astral-profile-birth-cities"
                     autoComplete="off"
                     placeholder="Ville de naissance"
                     required
                   />
-                  <datalist id="astral-profile-birth-cities">
-                    {BIRTH_CITY_OPTIONS.map((city) => (
-                      <option
-                        key={`${city.name}-${city.country}`}
-                        value={formatBirthCityValue(city)}
-                      />
-                    ))}
-                  </datalist>
                   <small className="astral-profile__birth-editor-help">
                     Date, heure et lieu exacts : le thème est recalculé avec les nouvelles coordonnées.
                   </small>
                 </label>
 
-                {editCitySuggestions.length > 0 ? (
+                {(editCity ? [editCity] : editCitySuggestions).length > 0 && (
                   <div className="astral-profile__birth-editor-suggestions" aria-label="Suggestions de villes">
-                    {editCitySuggestions.map((city) => {
-                      const cityValue = formatBirthCityValue(city);
-                      const isSelected = normalizeBirthPlace(editPlace) === normalizeBirthPlace(cityValue);
-
-                      return (
-                        <button
-                          key={`${city.name}-${city.country}`}
-                          type="button"
-                          className={isSelected ? 'is-selected' : ''}
-                          onClick={() => {
-                            setEditPlace(cityValue);
-                            setSelectedEditCity(city);
-                          }}
-                        >
-                          <span>{city.name}</span>
-                          <small>{formatBirthCityDetail(city)}</small>
-                        </button>
-                      );
-                    })}
+                    {(editCity ? [editCity] : editCitySuggestions).map((city) => (
+                      <button
+                        key={`${city.name}-${city.region || ''}-${city.country}`}
+                        type="button"
+                        className={city === editCity ? 'is-selected' : ''}
+                        onClick={() => {
+                          setEditPlace(formatBirthPlace(city));
+                          setEditCity(city);
+                        }}
+                      >
+                        <span>{city.name}</span>
+                        <small>{city === currentBirthPlace ? 'Lieu actuel' : [city.region, city.country].filter(Boolean).join(', ')}</small>
+                      </button>
+                    ))}
                   </div>
-                ) : (
-                  <p className="astral-profile__birth-editor-empty">
-                    Aucune ville trouvée dans la liste. Tu peux quand même enregistrer avec le lieu saisi.
-                  </p>
+                )}
+                {isSearchingEditCity && (
+                  <p className="astral-profile__birth-editor-empty">Recherche dans le monde entier…</p>
+                )}
+                {!editCity && !isSearchingEditCity && editCitySuggestions.length > 0 && (
+                  <p className="astral-profile__birth-editor-empty">Choisis ta ville dans la liste.</p>
+                )}
+                {!editCity && editCityNoResult && (
+                  <p className="astral-profile__birth-editor-empty">Aucune ville trouvée. Vérifie l’orthographe ou choisis la ville la plus proche.</p>
                 )}
 
                 <div className="astral-profile__birth-editor-actions">
@@ -954,10 +1165,10 @@ export default function AstralProfile({
                   </button>
                   <button
                     type="submit"
-                    disabled={editBirthDataLoading || !editPlace.trim()}
+                    disabled={editBirthDataLoading || isResolvingEdit || !editCity}
                   >
                     <Sparkles size={15} strokeWidth={1.8} aria-hidden="true" />
-                    <span>{editBirthDataLoading ? 'Calcul en cours...' : 'Générer le thème'}</span>
+                    <span>{editBirthDataLoading || isResolvingEdit ? 'Calcul en cours...' : 'Générer le thème'}</span>
                   </button>
                 </div>
               </form>
@@ -968,6 +1179,19 @@ export default function AstralProfile({
 
       {/* Profil Astral */}
       <div className="astral-profile">
+      {birthTimeUnknown && (
+        <div className="astral-profile__time-notice" role="note">
+          <Clock size={14} strokeWidth={1.7} aria-hidden="true" />
+          <p>
+            Heure de naissance inconnue : l’Ascendant et les maisons restent masqués, et la Lune est calculée à midi, à ±8° près.
+          </p>
+          {onEditBirthData && birthDate && birthPlace && (
+            <button type="button" onClick={() => setIsEditingBirthData(true)}>
+              Ajouter mon heure
+            </button>
+          )}
+        </div>
+      )}
       <div
         ref={sectionSwitchRef}
         className={`astral-profile__section-switch astral-profile__section-switch--reveal${isYou2 ? ' astral-profile__section-switch--you2' : ''} ${sectionSwitchVisible ? 'is-revealed' : ''}`}
@@ -1068,9 +1292,11 @@ export default function AstralProfile({
       {activeSection === 'planets' && (
         <div className="astral-profile__drawer" role="tabpanel">
           <div className="astral-profile__pills" ref={pillsContainerRef}>
-            {ASTRAL_PROFILE_PLANET_KEYS.map((key) => {
+            {planetKeys.map((key) => {
               const pillSign = getSignForPlanet(key, planetPositions, houses);
-              const pillHouse = getHouseRomanForPlanet(key, planetPositions);
+              const pillHouse = houseRomanFor(key);
+              const rawPillDegree = getSignDegreeLabel(key, planetPositions, houses);
+              const pillDegree = rawPillDegree && birthTimeUnknown && key === 'moon' ? `≈ ${rawPillDegree}` : rawPillDegree;
               const isExpanded = expandedPlanet === key && !activeAspect;
               return (
                 <div key={key} className={`astral-profile__inline-section astral-profile__accordion-card ${isExpanded ? 'astral-profile__accordion-card--active' : ''}`}>
@@ -1082,7 +1308,11 @@ export default function AstralProfile({
                   >
                     {renderPlanetGlyph(key, 'astral-profile__pill-glyph')}
                     <span>{PLANET_LABELS[key]}</span>
-                    <span className="astral-profile__pill-sign">{pillSign}</span>
+                    <span className="astral-profile__pill-sign">
+                      {renderSignIcon(pillSign)}
+                      {pillSign}
+                      {pillDegree && <span className="astral-profile__pill-degree">{pillDegree}</span>}
+                    </span>
                     {pillHouse && (
                       <span className="astral-profile__pill-house" title={`Maison ${pillHouse}`} aria-label={`Maison ${pillHouse}`}>
                         {pillHouse}
@@ -1131,7 +1361,20 @@ export default function AstralProfile({
         <div className="astral-profile__drawer astral-profile__drawer--you2" role="tabpanel">
           <div className="astral-profile__you2-panel-handle" aria-hidden="true" />
           <div className="astral-profile__you2-grid astral-profile__you2-grid--houses">
-            {houseActivations.map((house) => (
+            {birthTimeUnknown ? (
+              <article className="astral-profile__you2-insight-card">
+                <span className="astral-profile__you2-card-kicker">Maisons</span>
+                <h2 className="astral-profile__title">Heure de naissance requise</h2>
+                <p className="astral-profile__paragraph">
+                  Les maisons découpent le ciel à partir de l’horizon du lieu de naissance, qui tourne d’un signe toutes les deux heures environ. Sans l’heure exacte, elles ne peuvent pas être calculées.
+                </p>
+                {onEditBirthData && (
+                  <button type="button" className="astral-profile__you2-panel-action" onClick={() => setIsEditingBirthData(true)}>
+                    Ajouter mon heure
+                  </button>
+                )}
+              </article>
+            ) : houseActivations.map((house) => (
               <article className="astral-profile__you2-insight-card" key={`house-${house.index}`}>
                 <span className="astral-profile__you2-card-kicker">Maison {house.roman}</span>
                 <h2 className="astral-profile__title">Maison {house.roman}</h2>
@@ -1247,10 +1490,17 @@ export default function AstralProfile({
             <span><small>03</small>Aspects</span>
           </div>
 
-          <button type="button" className="astral-profile__premium-cta-button">
+          <button
+            type="button"
+            className="astral-profile__premium-cta-button"
+            onClick={() => (onOpenFullReading ? onOpenFullReading() : setFullReadingNotice(true))}
+          >
             <span>Ouvrir ma lecture complète</span>
             <ArrowRight size={16} strokeWidth={1.8} aria-hidden="true" />
           </button>
+          <p className="astral-profile__premium-cta-status" role="status">
+            {fullReadingNotice ? 'La lecture complète arrive très bientôt sur Nightstar.' : ''}
+          </p>
         </div>
 
       </section>

@@ -1,7 +1,6 @@
-import React from 'react';
 import { Sun, Moon, MessageCircle } from 'lucide-react';
 import { PlanetPosition, Aspect } from '../services/astrology';
-import { getPlanetInSignInterpretation, PLANET_INFO } from '../data/interpretations';
+import { getPlanetInSignInterpretation } from '../data/interpretations';
 
 interface InterpretationProps {
   name: string;
@@ -9,14 +8,11 @@ interface InterpretationProps {
   aspects: Aspect[];
 }
 
-export default function Interpretation({ name, planetPositions, aspects }: InterpretationProps) {
+export default function Interpretation({ name, planetPositions }: InterpretationProps) {
   const sun = planetPositions.sun;
   const moon = planetPositions.moon;
   const mercury = planetPositions.mercury;
 
-  const majorAspects = aspects
-    .filter(a => ['Conjonction', 'Trigone', 'Carré', 'Opposition'].includes(a.type))
-    .slice(0, 3);
 
   return (
     <div className="bg-white rounded-2xl shadow-xl p-8 max-w-4xl w-full">
@@ -32,7 +28,7 @@ export default function Interpretation({ name, planetPositions, aspects }: Inter
             </div>
             <div>
               <h3 className="text-lg font-bold text-slate-800">Soleil en {sun.sign}</h3>
-              <p className="text-xs text-slate-600">Votre cœur et votre ego, votre vitalité et votre créativité</p>
+              <p className="text-xs text-slate-600">Ton cœur et ton ego, ta vitalité et ta créativité</p>
             </div>
           </div>
           <p className="text-sm text-slate-700 leading-relaxed">
@@ -50,7 +46,7 @@ export default function Interpretation({ name, planetPositions, aspects }: Inter
             </div>
             <div>
               <h3 className="text-lg font-bold text-slate-800">Lune en {moon.sign}</h3>
-              <p className="text-xs text-slate-600">L'humeur intérieure qui exerce une profonde influence sur votre bien-être émotionnel</p>
+              <p className="text-xs text-slate-600">L'humeur intérieure qui exerce une profonde influence sur ton bien-être émotionnel</p>
             </div>
           </div>
           <p className="text-sm text-slate-700 leading-relaxed">
@@ -68,7 +64,7 @@ export default function Interpretation({ name, planetPositions, aspects }: Inter
             </div>
             <div>
               <h3 className="text-lg font-bold text-slate-800">Mercure en {mercury.sign}</h3>
-              <p className="text-xs text-slate-600">Votre pensée et la manière dont vous vous exprimez</p>
+              <p className="text-xs text-slate-600">Ta pensée et la manière dont tu t'exprimes</p>
             </div>
           </div>
           <p className="text-sm text-slate-700 leading-relaxed">
